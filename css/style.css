@@ -13345,7 +13345,7 @@ a.btn:not([href]):not([tabindex]).btn-white,
 a.btn:not([href]):not([tabindex]).btn-light {
   background-color: #fff;
   border-color: #e4e6ef;
-  color: #fff;
+  color: #001E6C;
 }
 
 button.btn.btn-white:hover,
@@ -19567,7 +19567,7 @@ a[data-toggle] {
 
 /*Strip*/
 .modal-strip {
-  background-color: #000000;
+  background-color: #001E6C;
   bottom: 0;
   color: #fff;
   left: 0;
