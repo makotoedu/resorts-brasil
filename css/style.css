@@ -4936,7 +4936,7 @@ p {
   text-transform: none;
   line-height: 1.7;
   letter-spacing: 0;
-  color: #3c4043;
+  color: #525E75;
   font-family: "Poppins", sans-serif;
 }
 
@@ -8076,7 +8076,7 @@ Portfolio
 .dark #footer,
 #footer.inverted,
 #footer.dark {
-  background-color: #181818;
+  background-color: #0E121D;
 }
 
 .dark #footer p,
@@ -8094,7 +8094,7 @@ Portfolio
 .dark #footer a:not(.btn):not(:hover),
 #footer.inverted a:not(.btn):not(:hover),
 #footer.dark a:not(.btn):not(:hover) {
-  color: #999;
+  color: #525E75;
 }
 
 .dark #footer h1,
@@ -8124,13 +8124,13 @@ Portfolio
 #footer.inverted .widget h4,
 #footer.dark .widget .widget-title,
 #footer.dark .widget h4 {
-  color: #fff;
+  color: #626f87;
 }
 
 .dark #footer .copyright-content,
 #footer.inverted .copyright-content,
 #footer.dark .copyright-content {
-  background-color: #1E1E1E;
+  background-color: #10141e;
 }
 
 /*  Widgets */
@@ -8165,7 +8165,7 @@ Portfolio
 }
 
 .widget a {
-  color: #3c4043;
+  color: #525E75;
 }
 
 .widget p {
@@ -8203,7 +8203,7 @@ Portfolio
   padding: 5px 14px;
   margin: 0 2px 5px 0;
   background-color: transparent;
-  color: #3c4043;
+  color: #525E75;
   display: inline-block;
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
@@ -10519,7 +10519,7 @@ Helpers
 .text-md span,
 .text-md span span {
   font-size: 74px !important;
-  line-height: 86px !important;
+  line-height: 82px !important;
 }
 
 .text-lg-light,
@@ -11506,7 +11506,7 @@ Helpers
   position: relative;
   width: 100%;
   margin: 50px 0;
-  border-top: 1px solid #e3e3e3;
+  border-top: 2px solid #e3e3e3;
 }
 
 /*Resposnive settings*/
@@ -13223,7 +13223,7 @@ a.btn:not([href]):not([tabindex]) {
   text-transform: uppercase;
   background-color: #2250fc;
   border-color: #2250fc;
-  border-width: 1px;
+  border-width: 0px;
   border-style: solid;
   color: #fff;
   -webkit-transition: all 0.3s;
@@ -13634,6 +13634,30 @@ a.btn:not([href]):not([tabindex]).btn-danger:not(:disabled):not(.disabled):activ
 a.btn:not([href]):not([tabindex]).btn-danger:not(:disabled):not(.disabled).active {
   background-color: #bd2130;
   border-color: #bd2130;
+  color: #fff;
+}
+
+button.btn.btn-ebook,
+.btn:not(.close):not(.mfp-close).btn-ebook,
+a.btn:not([href]):not([tabindex]).btn-ebook {
+  background: linear-gradient(164deg, #5bd8ff 0%, #e55056 100%) !important;
+  border-color: #5bd8ff;
+}
+
+button.btn.btn-ebook:hover,
+button.btn.btn-ebook:focus,
+button.btn.btn-ebook:not(:disabled):not(.disabled):active,
+button.btn.btn-ebook:not(:disabled):not(.disabled).active,
+.btn:not(.close):not(.mfp-close).btn-ebook:hover,
+.btn:not(.close):not(.mfp-close).btn-ebook:focus,
+.btn:not(.close):not(.mfp-close).btn-ebook:not(:disabled):not(.disabled):active,
+.btn:not(.close):not(.mfp-close).btn-ebook:not(:disabled):not(.disabled).active,
+a.btn:not([href]):not([tabindex]).btn-ebook:hover,
+a.btn:not([href]):not([tabindex]).btn-ebook:focus,
+a.btn:not([href]):not([tabindex]).btn-ebook:not(:disabled):not(.disabled):active,
+a.btn:not([href]):not([tabindex]).btn-ebook:not(:disabled):not(.disabled).active {
+  background: linear-gradient(164deg, #5bd8ff 0%, #e55056 100%) !important;
+  border-color: #5bd8ff;
   color: #fff;
 }
 
@@ -16651,7 +16675,7 @@ div.icon-box:before {
 
 .icon-box.clean .icon i {
   background-color: none;
-  color: #333;
+  color: #001E6C;
   font-size: 50px;
 }
 
@@ -20451,7 +20475,8 @@ video {
 }
 
 .bg-overlay[data-style="1"] {
-  background: #fff;
+  background: #001E6C;
+  opacity: .9;
 }
 
 .bg-overlay[data-style="2"] {
