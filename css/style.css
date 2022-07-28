@@ -4788,7 +4788,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: "Poppins", sans-serif;
-  color: #525E75;
+  color: #001E6C;
 }
 
 h1,
@@ -10445,7 +10445,7 @@ Helpers
 }
 
 .background-grey {
-  background-color: #f9f9fa !important;
+  background-color: #f2f2f2 !important;
 }
 
 .background-dark {
@@ -10602,7 +10602,7 @@ Helpers
 .text-dark label,
 .text-dark div:not(.alert),
 .text-dark span:not(.btn-label) {
-  color: #111 !important;
+  color: #001E6C !important;
 }
 
 .text-grey,
@@ -16898,14 +16898,14 @@ div.icon-box:before {
 
 .icon-boxx .icon-box-content h3 {
   font-size: 20px;
-  color: #1e2022;
+  color: #001E6C;
   font-weight: 400;
 }
 
 .icon-boxx .icon-box-content p {
   font-size: 1rem;
   margin-bottom: 0;
-  color: #1e2022;
+  color: #001E6C;
 }
 
 /* ----------------------------------------------------------------
