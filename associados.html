@@ -104,16 +104,16 @@
                                     </li>
                                     <li class="dropdown"><a href="">Associados</a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="associe-se.html">Associe-se</a></li>
                                             <li><a href="associados.html">Resorts Associados</a></li>
+                                            <li><a href="associe-se.html">Associe-se</a></li>
                                         </ul>
                                     </li>
                                     <li class="dropdown"><a href="">Informação</a>
                                         <ul class="dropdown-menu">
+                                            <li><a href="ebook.html">E-book</a></li>
                                             <li><a href="publicacoes.html">Publicações</a></li>
                                             <li><a href="estatisticas-e-estudos.html">Estatísticas e Estudos</a></li>
                                             <li><a href="#">Blog</a></li>
-                                            <li><a href="imprensa.html">Imprensa</a></li>
                                         </ul>
                                     </li>
                                     <li><a href="apoie.html">Apoie o turismo</a></li>
@@ -128,138 +128,233 @@
         </header>
         <!-- end: Header -->
 
-        <!-- Resorts -->
-        <section id="resorts">
+        <!-- Título -->
+        <section id="title">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-6 m-b-30">
-                        <h2>A Resorts Brasil representa grandes resorts do país, que passam por um criterioso processo
-                            de afiliação e análise conforme a matriz de classificação da associação.</h2>
+                    <div class="col-lg-10 center text-center">
+                        <h2 class="text-md">Resorts Associados</h2>
+                        <h3>Representamos os grandes resorts do país, que passam por um criterioso processo de afiliação
+                            e análise conforme a matriz de classificação da associação.</h3>
                         <div class="line"></div>
+                        <!-- Stats -->
                         <div class="row justify-content-md-center">
-                            <div class="col-md-4">
-                                <!-- Stats item -->
+                            <div class="col-md-2">
                                 <div class="text-center">
                                     <div class="counter display-4 d-block text-dark mb-2">
-                                        <span data-to="53" data-from="0"></span>
+                                        <span data-to="54" data-from="48"></span>
                                     </div>
-                                    <p class="lead">Resorts associados</p>
+                                    <p class="lead">Resorts Associados</p>
                                 </div>
-                                <!-- end: Stats item-->
                             </div>
-                            <div class="col-md-4">
-                                <!-- Stats -->
+                            <div class="col-md-2">
                                 <div class="text-center">
                                     <div class="counter display-4 d-block text-dark mb-2">
-                                        <span data-to="13" data-from="0"></span>
+                                        <span data-suffix=" mil" data-to="16" data-from="11"></span>
+                                    </div>
+                                    <p class="lead">Quartos</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <div class="counter display-4 d-block text-dark mb-2">
+                                        <span data-suffix=" mil" data-to="20" data-from="15"></span>
+                                    </div>
+                                    <p class="lead">Empregos Diretos</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <div class="counter display-4 d-block text-dark mb-2">
+                                        <span data-to="13" data-from="8"></span>
                                     </div>
                                     <p class="lead">Estados</p>
                                 </div>
-                                <!-- end: Stats item-->
                             </div>
-                            <div class="col-md-4">
-                                <!-- Stats -->
+                            <div class="col-md-2">
                                 <div class="text-center">
                                     <div class="counter display-4 d-block text-dark mb-2">
                                         <span data-to="5" data-from="0"></span>
                                     </div>
-                                    <p class="lead">Regiões</p>
+                                    <p class="lead">Regiões do Brasil</p>
                                 </div>
-                                <!-- end: Stats item -->
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <img src="images/ilustracao/mapa.jpg" class="img-fluid" alt="mapa">
+                        <!-- end: Stats -->
                     </div>
                 </div>
             </div>
         </section>
-        <!-- end: Resorts -->
+        <!-- end: Título -->
+
+        <!-- Mapa -->
+        <section id="mapa" class="no-padding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-10 center text-center">
+                        <img class="img-fluid" src="images/ilustracao/mapa.png" alt="mapa">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- end: Mapa -->
+
+        <!-- Associados -->
+        <section id="associados">
+            <div class="container">
+                <div class="row">
+                    <div class="heading-text heading-line text-center m-b-40">
+                        <h4>Resorts Associados</h4>
+                    </div>
+                    <div class="tabs">
+                        <!-- Navegação -->
+                        <ul class="nav nav-tabs nav-justified" id="resorts" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="sudeste-tab" data-bs-toggle="tab" href="#sudeste"
+                                    role="tab" aria-controls="sudeste" aria-selected="true">SUDESTE</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="sul-tab" data-bs-toggle="tab" href="#sul" role="tab"
+                                    aria-controls="sul" aria-selected="false">SUL</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="norte-tab" data-bs-toggle="tab" href="#norte" role="tab"
+                                    aria-controls="norte" aria-selected="true">NORTE</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="nordeste-tab" data-bs-toggle="tab" href="#nordeste" role="tab"
+                                    aria-controls="nordeste" aria-selected="false">NORDESTE</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="centro-oeste-tab" data-bs-toggle="tab" href="#centro-oeste"
+                                    role="tab" aria-controls="centro-oeste" aria-selected="true">CENTRO-OESTE</a>
+                            </li>
+                        </ul>
+                        <!-- end: Navegação -->
+                        <!-- Resorts -->
+                        <div class="tab-content" id="resortsContent">
+                            <!-- Sudeste -->
+                            <div class="tab-pane fade show active" id="sudeste" role="tabpanel"
+                                aria-labelledby="sudeste-tab">
+                                <div id="SP" class="row">
+                                    <div class="col-lg-3 text-center text-bottom">
+                                        <h4>São Paulo</h4>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <ul class="grid grid-6-columns text-center">
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/bourbon-resorts.png" alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/royal-palm-plaza-resort-campinas.png"
+                                                        alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/mavsa.png" alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/casa-grande-hotel-resort-spa.png"
+                                                        alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/sofitel-jequitimar-guaruja.png"
+                                                        alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/grand-hotel-campos-do-jordao.png"
+                                                        alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/grand-hotel-sao-pedro.png" alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/clubmed.png" alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/santa-clara-resorts.jpg" alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/taua-hotel-resort.png" alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/novotel-itu.png" alt=""></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="line"></div>
+                                <div id="RJ" class="row">
+                                    <div class="col-lg-3 text-center text-bottom">
+                                        <h4>Rio de Janeiro</h4>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <ul class="grid grid-6-columns text-center">
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/le-canton.png" alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/clubmed.png" alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/fasano.png" alt=""></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="line"></div>
+                                <div id="MG" class="row">
+                                    <div class="col-lg-3 text-center text-bottom">
+                                        <h4>Minas Gerais</h4>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <ul class="grid grid-6-columns text-center">
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/vale-suico-resort.png" alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/taua-grande-hotel.png" alt=""></a>
+                                            </li>
+                                            <li><a href="#" target="_blank">
+                                                    <img src="images/associados/taua-hotel-resort.png" alt=""></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- end: Sudeste -->
+                            </div>
+                            <!-- end: Resorts -->
+                        </div>
+                    </div>
+                </div>
+        </section>
+        <!-- end: Associados -->
 
         <!-- Folders -->
         <section id="folders" class="box-fancy section-fullwidth text-light no-padding">
             <div class="row">
-                <div class="col-lg-6 text-center" style="background-color: #EFB72C;">
-                    <h2 class="text-lg">MICE</h2>
-                    <h4>Folder MICE 2022</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget sapien leo. Praesent ac
-                        orci rhoncus, sollicitudin felis vel, tincidunt elit. Duis malesuada fringilla tincidunt. Fusce
-                        non ornare libero.</p>
+                <div class="col-lg-6 text-center" style="background-color: #242F9B;">
+                    <h4 class="m-b-0">FOLDER 2022</h4>
+                    <h2 class="text-lg m-b-0">MICE</h2>
+                    <p>Os resorts são excelentes espaços <br>para realizar eventos.</p>
+                </div>
+                <div class="col-lg-6 text-center" style="background-color: #FAC213;">
+                    <h3>Viva uma experiência de evento em um resort e aproveite o melhor da gastronomia, entretenimento,
+                        conforto e natureza!</h3>
                     <a class="btn btn-light btn-outline"
                         href="https://www.resortsbrasil.com.br/wp-content/uploads/2022/02/FOLDER-DIGITAL-RESORTS-BRASIL-MICE.pdf"
                         target="_blank">Baixar o folder</a>
                 </div>
-                <div class="col-lg-6 text-center" style="background-color: #28B055;">
-                    <h2 class="text-lg">LAZER</h2>
-                    <h4>Folder Lazer 2022</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget sapien leo. Praesent ac
-                        orci rhoncus, sollicitudin felis vel, tincidunt elit. Duis malesuada fringilla tincidunt. Fusce
-                        non ornare libero.</p>
-                    <a class="btn btn-light btn-outline"
-                        href="https://www.resortsbrasil.com.br/wp-content/uploads/2022/02/FOLDER-DIGITAL-RESORTS-BRASIL-LAZER.pdf"
-                        target="_blank">Baixar o folder</a>
-                </div>
-            </div>
         </section>
         <!-- end: Folders -->
 
-        <!-- Associados -->
-        <section id="associados" class="p-b-0">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-10 center">
-                        <div class="text-center m-b-30">
-                            <h2 class="m-b-0">Conheça nossos associados:</h2>
-                        </div>
-                        <ul class="grid grid-5-columns text-center">
-                            <li><a href="https://embratur.com.br/" target="_blank"><img alt="brasil sensacional"
-                                        src="images/parceiros/brasil-sensacional.png"></a></li>
-                            <li><a href="https://escolapararesultados.com.br/" target="_blank"><img
-                                        alt="escola para resultados"
-                                        src="images/parceiros/escola-para-resultados.png"></a></li>
-                            <li><a href="https://eaesp.fgv.br/centros/fgvcemd" target="_blank"><img alt="fgv cemd"
-                                        src="images/parceiros/fgv-cemd.png"></a>
-                            </li>
-                            <li><a href="https://fohb.com.br/" target="_blank"><img
-                                        alt="forum de operadores hoteleiros do brasil"
-                                        src="images/parceiros/forum-de-operadores-hoteleiros-do-brasil.png"></a></li>
-                            <li><a href="http://hsmaibrasil.org/" target="_blank"><img alt="hsmai brasil"
-                                        src="images/parceiros/hsmai-brasil.png"></a></li>
-                            <li><a href="https://www.jll.com.br/" target="_blank"><img alt="JLL"
-                                        src="images/parceiros/jll.png"></a></li>
-                            <li><a href="https://www.gov.br/turismo/pt-br" target="_blank"><img
-                                        alt="ministerio do turismo"
-                                        src="images/parceiros/ministerio-do-turismo.png"></a></li>
-                            <li><a href="https://reviewpro.shijigroup.com/pt/" target="_blank"><img alt="reviewpro"
-                                        src="images/parceiros/reviewpro.png"></a></li>
-                            <li><a href="https://www.sp.senac.br/" target="_blank"><img alt="senac"
-                                        src="images/parceiros/senac.png"></a></li>
-                            <li><a href="https://str.com/pt-br" target="_blank"><img alt="STR"
-                                        src="images/parceiros/str.png"></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- end: Associados -->
-
         <!-- CTA -->
-        <section id="cta">
+        <section id="cta" class="p-t-150 p-b-150">
             <div class="container">
-                <div style="background-image:url('https://images.pexels.com/photos/161212/rio-de-janeiro-olympics-2016-niteroi-brazil-161212.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')"
-                    class="call-to-action p-t-100 p-b-100 background-image rounded mb-0">
-                    <div class="bg-overlay" data-style="2"></div>
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-10">
-                                <h3 class="text-light">Quer fazer parte de um grupo seleto de resorts brasileiros?</h3>
-                                <p class="text-light">Faça parte e obtenha os benefícios de um associado.</p>
-                            </div>
-                            <div class="col-lg-2">
-                                <a href="associe-se.html" class="btn btn-light btn-outline">Associe-se</a>
-                            </div>
-                        </div>
+                <div class="row text-center">
+                    <h3 class="m-b-0">Quer fazer parte de um grupo seleto de resorts brasileiros?</h3>
+                    <p>Faça parte e ajude a transformar o setor. 😍</p>
+                    <div>
+                        <a href="associe-se.html" class="btn">Associe-se</a>
                     </div>
                 </div>
             </div>
@@ -280,7 +375,8 @@
                                 <ul class="list">
                                     <li><a href="index.html">Início</a></li>
                                     <li><a href="resorts-brasil.html">Sobre nós</a></li>
-                                    <li><a href="associados.html">Resorts Associados</a></li>
+                                    <li><a href="associados.html">Associados</a></li>
+                                    <li><a href="informacao.html">Informação</a></li>
                                     <li><a href="apoie.html">Apoie o turismo</a></li>
                                     <li><a href="fale-conosco.html">Fale conosco</a></li>
                                 </ul>
@@ -300,10 +396,10 @@
                             <div class="widget">
                                 <h4>Informação</h4>
                                 <ul class="list">
+                                    <li><a href="ebook.html">E-book</a></li>
                                     <li><a href="publicacoes.html">Publicações</a></li>
                                     <li><a href="estatisticas-e-estudos.html">Estatísticas e Estudos</a></li>
-                                    <li><a href="imprensa.html">Imprensa</a></li>
-                                    <li><a href="ebook.html">E-book</a></li>
+                                    <li><a href="#">Blog</a></li>
                                 </ul>
                             </div>
                         </div>
