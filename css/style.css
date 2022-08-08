@@ -6793,7 +6793,7 @@ Portfolio
   letter-spacing: -0.1px;
   line-height: 23px;
   margin-bottom: 16px;
-  color: #444;
+  color: #001E6C;
   font-weight: 600;
 }
 
@@ -10445,7 +10445,7 @@ Helpers
 }
 
 .background-grey {
-  background-color: #f2f2f2 !important;
+  background-color: #F7F9FC !important;
 }
 
 .background-dark {
