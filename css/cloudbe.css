@@ -1,0 +1,24 @@
+/* 
+WhatsApp Float Button
+*/
+.line {
+    border-color: #111;
+}
+
+.link-whatsapp {
+    position: fixed;
+    width: 39px;
+    height: 39px;
+    bottom: 72px;
+    right: 26px;
+    background-color: #25d366;
+    color: #FFF !important;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 22px;
+    z-index: 100;
+}
+
+.i-whatsapp {
+    margin-top: 9px;
+}
