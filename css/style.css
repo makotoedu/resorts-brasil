@@ -3384,7 +3384,7 @@ Main Menu: Responsive
 
 .header-extras>ul>li a,
 .header-extras>ul>li i {
-  color: #3c4043;
+  color: #001e6c;
 }
 
 .header-extras>ul>li>a:not(.btn),
@@ -3395,7 +3395,7 @@ Main Menu: Responsive
 
 .header-extras>ul>li .p-dropdown a>span {
   position: absolute;
-  top: -8px;
+  top: -10px;
   font-size: 9px;
   opacity: 1;
   right: -2px;
@@ -9869,7 +9869,7 @@ td.fc-today {
 }
 
 .p-dropdown a:not(.btn) {
-  color: #3c4043;
+  color: #001e6c;
 }
 
 .p-dropdown .btn,
