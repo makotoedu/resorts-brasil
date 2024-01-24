@@ -13664,8 +13664,8 @@ a.btn:not([href]):not([tabindex]).btn-ebook:not(:disabled):not(.disabled).active
 button.btn.btn-dark,
 .btn:not(.close):not(.mfp-close).btn-dark,
 a.btn:not([href]):not([tabindex]).btn-dark {
-  background-color: #000000;
-  border-color: #000000;
+  background-color: #181a53;
+  border-color: #181a53;
 }
 
 button.btn.btn-dark:hover,
@@ -13689,8 +13689,8 @@ button.btn.btn-dark.btn-outline,
 .btn:not(.close):not(.mfp-close).btn-dark.btn-outline,
 a.btn:not([href]):not([tabindex]).btn-dark.btn-outline {
   background-color: transparent;
-  color: #000000;
-  border-color: #000000;
+  color: #181a53;
+  border-color: #181a53;
 }
 
 button.btn.btn-dark.btn-outline:hover,
@@ -13705,8 +13705,8 @@ a.btn:not([href]):not([tabindex]).btn-dark.btn-outline:hover,
 a.btn:not([href]):not([tabindex]).btn-dark.btn-outline:focus,
 a.btn:not([href]):not([tabindex]).btn-dark.btn-outline:active,
 a.btn:not([href]):not([tabindex]).btn-dark.btn-outline.active {
-  background-color: #000000;
-  border-color: #000000;
+  background-color: #181a53;
+  border-color: #181a53;
   color: #fff;
 }
 
