@@ -499,8 +499,7 @@ Portfolio
 /* ----------------------------------------------------------------
 	Widgets
 -----------------------------------------------------------------*/
-.widget-tweeter li a,
-.widget-twitter li a {
+.widget-tweeter li a {
   color: #7341B4; }
 
 .tags a:hover, .tags a:focus, .tags a:active, .tags a.active {

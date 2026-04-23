@@ -520,8 +520,7 @@ select {
 /* ----------------------------------------------------------------------
 Lists
 -------------------------------------------------------------------------*/
-.widget-tweeter li:before,
-.widget-twitter li:before {
+.widget-tweeter li:before {
   margin-left: 0x;
   margin-right: -20px;
   position: absolute;

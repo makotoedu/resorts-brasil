@@ -3197,57 +3197,9 @@ var INSPIRO = {},
     };
     INSPIRO.widgets = {
         functions: function() {
-            INSPIRO.widgets.twitter();
             INSPIRO.widgets.flickr();
             INSPIRO.widgets.instagram();
             INSPIRO.widgets.subscribeForm();
-        },
-        twitter: function() {
-            var $widget_twitter = $(".widget-tweeter") || $(".widget-twitter");
-            if ($widget_twitter.length > 0) {
-                //Check if twittie plugin is loaded
-                if (typeof $.fn.twittie === "undefined") {
-                    INSPIRO.elements.notification(
-                        "Warning",
-                        "jQuery twittie plugin is missing in plugins.js file.",
-                        "danger"
-                    );
-                    return true;
-                }
-                var t = setTimeout(function() {
-                    $widget_twitter.each(function() {
-                        var elem = $(this),
-                            twitterUsername = elem.attr("data-username") || "ardianmusliu",
-                            twitterLimit = elem.attr("data-limit") || 2,
-                            twitterDateFormat = elem.attr("data-format") || "%b/%d/%Y",
-                            twitterLoadingText =
-                            elem.attr("data-loading-text") || "Loading...",
-                            twitterApiPAth =
-                            elem.attr("data-loader") || "include/twitter/tweet.php",
-                            twitterAvatar = elem.attr("data-avatar") || false;
-                        if (twitterAvatar == "true") {
-                            twitterAvatar = "{{avatar}}";
-                        } else {
-                            twitterAvatar = "";
-                        }
-                        elem.append('<div id="twitter-cnt"></div>');
-                        elem.find("#twitter-cnt").twittie({
-                                username: twitterUsername,
-                                count: twitterLimit,
-                                dateFormat: twitterDateFormat,
-                                template: twitterAvatar + "{{tweet}}<small>{{date}}</small>",
-                                apiPath: twitterApiPAth,
-                                loadingText: twitterLoadingText,
-                            },
-                            function() {
-                                if (elem.parents(".grid-layout").length > 0) {
-                                    elem.parents(".grid-layout").isotope("layout");
-                                }
-                            }
-                        );
-                    });
-                }, 2000);
-            }
         },
         flickr: function() {
             var $flickr_widget = $(".flickr-widget");

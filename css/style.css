@@ -8350,13 +8350,8 @@ body.breakpoint-sm .col-3 .flickr-widget img .widget-instagram img {
   width: 100%;
 }
 
-.widget-tweeter,
-.widget-twitter {
+.widget-tweeter {
   min-height: 248px;
-}
-
-#twitter-cnt {
-  position: relative;
 }
 
 .widget-tweeter:not([data-avatar="true"]) li {
@@ -8366,16 +8361,14 @@ body.breakpoint-sm .col-3 .flickr-widget img .widget-instagram img {
   -webkit-font-smoothing: antialiased;
 }
 
-.widget-tweeter:not([data-avatar="true"]) li:before,
-.widget-twitter:not([data-avatar="true"]) li:before {
+.widget-tweeter:not([data-avatar="true"]) li:before {
   margin-left: -22px;
   position: absolute;
   font-family: "Font Awesome 5 Brands";
   content: "\f099";
 }
 
-.widget-tweeter[data-avatar="true"] li img,
-.widget-twitter[data-avatar="true"] li img {
+.widget-tweeter[data-avatar="true"] li img {
   border-radius: 50%;
   left: -4px;
   position: absolute;
@@ -8383,31 +8376,26 @@ body.breakpoint-sm .col-3 .flickr-widget img .widget-instagram img {
   z-index: 3;
 }
 
-.widget-tweeter[data-avatar="true"] li,
-.widget-twitter[data-avatar="true"] li {
+.widget-tweeter[data-avatar="true"] li {
   padding-left: 10px;
 }
 
-.widget-tweeter li,
-.widget-twitter li {
+.widget-tweeter li {
   line-height: 1.66;
   margin-bottom: 20px;
 }
 
-.widget-tweeter li:last-child,
-.widget-twitter li:last-child {
+.widget-tweeter li:last-child {
   margin-bottom: 0px;
 }
 
-.widget-tweeter ul,
-.widget-twitter ul {
+.widget-tweeter ul {
   list-style: none;
   padding-left: 22px;
   margin-bottom: 0;
 }
 
-.widget-tweeter small,
-.widget-twitter small {
+.widget-tweeter small {
   display: block;
   color: #1e2022 !important;
   width: 100%;
@@ -14151,14 +14139,6 @@ a.btn:not([href]):not([tabindex]).btn-facebook {
   border-width: 0;
 }
 
-button.btn.btn-twitter,
-.btn:not(.close):not(.mfp-close).btn-twitter,
-a.btn:not([href]):not([tabindex]).btn-twitter {
-  background-color: #00aced !important;
-  color: #ffffff !important;
-  border-width: 0;
-}
-
 button.btn.btn-linkedin,
 .btn:not(.close):not(.mfp-close).btn-linkedin,
 a.btn:not([href]):not([tabindex]).btn-linkedin {
@@ -14905,11 +14885,6 @@ ul.nav li.dropdown:hover>ul.dropdown-menu {
 .social-icons.social-icons-colored .social-facebook a,
 .social-icons.social-icons-colored-hover .social-facebook a:hover {
   background-color: #5d82d1;
-}
-
-.social-icons.social-icons-colored .social-twitter a,
-.social-icons.social-icons-colored-hover .social-twitter a:hover {
-  background-color: #40bff5;
 }
 
 .social-icons.social-icons-colored .social-vimeo a,
@@ -16157,10 +16132,6 @@ i:not(.fa):not(.fab):not(.far):not(.fas) {
 
 .icon-tv:before {
   content: "\e9f6";
-}
-
-.icon-twitter:before {
-  content: "\e9f7";
 }
 
 .icon-type:before {
