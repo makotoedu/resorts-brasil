@@ -1,0 +1,15 @@
+# dependências
+node_modules/
+
+# build do Astro
+dist/
+.astro/
+
+# ambiente
+.env
+.env.production
+.vercel
+
+# sistema operacional
+.DS_Store
+Thumbs.db
