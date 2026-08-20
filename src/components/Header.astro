@@ -1,0 +1,131 @@
+---
+import { ui, url, localeBadge, locales, social, type Locale } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
+// O rotulo e resolvido aqui e nao no template: uma anotacao de tipo com
+// generics dentro do markup seria lida como tag JSX pelo parser do Astro.
+const otherLocales = locales
+  .filter((l) => l !== lang)
+  .map((l) => ({
+    locale: l,
+    label: (t.langOther as Record<string, string>)[l],
+  }));
+---
+
+<!-- Topbar -->
+<div id="topbar" class="topbar-colored topbar-fullwidth dark d-none d-xl-block d-lg-block">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <ul class="top-menu">
+          <li><a href={url('ebook', lang)}>{t.topbarEbook}</a></li>
+          <li>
+            <a href={url('joinUs', lang)}><span style="color: rgb(211, 180, 4);">{t.topbarJoin}</span></a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-6 d-none d-sm-block">
+        <div class="social-icons social-icons-colored-hover">
+          <ul>
+            <li class="social-facebook">
+              <a href={social.facebook} target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+            </li>
+            <li class="social-instagram">
+              <a href={social.instagram} target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+            </li>
+            <li class="social-linkedin">
+              <a href={social.linkedin} target="_blank" rel="noopener"><i class="fab fa-linkedin"></i></a>
+            </li>
+            <li class="social-youtube">
+              <a href={social.youtube} target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end: Topbar -->
+
+<!-- Header -->
+<header id="header" data-transparent="true" class="header-disable-fixed submenu-light">
+  <div class="header-inner">
+    <div class="container">
+      <!--Logo-->
+      <div id="logo">
+        <a href={url('home', lang)}>
+          <img src="/images/logo-25anos.png" alt="Resorts Brasil" class="logo-default" />
+          <img src="/images/logo-25anos.png" alt="Resorts Brasil" class="logo-dark" />
+        </a>
+      </div>
+      <!--End: Logo-->
+      <!--Header Extras-->
+      <div class="header-extras">
+        <ul>
+          <li>
+            <div class="p-dropdown">
+              <a href="#"><i class="icon-globe"></i><span>{localeBadge[lang]}</span></a>
+              <ul class="p-dropdown-content">
+                {
+                  otherLocales.map((other) => (
+                    <li>
+                      <a href={url('home', other.locale)}>{other.label}</a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <!--end: Header Extras-->
+      <!--Navigation Responsive Trigger-->
+      <div id="mainMenu-trigger">
+        <a class="lines-button x"><span class="lines"></span></a>
+      </div>
+      <!--end: Navigation Responsive Trigger-->
+      <!--Navigation-->
+      <div id="mainMenu">
+        <div class="container">
+          <nav>
+            <ul>
+              <li><a href={url('home', lang)}>{t.navHome}</a></li>
+              <li class="dropdown">
+                <a href="#">{t.navAbout}</a>
+                <ul class="dropdown-menu">
+                  <li><a href={url('resortsBrasil', lang)}>{t.navResortsBrasil}</a></li>
+                  <li><a href={url('board', lang)}>{t.navBoard}</a></li>
+                  <li><a href={url('history', lang)}>{t.navHistory}</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#">{t.navAssociates}</a>
+                <ul class="dropdown-menu">
+                  <li><a href={url('associates', lang)}>{t.navAssociatesList}</a></li>
+                  <li><a href={url('joinUs', lang)}>{t.navJoinUs}</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#">{t.navInformation}</a>
+                <ul class="dropdown-menu">
+                  <li><a href={url('publications', lang)}>{t.navPublications}</a></li>
+                  <li><a href={url('statistics', lang)}>{t.navStatistics}</a></li>
+                </ul>
+              </li>
+              <li><a href={url('support', lang)}>{t.navSupport}</a></li>
+              <li><a href={url('contact', lang)} style="color: #d39e00;">{t.navContact}</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <!--end: Navigation-->
+    </div>
+  </div>
+</header>
+<!-- end: Header -->

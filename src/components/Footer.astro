@@ -1,0 +1,94 @@
+---
+import { ui, url, social, type Locale } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
+// Resolvido no build. Antes o ano vinha de document.write() nas home e estava
+// fixo em "2022" nas 12 paginas internas em PT.
+const year = new Date().getFullYear();
+---
+
+<!-- Footer -->
+<footer id="footer">
+  <div class="footer-content">
+    <div class="container">
+      <div class="row gap-y">
+        <div class="col-md-6 col-xl-4">
+          <p>
+            <a href={url('home', lang)}>
+              <img src="/images/logo-25anos.png" alt="Resorts Brasil" style="height:130px;" />
+            </a>
+          </p>
+        </div>
+        <div class="col-6 col-md-3 col-xl-2">
+          <div class="widget">
+            <h4>{t.footerNavigation}</h4>
+            <ul class="list">
+              <li><a href={url('home', lang)}>{t.navHome}</a></li>
+              <li><a href={url('resortsBrasil', lang)}>{t.footerAbout}</a></li>
+              <li><a href={url('associates', lang)}>{t.navAssociates}</a></li>
+              <li><a href={url('support', lang)}>{t.navSupport}</a></li>
+              <li><a href={url('contact', lang)}>{t.navContact}</a></li>
+              <li><a href={url('privacy', lang)}>{t.footerPrivacy}</a></li>
+              <li><a href={url('terms', lang)}>{t.footerTerms}</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-6 col-md-3 col-xl-2">
+          <div class="widget">
+            <h4>{t.footerInstitutional}</h4>
+            <ul class="list">
+              <li><a href={url('resortsBrasil', lang)}>{t.navResortsBrasil}</a></li>
+              <li><a href={url('board', lang)}>{t.navBoard}</a></li>
+              <li><a href={url('history', lang)}>{t.navHistory}</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-6 col-md-6 col-xl-2">
+          <div class="widget">
+            <h4>{t.footerInformation}</h4>
+            <ul class="list">
+              <li><a href={url('publications', lang)}>{t.navPublications}</a></li>
+              <li><a href={url('statistics', lang)}>{t.footerStatistics}</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-6 col-md-6 col-xl-2">
+          <div class="widget">
+            <h4>{t.footerSocial}</h4>
+            <div class="social-icons social-icons-colored social-icons-rounded float-left">
+              <ul>
+                <li class="social-facebook">
+                  <a href={social.facebook} target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                </li>
+                <li class="social-instagram">
+                  <a href={social.instagram} target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+                </li>
+                <li class="social-linkedin">
+                  <a href={social.linkedin} target="_blank" rel="noopener"><i class="fab fa-linkedin"></i></a>
+                </li>
+                <li class="social-youtube">
+                  <a href={social.youtube} target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="copyright-content">
+    <div class="container">
+      <div class="copyright-text text-center">
+        &copy; {year} {t.copyright}
+        <a href="https://www.cloudbe.com.br" target="_blank" rel="noopener">Cloudbe</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- end: Footer -->
