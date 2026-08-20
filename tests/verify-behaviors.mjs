@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
+import { PNG } from 'pngjs';
 
-const BASE = 'http://localhost:4322';
+const BASE = 'http://localhost:4330';
 const results = [];
 const check = (name, pass, detail = '') => {
   results.push({ name, pass, detail });
@@ -71,6 +72,25 @@ const browser = await chromium.launch();
   });
   check('kenburns montado', kb.exists && kb.animate && kb.img, JSON.stringify(kb));
 
+  // Montado nao e o mesmo que visivel. A camada tem z-index: -1 e so aparece se
+  // o slide for um contexto de empilhamento — no original quem garantia isso
+  // era o flickity, posicionando o slide. Sem esse contexto a camada some atras
+  // do fundo do proprio slide: a classe continua aplicada, a altura da pagina
+  // nao muda, e o zoom simplesmente nao acontece. Aqui olhamos os pixels.
+  await page.addStyleTag({ content: '.slide-captions { visibility: hidden !important; }' });
+  const quadro = async () => PNG.sync.read(await page.locator('.slide.kenburns').screenshot());
+  const q1 = await quadro();
+  await page.waitForTimeout(1500);
+  const q2 = await quadro();
+  let soma = 0, n = 0;
+  for (let i = 0; i < Math.min(q1.data.length, q2.data.length); i += 4) {
+    soma += Math.abs(q1.data[i] - q2.data[i]);
+    n++;
+  }
+  const media = soma / n;
+  check('kenburns realmente amplia', media > 1,
+    `variacao media de ${media.toFixed(2)}/255 no canal R em 1,5 s`);
+
   await page.waitForTimeout(3200);
   const captions = await page.evaluate(() =>
     [...document.querySelectorAll('.inspiro-slider .slide-captions > *')]
@@ -84,13 +104,49 @@ const browser = await chromium.launch();
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(`${BASE}/`);
-  const firstBefore = await page.evaluate(() =>
-    document.querySelector('.carousel.client-logos').firstElementChild.innerHTML);
-  await page.waitForTimeout(2200);
-  const firstAfter = await page.evaluate(() =>
-    document.querySelector('.carousel.client-logos').firstElementChild.innerHTML);
-  check('carrossel de logos avanca', firstBefore !== firstAfter);
+  // Esperar o embrulho em .polo-carousel-item antes de medir. Comparar o
+  // innerHTML do primeiro filho logo apos o goto acusava "avanco" so porque o
+  // script tinha acabado de inserir o wrapper — o teste passava com o
+  // carrossel parado.
+  await page.waitForSelector('.carousel.client-logos > .polo-carousel-item', { state: 'attached' });
+  const logo = () => page.evaluate(() =>
+    document.querySelector('.carousel.client-logos > .polo-carousel-item img').getAttribute('src'));
+  const antes = await logo();
+  // O intervalo do tema e 7000ms; a espera precisa passar de uma volta.
+  await page.waitForTimeout(8000);
+  check('carrossel de logos avanca', antes !== (await logo()));
   await page.close();
+}
+
+/* 4b. Geometria das celulas do carrossel --------------------------------- */
+// O diff visual esconde o carrossel (a posicao depende do instante), entao a
+// formula do flickity fica coberta aqui. Ver o comentario em visual-diff.mjs.
+{
+  // largura da janela -> colunas, pelas faixas de js/functions.js com
+  // data-items="6": xs 1, sm 2, md 3, lg 4, xl 6.
+  const casos = [[390, 1], [700, 2], [900, 3], [1100, 4], [1440, 6]];
+  const erros = [];
+  for (const [width, colunas] of casos) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await page.goto(`${BASE}/`);
+    await page.waitForSelector('.carousel.client-logos > .polo-carousel-item', { state: 'attached' });
+    const m = await page.evaluate(() => {
+      const c = document.querySelector('.carousel.client-logos');
+      const cs = getComputedStyle(c);
+      const util = c.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const cel = c.querySelector('.polo-carousel-item').getBoundingClientRect();
+      return { util, largura: cel.width, altura: cel.height };
+    });
+    const esperado = (m.util + 10) / colunas;
+    if (Math.abs(m.largura - esperado) > 1) {
+      erros.push(`${width}px: celula ${m.largura.toFixed(1)}, esperado ${esperado.toFixed(1)} (${colunas} col)`);
+    }
+    if (Math.abs(m.altura - m.largura) > 1) {
+      erros.push(`${width}px: celula nao e quadrada (${m.largura.toFixed(1)}x${m.altura.toFixed(1)})`);
+    }
+    await page.close();
+  }
+  check('carrossel: geometria das celulas', erros.length === 0, erros.join('; ') || '5 larguras conferem');
 }
 
 /* 5. Contadores ---------------------------------------------------------- */

@@ -3,9 +3,13 @@ import { ui, url, social, type Locale } from '../i18n/ui';
 
 interface Props {
   lang: Locale;
+  /** Só a faixa de copyright, sem os widgets. É o rodapé que a 404 sempre teve. */
+  minimo?: boolean;
+  /** Rodapé escuro das três páginas do ebook (`class="inverted"` no original). */
+  invertido?: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, minimo = false, invertido = false } = Astro.props;
 const t = ui[lang];
 
 // Resolvido no build. Antes o ano vinha de document.write() nas home e estava
@@ -14,7 +18,8 @@ const year = new Date().getFullYear();
 ---
 
 <!-- Footer -->
-<footer id="footer">
+<footer id="footer" class={invertido ? 'inverted' : undefined}>
+  {!minimo && (
   <div class="footer-content">
     <div class="container">
       <div class="row gap-y">
@@ -82,6 +87,7 @@ const year = new Date().getFullYear();
       </div>
     </div>
   </div>
+  )}
   <div class="copyright-content">
     <div class="container">
       <div class="copyright-text text-center">

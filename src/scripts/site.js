@@ -115,18 +115,77 @@ function hero() {
 // o que dispensa clonar a lista para dar a volta.
 function logoCarousel() {
   document.querySelectorAll('.carousel.client-logos').forEach((carousel) => {
-    const items = [...carousel.children];
-    if (items.length < 2) return;
+    const originals = [...carousel.children];
+    if (originals.length < 2) return;
 
-    const perView = Number(carousel.getAttribute('data-items')) || 6;
-    const interval = Number(carousel.getAttribute('data-autoplay')) || 1000;
+    // Reproduz a estrutura que o flickity montava: cada item embrulhado em
+    // .polo-carousel-item. E essa classe que o CSS do tema estiliza
+    // (padding: 20px 30px, e img { width: 100% }), entao recriar o wrapper
+    // faz o dimensionamento das logos voltar a valer sem tocar no CSS.
+    const cells = originals.map((child) => {
+      if (child.classList.contains('polo-carousel-item')) return child;
+      const cell = document.createElement('div');
+      cell.className = 'polo-carousel-item';
+      child.replaceWith(cell);
+      cell.appendChild(child);
+      return cell;
+    });
+
+    // 7000 e o padrao do tema (`autoPlay: data-autoplay || 7000`). O carrossel
+    // de logos nao traz o atributo, entao girava a cada 7s, nao a cada 1s.
+    const interval = Number(carousel.getAttribute('data-autoplay')) || 7000;
+    // O tema aplicava padding-right inline a partir de data-margin, sobrepondo
+    // os 30px do CSS. Sem isso a logo fica menor que no original.
+    const margin = Number(carousel.getAttribute('data-margin')) || 10;
+
+    // Cadeia de colunas do tema (js/functions.js, linhas 1048-1089): cada faixa
+    // menor herda a de cima limitada a um teto, salvo data-items-* explicito.
+    const attrNum = (nome) => Number(carousel.getAttribute(nome)) || 0;
+    const items = attrNum('data-items') || 4;
+    const itemsLg = attrNum('data-items-lg') || Math.min(items, 4);
+    const itemsMd = attrNum('data-items-md') || Math.min(itemsLg, 3);
+    const itemsSm = attrNum('data-items-sm') || Math.min(itemsMd, 2);
+    const itemsXs = attrNum('data-items-xs') || Math.min(itemsSm, 1);
 
     carousel.style.display = 'flex';
     carousel.style.overflow = 'hidden';
-    items.forEach((item) => {
-      item.style.flex = `0 0 ${100 / perView}%`;
-      item.style.maxWidth = `${100 / perView}%`;
-    });
+
+    // As faixas sao as de js/functions.js, nao as do plugin — ver o comentario
+    // em public/css/ajustes.css. O plugin media com $(window).width(), que e o
+    // clientWidth do documento (sem a barra de rolagem).
+    const columns = () => {
+      const w = document.documentElement.clientWidth;
+      if (w < 576) return itemsXs;
+      if (w < 768) return itemsSm;
+      if (w < 1025) return itemsMd;
+      if (w < 1200) return itemsLg;
+      return items;
+    };
+
+    // Largura da celula como o flickity calculava: a margem entra na conta e so
+    // depois vira padding, entao as colunas somadas preenchem exatamente a
+    // largura util e o padding da ultima celula fica para fora, no corte do
+    // overflow. Dividir a largura por colunas deixa cada logo alguns px menor.
+    const layout = () => {
+      const cols = columns();
+      const estilo = getComputedStyle(carousel);
+      const util =
+        carousel.clientWidth -
+        parseFloat(estilo.paddingLeft) -
+        parseFloat(estilo.paddingRight);
+      const cellWidth = (util + margin) / cols;
+      cells.forEach((cell) => {
+        cell.style.flex = `0 0 ${cellWidth}px`;
+        cell.style.maxWidth = `${cellWidth}px`;
+        // As celulas do flickity eram quadradas: a altura do carrossel
+        // acompanhava a largura da celula.
+        cell.style.height = `${cellWidth}px`;
+        cell.style.paddingRight = `${margin}px`;
+      });
+    };
+
+    layout();
+    window.addEventListener('resize', layout);
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -135,10 +194,17 @@ function logoCarousel() {
       if (busy || document.hidden) return;
       busy = true;
       const first = carousel.firstElementChild;
+      // Um passo e uma celula. Em px, nao em %: a celula mede
+      // (largura util + margem) / colunas, que nao e uma fracao redonda da
+      // largura do carrossel.
+      const step = first.getBoundingClientRect().width;
       carousel.style.transition = 'transform 600ms ease';
-      carousel.style.transform = `translateX(-${100 / perView}%)`;
+      carousel.style.transform = `translateX(-${step}px)`;
 
+      let encerrado = false;
       const done = () => {
+        if (encerrado) return;
+        encerrado = true;
         carousel.style.transition = 'none';
         carousel.style.transform = 'translateX(0)';
         carousel.appendChild(first);
@@ -146,7 +212,67 @@ function logoCarousel() {
         carousel.removeEventListener('transitionend', done);
       };
       carousel.addEventListener('transitionend', done);
+      // Rede de seguranca: transicao de duracao zero nao emite transitionend, e
+      // sem isto o `busy` ficaria preso e o carrossel pararia de vez. Acontece
+      // com prefers-reduced-motion e com o CSS que o diff visual injeta.
+      setTimeout(done, 800);
     }, interval);
+  });
+}
+
+/* Grades .grid-layout ---------------------------------------------------- */
+// Substitui o Isotope, que o tema usava nas paginas de publicacoes e
+// estatisticas. Empacota cada item na coluna mais curta (masonry): com floats
+// as alturas desiguais produziriam uma escada, e no tablet a diferenca passa
+// de 500px de altura de pagina.
+//
+// A visibilidade fica no CSS (ver public/css/ajustes.css), nao aqui: o tema
+// mantinha os itens em opacity 0 ate inicializar, e se o script falhasse o
+// conteudo simplesmente sumia.
+function gridLayout() {
+  const grids = document.querySelectorAll('.grid-layout[data-item]');
+  if (!grids.length) return;
+
+  const layout = (grid) => {
+    const seletor = '.' + grid.getAttribute('data-item');
+    const items = [...grid.children].filter((el) => el.matches(seletor));
+    if (!items.length) return;
+
+    // Largura vem do CSS do tema (.post-5-columns .post-item etc.), que ja e
+    // responsivo; aqui so descobrimos quantas colunas isso da.
+    items.forEach((item) => {
+      item.style.position = '';
+      item.style.left = '';
+      item.style.top = '';
+    });
+    const itemWidth = items[0].getBoundingClientRect().width;
+    if (!itemWidth) return;
+    const cols = Math.max(1, Math.round(grid.clientWidth / itemWidth));
+
+    const alturas = new Array(cols).fill(0);
+    grid.style.position = 'relative';
+
+    items.forEach((item) => {
+      const menor = alturas.indexOf(Math.min(...alturas));
+      item.style.position = 'absolute';
+      item.style.left = `${menor * itemWidth}px`;
+      item.style.top = `${alturas[menor]}px`;
+      alturas[menor] += item.getBoundingClientRect().height;
+    });
+
+    grid.style.height = `${Math.max(...alturas)}px`;
+  };
+
+  const relayout = () => grids.forEach(layout);
+
+  relayout();
+  window.addEventListener('resize', relayout);
+  // As imagens mudam a altura dos itens depois de carregarem.
+  window.addEventListener('load', relayout);
+  grids.forEach((grid) => {
+    grid.querySelectorAll('img').forEach((img) => {
+      if (!img.complete) img.addEventListener('load', relayout, { once: true });
+    });
   });
 }
 
@@ -262,6 +388,7 @@ ready(() => {
   languageDropdown();
   hero();
   logoCarousel();
+  gridLayout();
   counters();
   tabs();
   cookieNotice();

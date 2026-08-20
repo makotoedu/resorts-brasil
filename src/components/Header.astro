@@ -3,9 +3,16 @@ import { ui, url, localeBadge, locales, social, type Locale } from '../i18n/ui';
 
 interface Props {
   lang: Locale;
+  /**
+   * As tres paginas do ebook nunca tiveram topbar, e o cabecalho delas leva a
+   * classe `dark`. As duas coisas andam juntas no original e mudam o
+   * deslocamento sob o cabecalho transparente — ver public/css/ajustes.css.
+   */
+  semTopbar?: boolean;
+  escuro?: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, semTopbar = false, escuro = false } = Astro.props;
 const t = ui[lang];
 
 // O rotulo e resolvido aqui e nao no template: uma anotacao de tipo com
@@ -19,6 +26,7 @@ const otherLocales = locales
 ---
 
 <!-- Topbar -->
+{!semTopbar && (
 <div id="topbar" class="topbar-colored topbar-fullwidth dark d-none d-xl-block d-lg-block">
   <div class="container">
     <div class="row">
@@ -51,10 +59,15 @@ const otherLocales = locales
     </div>
   </div>
 </div>
+)}
 <!-- end: Topbar -->
 
 <!-- Header -->
-<header id="header" data-transparent="true" class="header-disable-fixed submenu-light">
+<header
+  id="header"
+  data-transparent="true"
+  class={`header-disable-fixed ${escuro ? 'dark ' : ''}submenu-light`}
+>
   <div class="header-inner">
     <div class="container">
       <!--Logo-->

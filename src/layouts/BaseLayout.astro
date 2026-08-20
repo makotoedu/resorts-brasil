@@ -11,9 +11,42 @@ interface Props {
   route?: RouteKey;
   /** Caminho absoluto da imagem de compartilhamento. */
   ogImage?: string;
+  /** Rodapé só com a faixa de copyright, como a 404 sempre teve. */
+  rodapeMinimo?: boolean;
+  /**
+   * Classe do <body>. O site original usava "modern" em 33 páginas e deixava o
+   * <body> sem classe em 7 (as três do ebook, e política/termos em PT e ES).
+   * A inconsistência é do conteúdo original e muda o layout — reproduzida aqui
+   * de propósito, para não alterar a aparência dessas páginas.
+   */
+  bodyClass?: string;
+  /**
+   * Classe do <main>. Use "hero-fullscreen" quando o primeiro filho for uma
+   * section.fullscreen, para restaurar o deslocamento sob o cabeçalho
+   * transparente (ver public/css/ajustes.css).
+   */
+  mainClass?: string;
+  /**
+   * Variacao de cromo das tres paginas do ebook, tres tracos que no original
+   * andam sempre juntos: cabecalho sem topbar e com `.dark`, e rodape
+   * `.inverted`. A ausencia do topbar nao e so visual — sem ele o tema aplica
+   * -80px em vez de -120px ao irmao do cabecalho transparente, ver
+   * public/css/ajustes.css.
+   */
+  variacaoEbook?: boolean;
 }
 
-const { lang, title, description, route, ogImage = '/images/og-image.png' } = Astro.props;
+const {
+  lang,
+  title,
+  description,
+  route,
+  ogImage = '/images/og-image.png',
+  rodapeMinimo = false,
+  bodyClass = 'modern',
+  mainClass,
+  variacaoEbook = false,
+} = Astro.props;
 const t = ui[lang];
 
 const site = Astro.site!;
@@ -57,6 +90,8 @@ const alts = route ? alternates(route) : [];
 
     <link href="/css/plugins.css" rel="stylesheet" />
     <link href="/css/style.css" rel="stylesheet" />
+    <!-- Correções ao tema (ver public/css/ajustes.css); precisa vir depois do style.css -->
+    <link href="/css/ajustes.css" rel="stylesheet" />
 
     <!-- Google Tag Manager -->
     <script is:inline>
@@ -74,7 +109,7 @@ const alts = route ? alternates(route) : [];
     <!-- end: Google Tag Manager -->
   </head>
 
-  <body class="modern">
+  <body class={bodyClass || undefined}>
     <!-- Google Tag Manager (noscript) -->
     <noscript
       ><iframe
@@ -87,13 +122,13 @@ const alts = route ? alternates(route) : [];
 
     <!-- Body Inner -->
     <div class="body-inner">
-      <Header lang={lang} />
+      <Header lang={lang} semTopbar={variacaoEbook} escuro={variacaoEbook} />
 
-      <main>
+      <main class={mainClass}>
         <slot />
       </main>
 
-      <Footer lang={lang} />
+      <Footer lang={lang} minimo={rodapeMinimo} invertido={variacaoEbook} />
     </div>
     <!-- end: Body Inner -->
 

@@ -1,0 +1,286 @@
+/*
+ * Ajustes ao tema Inspiro decorrentes da refatoracao de 2026.
+ *
+ * Carregar SEMPRE depois de style.css: as regras aqui vencem por ordem de
+ * origem, nao por especificidade.
+ *
+ * ============================================================
+ * 1. O <main> e a regra que ele ativa sem querer
+ * ============================================================
+ *
+ * O tema traz a regra:
+ *
+ *     #header[data-transparent="true"] + main {
+ *       top: -120px; margin-bottom: -124px;
+ *     }
+ *
+ * Ela existe para uma estrutura de pagina que este site nao usa, com um
+ * #page-title fazendo de hero sob o cabecalho transparente. No site original
+ * nao havia elemento <main>, entao a regra nunca chegava a valer.
+ *
+ * Ao envolver o conteudo em <main> por semantica, a regra passou a casar e
+ * puxou o conteudo de TODAS as paginas 120px para cima, sob o cabecalho. O
+ * -124px que aparecia em dezenas de paginas no diff visual era literalmente
+ * este margin-bottom.
+ *
+ * Neutralizada abaixo. O <main> fica, porque a semantica e correta; o que sai
+ * e o deslocamento que o tema aplicaria a uma estrutura diferente.
+ */
+
+#header[data-transparent="true"] + main {
+  top: 0;
+  margin-bottom: 0;
+}
+
+/*
+ * Contrapartida: o tema tambem puxava para cima a secao .fullscreen quando ela
+ * vinha logo apos o cabecalho transparente, para o hero ocupar a tela inteira
+ * por baixo dele. Com o <main> no meio essa adjacencia se perdeu.
+ *
+ * O deslocamento vai no proprio <main>, nao na secao: quem define a altura do
+ * documento e a caixa do <main>, e deslocar so o filho deixava a caixa do pai
+ * no lugar antigo, sobrando um vao de 28px no fim da pagina.
+ *
+ * A classe e aplicada pelas paginas cujo primeiro filho e .fullscreen — hoje a
+ * 404 e as tres versoes do ebook. Um seletor :has() resolveria sem a classe,
+ * mas nao esta no alvo de navegadores configurado em scripts/purge-css.mjs.
+ *
+ * O valor do deslocamento NAO e constante no tema: sao duas regras, e qual
+ * delas vence depende de haver um #topbar antes do cabecalho.
+ *
+ *     #header[data-transparent="true"] + .fullscreen          -> -80px
+ *     #topbar ~ #header[data-transparent="true"] + .fullscreen -> -120px
+ *
+ * As tres paginas do ebook sao as unicas do site sem topbar, e por isso as
+ * unicas com -80px. Reproduzir so o -120px deixava essas paginas 40px altas
+ * demais. As duas regras abaixo espelham a cascata original, entao a pagina
+ * acerta sozinha conforme tenha ou nao topbar.
+ */
+#header[data-transparent="true"] + main.hero-fullscreen {
+  position: relative;
+  top: -80px;
+  margin-bottom: -80px;
+}
+
+#topbar ~ #header[data-transparent="true"] + main.hero-fullscreen {
+  top: -120px;
+  margin-bottom: -120px;
+}
+
+/*
+ * ============================================================
+ * 2. As grades .grid-layout (o que o Isotope fazia)
+ * ============================================================
+ *
+ * O tema deixava os filhos de .grid-layout com opacity: 0 e so os revelava ao
+ * inicializar o Isotope, que adicionava a classe .grid-loaded:
+ *
+ *     .grid-layout > *              { opacity: 0; transition: opacity .5s; }
+ *     .grid-layout.grid-loaded > *  { opacity: 1; }
+ *
+ * Sem o jQuery, ninguem adicionava .grid-loaded e o conteudo das 6 paginas com
+ * grade (publicacoes e estatisticas nos 3 idiomas) ficava invisivel.
+ *
+ * Resolvido em CSS, nao em JS, para nao haver um intervalo de conteudo
+ * invisivel ate o script rodar.
+ *
+ * O empacotamento em si (colocar cada item na coluna mais curta) ficou no
+ * JavaScript, em gridLayout() no src/scripts/site.js: os itens tem alturas
+ * desiguais e o float: left do tema produz escada, nao masonry.
+ *
+ * O que sobra para o CSS sao as calhas. O Isotope as aplicava por estilo
+ * inline, lendo data-margin com 20 de padrao (js/functions.js, linha 2238):
+ *
+ *     container:  margin  0 -Npx -Npx 0
+ *     itens:      padding 0  Npx  Npx 0
+ *
+ * O "|| 20" e facil de perder de vista: uma das grades do site nao tem o
+ * atributo, e reproduzir so o caso data-margin="30" deixava as tres paginas de
+ * estatisticas com calha de 10px e 38px a mais de altura.
+ *
+ * (O margin-bottom negativo do container nao chega a valer em nenhum dos dois
+ * casos: o tema tem `.grid-layout { margin-bottom: -2px !important }`, e
+ * !important vence tanto o estilo inline do Isotope quanto as regras daqui.)
+ */
+
+.grid-layout > * {
+  opacity: 1;
+}
+
+.grid-layout[data-item]:not([data-margin]) {
+  margin: 0 -20px -20px 0;
+}
+
+.grid-layout[data-item]:not([data-margin]) > .post-item,
+.grid-layout[data-item]:not([data-margin]) > .grid-item {
+  padding: 0 20px 20px 0;
+}
+
+.grid-layout[data-margin="30"] {
+  margin: 0 -30px -30px 0;
+}
+
+.grid-layout[data-margin="30"] > .post-item,
+.grid-layout[data-margin="30"] > .grid-item {
+  padding: 0 30px 30px 0;
+}
+
+/*
+ * ============================================================
+ * 3. Responsividade que o tema resolvia em JavaScript
+ * ============================================================
+ *
+ * O tema nao usava media queries para estas regras: o plugin `breakpoints` do
+ * jQuery aplicava as classes breakpoint-xs / sm / md / lg / xl no <body> a cada
+ * resize, e 15 regras do style.css dependiam delas. Com a remocao do jQuery
+ * essas regras deixaram de valer, e a grade de logos, os espacadores e a
+ * pagina 404 pararam de responder ao tamanho da tela.
+ *
+ * Aqui elas viram media queries de verdade. Assim o layout nao depende mais de
+ * JS (sem salto visual depois que o script carrega) e sobrevive a purga.
+ *
+ * ATENCAO AO ORIGEM DAS FAIXAS. O plugin traz um array padrao proprio, em
+ * js/plugins.js:
+ *
+ *     [{xs, 0}, {sm, 768}, {md, 992}, {lg, 1200}]      <- NAO e este
+ *
+ * mas o site sobrescreve esse array na chamada de configuracao, em
+ * js/functions.js (commit 069b3b4, linhas 68-88). Valem estas faixas:
+ *
+ *     xs     0 ..  575
+ *     sm   576 ..  767
+ *     md   768 .. 1024
+ *     lg  1025 .. 1199
+ *     xl  1200+
+ *
+ * Ler o array errado desloca todas as regras em uma faixa inteira, e o efeito e
+ * discreto: o site parece certo no celular e no desktop e erra no meio. Foi o
+ * que aconteceu — o tablet a 768px caia em `sm` em vez de `md`, e os `hr.space`
+ * ficavam 10px curtos em varias paginas.
+ *
+ * O resolvedor do plugin escolhe a maior faixa cuja largura seja <= a atual
+ * (`t >= n.width && (e = n.name)`), entao as bordas sao inclusivas embaixo.
+ *
+ * Sobre especificidade: media query nao acrescenta especificidade nenhuma.
+ * O seletor original `body.breakpoint-md .grid li` tem peso (0,2,2) e por isso
+ * vencia a regra base `.grid.grid-6-columns li`, de peso (0,2,1). Escrever
+ * apenas `body .grid li` daria (0,1,2) e perderia a disputa, entao as variantes
+ * de 5 e 6 colunas estao repetidas abaixo para reproduzir o peso do original.
+ */
+
+/* xs — ate 575 -------------------------------------------------------- */
+@media (max-width: 575px) {
+  body .grid li,
+  body .grid.grid-5-columns li,
+  body .grid.grid-6-columns li {
+    width: 50%;
+  }
+
+  body .page-error-404 {
+    font-size: 140px;
+    line-height: 0.8;
+    margin-bottom: 20px;
+  }
+
+  body .box-fancy [class*="col-"] {
+    padding: 10% !important;
+  }
+
+  body .carousel-description-clients .flickity-button {
+    display: none;
+  }
+}
+
+/* sm — 576 a 767 ------------------------------------------------------ */
+@media (min-width: 576px) and (max-width: 767px) {
+  body .page-error-404 {
+    font-size: 200px;
+    line-height: 0.8;
+    margin-bottom: 20px;
+  }
+
+  body .col-3 .flickr-widget img .widget-instagram img {
+    width: 16.666%;
+  }
+}
+
+/* xs + sm — ate 767: os espacadores encolhem --------------------------- */
+@media (max-width: 767px) {
+  body hr.space {
+    height: 16px;
+  }
+
+  body hr.space-lg,
+  body hr.space-xlg {
+    height: 40px;
+  }
+
+  body hr.space-xxlg {
+    height: 80px;
+  }
+}
+
+/* sm + md — 576 a 1024: a grade de logos cai para 3 colunas ------------ */
+@media (min-width: 576px) and (max-width: 1024px) {
+  body .grid li,
+  body .grid.grid-5-columns li,
+  body .grid.grid-6-columns li {
+    width: 33.33%;
+  }
+}
+
+/* md — 768 a 1024 ----------------------------------------------------- */
+@media (min-width: 768px) and (max-width: 1024px) {
+  body hr.space {
+    height: 26px;
+  }
+
+  body .carousel-description-clients .flickity-button {
+    display: none;
+  }
+}
+
+/* lg + xl — 1025 ou mais ---------------------------------------------- */
+@media (min-width: 1025px) {
+  body .page-menu nav > ul > li:hover > ul {
+    display: block;
+    -webkit-animation: fade-in-out 0.3s ease;
+    animation: fade-in-out 0.3s ease;
+    z-index: 3;
+  }
+
+  body .pricing-table .col-lg-2 {
+    width: 20%;
+  }
+
+  body .pricing-table .col-lg-2 .plan-list ul li {
+    font-size: 13px;
+  }
+}
+
+/*
+ * ============================================================
+ * 4. O contexto de empilhamento do hero
+ * ============================================================
+ *
+ * .kenburns-bg tem `position: absolute; z-index: -1`. O z-index negativo o
+ * coloca atras do CONTEUDO do slide mas a frente do FUNDO dele — desde que o
+ * slide seja um contexto de empilhamento. No original quem garantia isso era o
+ * flickity, que posicionava cada slide com `position: absolute; z-index: 2`.
+ *
+ * Sem o flickity o slide voltou a ser estatico, deixou de criar contexto, e o
+ * z-index: -1 passou a valer no contexto de um ancestral: a camada do Ken Burns
+ * foi parar ATRAS do fundo do proprio slide. Como o slide tem a mesma imagem de
+ * fundo, a pagina continuava parecendo certa — so que estatica, com o
+ * enquadramento do fundo nao ampliado. O zoom simplesmente nao aparecia.
+ *
+ * Nao foi o diff de altura nem a suite de comportamento que pegaram: a classe
+ * .kenburns-bg-animate estava la e a altura batia. Foi o diff de pixel.
+ *
+ * `position: relative` sem deslocamento nao move nada; serve so para restaurar
+ * o contexto de empilhamento que o flickity criava.
+ */
+.inspiro-slider .slide {
+  position: relative;
+  z-index: 2;
+}
