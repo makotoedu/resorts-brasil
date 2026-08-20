@@ -1,5 +1,6 @@
 ---
-import { ui, url, social, type Locale } from '../i18n/ui';
+import SocialIcons from './SocialIcons.astro';
+import { ui, url, type Locale } from '../i18n/ui';
 
 interface Props {
   lang: Locale;
@@ -66,22 +67,10 @@ const year = new Date().getFullYear();
         <div class="col-6 col-md-6 col-xl-2">
           <div class="widget">
             <h4>{t.footerSocial}</h4>
-            <div class="social-icons social-icons-colored social-icons-rounded float-left">
-              <ul>
-                <li class="social-facebook">
-                  <a href={social.facebook} target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
-                </li>
-                <li class="social-instagram">
-                  <a href={social.instagram} target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
-                </li>
-                <li class="social-linkedin">
-                  <a href={social.linkedin} target="_blank" rel="noopener"><i class="fab fa-linkedin"></i></a>
-                </li>
-                <li class="social-youtube">
-                  <a href={social.youtube} target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
-                </li>
-              </ul>
-            </div>
+            <SocialIcons
+              lang={lang}
+              class="social-icons social-icons-colored social-icons-rounded float-left"
+            />
           </div>
         </div>
       </div>

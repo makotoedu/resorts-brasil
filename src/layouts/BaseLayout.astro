@@ -1,12 +1,26 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { ui, url, alternates, htmlLang, defaultLocale, type Locale, type RouteKey } from '../i18n/ui';
+import {
+  ui,
+  url,
+  alternates,
+  htmlLang,
+  ogLocale,
+  meta,
+  social,
+  defaultLocale,
+  type Locale,
+  type RouteKey,
+} from '../i18n/ui';
+import { contato } from '../data/contato';
 
 interface Props {
   lang: Locale;
-  title: string;
-  description: string;
+  /** Sobrepoe o title de `meta`. So a 404 precisa, por nao ter `route`. */
+  title?: string;
+  /** Sobrepoe a description de `meta`. Idem. */
+  description?: string;
   /** Chave da pagina no mapa de rotas. Omitida em paginas sem traducao (404). */
   route?: RouteKey;
   /** Caminho absoluto da imagem de compartilhamento. */
@@ -38,8 +52,8 @@ interface Props {
 
 const {
   lang,
-  title,
-  description,
+  title: titleProp,
+  description: descricaoProp,
   route,
   ogImage = '/images/og-image.png',
   rodapeMinimo = false,
@@ -49,10 +63,64 @@ const {
 } = Astro.props;
 const t = ui[lang];
 
+// Title e description saem de `meta` em src/i18n/ui.ts, onde os 3 idiomas
+// ficam lado a lado. A prop so existe para a 404, que nao tem `route`.
+const paginaMeta = route ? meta[route][lang] : undefined;
+const title = titleProp ?? paginaMeta?.title;
+const description = descricaoProp ?? paginaMeta?.description;
+if (!title || !description) {
+  throw new Error(
+    `BaseLayout: pagina sem title/description. Acrescente a rota "${route}" em meta (src/i18n/ui.ts) ou passe as props.`
+  );
+}
+
 const site = Astro.site!;
-const canonical = new URL(route ? url(route, lang) : Astro.url.pathname, site);
+// Sem `route` (so a 404), o caminho vem da URL do build e traz `.html`, que
+// contradiz o cleanUrls usado no resto do site.
+const fallbackPath = Astro.url.pathname.replace(/\.html$/, '');
+const canonical = new URL(route ? url(route, lang) : fallbackPath, site);
 const ogImageUrl = new URL(ogImage, site);
 const alts = route ? alternates(route) : [];
+
+/** Paginas sem traducao e sem valor de busca (a 404) saem do indice. */
+const noindex = !route;
+
+/**
+ * Dado estruturado da associacao. Uma vez por pagina, com os mesmos valores que
+ * a pagina de contato exibe — ver src/data/contato.ts.
+ */
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Resorts Brasil',
+  alternateName: 'Associação Brasileira de Resorts',
+  url: site.href,
+  logo: new URL('/images/logo-25anos.png', site).href,
+  email: contato.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: contato.endereco.logradouro,
+    addressLocality: contato.endereco.cidade,
+    addressRegion: contato.endereco.uf,
+    addressCountry: contato.endereco.pais,
+  },
+  contactPoint: [
+    {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      email: contato.email,
+      telephone: contato.whatsapp.telefoneE164,
+      availableLanguage: ['pt-BR', 'en', 'es'],
+    },
+    {
+      '@type': 'ContactPoint',
+      contactType: 'public relations',
+      email: contato.imprensa.email,
+      telephone: contato.imprensa.telefoneE164,
+    },
+  ],
+  sameAs: Object.values(social),
+};
 ---
 
 <html lang={htmlLang[lang]}>
@@ -63,6 +131,7 @@ const alts = route ? alternates(route) : [];
     <meta name="description" content={description} />
     <link rel="icon" type="image/png" href="/images/favicon.png" />
     <title>{title}</title>
+    {noindex && <meta name="robots" content="noindex, follow" />}
 
     <link rel="canonical" href={canonical} />
     {
@@ -78,15 +147,26 @@ const alts = route ? alternates(route) : [];
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Resorts Brasil" />
-    <meta property="og:locale" content={lang.replace('-', '_')} />
+    <meta property="og:locale" content={ogLocale[lang]} />
+    {
+      alts
+        .filter((a) => a.lang !== lang)
+        .map((a) => <meta property="og:locale:alternate" content={ogLocale[a.lang]} />)
+    }
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Resorts Brasil" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="Resorts Brasil" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
 
     <link href="/css/plugins.css" rel="stylesheet" />
     <link href="/css/style.css" rel="stylesheet" />
@@ -120,11 +200,13 @@ const alts = route ? alternates(route) : [];
     >
     <!-- end: Google Tag Manager (noscript) -->
 
+    <a class="skip-link" href="#conteudo">{t.skipToContent}</a>
+
     <!-- Body Inner -->
     <div class="body-inner">
-      <Header lang={lang} semTopbar={variacaoEbook} escuro={variacaoEbook} />
+      <Header lang={lang} route={route} semTopbar={variacaoEbook} escuro={variacaoEbook} />
 
-      <main class={mainClass}>
+      <main id="conteudo" class={mainClass}>
         <slot />
       </main>
 
@@ -133,13 +215,19 @@ const alts = route ? alternates(route) : [];
     <!-- end: Body Inner -->
 
     <!-- Modal Cookie-->
+    <!--
+      `data-expire="10000"` e `data-cookie-enabled="true"` vinham do original e
+      nao eram lidos por ninguem: o tema le `data-cookie-expire`, ausente, e cai
+      no padrao de 365 dias. Removidos para o markup nao sugerir uma
+      configuracao que nao existe — o prazo continua sendo o mesmo.
+    -->
     <div
       id="cookieNotify"
       class="modal-strip modal-bottom cookie-notify"
+      role="region"
+      aria-label={t.cookieRegion}
       data-delay="2000"
-      data-expire="10000"
       data-cookie-name="cookiebar21_cbe"
-      data-cookie-enabled="true"
     >
       <div class="container">
         <div class="row">
@@ -163,7 +251,14 @@ const alts = route ? alternates(route) : [];
     <!--End: Modal Cookie-->
 
     <!-- Scroll top -->
-    <a id="scrollTop"><i class="icon-chevron-up"></i><i class="icon-chevron-up"></i></a>
+    <!--
+      href="#top" e proposital: sem ele o elemento nao entra na ordem de
+      tabulacao e nao responde ao teclado. `#top` e tratado pelo navegador como
+      o topo do documento mesmo sem elemento correspondente, entao o botao
+      funciona sem JavaScript; com JavaScript o site.js chama preventDefault e a
+      URL nao muda. Os dois <i> sao do tema (um e a seta animada).
+    -->
+    <a id="scrollTop" href="#top" aria-label={t.backToTop}><i class="icon-chevron-up" aria-hidden="true"></i><i class="icon-chevron-up" aria-hidden="true"></i></a>
 
     <script src="../scripts/site.js"></script>
   </body>

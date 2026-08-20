@@ -35,6 +35,7 @@ function mobileMenu() {
     menu.style.transition = `min-height 500ms ${EASE}`;
     menu.style.minHeight = next ? `${window.innerHeight}px` : '0px';
     trigger.classList.toggle('toggle-active', next);
+    trigger.setAttribute('aria-expanded', String(next));
     document.body.classList.toggle('mainMenu-open', next);
 
     clearTimeout(animateTimer);
@@ -50,6 +51,15 @@ function mobileMenu() {
     setOpen(!open);
   });
 
+  // O gatilho e um <a> sem href com role="button": o clique do mouse funciona
+  // sozinho, mas Enter e Espaco precisam ser tratados a mao — sem isso o
+  // elemento recebe foco pelo teclado e nao responde a ele.
+  trigger.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    setOpen(!open);
+  });
+
   // O tema fecha o menu ao redimensionar para o breakpoint de desktop.
   window.addEventListener('resize', () => {
     if (open && window.innerWidth >= 992) setOpen(false);
@@ -59,18 +69,54 @@ function mobileMenu() {
 /* Seletor de idioma ------------------------------------------------------ */
 // No desktop o CSS abre por :hover; o clique existe para toque.
 function languageDropdown() {
+  // Mantem aria-expanded junto da classe de estado: sao a mesma informacao,
+  // uma para o CSS e outra para o leitor de tela.
+  const sync = (drop) => {
+    const link = drop.querySelector(':scope > a');
+    if (link) link.setAttribute('aria-expanded', String(drop.classList.contains('dropdown-active')));
+  };
+
   document.querySelectorAll('.p-dropdown').forEach((drop) => {
     const link = drop.querySelector(':scope > a');
     if (!link) return;
     link.addEventListener('click', (e) => {
       e.preventDefault();
       drop.classList.toggle('dropdown-active');
+      sync(drop);
+    });
+    // Esc fecha e devolve o foco ao gatilho, como qualquer menu.
+    drop.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || !drop.classList.contains('dropdown-active')) return;
+      drop.classList.remove('dropdown-active');
+      sync(drop);
+      link.focus();
     });
   });
 
   document.addEventListener('click', (e) => {
     document.querySelectorAll('.p-dropdown.dropdown-active').forEach((drop) => {
-      if (!drop.contains(e.target)) drop.classList.remove('dropdown-active');
+      if (drop.contains(e.target)) return;
+      drop.classList.remove('dropdown-active');
+      sync(drop);
+    });
+  });
+}
+
+/* Submenus da navegacao -------------------------------------------------- */
+// O submenu abre por CSS (:hover no desktop, sempre aberto no mobile), e o
+// ajustes.css acrescentou :focus-within para o teclado. Falta so manter o
+// aria-expanded honesto: um atributo fixo em "false" enquanto o menu abre
+// engana mais o leitor de tela do que a ausencia dele.
+function navDropdowns() {
+  document.querySelectorAll('#mainMenu nav > ul > li.dropdown').forEach((li) => {
+    const link = li.querySelector(':scope > a');
+    if (!link) return;
+    const marcar = (aberto) => link.setAttribute('aria-expanded', String(aberto));
+    li.addEventListener('mouseenter', () => marcar(true));
+    li.addEventListener('mouseleave', () => marcar(false));
+    li.addEventListener('focusin', () => marcar(true));
+    li.addEventListener('focusout', (e) => {
+      if (!li.contains(e.relatedTarget)) marcar(false);
     });
   });
 }
@@ -313,23 +359,56 @@ function counters() {
 /* Abas ------------------------------------------------------------------- */
 // Equivale ao data-bs-toggle="tab" do Bootstrap: .active no link e no painel.
 function tabs() {
+  const ativar = (tab) => {
+    const targetId = tab.getAttribute('href');
+    const scope = tab.closest('.tabs') || document;
+    const pane = scope.querySelector(targetId);
+    if (!pane) return false;
+
+    scope.querySelectorAll('.nav-link').forEach((link) => {
+      link.classList.remove('active');
+      link.setAttribute('aria-selected', 'false');
+      // Tabulacao rotativa: so a aba selecionada fica na ordem de tabulacao,
+      // as outras se alcancam pelas setas. E o que o padrao ARIA de abas pede.
+      link.setAttribute('tabindex', '-1');
+    });
+    scope.querySelectorAll('.tab-pane').forEach((p) => p.classList.remove('active', 'show'));
+
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    tab.removeAttribute('tabindex');
+    pane.classList.add('active', 'show');
+    return true;
+  };
+
+  document.querySelectorAll('[role="tablist"]').forEach((lista) => {
+    const abas = [...lista.querySelectorAll('[data-bs-toggle="tab"]')];
+    if (!abas.length) return;
+
+    // Estado inicial da tabulacao rotativa, a partir de quem ja esta ativo.
+    const ativa = abas.find((t) => t.classList.contains('active')) || abas[0];
+    abas.forEach((t) => t !== ativa && t.setAttribute('tabindex', '-1'));
+
+    lista.addEventListener('keydown', (e) => {
+      const atual = abas.indexOf(document.activeElement);
+      if (atual === -1) return;
+
+      const passo = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      let alvo;
+      if (passo) alvo = abas[(atual + passo + abas.length) % abas.length];
+      else if (e.key === 'Home') alvo = abas[0];
+      else if (e.key === 'End') alvo = abas[abas.length - 1];
+      else return;
+
+      e.preventDefault();
+      if (ativar(alvo)) alvo.focus();
+    });
+  });
+
   document.querySelectorAll('[data-bs-toggle="tab"]').forEach((tab) => {
     tab.addEventListener('click', (e) => {
       e.preventDefault();
-      const targetId = tab.getAttribute('href');
-      const scope = tab.closest('.tabs') || document;
-      const pane = scope.querySelector(targetId);
-      if (!pane) return;
-
-      scope.querySelectorAll('.nav-link').forEach((link) => {
-        link.classList.remove('active');
-        link.setAttribute('aria-selected', 'false');
-      });
-      scope.querySelectorAll('.tab-pane').forEach((p) => p.classList.remove('active', 'show'));
-
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-      pane.classList.add('active', 'show');
+      ativar(tab);
     });
   });
 }
@@ -346,18 +425,20 @@ function cookieNotice() {
 
   if (document.cookie.split('; ').some((c) => c.startsWith(`${name}=`))) return;
 
-  const hide = (persist) => {
+  // Aceitar e recusar registram a escolha; o que muda e o valor gravado. Antes
+  // so o "Aceitar" persistia, entao quem recusava via a faixa de novo a cada
+  // pagina — a recusa nao era respeitada nem pelo tempo de uma navegacao.
+  const decidir = (aceitou) => {
     notice.classList.remove('modal-active');
-    if (!persist) return;
     const expires = new Date(Date.now() + expireDays * 864e5).toUTCString();
-    document.cookie = `${name}=1; expires=${expires}; path=/; SameSite=Lax`;
+    document.cookie = `${name}=${aceitou ? 1 : 0}; expires=${expires}; path=/; SameSite=Lax`;
   };
 
   notice.querySelectorAll('.modal-confirm').forEach((b) =>
-    b.addEventListener('click', () => hide(true))
+    b.addEventListener('click', () => decidir(true))
   );
   notice.querySelectorAll('.modal-close').forEach((b) =>
-    b.addEventListener('click', () => hide(false))
+    b.addEventListener('click', () => decidir(false))
   );
 
   setTimeout(() => notice.classList.add('modal-active'), delay);
@@ -379,13 +460,19 @@ function scrollTop() {
   };
 
   window.addEventListener('scroll', update, { passive: true });
-  button.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  // preventDefault para o href="#top" nao sujar a URL quando ha JavaScript. Sem
+  // JavaScript o href continua valendo e leva ao topo do documento.
+  button.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
   update();
 }
 
 ready(() => {
   mobileMenu();
   languageDropdown();
+  navDropdowns();
   hero();
   logoCarousel();
   gridLayout();

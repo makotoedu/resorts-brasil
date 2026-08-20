@@ -1,0 +1,62 @@
+---
+import { cargoEm, type Membro } from '../data/diretoria';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  membros: Membro[];
+  lang: Locale;
+}
+
+const { membros, lang } = Astro.props;
+
+/**
+ * A grade de fotos da diretoria e do conselho consultivo.
+ *
+ * O icone do LinkedIn aparece para todos, porque e assim que o cartao e
+ * desenhado — some-lo de um membro mudaria o desenho da grade. O que muda e o
+ * link: quem nao tem perfil fica com um <a> sem href, e nao com o `href="#"`
+ * do original, que era um link visivel, focavel e sem destino.
+ */
+---
+
+<div class="row">
+  <div class="col-lg-12 center">
+    <div class="row team-members">
+      {
+        membros.map((membro) => (
+          <div class="col-lg-2 col-6">
+            <div class="team-member">
+              <div class="team-image">
+                <img src={membro.foto} alt={membro.nome} />
+              </div>
+              <div class="team-desc">
+                <h3>{membro.nome}</h3>
+                <span>{cargoEm(membro.cargo, lang)}</span>
+                <div class="text-center m-t-10 social-icons social-icons-border social-icons-rounded">
+                  <ul>
+                    <li class="social-linkedin">
+                      {membro.linkedin ? (
+                        <a
+                          href={membro.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${membro.nome} no LinkedIn`}
+                        >
+                          <i class="fab fa-linkedin" aria-hidden="true" />
+                        </a>
+                      ) : (
+                        <a>
+                          <i class="fab fa-linkedin" aria-hidden="true" />
+                        </a>
+                      )}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>

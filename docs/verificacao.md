@@ -45,6 +45,13 @@ slide. Hoje ela compara o hero consigo mesmo com 1,5 s de intervalo e exige que
 os pixels mudem; sem a correção, a variação medida é **0,00**. Ao testar um
 efeito, teste o efeito, não o andaime.
 
+**Abrir não é ir para o lugar certo.** A verificação do seletor de idioma
+checava que o menu abria, ficava opaco e clicável — e passava enquanto o
+seletor mandava para a home do outro idioma em vez da tradução da página atual.
+Quem estava em `/historia` e trocava para inglês caía em `/en-us/home` e perdia
+a página. Hoje há duas verificações do **destino**: uma numa página com
+tradução, outra na 404, que não tem e precisa cair na home.
+
 **Um teste que passava sem testar nada.** A verificação do carrossel comparava o
 `innerHTML` do primeiro filho logo depois do `goto` e de novo 2s depois. Só que o
 `site.js` embrulha cada item num `.polo-carousel-item` ao inicializar, então a
@@ -105,11 +112,60 @@ para não gerar falso positivo:
 
 Leva cerca de 15 minutos. **Rode sempre que mexer em CSS.**
 
-Em 20/08/2026 a varredura fechou em **120/120 idênticas**, sem nenhuma divergência
-aceita. Esse é o valor de referência: qualquer número menor é regressão, não
-tolerância. A progressão até lá foi 20 → 57 → 65 → 77 → 103 → 120, e cada salto
-correspondeu a uma causa raiz — todas descritas em
-[decisoes.md](decisoes.md).
+A refatoração fechou em **120/120 idênticas**, sem nenhuma divergência aceita. A
+progressão até lá foi 20 → 57 → 65 → 77 → 103 → 120, e cada salto correspondeu a
+uma causa raiz — todas descritas em [decisoes.md](decisoes.md).
+
+### O valor de referência hoje é 117/120
+
+O refino de 20/08/2026 manteve 120/120 em tudo o que era SEO, acessibilidade e
+extração de dados — nada daquilo move um pixel em repouso. Depois disso,
+**correções de conteúdo pedidas pelo cliente** mudam o layout de propósito:
+
+| comparação | o que mudou | por quê |
+|---|---|---|
+| `/en-us/join-us` mobile (−144px) | 2 logos de parceiro a menos | a lista inglesa tinha 10, a portuguesa 8; o cliente confirmou que a portuguesa é a correta |
+| `/en-us/join-us` tablet (−197px) | idem | idem |
+| `/en-us/board` mobile (−23px, 6.42%) | cargos traduzidos | "Chair of the Board" cabe em 1 linha onde "Presidente do Conselho" ocupava 2, e "Vice President of Human Intelligence" em 2 onde o português ocupava 3 |
+
+**117/120 é o novo valor de referência.** Qualquer número menor é regressão;
+qualquer divergência fora dessas três também é.
+
+Nos dois casos a divergência **só aparece onde o texto reflui**. `/en-us/join-us`
+fecha idêntica no desktop, porque 10 e 8 logos ocupam as mesmas duas linhas numa
+grade de 6 colunas; `/en-us/board` fecha idêntica no tablet e no desktop, onde os
+cargos cabem na mesma quantidade de linhas nos dois idiomas. É o mesmo padrão das
+faixas de `body.breakpoint-*`: **a divergência se esconde num viewport e aparece
+em outro.**
+
+A saída do Wyndham Gramado do carrossel da home, feita na mesma leva, **não**
+gera divergência: o carrossel fica `hidden` durante o diff e é de uma linha só,
+então um logo a menos não muda altura nenhuma. Conferido nas três homes.
+
+### O limiar de 0,5% deixa passar mudança de texto
+
+Este número merece atenção porque contraria a intuição de que "o diff é o juiz".
+
+A página `/es-es/directorio` teve **os seis cargos trocados de português para
+espanhol** e mesmo assim entrou na conta como idêntica. Medido:
+
+| viewport | altura | pixels diferentes | veredito |
+|---|---|---|---|
+| mobile | 4466 → 4466 | 0,235% | passa |
+| tablet | 5303 → 5303 | 0,145% | passa |
+| desktop | 2393 → 2393 | 0,160% | passa |
+
+O texto mudou, mas coube na mesma quantidade de linhas — a altura não mexeu e a
+área alterada é pequena demais para o limiar. Para comparação, `/diretoria`, onde
+nada mudou, fica entre 0,016% e 0,045%: esse é o piso de ruído de antialiasing.
+
+Duas consequências práticas:
+
+1. **Para trabalho de tradução, o diff visual não serve de detector.** Ele pega o
+   que empurra layout, não o que troca palavra. Confira o texto no HTML gerado.
+2. **Um número entre 0,05% e 0,5% não é ruído** — é mudança real que passou. Se
+   quiser investigar uma página específica, meça o percentual em vez de confiar
+   no veredito binário.
 
 Para reconferir um grupo sem pagar a varredura inteira, as duas listas aceitam
 filtro por variável de ambiente:
@@ -120,6 +176,25 @@ PAGES=/index.html,/ebook.html VIEWPORTS=desktop node tests/visual-diff.mjs
 
 Só não confunda a rodada filtrada com a completa: o `N/120` do resumo passa a ser
 `N/2`. Antes de dar algo por pronto, rode sem filtro.
+
+### Uma camada 0, para não pagar 15 minutos à toa
+
+Ao mexer em markup — extrair um componente, trocar um bloco — compare antes o
+**HTML gerado**, que custa segundos:
+
+1. guarde o `dist/` de antes (`cp -r dist /tmp/antes`);
+2. rebuild;
+3. para cada página, normalize espaço em branco, ignore os atributos que não
+   afetam layout (`href`, `alt`, `rel`, `target`, `aria-*`) e compare a
+   sequência de tags, classes e texto.
+
+A vantagem não é só velocidade: o diff de pixel diz *que a página mudou*, este
+diz *qual tag* mudou. Na extração de `src/data/` ele apontou em segundos as duas
+omissões que o olho não pegaria — os 11 `<div class="line">` entre estados e os
+`</div>` de fechamento do carrossel engolidos por um recorte largo demais.
+
+Use-o para chegar ao diff visual já sabendo que a árvore está igual. O diff
+visual continua sendo o juiz: só ele pega o que muda sem mudar o HTML.
 
 ### Por que esta camada existe
 

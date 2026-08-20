@@ -1,8 +1,15 @@
 ---
-import { ui, url, localeBadge, locales, social, type Locale } from '../i18n/ui';
+import SocialIcons from './SocialIcons.astro';
+import { ui, url, localeBadge, locales, htmlLang, type Locale, type RouteKey } from '../i18n/ui';
 
 interface Props {
   lang: Locale;
+  /**
+   * Rota da pagina atual, para o seletor de idioma levar a traducao DESTA
+   * pagina. Ausente so na 404, que nao tem traducao — nesse caso o seletor cai
+   * na home, que e o unico destino que existe nos tres idiomas.
+   */
+  route?: RouteKey;
   /**
    * As tres paginas do ebook nunca tiveram topbar, e o cabecalho delas leva a
    * classe `dark`. As duas coisas andam juntas no original e mudam o
@@ -12,16 +19,22 @@ interface Props {
   escuro?: boolean;
 }
 
-const { lang, semTopbar = false, escuro = false } = Astro.props;
+const { lang, route, semTopbar = false, escuro = false } = Astro.props;
 const t = ui[lang];
 
 // O rotulo e resolvido aqui e nao no template: uma anotacao de tipo com
 // generics dentro do markup seria lida como tag JSX pelo parser do Astro.
+//
+// O destino era `url('home', ...)` fixo: trocar de idioma em /historia jogava o
+// visitante na home inglesa, e ele perdia a pagina em que estava. O mapa
+// `routes` ja tinha o slug traduzido de cada pagina — faltava usa-lo.
 const otherLocales = locales
   .filter((l) => l !== lang)
   .map((l) => ({
-    locale: l,
     label: (t.langOther as Record<string, string>)[l],
+    href: url(route ?? 'home', l),
+    // hreflang usa o codigo de idioma, nao a chave do locale.
+    hreflang: htmlLang[l],
   }));
 ---
 
@@ -39,22 +52,7 @@ const otherLocales = locales
         </ul>
       </div>
       <div class="col-md-6 d-none d-sm-block">
-        <div class="social-icons social-icons-colored-hover">
-          <ul>
-            <li class="social-facebook">
-              <a href={social.facebook} target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
-            </li>
-            <li class="social-instagram">
-              <a href={social.instagram} target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
-            </li>
-            <li class="social-linkedin">
-              <a href={social.linkedin} target="_blank" rel="noopener"><i class="fab fa-linkedin"></i></a>
-            </li>
-            <li class="social-youtube">
-              <a href={social.youtube} target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
-            </li>
-          </ul>
-        </div>
+        <SocialIcons lang={lang} class="social-icons social-icons-colored-hover" />
       </div>
     </div>
   </div>
@@ -83,12 +81,16 @@ const otherLocales = locales
         <ul>
           <li>
             <div class="p-dropdown">
-              <a href="#"><i class="icon-globe"></i><span>{localeBadge[lang]}</span></a>
+              <a
+                href="#"
+                aria-label={t.chooseLanguage}
+                aria-haspopup="true"
+                aria-expanded="false"><i class="icon-globe" aria-hidden="true"></i><span>{localeBadge[lang]}</span></a>
               <ul class="p-dropdown-content">
                 {
                   otherLocales.map((other) => (
                     <li>
-                      <a href={url('home', other.locale)}>{other.label}</a>
+                      <a href={other.href} hreflang={other.hreflang}>{other.label}</a>
                     </li>
                   ))
                 }
@@ -99,8 +101,20 @@ const otherLocales = locales
       </div>
       <!--end: Header Extras-->
       <!--Navigation Responsive Trigger-->
+      <!--
+        role/tabindex em vez de <button>: o <a> nao tem href (o tema o usa so
+        como gatilho), entao nao entrava na ordem de tabulacao. Trocar a tag por
+        <button> traria o estilo de UA do botao para dentro de um elemento que o
+        tema desenha por CSS. O site.js trata Enter e Espaco.
+      -->
       <div id="mainMenu-trigger">
-        <a class="lines-button x"><span class="lines"></span></a>
+        <a
+          class="lines-button x"
+          role="button"
+          tabindex="0"
+          aria-label={t.openMenu}
+          aria-controls="mainMenu"
+          aria-expanded="false"><span class="lines"></span></a>
       </div>
       <!--end: Navigation Responsive Trigger-->
       <!--Navigation-->
@@ -110,7 +124,7 @@ const otherLocales = locales
             <ul>
               <li><a href={url('home', lang)}>{t.navHome}</a></li>
               <li class="dropdown">
-                <a href="#">{t.navAbout}</a>
+                <a href="#" aria-haspopup="true" aria-expanded="false">{t.navAbout}</a>
                 <ul class="dropdown-menu">
                   <li><a href={url('resortsBrasil', lang)}>{t.navResortsBrasil}</a></li>
                   <li><a href={url('board', lang)}>{t.navBoard}</a></li>
@@ -118,14 +132,14 @@ const otherLocales = locales
                 </ul>
               </li>
               <li class="dropdown">
-                <a href="#">{t.navAssociates}</a>
+                <a href="#" aria-haspopup="true" aria-expanded="false">{t.navAssociates}</a>
                 <ul class="dropdown-menu">
                   <li><a href={url('associates', lang)}>{t.navAssociatesList}</a></li>
                   <li><a href={url('joinUs', lang)}>{t.navJoinUs}</a></li>
                 </ul>
               </li>
               <li class="dropdown">
-                <a href="#">{t.navInformation}</a>
+                <a href="#" aria-haspopup="true" aria-expanded="false">{t.navInformation}</a>
                 <ul class="dropdown-menu">
                   <li><a href={url('publications', lang)}>{t.navPublications}</a></li>
                   <li><a href={url('statistics', lang)}>{t.navStatistics}</a></li>

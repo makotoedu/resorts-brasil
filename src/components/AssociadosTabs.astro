@@ -1,0 +1,84 @@
+---
+import { regioesAssociados } from '../data/associados';
+import { ui, type Locale } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
+/**
+ * As abas por regiao da pagina de associados.
+ *
+ * Os dados vem de src/data/associados.ts, iguais nos tres idiomas; so o rotulo
+ * da aba traduz. Substitui ~500 linhas de markup identico em cada um dos tres
+ * arquivos de pagina.
+ *
+ * A estrutura reproduz a do tema: painel .tab-pane por regiao, uma .row por
+ * estado com o nome numa coluna e a grade de logos na outra. O primeiro painel
+ * nasce com `active`, os demais so com `fade show` — e como o original vinha, e
+ * e o que o tabs() do site.js espera encontrar.
+ */
+const rotulos = t.regioesAssociados as Record<string, string>;
+---
+
+<!-- Navegação -->
+<ul class="nav nav-tabs nav-justified" id="resorts" role="tablist">
+  {
+    regioesAssociados.map((regiao, i) => (
+      <li class="nav-item">
+        <a
+          class={`nav-link${i === 0 ? ' active' : ''}`}
+          id={`${regiao.id}-tab`}
+          data-bs-toggle="tab"
+          href={`#${regiao.id}`}
+          role="tab"
+          aria-controls={regiao.id}
+          aria-selected={i === 0 ? 'true' : 'false'}
+        >{rotulos[regiao.id]}</a>
+      </li>
+    ))
+  }
+</ul>
+<!-- end: Navegação -->
+<!-- Resorts -->
+<div class="tab-content" id="resortsContent">
+  {
+    regioesAssociados.map((regiao, i) => (
+      <div
+        class={`tab-pane fade show${i === 0 ? ' active' : ''}`}
+        id={regiao.id}
+        role="tabpanel"
+        aria-labelledby={`${regiao.id}-tab`}
+      >
+        {regiao.estados.map((estado, j) => (
+          <>
+            {/* Divisor entre estados: vai ENTRE eles, nunca antes do primeiro
+                nem depois do ultimo — sao 11 divisores para 16 estados em 5
+                paineis, exatamente como no markup original. */}
+            {j > 0 && <div class="line" />}
+            <div id={estado.uf} class="row">
+              <div class="col-lg-3 text-center text-bottom">
+                <h4>{estado.estado}</h4>
+              </div>
+              <div class="col-lg-9">
+                <ul class="grid grid-6-columns text-center">
+                  {estado.resorts.map((resort) => (
+                    <li>
+                      <a href={resort.url} target="_blank" rel="noopener noreferrer">
+                        <img src={resort.logo} alt={resort.nome} />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </>
+        ))}
+      </div>
+    ))
+  }
+</div>
+<!-- end: Resorts -->

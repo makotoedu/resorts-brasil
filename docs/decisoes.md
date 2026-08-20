@@ -352,3 +352,218 @@ A combinação que preserva é `build.format: 'file'` no
 não introduzir nenhum redirect implícito.
 
 A única URL removida foi `/arena-conexoes`, a pedido, com redirect 301 para `/`.
+
+---
+
+# Refino de 2026 — segunda passagem
+
+A refatoração terminou com 120/120 no diff visual, e foi justamente por ser fiel
+ao original que ela **preservou os defeitos dele**. Esta segunda passagem
+separou o trabalho por risco visual: primeiro tudo o que não move um pixel,
+depois a extração de dados, cada bloco com sua rodada de diff.
+
+---
+
+## O critério: risco visual, não tamanho
+
+O que tornou esta passagem barata foi ordenar por risco em vez de por esforço.
+Meta tags, `sitemap.xml`, JSON-LD, `aria-*`, `rel="noopener"`, nomes acessíveis
+e foco visível **não movem um pixel em repouso** — o diff visual não foca nada e
+não lê atributo. Deu para fazer os 40 arquivos de uma vez e confirmar com uma
+única rodada: `120/120`.
+
+Isso vale como método: neste projeto, antes de estimar uma mudança, pergunte se
+ela aparece num screenshot parado. Se não aparece, o custo de verificação é
+quase zero e ela pode ir junto com outras.
+
+---
+
+## Foco visível: `:focus-visible`, não `:focus`
+
+O tema apaga o indicador de foco do site inteiro:
+
+```css
+a:not(.btn):not(.badge):hover,
+a:not(.btn):not(.badge):focus,
+a:not(.btn):not(.badge):active { outline: none }
+```
+
+O `:hover` está no mesmo seletor do `:focus`, então não dá para simplesmente
+remover a regra: isso mudaria o desenho do hover, que é visível e está no diff.
+
+A saída foi acrescentar `:focus-visible` no `ajustes.css`. O navegador só o
+aplica quando o foco veio do teclado, então o clique de mouse continua sem
+contorno — nada muda para quem usa ponteiro, e o diff visual segue idêntico.
+
+## Submenu que abria no `:hover` e não no foco
+
+Medido no navegador, não deduzido do CSS: com o item pai **focado**, o
+`.dropdown-menu` tinha altura **0**; no `:hover`, 136px. Quem navegava por
+teclado tabulava para dentro de um submenu invisível — os links recebiam foco
+sem nada aparecer na tela.
+
+A causa é `display: none` → `display: block` no `:hover`, sem equivalente para
+foco. Um `:focus-within` no `ajustes.css` resolve.
+
+Vale registrar o caminho: a primeira hipótese foi que os submenus de desktop
+estavam **quebrados**, porque a única regra que os revela no `style.css`
+depende de `.hover-active`, classe que ninguém aplica desde a saída do jQuery.
+Um teste no navegador mostrou que abrem normalmente — a regra do `.hover-active`
+está dentro de `@media (max-width: 991.98px)` e o desktop usa outro caminho.
+**Neste tema, meça antes de concluir:** o CSS é grande o bastante para que ler
+o seletor errado leve a um diagnóstico inteiro errado.
+
+---
+
+## Guarda na purga de CSS
+
+O `decisoes.md` já contava que um glob errado faz o PurgeCSS purgar contra nada,
+levando o `style.css` de 452 KB para 11.7 KB com um aviso discreto de uma linha
+como único sinal. O aviso continuava lá, e nada impedia o estrago.
+
+Agora o script aborta em três situações:
+
+1. `dist/` não tem exatamente 40 páginas;
+2. o PurgeCSS devolve menos folhas do que existem em `dist/css/`;
+3. qualquer folha encolhe mais de 99,5%.
+
+A (2) é a que pega o caso real: rodar o script de outro diretório fazia os dois
+globs não casarem nada, e ele terminava com `TOTAL 0.0 KB` e **código de saída
+0** — um sucesso silencioso que um pipeline daria por bom.
+
+---
+
+## Dados em vez de markup, em duas etapas
+
+A extração de `src/data/` foi feita para ser **verificável**, não só menor. A
+regra: o HTML gerado tem de ter a mesma árvore de antes.
+
+Para conferir isso sem depender só do diff de pixel, a comparação foi feita no
+HTML: normaliza espaço em branco, ignora atributos que não afetam layout
+(`href`, `alt`, `aria-*`, `rel`) e compara a sequência de tags, classes e texto.
+Isso localiza a divergência em segundos, com o nome da tag — enquanto o diff
+visual diz só que a página mudou.
+
+Foi assim que apareceram as duas omissões da primeira tentativa:
+
+- **os 11 `<div class="line">`** entre estados na página de associados, que o
+  extrator não capturou por não serem dados;
+- **os `</div>` de fechamento** do carrossel da home, engolidos por um recorte
+  que ia até o próximo comentário HTML.
+
+Nenhuma das duas apareceria como erro de build. A segunda teria fechado o
+`<section>` cedo demais.
+
+### O que mudou de propósito
+
+Três mudanças deliberadas de conteúdo, todas invisíveis no diff:
+
+| mudança | por quê |
+|---|---|
+| o logo `wyndham-gramado` entrou na home em espanhol | as outras duas homes já o tinham; era o ES que estava desatualizado |
+| os 71 `href="#"` do carrossel viraram os sites reais | as URLs já estavam em `/associados`; eram 71 links que o teclado percorria para lugar nenhum |
+| `alt` normalizado nos três idiomas | EN e ES tinham dois nomes em caixa baixa |
+
+O carrossel fica `hidden` durante o diff (ver [verificacao.md](verificacao.md)),
+e é de uma linha só, então acrescentar um logo não muda a altura da página.
+Confirmado: `120/120` depois da extração.
+
+Quem **não** tem site continua com um `<a>` sem `href`, em vez de `href="#"`.
+Isso mantém a caixa que o carrossel mede e o ícone que a grade desenha, mas tira
+o item da ordem de tabulação — um `<a>` sem `href` não é link para o leitor de
+tela.
+
+---
+
+## Achados de conteúdo, e o que o cliente decidiu
+
+A extração de `src/data/` tornou visíveis divergências que a duplicação
+escondia. Nenhuma delas era decisão de engenharia. As respostas do cliente, em
+20/08/2026:
+
+### Decidido e aplicado
+
+**O Wyndham Gramado deixou de ser associado.** Ele aparecia no carrossel da home
+em PT e EN, mas não constava de `/associados` e não tinha URL em lugar nenhum —
+o ES já o havia removido. Saiu de [`carrossel-home.ts`](../src/data/carrossel-home.ts),
+que passou a ter 70 logos.
+
+Não gera divergência no diff visual: o carrossel fica `hidden` durante a
+comparação e é de uma linha só, então um logo a menos não muda altura.
+
+**A lista de parceiros correta é a portuguesa.** A versão inglesa de associe-se
+listava 10 parceiros, dois a mais (`talge` e `villa-camarao`) — e os dois já
+apareciam na faixa de *mantenedores* da mesma página, o que reforça terem sido
+duplicados por engano. A página inglesa passou a usar a mesma constante
+`parceiros` das outras duas, e o `parceirosJoinUsEn` deixou de existir.
+
+**Esta muda o layout de propósito**: −144px no mobile e −197px no tablet de
+`/en-us/join-us`. No desktop fecha idêntica, porque 10 e 8 logos ocupam as mesmas
+duas linhas numa grade de 6 colunas. Junto com a tradução dos cargos (adiante), o
+valor de referência do diff passou a ser **117/120** — ver
+[verificacao.md](verificacao.md).
+
+**A foto de hero do Unsplash em `/resorts-brasil` fica.** É uma dependência de
+terceiro numa página que hospeda todo o resto, e entrega o IP do visitante a
+outro domínio, mas a decisão foi mantê-la. Registrado para quem reencontrar o
+`https://images.unsplash.com/...` no meio de 42 caminhos locais e achar que é
+descuido: não é.
+
+**O seletor de idioma passa a levar à tradução da página atual.** Antes o
+destino era `url('home', ...)` fixo: trocar de idioma em `/historia` jogava o
+visitante na home inglesa. O mapa `routes` já tinha o slug traduzido de cada
+página — faltava usá-lo. O `BaseLayout` passa a `route` ao `Header`, que resolve
+o destino e ainda marca o link com `hreflang`. Só a 404 cai na home, por não ter
+tradução.
+
+Muda só atributos, então não aparece no diff visual — mas aparece no uso.
+
+**Os dois LinkedIn trocados foram corrigidos.** Antonio Dias e Laini Melo
+apontavam ambos para `carlos-jacobina-b0362b4b` — que é, de fato, o perfil do
+Carlos Jacobina, membro do Conselho Consultivo. O endereço certo dele estava lá;
+tinha sido copiado por cima dos outros dois. Hoje os três estão corretos e não há
+LinkedIn repetido no arquivo.
+
+**Os cargos da diretoria passaram a ser traduzidos** — e a correção obrigou a
+uma distinção que o markup escondia. O campo `cargo` carrega duas coisas
+diferentes:
+
+| grupo | o que o campo traz | traduz? |
+|---|---|---|
+| Diretoria | um cargo ("Vice-Presidente de Operações") | **sim** |
+| Conselho Consultivo | a empresa do conselheiro ("Grupo Aviva") | **não** — é nome próprio |
+
+Por isso o tipo é `string | Record<Locale, string>`: string simples para o que
+não traduz, Record por idioma para o que traduz. Traduzir os dois teria posto
+"Aviva Group" no site. Tratar os dois como a mesma coisa foi justamente o que
+deixou a página inteira em português nos três idiomas.
+
+Sobre gênero: **o espanhol marca o que o português marca, e nada além disso.**
+"Vice-Presidente Administrativo-Financeira" já vinha no feminino no original,
+então o espanhol acompanha; "Vice-Presidente de Inteligência Humana" é invariável
+em português e segue invariável em espanhol. A regra é espelhar a fonte, não
+inferir a partir do nome.
+
+As traduções valem uma conferência do cliente antes de ir ao ar: são títulos
+oficiais de pessoas reais, e "Vice-Presidente Comercial" em inglês pode ser
+*Vice President of Sales* ou *Commercial Vice President* conforme o que a
+associação usa em documento.
+
+**Efeito no layout, e uma lição sobre o diff.** O inglês é mais curto: "Chair of
+the Board" cabe numa linha onde "Presidente do Conselho" ocupava duas, e a página
+`/en-us/board` encolheu 23px no mobile — divergência aceita e registrada.
+
+Já `/es-es/directorio` trocou os seis cargos e **passou no diff como idêntica**:
+o espanhol tem comprimento parecido com o português, coube nas mesmas linhas, e
+os 0,15%–0,24% de pixels alterados ficaram abaixo do limiar de 0,5%. Ou seja: o
+diff visual pega o que empurra layout, não o que troca palavra. Para trabalho de
+tradução, confira o texto no HTML gerado — está detalhado em
+[verificacao.md](verificacao.md).
+
+### Ainda em aberto
+
+- **O contador diz 83 resorts associados; a lista tem 78.**
+- **As páginas do ebook seguem em português nas três versões** — 1.089 linhas
+  cada, é trabalho de tradutor.
+- **O aviso de cookies é decorativo:** o GTM dispara antes de qualquer escolha
+  do visitante, o que num site brasileiro é assunto de LGPD.

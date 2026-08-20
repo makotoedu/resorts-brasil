@@ -1,11 +1,10 @@
 ---
+import { contato } from '../../data/contato';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
   lang="en-us"
-  title={'Contact us - Resorts Brasil'}
-  description={'Brazilian Association of Resorts'}
   route="contact"
 >
     <!-- Title -->
@@ -28,32 +27,32 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
                     <div class="col-lg-3">
                         <div class="icon-box small clean">
                             <div class="icon">
-                                <a href="mailto:contato@resortsbrasil.com.br"><i class="icon-mail"></i></a>
+                                <a href={`mailto:${contato.email}`}><i class="icon-mail"></i></a>
                             </div>
                             <h3>Email</h3>
                             <p>Questions? We can help you via email.<br>
-                                <b>contato@resortsbrasil.com.br</b>
+                                <b>{contato.email}</b>
                             </p>
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <div class="icon-box small clean">
                             <div class="icon">
-                                <a href="https://goo.gl/maps/osRdE2bZhqc1hCk78"><i class="icon-map-pin"></i></a>
+                                <a href={contato.endereco.mapa}><i class="icon-map-pin"></i></a>
                             </div>
                             <h3>Address</h3>
                             <p>Our mailing address:<br>
-                                <b>R. Prof. Carlos de Carvalho, 28, sl. 82 - Itaim Bibi, São Paulo - SP</b>
+                                <b>{contato.endereco.linha}</b>
                             </p>
                         </div>
                     </div>
                     <div class="col-lg-3">
                         <div class="icon-box small clean">
                             <div class="icon">
-                                <a href="mailto:cristiane@hatsur.com"><i class="icon-message-square"></i></a>
+                                <a href={`mailto:${contato.imprensa.email}`}><i class="icon-message-square"></i></a>
                             </div>
                             <h3>Press</h3>
-                            <p>Anagrama Comunicação e Eventos.<br><b>reila@anagrama.com.br</b><br><b>+55 11
+                            <p>Anagrama Comunicação e Eventos.<br><b>{contato.imprensa.email}</b><br><b>+55 11
                                     95038-7232</b>
                             </p>
                         </div>
@@ -61,7 +60,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
                     <div class="col-lg-3">
                         <div class="icon-box small clean">
                             <div class="icon">
-                                <a href="https://wa.me/5511950580313" target="_blank"><i
+                                <a href={contato.whatsapp.link} target="_blank" rel="noopener noreferrer"><i
                                         class="fab fa-whatsapp"></i></a>
                             </div>
                             <h3>WhatsApp</h3>

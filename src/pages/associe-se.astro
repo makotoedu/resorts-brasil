@@ -1,11 +1,11 @@
 ---
+import GradeLogos from '../components/GradeLogos.astro';
+import { descontos, mantenedores, parceiros } from '../data/parceiros';
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
   lang="pt-br"
-  title={'Associe-se - Resorts Brasil'}
-  description={'Associação Brasileira de Resorts'}
   route="joinUs"
 >
     <!-- Associe-se -->
@@ -30,7 +30,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                             associação é um dos pilares para nosso desenvolvimento e fortalecimento como segmento.
                         </p>
                         <div class="m-b-20">
-                            <a href="/fale-conosco" target="_blank" class="btn">Associe-se</a>
+                            <a href="/fale-conosco" target="_blank" rel="noopener noreferrer" class="btn">Associe-se</a>
                             <a href="/associados" class="btn btn-outline">Conheça os associados</a>
                         </div>
                     </div>
@@ -126,22 +126,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                     <h4 class="text-center" style="letter-spacing: 1px;">Mantenedores:</h4>
                 </div>
                 <div class="col-lg-9">
-                    <ul class="grid grid-6-columns text-center">
-                        <li><a href="https://www.equipotel.com.br/" target="_blank"><img alt="Equipotel"
-                                    src="/images/parceiros/equipotel.png"></a></li>
-                        <li><a href="https://harus.ind.br/" target="_blank"><img alt="Harus"
-                                    src="/images/parceiros/harus.png"></a></li>
-                        <li><a href="https://www.nestleprofessional.com.br/" target="_blank"><img
-                                    alt="Nestle Professional" src="/images/parceiros/nestle-professional.png"></a></li>
-                        <li><a href="https://rentv.com.br/" target="_blank"><img alt="Rentv"
-                                    src="/images/parceiros/rentv.png"></a></li>
-                        <li><a href="https://www.r1audiovisual.com.br/" target="_blank"><img alt="R1 Audio Visual"
-                                    src="/images/parceiros/r1-grupo.png"></a></li>
-                        <li><a href="https://talge.com.br/" target="_blank"><img alt="Talge"
-                                    src="/images/parceiros/talge.png"></a></li>
-                        <li><a href="https://www.villacamarao.com.br/" target="_blank"><img alt="Villa Camarão"
-                                    src="/images/parceiros/villa-camarao.png"></a></li>
-                    </ul>
+                    <GradeLogos itens={mantenedores} colunas={6} />
                 </div>
             </div>
             <div class="row p-t-30">
@@ -149,24 +134,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                     <h4 class="text-center" style="letter-spacing: 1px;">Parceiros:</h4>
                 </div>
                 <div class="col-lg-9">
-                    <ul class="grid grid-6-columns text-center">
-                        <li><a href="https://www.amigosdobem.org/" target="_blank"><img alt="Amigos do bem"
-                                    src="/images/parceiros/amigos-do-bem.png"></a></li>
-                        <li><a href="https://www.sp.senac.br/" target="_blank"><img alt="senac"
-                                    src="/images/parceiros/senac.png"></a></li>
-                        <li><a href="https://eaesp.fgv.br/centros/fgvcemd" target="_blank"><img alt="fgv cemd"
-                                    src="/images/parceiros/fgv-cemd.png"></a>
-                        <li><a href="https://www.jll.com.br/" target="_blank"><img alt="JLL"
-                                    src="/images/parceiros/jll.png"></a></li>
-                        <li><a href="https://str.com/pt-br" target="_blank"><img alt="STR"
-                                    src="/images/parceiros/str.png"></a></li>
-                        <li><a href="#" target="_blank"><img alt="Arbache Consulting"
-                                    src="/images/parceiros/arbache-consulting.png"></a></li>
-                        <li><a href="https://gks.com.br/" target="_blank"><img alt="GKS"
-                                    src="/images/parceiros/gks.png"></a></li>
-                        <li><a href="https://esgpulse.com.br/" target="_blank"><img alt="ESG Pulse"
-                                    src="/images/parceiros/esg-pulse.png"></a></li>
-                    </ul>
+                    <GradeLogos itens={parceiros} colunas={6} />
                 </div>
             </div>
             <div class="row p-t-30">
@@ -175,18 +143,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
                     <p class="text-center">Cursos e Eventos</p>
                 </div>
                 <div class="col-lg-9">
-                    <ul class="grid grid-6-columns text-center">
-                        <li><a href="https://escolapararesultados.com.br/" target="_blank"><img
-                                    alt="Escola Para Resultados"
-                                    src="/images/parceiros/escola-para-resultados.png"></a></li>
-                        <li><a href="http://hsmaibrasil.org/" target="_blank"><img alt="hsmai brasil"
-                                    src="/images/parceiros/hsmai-brasil.png"></a></li>
-                        <li><a href="https://www.sp.senac.br/" target="_blank"><img alt="Senac SP"
-                                    src="/images/parceiros/senac.png"></a></li>
-                        <li><a href="https://www.markupconsult.com.br/" target="_blank"><img
-                                    alt="Mark Up Consultoria" src="/images/parceiros/markup-consultoria.png"></a>
-                        </li>
-                    </ul>
+                    <GradeLogos itens={descontos} colunas={6} />
                 </div>
             </div>
         </div>
@@ -196,7 +153,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <!-- CTA -->
     <section id="cta">
         <div class="container">
-            <div style="background-image:url('images/hero/pexels-161212.jpg')"
+            <div style="background-image:url('/images/hero/pexels-161212.jpg')"
                 class="call-to-action p-t-100 p-b-100 background-image rounded mb-0">
                 <div class="bg-overlay" data-style="2"></div>
                 <div class="container">

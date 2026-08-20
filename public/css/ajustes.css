@@ -284,3 +284,86 @@
   position: relative;
   z-index: 2;
 }
+
+/*
+ * ============================================================
+ * 5. Foco visivel
+ * ============================================================
+ *
+ * O tema remove o indicador de foco do site inteiro:
+ *
+ *     a:not(.btn):not(.badge):hover,
+ *     a:not(.btn):not(.badge):focus,
+ *     a:not(.btn):not(.badge):active { outline: none }
+ *     .lines-button:hover, .lines-button:focus { outline: none }
+ *
+ * Isso reprova o criterio 2.4.7 da WCAG: quem navega por teclado perde a
+ * referencia de onde esta. O `outline: none` casa junto com :hover, entao a
+ * regra so pode ser desfeita para o estado de foco.
+ *
+ * :focus-visible em vez de :focus de proposito — o navegador so pinta quando o
+ * foco veio do teclado, entao o clique de mouse continua sem contorno e nada
+ * muda visualmente para quem usa ponteiro. Por isso tambem esta secao nao
+ * aparece no diff visual: ele nunca foca nada.
+ *
+ * O deslocamento de 2px evita que o contorno encoste no glifo em links de
+ * texto; o azul e o mesmo #2250fc que o tema ja usa em :focus.
+ */
+a:focus-visible,
+button:focus-visible,
+.lines-button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #2250fc;
+  outline-offset: 2px;
+}
+
+/* Sobre fundo escuro o azul do tema some; o branco mantem o contraste. */
+#header.dark a:focus-visible,
+#topbar a:focus-visible,
+#footer.inverted a:focus-visible,
+.cookie-notify a:focus-visible,
+.cookie-notify button:focus-visible,
+.text-light a:focus-visible {
+  outline-color: #fff;
+}
+
+/*
+ * O "pular para o conteudo" fica fora da tela ate receber foco. Nao usa
+ * display:none nem visibility:hidden porque nenhum dos dois e focavel.
+ */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 300;
+  padding: 10px 18px;
+  background: #fff;
+  color: #2250fc;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+/*
+ * ============================================================
+ * 6. Submenus da navegacao pelo teclado
+ * ============================================================
+ *
+ * No desktop o submenu sai de `display: none` para `display: block` no :hover
+ * do <li>. Nao ha equivalente para o foco, entao quem navega por teclado
+ * tabulava PARA DENTRO de um submenu invisivel: os links recebiam foco com
+ * altura 0 e nada aparecia na tela.
+ *
+ * Medido no navegador antes da correcao, com o pai focado:
+ *   altura do .dropdown-menu = 0   (e 136px no :hover)
+ *
+ * :focus-within reproduz o :hover para o foco. Nao usa media query porque
+ * abaixo de 992px o submenu ja e display:block e a regra vira redundante, nao
+ * conflitante. Nao aparece no diff visual: ele nunca foca nada.
+ */
+#mainMenu nav > ul > li.dropdown:focus-within > .dropdown-menu {
+  display: block;
+}

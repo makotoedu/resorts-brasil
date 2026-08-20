@@ -1,0 +1,43 @@
+---
+import { ui, social, type Locale } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  /** Classes da <div> externa, que mudam entre topbar e rodape. */
+  class: string;
+}
+
+const { lang, class: classe } = Astro.props;
+const t = ui[lang];
+
+/**
+ * Os quatro links eram escritos duas vezes — topbar e rodape — e nenhum tinha
+ * nome acessivel: o conteudo do <a> era so um <i> de icone, entao o leitor de
+ * tela anunciava "link" quatro vezes seguidas. Sao 8 por pagina, 320 no site.
+ */
+const redes = [
+  { key: 'facebook', rede: 'Facebook', href: social.facebook, icone: 'fab fa-facebook-f' },
+  { key: 'instagram', rede: 'Instagram', href: social.instagram, icone: 'fab fa-instagram' },
+  { key: 'linkedin', rede: 'LinkedIn', href: social.linkedin, icone: 'fab fa-linkedin' },
+  { key: 'youtube', rede: 'YouTube', href: social.youtube, icone: 'fab fa-youtube' },
+] as const;
+---
+
+<div class={classe}>
+  <ul>
+    {
+      redes.map((r) => (
+        <li class={`social-${r.key}`}>
+          <a
+            href={r.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${t.socialOn} ${r.rede}`}
+          >
+            <i class={r.icone} aria-hidden="true" />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>

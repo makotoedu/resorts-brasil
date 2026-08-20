@@ -56,6 +56,29 @@ const browser = await chromium.launch();
   });
   check('seletor de idioma abre', state.active && state.opacity === '1' && state.clickable,
     `opacity=${state.opacity}, link clicavel=${state.clickable}`);
+
+  // Abrir nao e ir para o lugar certo. O destino era `url('home', ...)` fixo,
+  // entao o seletor abria, ficava clicavel e passava nesta suite enquanto jogava
+  // quem estava em /historia na home inglesa. Aqui o teste e do destino.
+  const destinos = await page.$$eval('.p-dropdown-content a', (as) =>
+    as.map((a) => new URL(a.href).pathname));
+  const esperado = ['/en-us/history', '/es-es/historia'];
+  check('seletor de idioma leva a traducao DESTA pagina',
+    JSON.stringify(destinos) === JSON.stringify(esperado),
+    `de /historia -> ${destinos.join(', ')}`);
+  await page.close();
+}
+
+/* 2b. Seletor de idioma na 404, que nao tem traducao --------------------- */
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.goto(`${BASE}/404.html`);
+  const destinos = await page.$$eval('.p-dropdown-content a', (as) =>
+    as.map((a) => new URL(a.href).pathname));
+  // Sem `route`, o unico destino que existe nos tres idiomas e a home.
+  check('seletor de idioma cai na home quando nao ha traducao',
+    JSON.stringify(destinos) === JSON.stringify(['/en-us/home', '/es-es/inicio']),
+    destinos.join(', '));
   await page.close();
 }
 

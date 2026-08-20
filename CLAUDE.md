@@ -105,3 +105,47 @@ Para poupar buscas: não há lightbox, formulário, carrossel com múltiplos sli
 nem cabeçalho fixo no scroll. O `functions.js` original
 inicializava tudo isso, mas nenhuma das 40 páginas usa — foi por isso que a
 remoção do jQuery coube em 8 KB.
+
+## Onde os dados moram
+
+Desde o refino de agosto/2026, **dado não é markup**. Resorts associados,
+parceiros, diretoria e contato ficam em [`src/data/`](src/data/); rota, `title`,
+`description` e qualquer texto que traduza ficam em
+[`src/i18n/ui.ts`](src/i18n/ui.ts).
+
+A regra prática: **o que traduz vai em `ui.ts`, o que não traduz vai em
+`src/data/`.** Nome de resort, URL, foto e cargo não traduzem. Rótulo de aba,
+título de seção e a dupla `title`/`description` traduzem.
+
+Editar markup de página para acrescentar um resort ou um parceiro é o caminho
+errado — foi exatamente assim que a home em espanhol ficou com um logo a menos e
+a página inglesa de associe-se com dois parceiros a mais.
+
+## Ao extrair markup para componente
+
+O diff visual custa 15 minutos e diz só que a página mudou. Antes dele, compare
+o **HTML gerado**: normalize o espaço em branco, ignore os atributos que não
+afetam layout (`href`, `alt`, `aria-*`, `rel`, `target`) e compare a sequência de
+tags, classes e texto. A divergência aparece em segundos, com o nome da tag.
+
+Duas omissões que só esse método pegou, e que nenhum erro de build revelaria:
+
+- os 11 `<div class="line">` entre estados na página de associados — separadores
+  visuais que um extrator focado em dados não captura;
+- os `</div>` de fechamento do carrossel da home, engolidos por um recorte que ia
+  até o próximo comentário HTML. Teria fechado o `<section>` cedo demais.
+
+Ao trocar um bloco por componente, prefira recortar um trecho **balanceado**
+(um `<ul>…</ul>` inteiro) a recortar até um comentário.
+
+## Antes de concluir que algo do tema está quebrado
+
+O `style.css` tem 21 mil linhas e a mesma classe aparece em contextos diferentes.
+Ao investigar, **meça no navegador antes de concluir pelo seletor**.
+
+Exemplo real: a única regra que revela `.dropdown-menu` depende de
+`.hover-active`, classe que ninguém aplica desde a saída do jQuery — o que
+sugeria que os submenus de desktop estavam quebrados. Não estavam: aquela regra
+vive dentro de `@media (max-width: 991.98px)` e o desktop usa outro caminho. Um
+teste de hover no Playwright resolveu em um minuto o que a leitura do CSS
+apontava errado.

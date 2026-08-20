@@ -9,15 +9,27 @@ autenticação ou banco de dados.
 ## Estrutura
 
 ```
-astro.config.mjs          i18n, formato de build e domínio canônico
-vercel.json               cleanUrls e o redirect de /arena-conexoes
+astro.config.mjs          i18n, formato de build, domínio canônico e sitemap
+vercel.json               cleanUrls, redirect, cache e cabeçalhos de segurança
+tsconfig.json             astro/tsconfigs/strict — `astro check` roda no build
 
 src/
-  i18n/ui.ts              fonte única de rotas e strings dos 3 idiomas
+  i18n/ui.ts              rotas, títulos, descrições e strings dos 3 idiomas
+  data/                   os dados que eram markup
+    associados.ts         78 resorts por região e estado
+    carrossel-home.ts     os 71 logos do carrossel da home
+    parceiros.ts          mantenedores, parceiros e descontos
+    diretoria.ts          diretoria e conselho consultivo
+    contato.ts            endereço, e-mails e telefones
   layouts/BaseLayout.astro  <head>, header, <main>, rodapé, cookies, scripts
   components/
     Header.astro          topbar, logo, seletor de idioma, navegação
     Footer.astro          widgets do rodapé e copyright
+    SocialIcons.astro     os 4 links de rede social, com nome acessível
+    AssociadosTabs.astro  as abas por região da página de associados
+    CarrosselAssociados.astro  o carrossel de logos da home
+    GradeLogos.astro      uma faixa de logos (mantenedores/parceiros/descontos)
+    GradeMembros.astro    a grade de fotos da diretoria e do conselho
   pages/                  40 páginas — PT na raiz, en-us/ e es-es/
   scripts/site.js         os comportamentos de interface
 
@@ -25,6 +37,7 @@ public/                   servido como está, na raiz do site
   css/                    plugins.css, style.css e ajustes.css
   images/                 198 arquivos
   webfonts/               fontes de ícone (subsetadas)
+  robots.txt              aponta para o sitemap
 
 scripts/
   purge-css.mjs           purga e minifica o CSS depois do build
@@ -37,6 +50,33 @@ tests/
 
 ---
 
+## Dados em vez de markup
+
+`src/data/` existe porque os mesmos dados estavam escritos à mão em três
+arquivos por página. Os 78 resorts associados ocupavam ~600 linhas em cada uma
+das três versões de `/associados`; a diretoria, ~350 em cada uma das três de
+`/diretoria`; a faixa de mantenedores e parceiros se repetia em **12** páginas.
+
+Nada disso variava por idioma — e onde variava, era por engano. A extração
+levou `src/pages/` de 12.629 para 8.855 linhas e tornou impossível a classe de
+divergência que já havia acontecido:
+
+| divergência encontrada | onde |
+|---|---|
+| um logo a menos no carrossel | só na home em espanhol |
+| dois logos de parceiro a mais | só em `/en-us/join-us` |
+| dois logos com `alt` em caixa baixa | só em EN e ES |
+
+O que **traduz** continua em [`src/i18n/ui.ts`](../src/i18n/ui.ts): rótulo de
+aba, título de seção, `title` e `description` de cada página. O que **não
+traduz** — nome de resort, URL, foto, cargo — está em `src/data/`.
+
+A divergência de `/en-us/join-us` foi preservada de propósito, num
+`parceirosJoinUsEn` separado, porque não dá para saber daqui se os dois logos a
+mais são erro ou intenção. Está anotada no arquivo para decisão do cliente.
+
+---
+
 ## A fonte única de verdade
 
 [`src/i18n/ui.ts`](../src/i18n/ui.ts) é a peça central da arquitetura. Ele
@@ -45,9 +85,18 @@ concentra:
 - **`routes`** — o slug de cada uma das 13 páginas nos 3 idiomas. Os slugs são
   traduzidos (`/historia`, `/en-us/history`, `/es-es/historia`), então não podem
   ser derivados automaticamente.
-- **`ui`** — as strings de topbar, navegação, rodapé e aviso de cookies por
-  idioma.
+- **`meta`** — `title` e `description` de cada página nos 3 idiomas. Antes eram
+  props escritas em cada arquivo, e as 40 páginas acabaram compartilhando **três**
+  descriptions genéricas, uma por idioma. Lado a lado aqui, a repetição fica
+  visível. O `BaseLayout` lê daqui quando a página passa `route`; a prop
+  continua existindo para a 404, que não tem rota.
+- **`ui`** — as strings de topbar, navegação, rodapé, aviso de cookies, rótulos
+  de região e os nomes acessíveis (menu, seletor de idioma, voltar ao topo).
 - **`social`** — as URLs das redes sociais, antes repetidas em cada página.
+- **`htmlLang` / `ogLocale`** — os códigos de idioma em duas convenções
+  diferentes: `hreflang` quer `pt-br`, o Open Graph quer `pt_BR`. Derivar um do
+  outro com `replace('-','_')` produzia `pt_br`, que o Facebook descarta em
+  silêncio.
 
 Esse arquivo alimenta ao mesmo tempo a navegação, o rodapé, o seletor de idioma
 e as tags `hreflang`. É o que resolve o problema que motivou a refatoração: o
@@ -70,7 +119,7 @@ no ar —, o [`BaseLayout`](../src/layouts/BaseLayout.astro) as reproduz por pro
 | `rodapeMinimo` | 404 | rodapé só com a faixa de copyright |
 | `bodyClass` | 7 | `<body>` sem `class="modern"` |
 | `mainClass` | 4 | `hero-fullscreen`, o deslocamento sob o cabeçalho |
-| `cabecalhoEbook` | 3 | cabeçalho sem topbar e com `.dark` |
+| `variacaoEbook` | 3 | cabeçalho sem topbar e com `.dark`, rodapé `.inverted` |
 
 Cada uma dessas apareceu como uma página reprovada no diff visual, não como uma
 decisão de projeto. Antes de acrescentar uma prop nova, vale confirmar no
