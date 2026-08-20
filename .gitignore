@@ -5,6 +5,9 @@ node_modules/
 dist/
 .astro/
 
+# PNGs de diagnóstico gerados pelo diff visual
+tests/visual-diff/
+
 # ambiente
 .env
 .env.production
