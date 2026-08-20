@@ -105,6 +105,12 @@ para não gerar falso positivo:
 
 Leva cerca de 15 minutos. **Rode sempre que mexer em CSS.**
 
+Em 20/08/2026 a varredura fechou em **120/120 idênticas**, sem nenhuma divergência
+aceita. Esse é o valor de referência: qualquer número menor é regressão, não
+tolerância. A progressão até lá foi 20 → 57 → 65 → 77 → 103 → 120, e cada salto
+correspondeu a uma causa raiz — todas descritas em
+[decisoes.md](decisoes.md).
+
 Para reconferir um grupo sem pagar a varredura inteira, as duas listas aceitam
 filtro por variável de ambiente:
 

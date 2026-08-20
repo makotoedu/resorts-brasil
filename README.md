@@ -83,7 +83,8 @@ Feito e verificado:
 - 40 páginas em um layout único, URLs preservadas, `hreflang` nos 3 idiomas
 - jQuery e o engine do tema trocados por ~9 KB de JS nativo
 - CSS de 805 KB para 63 KB (purga contra o HTML gerado + lightningcss)
-- paridade visual com o site original conferida página a página
+- **120/120 comparações visuais idênticas** ao site original — 40 páginas × 3
+  viewports, sem divergência aceita (20/08/2026)
 
 Pendente:
 
