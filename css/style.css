@@ -10510,6 +10510,12 @@ Helpers
   line-height: 68px !important;
 }
 
+/* Títulos de página promovidos de h2 para h1 mantêm o espaçamento original de h2 (16px, não os 20px padrão de h1). */
+h1.text-md:not(:last-child),
+h1.text-lg:not(:last-child) {
+  margin-bottom: 16px;
+}
+
 .text-lg-light,
 .text-lg-light span,
 .text-lg-light span span {
@@ -15128,7 +15134,7 @@ ul.nav li.dropdown:hover>ul.dropdown-menu {
 
 @font-face {
   font-family: 'inspiro-icons';
-  src: url("../webfonts/inspiro-icons.ttf?ijzgpf") format("truetype"), url("../webfonts/inspiro-icons.woff?ijzgpf") format("woff");
+  src: url("../webfonts/inspiro-icons.woff?ijzgpf") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: block;
