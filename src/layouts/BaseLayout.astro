@@ -168,39 +168,216 @@ const orgJsonLd = {
 
     <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
 
+    <!--
+      Poppins, que era um @import na linha 9 do style.css. Os pesos sao os
+      medidos (400-800), a Nunito saiu por nao ter uso, e o endpoint css2 traz
+      o display=swap. Preload das faces nao da: a URL do gstatic e opaca.
+      Motivos e medicoes em docs/decisoes.md, "Google Fonts".
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    />
+
+    <!--
+      Consentimento e Google Tag Manager.
+
+      Inline e sincrono de proposito, e nao pode virar um modulo do
+      src/scripts/: os defaults do Consent Mode precisam estar no dataLayer
+      antes de qualquer rede, e a decisao de injetar o gtm.js depende de ler o
+      cookie sem esperar o DOMContentLoaded. Antes deste bloco, o GTM disparava
+      incondicionalmente e a faixa era decorativa.
+
+      A UI vive no src/scripts/site.js e so conversa com window.rbConsent.
+      Ver docs/decisoes.md, "O consentimento que nao consentia".
+    -->
+    <script is:inline>
+      (function (w, d) {
+        var GTM = 'GTM-PK7DG6MD';
+        var NOME = 'rb_consent';
+        var VERSAO = 'v1';
+        var DIAS = 180;
+
+        w.dataLayer = w.dataLayer || [];
+        function gtag() {
+          w.dataLayer.push(arguments);
+        }
+
+        /* Consent Mode v2: tudo negado antes de qualquer rede. */
+        gtag('consent', 'default', {
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
+          analytics_storage: 'denied',
+          functionality_storage: 'denied',
+          personalization_storage: 'denied',
+          security_storage: 'granted',
+        });
+
+        function ler() {
+          var m = d.cookie.match(/(?:^|;\s*)rb_consent=([^;]*)/);
+          if (!m) return null;
+          var v = decodeURIComponent(m[1]);
+          /* Versao diferente: a escolha nao vale mais e a faixa volta. */
+          if (v.indexOf(VERSAO + '|') !== 0) return null;
+          return { analise: v.indexOf('a:1') > -1, publicidade: v.indexOf('p:1') > -1 };
+        }
+
+        var carregado = false;
+        function carregarGtm() {
+          if (carregado) return;
+          carregado = true;
+          w.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+          var s = d.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtm.js?id=' + GTM;
+          d.head.appendChild(s);
+        }
+
+        function aplicar(escolha) {
+          var pub = escolha.publicidade ? 'granted' : 'denied';
+          gtag('consent', 'update', {
+            ad_storage: pub,
+            ad_user_data: pub,
+            ad_personalization: pub,
+            analytics_storage: escolha.analise ? 'granted' : 'denied',
+          });
+          w.dataLayer.push({
+            event: 'consent_update',
+            rb_analise: !!escolha.analise,
+            rb_publicidade: !!escolha.publicidade,
+          });
+          /* Recusa total nao carrega o container: nao ha o que medir. */
+          if (escolha.analise || escolha.publicidade) carregarGtm();
+        }
+
+        function gravar(escolha) {
+          var valor =
+            VERSAO +
+            '|a:' + (escolha.analise ? 1 : 0) +
+            '|p:' + (escolha.publicidade ? 1 : 0) +
+            '|t:' + Math.floor(Date.now() / 1000);
+          d.cookie =
+            NOME + '=' + encodeURIComponent(valor) +
+            '; expires=' + new Date(Date.now() + DIAS * 864e5).toUTCString() +
+            '; path=/; SameSite=Lax' +
+            (w.location.protocol === 'https:' ? '; Secure' : '');
+        }
+
+        w.rbConsent = {
+          get: ler,
+          set: function (escolha) {
+            gravar(escolha);
+            aplicar(escolha);
+          },
+          /* A UI registra aqui como reabrir o painel. */
+          aoAbrir: null,
+          abrir: function () {
+            if (typeof w.rbConsent.aoAbrir === 'function') w.rbConsent.aoAbrir();
+          },
+        };
+
+        var escolha = ler();
+        if (escolha) aplicar(escolha);
+
+        /* O cookiebar21_cbe guardava uma escolha que nao controlava nada: nao e
+           herdado, e sai do navegador de quem ja visitou. */
+        if (d.cookie.indexOf('cookiebar21_cbe=') > -1) {
+          d.cookie = 'cookiebar21_cbe=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+        }
+      })(window, document);
+    </script>
+    <!-- end: Consentimento e Google Tag Manager -->
+
     <link href="/css/plugins.css" rel="stylesheet" />
     <link href="/css/style.css" rel="stylesheet" />
     <!-- Correções ao tema (ver public/css/ajustes.css); precisa vir depois do style.css -->
     <link href="/css/ajustes.css" rel="stylesheet" />
-
-    <!-- Google Tag Manager -->
-    <script is:inline>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', 'GTM-PK7DG6MD');
-    </script>
-    <!-- end: Google Tag Manager -->
   </head>
 
   <body class={bodyClass || undefined}>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript
-      ><iframe
-        src="https://www.googletagmanager.com/ns.html?id=GTM-PK7DG6MD"
-        height="0"
-        width="0"
-        style="display:none;visibility:hidden"></iframe></noscript
-    >
-    <!-- end: Google Tag Manager (noscript) -->
-
+    <!-- O <noscript> do GTM saiu daqui: sem JavaScript nao ha como pedir nem
+         registrar consentimento, e ele era a unica coisa que ainda disparava
+         incondicionalmente. Ver docs/decisoes.md. -->
     <a class="skip-link" href="#conteudo">{t.skipToContent}</a>
+
+    <!--
+      Fica logo depois do skip link, e nao no fim do <body> como no original,
+      para o teclado alcancar a escolha cedo. Nao muda pixel: `.modal-strip` e
+      position: fixed. Nasce `hidden` (reforcado no ajustes.css, secao 7) —
+      quem ja decidiu, e quem esta sem JavaScript, nao recebe uma faixa que
+      nao pode acionar.
+    -->
+    <div
+      id="cookieNotify"
+      class="modal-strip modal-bottom cookie-notify"
+      role="region"
+      aria-label={t.cookieRegion}
+      hidden
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-7 text-sm-center sm-center sm-m-b-10 m-t-5">
+            {t.cookieText}
+            <a href={url('privacy', lang)} class="text-light">
+              <span> {t.cookieMore} <i class="fa fa-info-circle"></i></span>
+            </a>
+          </div>
+          <!-- Os tres botoes usam a MESMA classe: recusar precisa ser tao
+               facil e tao visivel quanto aceitar. -->
+          <div class="col-lg-5 text-right sm-text-center sm-center">
+            <button type="button" class="btn btn-rounded btn-light btn-sm m-r-10" data-cookie="rejeitar">
+              {t.cookieRejectAll}
+            </button>
+            <button
+              type="button"
+              class="btn btn-rounded btn-light btn-sm m-r-10"
+              data-cookie="personalizar"
+              aria-expanded="false"
+              aria-controls="cookiePrefs"
+            >
+              {t.cookieCustomize}
+            </button>
+            <button type="button" class="btn btn-rounded btn-light btn-sm" data-cookie="aceitar">
+              {t.cookieAcceptAll}
+            </button>
+          </div>
+        </div>
+
+        <div id="cookiePrefs" class="cookie-prefs" role="group" aria-labelledby="cookiePrefsTitle" hidden>
+          <!-- <p> e nao <h2>: um cabecalho aqui entraria no sumario das 40 paginas. -->
+          <p id="cookiePrefsTitle" class="cookie-prefs-title">{t.cookiePrefsTitle}</p>
+          <ul class="cookie-cats">
+            <li>
+              <label>
+                <input type="checkbox" checked disabled />
+                <strong>{t.cookieCatNecessary}</strong> <span>({t.cookieAlwaysOn})</span>
+              </label>
+              <p>{t.cookieCatNecessaryDesc}</p>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox" data-cookie-cat="analise" />
+                <strong>{t.cookieCatAnalytics}</strong>
+              </label>
+              <p>{t.cookieCatAnalyticsDesc}</p>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox" data-cookie-cat="publicidade" />
+                <strong>{t.cookieCatAds}</strong>
+              </label>
+              <p>{t.cookieCatAdsDesc}</p>
+            </li>
+          </ul>
+          <button type="button" class="btn btn-rounded btn-light btn-sm" data-cookie="salvar">
+            {t.cookieSave}
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Body Inner -->
     <div class="body-inner">
@@ -213,42 +390,6 @@ const orgJsonLd = {
       <Footer lang={lang} minimo={rodapeMinimo} invertido={variacaoEbook} />
     </div>
     <!-- end: Body Inner -->
-
-    <!-- Modal Cookie-->
-    <!--
-      `data-expire="10000"` e `data-cookie-enabled="true"` vinham do original e
-      nao eram lidos por ninguem: o tema le `data-cookie-expire`, ausente, e cai
-      no padrao de 365 dias. Removidos para o markup nao sugerir uma
-      configuracao que nao existe — o prazo continua sendo o mesmo.
-    -->
-    <div
-      id="cookieNotify"
-      class="modal-strip modal-bottom cookie-notify"
-      role="region"
-      aria-label={t.cookieRegion}
-      data-delay="2000"
-      data-cookie-name="cookiebar21_cbe"
-    >
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 text-sm-center sm-center sm-m-b-10 m-t-5">
-            {t.cookieText}
-            <a href={url('privacy', lang)} class="text-light">
-              <span> {t.cookieMore} <i class="fa fa-info-circle"></i></span>
-            </a>
-          </div>
-          <div class="col-lg-4 text-right sm-text-center sm-center">
-            <button type="button" class="btn btn-rounded btn-light btn-outline btn-sm m-r-10 modal-close">
-              {t.cookieReject}
-            </button>
-            <button type="button" id="aceitar-cookies" class="btn btn-rounded btn-light btn-sm modal-confirm">
-              {t.cookieAccept}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!--End: Modal Cookie-->
 
     <!-- Scroll top -->
     <!--

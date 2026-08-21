@@ -6,7 +6,13 @@ Author: Cloudbe (Brasil)
 Copyright 2022
 
 */
-@import url("https://fonts.googleapis.com/css?family=Poppins:100,200,400,500,600,700,800|Nunito:300,400,600,700,800");
+/*
+  O @import do Google Fonts que ficava aqui foi para o <head> do BaseLayout.astro,
+  como <link> com preconnect. E a unica edicao de conteudo deste arquivo do tema:
+  um @import nao tem como ser desfeito pelo ajustes.css, e ele sobrevivia a purga
+  na linha 1 do CSS de producao, criando a cadeia HTML -> style.css -> googleapis
+  -> gstatic. Ver docs/decisoes.md.
+*/
 
 section {
   padding: 6rem 0;
@@ -15134,7 +15140,8 @@ ul.nav li.dropdown:hover>ul.dropdown-menu {
 
 @font-face {
   font-family: 'inspiro-icons';
-  src: url("../webfonts/inspiro-icons.woff?ijzgpf") format("woff");
+  /* woff2 e ?v= vem de scripts/subset-fonts.py — ver scripts/glifos.json */
+  src: url("../webfonts/inspiro-icons.woff2?v=2026-08") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: block;

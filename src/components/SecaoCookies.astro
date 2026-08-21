@@ -1,0 +1,93 @@
+---
+/**
+ * A secao "Como utilizamos os cookies" da politica de privacidade.
+ *
+ * Existe como componente pelo mesmo motivo que src/data/: a secao estava
+ * escrita a mao nos tres arquivos de politica, e conteudo triplicado neste
+ * projeto sempre divergiu — foi assim que a home em espanhol ficou com um logo
+ * a menos e a pagina inglesa de associe-se com dois parceiros a mais. Uma
+ * tabela de cookies desatualizada em um idioma so seria pior: e afirmacao
+ * juridica sobre tratamento de dados.
+ *
+ * Os fatos (nome, fornecedor, validade, categoria) vem de src/data/cookies.ts;
+ * o que traduz (finalidade, rotulos, descricao das categorias) vem de
+ * src/i18n/ui.ts. As categorias e as descricoes sao as MESMAS do painel de
+ * preferencias, entao a politica e a interface nao tem como discordar.
+ */
+import { ui, type Locale } from '../i18n/ui';
+import { cookies, categoriasCookie, type CategoriaCookie } from '../data/cookies';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
+/*
+ * Aborta o build em vez de renderizar celula vazia. Uma tabela de tratamento de
+ * dados com uma finalidade em branco e pior do que um erro de build: ninguem
+ * repara, e ela vai ao ar afirmando nada sobre um cookie que existe. Mesmo
+ * criterio do title/description ausente no BaseLayout.
+ */
+const semFinalidade = cookies.filter((c) => !t.cookiePurposes[c.nome]);
+if (semFinalidade.length > 0) {
+  throw new Error(
+    `SecaoCookies: sem finalidade em ${lang} para ${semFinalidade.map((c) => c.nome).join(', ')}. ` +
+      'Acrescente em `cookiePurposes` (src/i18n/ui.ts), nos tres idiomas.'
+  );
+}
+
+const rotulo: Record<CategoriaCookie, { nome: string; desc: string }> = {
+  necessarios: { nome: t.cookieCatNecessary, desc: t.cookieCatNecessaryDesc },
+  analise: { nome: t.cookieCatAnalytics, desc: t.cookieCatAnalyticsDesc },
+  publicidade: { nome: t.cookieCatAds, desc: t.cookieCatAdsDesc },
+};
+---
+
+<div class="row">
+  <h4>{t.cookiePolicyTitle}</h4>
+  <p>{t.cookiePolicyIntro}</p>
+  <p>{t.cookiePolicyManage}</p>
+  <p>{t.cookiePolicyCategories}</p>
+
+  {
+    categoriasCookie.map((categoria) => {
+      const doGrupo = cookies.filter((c) => c.categoria === categoria);
+      return (
+        <>
+          <hr class="space" />
+          <div>
+            <p class="text-bold">{rotulo[categoria].nome}</p>
+            <p>{rotulo[categoria].desc}</p>
+            {categoria === 'publicidade' && <p>{t.cookieAdsNote}</p>}
+            {doGrupo.length === 0 ? (
+              <p>{t.cookieNoneYet}</p>
+            ) : (
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th scope="col">{t.cookieColName}</th>
+                    <th scope="col">{t.cookieColProvider}</th>
+                    <th scope="col">{t.cookieColDuration}</th>
+                    <th scope="col">{t.cookieColPurpose}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {doGrupo.map((c) => (
+                    <tr>
+                      <th scope="row">{c.nome}</th>
+                      <td>{c.fornecedor}</td>
+                      <td>{c.dias} {t.cookieDays}</td>
+                      <td>{t.cookiePurposes[c.nome]}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </>
+      );
+    })
+  }
+</div>

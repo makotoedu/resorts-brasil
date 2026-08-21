@@ -367,3 +367,181 @@ button:focus-visible,
 #mainMenu nav > ul > li.dropdown:focus-within > .dropdown-menu {
   display: block;
 }
+
+/*
+ * ============================================================
+ * 7. Consentimento de cookies
+ * ============================================================
+ *
+ * A faixa e a do tema (.modal-strip.modal-bottom, position: fixed), entao nada
+ * aqui mexe em posicao, cor ou animacao: sao so o painel de categorias, que o
+ * tema nao previa, e o [hidden] que ele atrapalha.
+ *
+ * Nada disso move um pixel de pagina nenhuma — a faixa esta fora do fluxo.
+ */
+
+/*
+ * O tema da `display: inline-block` a `.modal-strip`, e declaracao de autor
+ * vence o `display: none` que o navegador aplica a [hidden]. Sem esta regra a
+ * faixa aparece para quem ja decidiu, e — pior — os botoes dela continuam na
+ * ordem de tabulacao mesmo fora da tela.
+ */
+.cookie-notify[hidden] {
+  display: none !important;
+}
+
+.cookie-prefs {
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  margin-top: 15px;
+  padding-top: 15px;
+  text-align: left;
+}
+
+.cookie-prefs-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.cookie-cats {
+  display: grid;
+  gap: 12px 30px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  list-style: none;
+  margin: 0 0 15px;
+  padding: 0;
+}
+
+.cookie-cats label {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-weight: 400;
+  gap: 8px;
+  margin: 0;
+}
+
+/* O tema esconde input[type=checkbox] em varios contextos; aqui ele e o controle. */
+.cookie-cats input[type='checkbox'] {
+  flex: none;
+  height: 16px;
+  margin: 0;
+  opacity: 1;
+  position: static;
+  width: 16px;
+}
+
+.cookie-cats input:disabled + strong {
+  opacity: 0.75;
+}
+
+.cookie-cats p {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 4px 0 0 24px;
+  opacity: 0.85;
+}
+
+/*
+ * O botao de revogar herda o tamanho e a cor do texto do rodape; o sublinhado e
+ * o cursor sao o que o faz parecer acionavel, ja que <button> nasce sem os dois.
+ */
+.cookie-manage-btn {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+/*
+ * ============================================================
+ * 8. Fachada dos videos do YouTube
+ * ============================================================
+ *
+ * A caixa reproduz a do <iframe> que substituiu. O tema tem `iframe{width:100%}`,
+ * entao as duas chamadas do site rendiam 100% da coluna por 420px, apesar dos
+ * atributos diferentes no markup — a altura vem por style inline no componente.
+ */
+/*
+ * `inline-block`, e nao o `block` que um <div> traz de fabrica: o <iframe> que a
+ * fachada substituiu era um elemento INLINE, e por isso ocupava uma linha de
+ * texto — o espaco do descendente da fonte somava ~7px abaixo dele. Um <div>
+ * block nao cria essa caixa de linha, e as 6 paginas encolhiam 7px. Foi o diff
+ * visual que contou; nenhum teste de comportamento veria.
+ */
+.yt-facade {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+}
+
+.yt-facade iframe {
+  height: 100%;
+}
+
+/* E um <a>, entao o reset abaixo neutraliza o sublinhado e a cor do tema. */
+.yt-facade-btn {
+  background: #000;
+  border: 0;
+  cursor: pointer;
+  display: block;
+  height: 100%;
+  padding: 0;
+  position: relative;
+  text-decoration: none;
+  width: 100%;
+}
+
+/*
+ * `cover` porque e o que o player do YouTube faz: comparadas lado a lado, as
+ * duas capturas mostram a imagem sangrando ate as bordas da caixa, sem tarja.
+ * Chegou a ser `contain` por suposicao — e a suposicao piorou o enquadramento
+ * sem melhorar o diff.
+ */
+.yt-facade-btn img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* O triangulo e um CSS puro para nao acrescentar um arquivo por um play. */
+.yt-facade-play {
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 14px;
+  height: 48px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: background-color 0.2s;
+  width: 68px;
+}
+
+.yt-facade-play::before {
+  border-color: transparent transparent transparent #fff;
+  border-style: solid;
+  border-width: 11px 0 11px 19px;
+  content: '';
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-40%, -50%);
+}
+
+.yt-facade-btn:hover .yt-facade-play,
+.yt-facade-btn:focus-visible .yt-facade-play {
+  background: #ff0000;
+}
+
+/* Texto de verdade para leitor de tela, so fora da tela para quem enxerga. */
+.yt-facade-label {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

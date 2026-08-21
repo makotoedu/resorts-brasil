@@ -413,35 +413,111 @@ function tabs() {
   });
 }
 
-/* Aviso de cookies ------------------------------------------------------- */
+/* Consentimento de cookies ----------------------------------------------- */
+/*
+ * So a interface. Quem grava o cookie, fala Consent Mode e decide carregar (ou
+ * nao) o GTM e o window.rbConsent, no bloco inline do <head> do BaseLayout —
+ * aquilo precisa rodar antes de qualquer rede, e este arquivo so roda no
+ * DOMContentLoaded.
+ *
+ * A faixa continua usando as classes de estado do tema (.modal-strip,
+ * .modal-active), entao o CSS existente vale sem alteracao.
+ */
 function cookieNotice() {
   const notice = document.querySelector('.cookie-notify');
-  if (!notice) return;
+  const api = window.rbConsent;
+  if (!notice || !api) return;
 
-  const name = notice.getAttribute('data-cookie-name') || 'cookieModalName2020_3';
-  // O tema le data-cookie-expire (ausente no markup), caindo no padrao de 365 dias.
-  const expireDays = Number(notice.getAttribute('data-cookie-expire')) || 365;
-  const delay = Number(notice.getAttribute('data-delay')) || 3000;
+  const painel = notice.querySelector('#cookiePrefs');
+  const btnPersonalizar = notice.querySelector('[data-cookie="personalizar"]');
+  const caixas = notice.querySelectorAll('[data-cookie-cat]');
 
-  if (document.cookie.split('; ').some((c) => c.startsWith(`${name}=`))) return;
+  // O `hidden` so cai depois que a faixa termina de descer, e quem reabre pelo
+  // rodape dentro desses 700ms cancelaria a si mesmo se o timer sobrevivesse.
+  let timerEsconder = null;
 
-  // Aceitar e recusar registram a escolha; o que muda e o valor gravado. Antes
-  // so o "Aceitar" persistia, entao quem recusava via a faixa de novo a cada
-  // pagina — a recusa nao era respeitada nem pelo tempo de uma navegacao.
-  const decidir = (aceitou) => {
-    notice.classList.remove('modal-active');
-    const expires = new Date(Date.now() + expireDays * 864e5).toUTCString();
-    document.cookie = `${name}=${aceitou ? 1 : 0}; expires=${expires}; path=/; SameSite=Lax`;
+  const mostrar = () => {
+    clearTimeout(timerEsconder);
+    notice.hidden = false;
+    // Um quadro de intervalo entre revelar e animar: sem isso o navegador
+    // calcula o estado inicial ja com a classe aplicada e nao ha transicao.
+    requestAnimationFrame(() => notice.classList.add('modal-active'));
   };
 
-  notice.querySelectorAll('.modal-confirm').forEach((b) =>
-    b.addEventListener('click', () => decidir(true))
-  );
-  notice.querySelectorAll('.modal-close').forEach((b) =>
-    b.addEventListener('click', () => decidir(false))
-  );
+  const esconder = () => {
+    notice.classList.remove('modal-active');
+    fecharPainel(false);
+    // Espera a transicao do tema (.7s) antes do hidden, senao a faixa some de
+    // uma vez em vez de descer.
+    clearTimeout(timerEsconder);
+    timerEsconder = setTimeout(() => {
+      notice.hidden = true;
+    }, 700);
+  };
 
-  setTimeout(() => notice.classList.add('modal-active'), delay);
+  const abrirPainel = () => {
+    painel.hidden = false;
+    btnPersonalizar.setAttribute('aria-expanded', 'true');
+    const escolha = api.get();
+    caixas.forEach((c) => {
+      c.checked = !!(escolha && escolha[c.dataset.cookieCat]);
+    });
+    caixas[0]?.focus();
+  };
+
+  function fecharPainel(devolverFoco = true) {
+    if (painel.hidden) return;
+    painel.hidden = true;
+    btnPersonalizar.setAttribute('aria-expanded', 'false');
+    if (devolverFoco) btnPersonalizar.focus();
+  }
+
+  const decidir = (escolha) => {
+    api.set(escolha);
+    esconder();
+  };
+
+  notice.addEventListener('click', (e) => {
+    const acao = e.target.closest('[data-cookie]')?.dataset.cookie;
+    if (acao === 'aceitar') decidir({ analise: true, publicidade: true });
+    else if (acao === 'rejeitar') decidir({ analise: false, publicidade: false });
+    else if (acao === 'personalizar') (painel.hidden ? abrirPainel : fecharPainel)();
+    else if (acao === 'salvar') {
+      const escolha = { analise: false, publicidade: false };
+      caixas.forEach((c) => {
+        escolha[c.dataset.cookieCat] = c.checked;
+      });
+      decidir(escolha);
+    }
+  });
+
+  // Esc fecha o painel e volta para a faixa — nunca fecha a faixa inteira, o
+  // que equivaleria a decidir por quem nao decidiu.
+  notice.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !painel.hidden) {
+      e.stopPropagation();
+      fecharPainel();
+    }
+  });
+
+  // O botao do rodape entra por aqui. Reabrir ja mostra o painel: quem pediu
+  // para rever a escolha quer as categorias, nao a faixa de novo.
+  api.aoAbrir = () => {
+    mostrar();
+    abrirPainel();
+  };
+
+  // Sem escolha registrada, a faixa aparece de imediato. O atraso de 2s do
+  // original so fazia sentido quando ela era decorativa; agora nada e medido
+  // enquanto ela nao for respondida, e adiar a pergunta seria adiar a medicao.
+  if (!api.get()) mostrar();
+
+  // O botao do rodape so existe quando ha JavaScript para atende-lo.
+  const revogar = document.querySelector('.cookie-manage');
+  if (revogar) {
+    revogar.hidden = false;
+    revogar.querySelector('.cookie-manage-btn').addEventListener('click', () => api.abrir());
+  }
 }
 
 /* Voltar ao topo --------------------------------------------------------- */
@@ -469,6 +545,38 @@ function scrollTop() {
   update();
 }
 
+/* Fachada dos videos do YouTube ------------------------------------------ */
+/*
+ * Ate o clique, nenhum dominio do Google e contatado por causa do video. O
+ * clique e o consentimento para aquele embed — e por isso a fachada nao depende
+ * da faixa de cookies.
+ *
+ * O destino e youtube-nocookie.com, que so grava cookie depois que o video
+ * comeca a tocar.
+ */
+function videoFacades() {
+  document.querySelectorAll('.yt-facade-btn').forEach((botao) => {
+    botao.addEventListener('click', (e) => {
+      // O href leva a pagina do video e e o caminho de quem esta sem JavaScript;
+      // aqui ele da lugar ao embed no proprio lugar da fachada.
+      e.preventDefault();
+      const { yt, ytParams, ytTitulo } = botao.dataset;
+      const iframe = document.createElement('iframe');
+      iframe.src =
+        `https://www.youtube-nocookie.com/embed/${yt}?` + (ytParams ? `${ytParams}&` : '') + 'autoplay=1';
+      iframe.title = ytTitulo;
+      iframe.allow =
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.allowFullscreen = true;
+      iframe.setAttribute('frameborder', '0');
+      botao.parentElement.replaceChildren(iframe);
+      // Quem chegou pelo teclado perderia o foco no <button> que acabou de sumir.
+      iframe.focus();
+    });
+  });
+}
+
 ready(() => {
   mobileMenu();
   languageDropdown();
@@ -479,5 +587,6 @@ ready(() => {
   counters();
   tabs();
   cookieNotice();
+  videoFacades();
   scrollTop();
 });

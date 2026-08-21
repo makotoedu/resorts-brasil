@@ -27,10 +27,22 @@ const PAGINAS_ESPERADAS = 40;
 const REDUCAO_MAXIMA = 99.5;
 
 /**
- * Classes aplicadas em runtime por src/scripts/site.js, que nao aparecem no
- * HTML estatico e portanto sao invisiveis para o purge.
+ * Seletores que so existem em runtime, aplicados por src/scripts/site.js, e
+ * portanto invisiveis para o purge — que so enxerga o HTML estatico.
  */
 const runtimeClasses = [
+  /*
+   * `iframe` e um seletor de TAG, nao uma classe, e entrou aqui quando os
+   * videos viraram fachada de clique-para-carregar: depois disso nao ha um
+   * unico <iframe> nas 40 paginas, entao o purge levaria embora o
+   * `iframe{width:100%}` do tema e o `.yt-facade iframe{height:100%}` do
+   * ajustes.css. O <iframe> nasce no clique, e sem essas duas regras nasceria
+   * com os 300x150 do padrao do navegador.
+   *
+   * Nao aparece no diff visual: em repouso a pagina mostra a fachada, e o
+   * estrago so existe depois de um clique.
+   */
+  'iframe',
   'toggle-active',
   'mainMenu-open',
   'menu-animate',

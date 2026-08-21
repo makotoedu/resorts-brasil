@@ -1,0 +1,67 @@
+{
+  "_leia": [
+    "Os glifos de icone que o site realmente usa, e a unica fonte de verdade do",
+    "assunto: scripts/subset-fonts.py gera os subsets a partir daqui, e",
+    "scripts/check-glifos.mjs falha o build se o CSS purgado pedir um codepoint",
+    "que nao esteja nesta lista.",
+    "",
+    "A lista NAO sai do inventario de <i class> do HTML. Dois glifos vem de",
+    "pseudo-elementos sem classe fa-* (U+F054 e U+F192) e ficaram de fora da",
+    "primeira versao do subset; rodar aquele script apagava as setas e bolinhas",
+    "das listas de 6 paginas, sem erro de build. Ver docs/decisoes.md.",
+    "",
+    "Para atualizar: rode o build, leia o que o check-glifos reclamar, e",
+    "acrescente aqui — em `glifos` se o icone e usado mesmo, em `ignorar` se for",
+    "falso positivo do extrator do PurgeCSS."
+  ],
+
+  "versao": "2026-08",
+
+  "familias": [
+    {
+      "origem": "fa-brands-400.woff2",
+      "saida": "fa-brands-400.woff2",
+      "familia_css": "Font Awesome 5 Brands",
+      "glifos": {
+        "U+F08C": "linkedin",
+        "U+F167": "youtube",
+        "U+F16D": "instagram",
+        "U+F232": "whatsapp",
+        "U+F39E": "facebook-f"
+      }
+    },
+    {
+      "origem": "fa-solid-900.woff2",
+      "saida": "fa-solid-900.woff2",
+      "familia_css": "Font Awesome 5 Free (peso 900)",
+      "glifos": {
+        "U+F05A": "info-circle — <i class=\"fa fa-info-circle\"> da faixa de cookies, 40 paginas",
+        "U+F054": "chevron-right — .list-icon.list-icon-arrow li:before, SEM classe no HTML",
+        "U+F192": "dot-circle — .list-icon.list-icon-circle li:before, SEM classe no HTML"
+      }
+    },
+    {
+      "origem": "inspiro-icons.woff",
+      "saida": "inspiro-icons.woff2",
+      "familia_css": "inspiro-icons",
+      "glifos": {
+        "U+E925": "box",
+        "U+E92B": "check-circle",
+        "U+E930": "chevron-right — tambem #mainMenu nav>ul>li.dropdown:before, 40 paginas",
+        "U+E931": "chevron-up",
+        "U+E978": "globe",
+        "U+E992": "mail",
+        "U+E993": "map-pin",
+        "U+E99A": "message-square"
+      }
+    }
+  ],
+
+  "remover": {
+    "fa-regular-400.woff2": "nenhum icone .far em qualquer uma das 40 paginas"
+  },
+
+  "ignorar": {
+    "U+E919": ".icon-award sobrevive a purga por causa do caminho /images/ebook/icon-award.png — o extrator do PurgeCSS casa a substring. Nao existe <i class=\"icon-award\"> no site."
+  }
+}

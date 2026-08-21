@@ -1,0 +1,62 @@
+---
+/**
+ * Video do YouTube com fachada de clique-para-carregar.
+ *
+ * O original embutia <iframe src="youtube.com/embed/..."> direto: o YouTube era
+ * contatado no carregamento da pagina, antes de qualquer escolha do visitante, e
+ * puxava junto i.ytimg.com, doubleclick.net e googleapis.com. Aqui nada sai
+ * daqui ate o clique — e o clique e o consentimento para aquele video.
+ *
+ * Duas decisoes que parecem detalhe e nao sao:
+ *
+ * - A miniatura e LOCAL (public/images/video/<id>.jpg). Puxa-la de i.ytimg.com
+ *   faria a fachada chamar a CDN do Google, que e o problema que ela existe
+ *   para resolver.
+ * - O destino e youtube-nocookie.com, que so grava cookie depois que o video
+ *   comeca a tocar.
+ *
+ * A caixa reproduz a do <iframe> que substituiu: o tema tem `iframe{width:100%}`,
+ * entao as duas chamadas do site rendiam 100% da coluna por 420px de altura,
+ * apesar dos atributos diferentes no markup (`width="560" height="420"` numa,
+ * `width="100%" height="420px"` na outra).
+ */
+import { ui, type Locale } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  /** ID do video no YouTube. Precisa existir public/images/video/<id>.jpg. */
+  id: string;
+  /** Titulo real do video, usado no nome acessivel e no title do iframe. */
+  titulo: string;
+  /** Parametros extras do player, como `controls=0`. */
+  params?: string;
+  /** Altura do quadro. As duas chamadas usam o padrao. */
+  altura?: string;
+}
+
+const { lang, id, titulo, params = '', altura = '420px' } = Astro.props;
+const t = ui[lang];
+---
+
+<div class="yt-facade" style={`height:${altura}`}>
+  <!--
+    <a> com href de verdade, e nao <button>, pelo mesmo motivo do href="#top" do
+    #scrollTop: sem JavaScript um <button> aqui nao faria nada, e o visitante
+    ficaria sem o video. Assim o link leva a pagina do video; com JavaScript o
+    site.js chama preventDefault e troca a fachada pelo embed ali mesmo.
+  -->
+  <a
+    class="yt-facade-btn"
+    href={`https://www.youtube.com/watch?v=${id}`}
+    target="_blank"
+    rel="noopener"
+    data-yt={id}
+    data-yt-params={params}
+    data-yt-titulo={titulo}
+  >
+    <img src={`/images/video/${id}.jpg`} alt="" width="1280" height="720" loading="lazy" />
+    <span class="yt-facade-play" aria-hidden="true"></span>
+    <!-- Texto de verdade, so visualmente escondido: o nome acessivel do link. -->
+    <span class="yt-facade-label">{t.videoPlay}: {titulo}</span>
+  </a>
+</div>

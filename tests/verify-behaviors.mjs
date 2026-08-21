@@ -207,29 +207,178 @@ const browser = await chromium.launch();
   await page.close();
 }
 
-/* 7. Aviso de cookies ---------------------------------------------------- */
+/* 7. Consentimento de cookies -------------------------------------------- */
+/*
+ * A versao anterior destes testes media so o cosmetico — a faixa aparece, some,
+ * grava um cookie — e passava enquanto o GTM disparava antes de qualquer escolha
+ * e "Recusar" nao recusava nada. O que importa aqui e a REDE: o que sai do
+ * navegador antes e depois de cada decisao.
+ */
+{
+  const RASTREIO = /googletagmanager\.com|google-analytics\.com|analytics\.google\.com|doubleclick\.net/i;
+
+  /** Abre uma pagina limpa registrando todo request a dominio de rastreamento. */
+  const abrir = async () => {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    const rastreio = [];
+    page.on('request', (r) => RASTREIO.test(r.url()) && rastreio.push(new URL(r.url()).host));
+    await page.goto(`${BASE}/historia.html`);
+    await page.waitForTimeout(800);
+    return { page, rastreio };
+  };
+
+  const lerCookie = (page) =>
+    page.evaluate(() => decodeURIComponent(document.cookie.match(/rb_consent=([^;]*)/)?.[1] ?? ''));
+
+  const consentimentos = (page) =>
+    page.evaluate(() =>
+      (window.dataLayer ?? [])
+        .map((e) => (e && typeof e.length === 'number' ? Array.from(e) : e))
+        .filter((e) => Array.isArray(e) && e[0] === 'consent')
+        .map((e) => [e[1], e[2]])
+    );
+
+  /* 7a. Nada sai antes da escolha */
+  {
+    const { page, rastreio } = await abrir();
+    const visivel = await page.evaluate(
+      () => !document.querySelector('.cookie-notify').hidden &&
+        document.querySelector('.cookie-notify').classList.contains('modal-active')
+    );
+    const padroes = (await consentimentos(page)).find(([tipo]) => tipo === 'default')?.[1] ?? {};
+    check('nada e carregado antes da escolha', rastreio.length === 0,
+      rastreio.length ? `vazou para ${[...new Set(rastreio)].join(', ')}` : 'zero requisicoes');
+    check('faixa de cookies aparece sem atraso', visivel);
+    check('Consent Mode v2 nasce negado',
+      padroes.ad_storage === 'denied' && padroes.ad_user_data === 'denied' &&
+      padroes.ad_personalization === 'denied' && padroes.analytics_storage === 'denied',
+      JSON.stringify(padroes));
+    await page.close();
+  }
+
+  /* 7b. Rejeitar todos */
+  {
+    const { page, rastreio } = await abrir();
+    await page.click('[data-cookie="rejeitar"]');
+    await page.waitForTimeout(1200);
+    const cookie = await lerCookie(page);
+    const escondida = await page.evaluate(() => document.querySelector('.cookie-notify').hidden);
+    check('rejeitar nao carrega nada', rastreio.length === 0 && cookie.startsWith('v1|a:0|p:0'),
+      `rede=${rastreio.length} requisicoes, cookie=${cookie.replace(/\|t:\d+/, '')}`);
+    check('rejeitar esconde a faixa', escondida);
+
+    await page.reload();
+    await page.waitForTimeout(1200);
+    const voltou = await page.evaluate(() => !document.querySelector('.cookie-notify').hidden);
+    check('faixa nao reaparece apos recusa', !voltou && rastreio.length === 0,
+      `rede acumulada=${rastreio.length}`);
+    await page.close();
+  }
+
+  /* 7c. Aceitar todos */
+  {
+    const { page, rastreio } = await abrir();
+    await page.click('[data-cookie="aceitar"]');
+    await page.waitForTimeout(2500);
+    const cookie = await lerCookie(page);
+    const update = (await consentimentos(page)).find(([tipo]) => tipo === 'update')?.[1] ?? {};
+    check('aceitar carrega o GTM', rastreio.some((h) => h.includes('googletagmanager')),
+      [...new Set(rastreio)].join(', ') || 'nenhuma requisicao');
+    check('aceitar grava as duas categorias', cookie.startsWith('v1|a:1|p:1'),
+      cookie.replace(/\|t:\d+/, ''));
+    check('aceitar libera o Consent Mode',
+      update.analytics_storage === 'granted' && update.ad_storage === 'granted',
+      JSON.stringify(update));
+    await page.close();
+  }
+
+  /* 7d. Painel: so desempenho */
+  {
+    const { page, rastreio } = await abrir();
+    await page.click('[data-cookie="personalizar"]');
+    await page.waitForTimeout(200);
+    const expandido = await page.getAttribute('[data-cookie="personalizar"]', 'aria-expanded');
+    await page.check('[data-cookie-cat="analise"]');
+    await page.click('[data-cookie="salvar"]');
+    await page.waitForTimeout(2500);
+    const cookie = await lerCookie(page);
+    const update = (await consentimentos(page)).find(([tipo]) => tipo === 'update')?.[1] ?? {};
+    check('painel abre e anuncia estado', expandido === 'true', `aria-expanded=${expandido}`);
+    check('escolha parcial e respeitada',
+      cookie.startsWith('v1|a:1|p:0') &&
+        update.analytics_storage === 'granted' && update.ad_storage === 'denied' &&
+        rastreio.some((h) => h.includes('googletagmanager')),
+      `cookie=${cookie.replace(/\|t:\d+/, '')}, ad_storage=${update.ad_storage}`);
+    await page.close();
+  }
+
+  /* 7e. Revogar pelo rodape, e Esc no painel */
+  {
+    const { page } = await abrir();
+    await page.click('[data-cookie="personalizar"]');
+    await page.check('[data-cookie-cat="publicidade"]');
+    await page.click('[data-cookie="salvar"]');
+    await page.waitForTimeout(1000);
+
+    await page.click('.cookie-manage-btn');
+    await page.waitForTimeout(300);
+    const reaberto = await page.evaluate(() => ({
+      faixa: !document.querySelector('.cookie-notify').hidden,
+      painel: !document.querySelector('#cookiePrefs').hidden,
+      analise: document.querySelector('[data-cookie-cat="analise"]').checked,
+      publicidade: document.querySelector('[data-cookie-cat="publicidade"]').checked,
+    }));
+    check('rodape reabre o painel com a escolha salva',
+      reaberto.faixa && reaberto.painel && !reaberto.analise && reaberto.publicidade,
+      JSON.stringify(reaberto));
+
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+    const aposEsc = await page.evaluate(() => ({
+      painel: document.querySelector('#cookiePrefs').hidden,
+      faixa: !document.querySelector('.cookie-notify').hidden,
+      foco: document.activeElement?.dataset?.cookie,
+    }));
+    // Esc fecha so o painel: fechar a faixa equivaleria a decidir por quem nao decidiu.
+    check('Esc fecha o painel e devolve o foco',
+      aposEsc.painel && aposEsc.faixa && aposEsc.foco === 'personalizar',
+      JSON.stringify(aposEsc));
+    await page.close();
+  }
+}
+
+/* 7f. Fachada dos videos ------------------------------------------------- */
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  await page.goto(`${BASE}/historia.html`);
-  await page.waitForTimeout(2600);
-  const shown = await page.evaluate(() =>
-    document.querySelector('.cookie-notify').classList.contains('modal-active'));
-  check('aviso de cookies aparece', shown);
+  const yt = [];
+  page.on('request', (r) => /youtube|ytimg|googlevideo/i.test(r.url()) && yt.push(new URL(r.url()).host));
+  await page.goto(`${BASE}/resorts-brasil.html`);
+  await page.waitForTimeout(1500);
+  const antes = yt.length;
 
-  await page.click('.cookie-notify .modal-confirm');
-  await page.waitForTimeout(200);
-  const afterAccept = await page.evaluate(() => ({
-    hidden: !document.querySelector('.cookie-notify').classList.contains('modal-active'),
-    cookie: document.cookie.includes('cookiebar21_cbe'),
-  }));
-  check('aceitar cookie persiste', afterAccept.hidden && afterAccept.cookie,
-    `cookie gravado=${afterAccept.cookie}`);
+  const caixa = await page.evaluate(() => {
+    const r = document.querySelector('.yt-facade').getBoundingClientRect();
+    return { h: Math.round(r.height), w: Math.round(r.width) };
+  });
 
-  await page.reload();
-  await page.waitForTimeout(2600);
-  const stillHidden = await page.evaluate(() =>
-    !document.querySelector('.cookie-notify').classList.contains('modal-active'));
-  check('aviso nao reaparece apos aceite', stillHidden);
+  await page.click('.yt-facade-btn');
+  await page.waitForTimeout(1500);
+  const depois = await page.evaluate(() => {
+    const f = document.querySelector('.yt-facade iframe');
+    const r = f?.getBoundingClientRect();
+    return { src: f?.src ?? '', h: Math.round(r?.height ?? 0), w: Math.round(r?.width ?? 0) };
+  });
+
+  check('video nao contata o YouTube antes do clique', antes === 0,
+    antes ? [...new Set(yt)].join(', ') : 'zero requisicoes');
+  // 420px e a altura que o <iframe> original rendia: o tema tem iframe{width:100%}
+  // e o height do atributo. A fachada tem de ocupar a mesma caixa.
+  check('fachada ocupa a caixa do iframe original', caixa.h === 420 && caixa.w > 400,
+    `${caixa.w}x${caixa.h}`);
+  check('clique carrega o embed sem cookie, na mesma caixa',
+    depois.src.startsWith('https://www.youtube-nocookie.com/embed/LJ_9oUeE4e8?') &&
+      depois.src.includes('autoplay=1') && depois.h === 420 && depois.w === caixa.w,
+    `${depois.w}x${depois.h} — ${depois.src}`);
   await page.close();
 }
 
@@ -237,6 +386,11 @@ const browser = await chromium.launch();
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(`${BASE}/politica-de-privacidade.html`);
+  // Decide antes: a faixa e `position: fixed` com z-index 999 e cobre o canto do
+  // #scrollTop (z-index 199) enquanto esta na tela. Vale no original tambem — la
+  // o atraso de 2s so escondia o encontro. Aqui o teste e do voltar ao topo.
+  await page.click('[data-cookie="rejeitar"]');
+  await page.waitForTimeout(900);
   const before = await page.evaluate(() => getComputedStyle(document.querySelector('#scrollTop')).opacity);
   await page.evaluate(() => window.scrollTo(0, 1200));
   await page.waitForTimeout(300);
@@ -249,7 +403,77 @@ const browser = await chromium.launch();
   await page.close();
 }
 
-/* 9. Erros de console em todas as paginas -------------------------------- */
+/* 9. Glifos das fontes subsetadas ---------------------------------------- */
+/*
+ * Cobre o buraco que deixou o subset incompleto passar: nada nesta suite
+ * verificava fonte, e o diff visual so pegaria as 6 paginas afetadas.
+ *
+ * O `check-glifos.mjs` do build garante que a LISTA cobre o que o CSS pede;
+ * este teste garante que os ARQUIVOS gerados contem mesmo os glifos da lista.
+ * Sao coisas diferentes: um pyftsubset com a flag errada passa no primeiro e
+ * falha aqui.
+ *
+ * Metodo: pintar o codepoint num canvas e comparar com um codepoint sabidamente
+ * ausente da mesma familia. Glifo que caiu do subset renderiza como tofu, e o
+ * tofu e identico para qualquer codepoint ausente — se os bitmaps baterem, o
+ * glifo sumiu. Medir largura NAO serve: o tofu ocupa 1em, e varios icones
+ * tambem (info-circle e dot-circle dao exatamente os mesmos 100px).
+ */
+{
+  const { readFile } = await import('node:fs/promises');
+  const spec = JSON.parse(await readFile(new URL('../scripts/glifos.json', import.meta.url), 'utf8'));
+
+  // Peso do @font-face de cada familia, e um codepoint que o subset nao tem.
+  const perfil = {
+    'Font Awesome 5 Brands': { peso: 400, controle: 0xf099 },
+    'Font Awesome 5 Free (peso 900)': { peso: 900, controle: 0xf007, css: 'Font Awesome 5 Free' },
+    'inspiro-icons': { peso: 400, controle: 0xe919 },
+  };
+
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.goto(`${BASE}/historia.html`);
+
+  const alvos = spec.familias.map((f) => {
+    const p = perfil[f.familia_css];
+    return {
+      familia: p.css ?? f.familia_css,
+      peso: p.peso,
+      controle: p.controle,
+      glifos: Object.entries(f.glifos).map(([cp, nome]) => ({
+        cp: parseInt(cp.slice(2), 16),
+        nome: String(nome).split(' ')[0],
+      })),
+    };
+  });
+
+  const ausentes = await page.evaluate(async (alvos) => {
+    const pintar = async (familia, peso, cp) => {
+      await document.fonts.load(`${peso} 64px "${familia}"`);
+      const c = document.createElement('canvas');
+      c.width = c.height = 80;
+      const ctx = c.getContext('2d');
+      ctx.font = `${peso} 64px "${familia}"`;
+      ctx.textBaseline = 'top';
+      ctx.fillText(String.fromCodePoint(cp), 8, 8);
+      return c.toDataURL();
+    };
+    const faltando = [];
+    for (const alvo of alvos) {
+      const tofu = await pintar(alvo.familia, alvo.peso, alvo.controle);
+      for (const g of alvo.glifos) {
+        if ((await pintar(alvo.familia, alvo.peso, g.cp)) === tofu) faltando.push(`${alvo.familia}/${g.nome}`);
+      }
+    }
+    return faltando;
+  }, alvos);
+
+  const total = alvos.reduce((n, a) => n + a.glifos.length, 0);
+  check('todos os glifos do subset renderizam', ausentes.length === 0,
+    ausentes.length ? `tofu em: ${ausentes.join(', ')}` : `${total} glifos, 3 familias`);
+  await page.close();
+}
+
+/* 10. Erros de console em todas as paginas ------------------------------- */
 {
   const pages = ['/', '/historia.html', '/associados.html', '/en-us/home.html', '/es-es/inicio.html', '/ebook.html'];
   const errors = [];

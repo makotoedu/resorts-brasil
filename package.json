@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && node scripts/purge-css.mjs",
+    "build": "astro check && astro build && node scripts/purge-css.mjs && node scripts/check-glifos.mjs",
     "check": "astro check",
     "preview": "astro preview",
     "verify": "node tests/verify-behaviors.mjs"

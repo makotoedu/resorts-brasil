@@ -82,6 +82,16 @@ const year = new Date().getFullYear();
       <div class="copyright-text text-center">
         &copy; {year} {t.copyright}
         <a href="https://www.cloudbe.com.br" target="_blank" rel="noopener">Cloudbe</a>
+        <!--
+          Revogar tem de ser tao facil quanto consentir, e estar em toda pagina
+          — inclusive na 404, que usa `minimo`. Fica na faixa de copyright, que
+          o diff visual ja esconde, e nao na lista "Navegacao", onde um <li> a
+          mais mudaria a altura do rodape em 39 paginas. Nasce `hidden`: sem
+          JavaScript o botao nao faria nada.
+        -->
+        <span class="cookie-manage" hidden>
+          &middot; <button type="button" class="cookie-manage-btn">{t.cookieManage}</button>
+        </span>
       </div>
     </div>
   </div>

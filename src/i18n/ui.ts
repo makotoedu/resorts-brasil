@@ -360,10 +360,49 @@ export const ui = {
     copyright: 'Resorts Brasil - Todos os direitos reservados. by',
     regioesAssociados: { sudeste: 'SUDESTE', sul: 'SUL', norte: 'NORTE', nordeste: 'NORDESTE', 'centro-oeste': 'CENTRO-OESTE' },
     cookieRegion: 'Aviso de cookies',
-    cookieText: 'Este site utiliza cookies para aprimorar a experiência dos usuários.',
+    cookieText:
+      'Usamos cookies para manter o site funcionando e, com a sua autorização, para medir o uso das páginas e apoiar nossas campanhas.',
     cookieMore: 'Saiba mais',
-    cookieReject: 'Recusar',
-    cookieAccept: 'Aceitar',
+    cookieAcceptAll: 'Aceitar todos',
+    cookieRejectAll: 'Rejeitar todos',
+    cookieCustomize: 'Personalizar',
+    cookieSave: 'Salvar preferências',
+    cookiePrefsTitle: 'Preferências de cookies',
+    cookieCatNecessary: 'Necessários',
+    cookieCatNecessaryDesc:
+      'Mantêm o site funcionando e guardam a sua escolha de cookies. Não podem ser desligados.',
+    cookieCatAnalytics: 'Desempenho e análise',
+    cookieCatAnalyticsDesc:
+      'Mostram quais páginas são mais visitadas e como o site é usado, para que possamos melhorá-lo.',
+    cookieCatAds: 'Publicidade',
+    cookieCatAdsDesc:
+      'Permitem medir e direcionar nossas campanhas nos serviços do Google. Sem eles você continua vendo anúncios, só não personalizados por nós.',
+    cookieAlwaysOn: 'Sempre ativos',
+    cookieManage: 'Preferências de cookies',
+    cookieClose: 'Fechar',
+    videoPlay: 'Assistir ao vídeo',
+    videoInstitucional: 'Vídeo institucional da Resorts Brasil',
+    videoEbook: 'Vídeo de apresentação do e-book',
+    cookiePolicyTitle: 'Como utilizamos os cookies',
+    cookiePolicyIntro:
+      'Cookies são pequenos arquivos que um site grava no seu navegador. Alguns são indispensáveis para o site funcionar; os demais só são gravados se você autorizar. Nada de análise ou de publicidade é carregado antes da sua escolha.',
+    cookiePolicyManage:
+      'Para rever ou mudar sua escolha a qualquer momento, use o botão «Preferências de cookies» no rodapé de qualquer página. A decisão fica registrada por 180 dias, e depois disso perguntamos de novo.',
+    cookiePolicyCategories: 'Usamos três categorias de cookies:',
+    cookieColName: 'Nome',
+    cookieColProvider: 'Fornecedor',
+    cookieColDuration: 'Validade',
+    cookieColPurpose: 'Finalidade',
+    cookieDays: 'dias',
+    cookieNoneYet: 'Hoje este site não grava nenhum cookie próprio desta categoria.',
+    cookieAdsNote:
+      'Quando você autoriza esta categoria, os recursos de publicidade do Google Analytics passam a enviar dados da sua navegação aos serviços de publicidade do Google (google.com e doubleclick.net), que podem gravar cookies nos domínios deles.',
+    cookiePurposes: {
+      rb_consent:
+        'Guarda quais categorias de cookies você autorizou, para não perguntarmos de novo a cada página.',
+      _ga: 'Distingue visitantes, para o Google Analytics contar quantas pessoas diferentes acessam o site.',
+      _ga_2S6ZPL4J2P: 'Mantém o estado da sessão de análise da propriedade do Google Analytics deste site.',
+    } as Record<string, string>,
   },
   'en-us': {
     skipToContent: 'Skip to content',
@@ -398,10 +437,48 @@ export const ui = {
     copyright: 'Resorts Brasil - All rights reserved. by',
     regioesAssociados: { sudeste: 'SOUTHEAST', sul: 'SOUTH', norte: 'NORTH', nordeste: 'NORTHEAST', 'centro-oeste': 'MIDWEST' },
     cookieRegion: 'Cookie notice',
-    cookieText: 'This website uses cookies to improve user experience.',
+    cookieText:
+      'We use cookies to keep this site working and, with your permission, to measure how the pages are used and support our campaigns.',
     cookieMore: 'Learn more',
-    cookieReject: 'Reject',
-    cookieAccept: 'Accept',
+    cookieAcceptAll: 'Accept all',
+    cookieRejectAll: 'Reject all',
+    cookieCustomize: 'Customize',
+    cookieSave: 'Save preferences',
+    cookiePrefsTitle: 'Cookie preferences',
+    cookieCatNecessary: 'Necessary',
+    cookieCatNecessaryDesc:
+      'Keep the site working and store your cookie choice. These cannot be turned off.',
+    cookieCatAnalytics: 'Performance and analytics',
+    cookieCatAnalyticsDesc:
+      'Show which pages are visited most and how the site is used, so that we can improve it.',
+    cookieCatAds: 'Advertising',
+    cookieCatAdsDesc:
+      'Let us measure and target our campaigns on Google services. Without them you still see ads, just not ones personalized by us.',
+    cookieAlwaysOn: 'Always on',
+    cookieManage: 'Cookie preferences',
+    cookieClose: 'Close',
+    videoPlay: 'Watch the video',
+    videoInstitucional: 'Resorts Brasil institutional video',
+    videoEbook: 'E-book presentation video',
+    cookiePolicyTitle: 'How we use cookies',
+    cookiePolicyIntro:
+      'Cookies are small files that a website stores in your browser. Some are essential for the site to work; the rest are only stored if you allow them. No analytics or advertising is loaded before you choose.',
+    cookiePolicyManage:
+      'To review or change your choice at any time, use the "Cookie preferences" button in the footer of any page. Your decision is kept for 180 days, after which we ask again.',
+    cookiePolicyCategories: 'We use three categories of cookies:',
+    cookieColName: 'Name',
+    cookieColProvider: 'Provider',
+    cookieColDuration: 'Duration',
+    cookieColPurpose: 'Purpose',
+    cookieDays: 'days',
+    cookieNoneYet: 'This site currently stores no first-party cookie in this category.',
+    cookieAdsNote:
+      'When you allow this category, the advertising features of Google Analytics begin sending your browsing data to Google advertising services (google.com and doubleclick.net), which may store cookies on their own domains.',
+    cookiePurposes: {
+      rb_consent: 'Stores which cookie categories you allowed, so that we do not ask again on every page.',
+      _ga: 'Distinguishes visitors, so that Google Analytics can count how many different people visit the site.',
+      _ga_2S6ZPL4J2P: 'Keeps the analytics session state for this site’s Google Analytics property.',
+    } as Record<string, string>,
   },
   'es-es': {
     skipToContent: 'Saltar al contenido',
@@ -436,10 +513,49 @@ export const ui = {
     copyright: 'Resorts Brasil - Todos los derechos reservados. by',
     regioesAssociados: { sudeste: 'SURESTE', sul: 'SUR', norte: 'NORTE', nordeste: 'NORESTE', 'centro-oeste': 'CENTRO-OESTE' },
     cookieRegion: 'Aviso de cookies',
-    cookieText: 'Este sitio utiliza cookies para perfeccionar la experiencia de los usuarios.',
+    cookieText:
+      'Usamos cookies para que el sitio funcione y, con su autorización, para medir el uso de las páginas y apoyar nuestras campañas.',
     cookieMore: 'Ver más',
-    cookieReject: 'Rechazar',
-    cookieAccept: 'Aceptar',
+    cookieAcceptAll: 'Aceptar todas',
+    cookieRejectAll: 'Rechazar todas',
+    cookieCustomize: 'Personalizar',
+    cookieSave: 'Guardar preferencias',
+    cookiePrefsTitle: 'Preferencias de cookies',
+    cookieCatNecessary: 'Necesarias',
+    cookieCatNecessaryDesc:
+      'Mantienen el sitio en funcionamiento y guardan su elección de cookies. No se pueden desactivar.',
+    cookieCatAnalytics: 'Rendimiento y análisis',
+    cookieCatAnalyticsDesc:
+      'Muestran qué páginas se visitan más y cómo se usa el sitio, para que podamos mejorarlo.',
+    cookieCatAds: 'Publicidad',
+    cookieCatAdsDesc:
+      'Permiten medir y dirigir nuestras campañas en los servicios de Google. Sin ellas usted sigue viendo anuncios, solo que no personalizados por nosotros.',
+    cookieAlwaysOn: 'Siempre activas',
+    cookieManage: 'Preferencias de cookies',
+    cookieClose: 'Cerrar',
+    videoPlay: 'Ver el vídeo',
+    videoInstitucional: 'Vídeo institucional de Resorts Brasil',
+    videoEbook: 'Vídeo de presentación del e-book',
+    cookiePolicyTitle: 'Cómo utilizamos las cookies',
+    cookiePolicyIntro:
+      'Las cookies son pequeños archivos que un sitio guarda en su navegador. Algunas son indispensables para que el sitio funcione; las demás solo se guardan si usted lo autoriza. Nada de análisis ni de publicidad se carga antes de su elección.',
+    cookiePolicyManage:
+      'Para revisar o cambiar su elección en cualquier momento, use el botón «Preferencias de cookies» en el pie de cualquier página. La decisión queda registrada por 180 días, y después volvemos a preguntar.',
+    cookiePolicyCategories: 'Usamos tres categorías de cookies:',
+    cookieColName: 'Nombre',
+    cookieColProvider: 'Proveedor',
+    cookieColDuration: 'Validez',
+    cookieColPurpose: 'Finalidad',
+    cookieDays: 'días',
+    cookieNoneYet: 'Hoy este sitio no guarda ninguna cookie propia de esta categoría.',
+    cookieAdsNote:
+      'Cuando usted autoriza esta categoría, las funciones de publicidad de Google Analytics pasan a enviar los datos de su navegación a los servicios de publicidad de Google (google.com y doubleclick.net), que pueden guardar cookies en sus propios dominios.',
+    cookiePurposes: {
+      rb_consent:
+        'Guarda qué categorías de cookies usted autorizó, para no volver a preguntar en cada página.',
+      _ga: 'Distingue a los visitantes, para que Google Analytics pueda contar cuántas personas diferentes acceden al sitio.',
+      _ga_2S6ZPL4J2P: 'Mantiene el estado de la sesión de análisis de la propiedad de Google Analytics de este sitio.',
+    } as Record<string, string>,
   },
 } as const;
 
