@@ -122,8 +122,16 @@ esperar 400 ms antes de medir.
 npm run verify:geometria      # precisa do preview no ar
 ```
 
-40 páginas × 3 viewports, em cerca de 2 minutos. É a camada que substituiu o
+41 páginas × 3 viewports, em cerca de 2 minutos. É a camada que substituiu o
 diff visual como portão de layout.
+
+A 41ª é o catálogo `/design`, que fica fora da lista de
+[`tests/paginas.mjs`](../tests/paginas.mjs) — não é página de conteúdo e o diff
+visual não tem contra o que compará-lo. Na geometria ele entra, e por um motivo
+prático: é a única página que roda **só** sobre o sistema novo, então primitivo
+quebrado aparece ali antes de qualquer outro lugar. Valeu na primeira execução da
+Etapa 1 — a escala tipográfica do próprio catálogo transbordava 25px em 390px, e
+nenhum outro portão viu.
 
 **Por que ela existe.** `npm run verify` passou 14/14 durante todo o período em
 que a grade de logos estava quebrada: teste de comportamento verifica estados
@@ -165,6 +173,36 @@ Daí a regra: **ao mexer nesta suíte, plante defeitos e confirme que ela os
 pega.** Teste que nunca falha não protege nada.
 
 ---
+
+
+## 2c. Ícones — o SVG contra a webfont que ele substitui
+
+```bash
+npm run verify:icones         # precisa do preview no ar
+```
+
+[`tests/verify-icones.mjs`](../tests/verify-icones.mjs) confere que cada um dos
+16 ícones em SVG desenha o **mesmo símbolo** que a webfont desenhava.
+
+**Por que existe.** O histórico deste projeto com ícone é ruim de um jeito
+específico: a falha nunca quebra o build. O subset montado a partir das classes
+do HTML apagou as setas de 6 páginas e ninguém viu, porque glifo ausente vira
+tofu — que ocupa exatamente 1em. Trocar a webfont por caminho SVG gerado por
+script tem o mesmo modo de falha: contorno vazio, codepoint trocado ou eixo
+espelhado passam por todos os outros portões.
+
+**Como mede.** Forma, não pixel absoluto. Cada símbolo é renderizado grande,
+recortado no seu próprio retângulo de tinta e reescalado para 96×96 antes da
+comparação — assim a métrica da fonte (que o navegador resolve pela tabela OS/2,
+não pelo `hhea` que o gerador leu) sai da conta e sobra o desenho.
+
+Calibração: os 16 ficam entre 0% e 5,1%; trocar entre si os dois glifos **mais
+parecidos do conjunto** (`chevron-right` e `chevron-up`) dá 33%. O limiar é 8%.
+
+A página de teste é servida de dentro da origem do preview, por interceptação de
+rota, e não com `setContent`: em `about:blank` o `@font-face` com URL relativa
+não resolve, a webfont não carrega e os 16 reprovam por tofu — o oposto do que a
+checagem quer dizer. Sem preview no ar, o `goto` falha com mensagem clara.
 
 ## 3. Diff visual — hoje um changelog
 
@@ -417,7 +455,8 @@ com o navegador limpo:
 
 ## Antes de promover para produção
 
-1. As três camadas acima, limpas — ou com cada divergência explicada por escrito.
+1. As quatro camadas acima, limpas — ou com cada divergência explicada por
+   escrito.
 2. Conferência manual do que os números não mostram: abrir `/associados` a
    768 px e confirmar a grade em 3 colunas com os logos a ~124 px.
 3. A conferência de rede da camada 4.

@@ -1,0 +1,44 @@
+---
+/**
+ * Container — a largura do conteudo.
+ *
+ * MEDIDO: o `.container` do tema para em 1500px, com 30px de recuo ate 1023px e
+ * 14px a partir dai. Nao sao os 1140px do Bootstrap, que o `tokens.css` chegou
+ * a registrar de memoria — a primeira pagina migrada teria nascido 24% mais
+ * estreita que o site e ninguem saberia dizer se foi refino.
+ *
+ * O QUE MUDA de proposito: o tema tambem prendia o container em 540px entre
+ * 576 e 767px, um degrau do Bootstrap que faz o conteudo ENCOLHER quando a tela
+ * cresce e depois saltar para a largura inteira em 768. Aqui a largura e
+ * continua. E o unico desvio, e vale so naquela faixa.
+ *
+ *   <Container>...</Container>
+ *   <Container largura="estreita">um texto longo</Container>
+ */
+interface Props {
+  como?: 'div' | 'section' | 'header' | 'footer' | 'nav' | 'article';
+  /**
+   * `conteudo` e a largura do site (1500px). `estreita` limita a linha para
+   * leitura corrida — politica de privacidade e termos, onde 1500px de largura
+   * dariam linhas de 200 caracteres.
+   */
+  largura?: 'conteudo' | 'estreita' | 'total';
+  class?: string;
+}
+
+const { como = 'div', largura = 'conteudo', class: classe } = Astro.props;
+
+const Tag = como;
+
+/* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
+const LARGURAS = {
+  conteudo: 'max-w-conteudo',
+  estreita: 'max-w-3xl',
+  total: 'max-w-none',
+} as const;
+---
+
+<!-- px-7.5 = 30px e lg:px-3.5 = 14px, os dois valores medidos. -->
+<Tag class:list={['mx-auto w-full px-7.5 lg:px-3.5', LARGURAS[largura], classe]}>
+  <slot />
+</Tag>

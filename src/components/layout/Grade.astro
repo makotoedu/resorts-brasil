@@ -1,0 +1,136 @@
+---
+/**
+ * Grade — colunas por container query, sem `.row` e sem JavaScript.
+ *
+ * DUAS DIVIDAS DO TEMA MORREM AQUI.
+ *
+ * A primeira e a margem negativa: `.row` tem `margin: 0 -14px` para cancelar o
+ * recuo das colunas, e e ela que faz as 40 paginas transbordarem 30px na
+ * horizontal no mobile — as 72 pendencias que a varredura de geometria
+ * registrou na Etapa 0.5, medidas identicas no site original. `gap` resolve o
+ * mesmo problema sem nada estourar para fora.
+ *
+ * A segunda e o numero de colunas. No tema ele vinha de classes que o
+ * JavaScript aplicava no `<body>` (`breakpoint-md` e companhia), com as faixas
+ * definidas em dois lugares diferentes — ler o array errado ja custou 22
+ * comparacoes de tablet reprovadas neste projeto. Aqui a contagem e uma
+ * container query: a grade responde a LARGURA DO PAI, nao a da janela, entao a
+ * mesma grade dentro de uma coluna estreita se comporta certo sem saber onde
+ * esta. E o que dispensa a faixa, e portanto o erro de faixa.
+ *
+ *   <Grade colunas={4}>...</Grade>
+ *   <Grade colunas={6} espaco="sm" como="ul">...</Grade>
+ *
+ * `colunas` e o MAXIMO, atingido quando ha largura. A descida ate uma coluna e
+ * fixa e esta na tabela do <style> abaixo.
+ */
+interface Props {
+  /** Colunas na largura cheia. Lista de itens iguais: 2, 3, 4 ou 6. */
+  colunas?: 1 | 2 | 3 | 4 | 6;
+  /** 16px, 28px (o vao medido no tema) ou 40px. */
+  espaco?: 'sm' | 'md' | 'lg';
+  /** `ul` quando os filhos forem `<li>` — uma lista de cartoes continua lista. */
+  como?: 'div' | 'ul' | 'ol';
+  /** Alinhamento vertical entre celulas de alturas diferentes. */
+  alinhamento?: 'inicio' | 'centro' | 'esticar';
+  class?: string;
+}
+
+const {
+  colunas = 3,
+  espaco = 'md',
+  como = 'div',
+  alinhamento = 'esticar',
+  class: classe,
+} = Astro.props;
+
+const Tag = como;
+
+/* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
+const ESPACOS = {
+  sm: 'gap-4', // 16px
+  md: 'gap-7', // 28px — o vao do .row do tema, medido
+  lg: 'gap-10', // 40px
+} as const;
+
+const ALINHAMENTOS = {
+  inicio: 'items-start',
+  centro: 'items-center',
+  esticar: 'items-stretch',
+} as const;
+---
+
+<!--
+  A caixa externa e o container da query. Um elemento nao pode consultar o
+  proprio tamanho — seria circular — entao a grade precisa de um pai declarado.
+-->
+<div class="caixa">
+  <Tag class:list={['grade', `colunas-${colunas}`, ESPACOS[espaco], ALINHAMENTOS[alinhamento], classe]}>
+    <slot />
+  </Tag>
+</div>
+
+<style>
+  .caixa {
+    container-type: inline-size;
+  }
+
+  .grade {
+    display: grid;
+    /* `minmax(0, 1fr)` e nao `1fr`: sem o minimo zero, um filho largo (uma
+       tabela, um `<pre>`, uma imagem sem `max-width`) estica a coluna e a grade
+       transborda — que e o defeito que este componente existe para nao ter. */
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  /* Lista continua lista, mas sem marcador nem o recuo que o base.css da. */
+  ul.grade,
+  ol.grade {
+    list-style: none;
+    margin-block: 0;
+    padding-inline-start: 0;
+  }
+
+  /*
+   * A descida ate uma coluna, por largura do PAI:
+   *
+   *   colunas   < 30rem   >= 30rem   >= 48rem
+   *   2         1         2          2
+   *   3         1         2          3
+   *   4         2         2          4
+   *   6         2         3          6
+   *
+   * Quatro e seis comecam em duas porque e o que o tema fazia com
+   * `col-lg-3 col-6` e `col-lg-2 col-6`: cartao de associado e logo de parceiro
+   * ficam pequenos demais empilhados um por linha.
+   */
+  .colunas-4,
+  .colunas-6 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @container (min-width: 30rem) {
+    .colunas-2,
+    .colunas-3 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .colunas-6 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @container (min-width: 48rem) {
+    .colunas-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .colunas-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .colunas-6 {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+</style>

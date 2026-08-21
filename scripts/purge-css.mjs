@@ -90,13 +90,35 @@ async function main() {
     );
   }
 
+  /*
+   * So as paginas que AINDA CARREGAM o tema alimentam a purga.
+   *
+   * Antes o glob pegava dist/ inteiro, e o catalogo do design system — que nao
+   * tem uma linha do tema — segurava regras vivas para as 40 paginas que tem.
+   * Medido: 1,1 KB a mais em plugins.css + style.css so por causa do /design.
+   *
+   * Escrito assim, o efeito e o contrario e automatico: cada pagina migrada sai
+   * da lista e leva junto as regras que so ela mantinha. O CSS do tema encolhe
+   * sozinho ao longo da migracao, ate a Etapa 11 apagar os arquivos.
+   */
+  const doTema = [];
+  for (const p of paginas) {
+    const html = await readFile(new URL(p, DIST), 'utf8');
+    if (/\/css\/(plugins|style|ajustes)\.css/.test(html)) doTema.push(`dist/${p}`);
+  }
+
+  if (doTema.length === 0) {
+    console.log('  purga dispensada: nenhuma pagina carrega mais o CSS do tema.');
+    return;
+  }
+
   const before = {};
   for (const file of files) {
     before[file] = (await readFile(new URL(file, CSS_DIR))).length;
   }
 
   const results = await new PurgeCSS().purge({
-    content: ['dist/**/*.html'],
+    content: doTema,
     css: files.map((f) => `dist/css/${f}`),
     // Sem padroes amplos aqui de proposito: os 14 icones em uso aparecem no
     // HTML (class="fab fa-facebook-f", class="icon-globe"), entao o purge os

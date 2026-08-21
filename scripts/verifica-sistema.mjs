@@ -28,8 +28,26 @@ const ARQUIVO_DE_TOKENS = 'src/styles/tokens.css';
 /**
  * Paginas ja migradas para o design system. Enquanto a lista nao cobrir as 40,
  * as checagens de escopo de pagina so valem para o que esta aqui.
+ *
+ * Os componentes do sistema novo entram junto: eles nao sao pagina, mas estao
+ * dentro do escopo desde o primeiro commit — cor literal ou `style=` inline num
+ * primitivo contamina toda pagina que o usar.
  */
-const MIGRADAS = ['src/pages/design.astro'];
+const MIGRADAS = [
+  'src/pages/design.astro',
+  'src/components/primitivos/Titulo.astro',
+  'src/components/primitivos/Texto.astro',
+  'src/components/primitivos/Botao.astro',
+  'src/components/primitivos/Icone.astro',
+  'src/components/primitivos/Imagem.astro',
+  'src/components/layout/Secao.astro',
+  'src/components/layout/Container.astro',
+  'src/components/layout/Grade.astro',
+];
+
+/** Onde vivem os componentes do sistema novo, e o catalogo que os documenta. */
+const DIRETORIOS_DE_COMPONENTE = ['src/components/primitivos', 'src/components/layout'];
+const CATALOGO = 'src/pages/design.astro';
 
 const falhas = [];
 const avisos = [];
@@ -73,10 +91,31 @@ async function semCorLiteral(fontes) {
   for (const f of fontes) {
     if (f === ARQUIVO_DE_TOKENS) continue;
     const texto = await readFile(join(RAIZ, f), 'utf8');
+    /*
+     * O estado do comentario de bloco atravessa linhas. Sem acompanhar isso, um
+     * comentario de tres linhas citando o valor medido — que e como este projeto
+     * documenta — reprovava o build a partir da segunda linha.
+     */
+    let emComentario = false;
     texto.split('\n').forEach((linha, i) => {
-      // Comentario nao pinta nada — e neste projeto os comentarios citam os
-      // valores medidos de proposito.
-      const semComentario = linha.replace(/\/\*.*?\*\//g, '').replace(/^\s*\*.*/, '').replace(/\/\/.*/, '');
+      let semComentario = linha;
+      if (emComentario) {
+        const fim = semComentario.indexOf('*/');
+        if (fim === -1) return;
+        semComentario = semComentario.slice(fim + 2);
+        emComentario = false;
+      }
+      semComentario = semComentario.replace(/\/\*.*?\*\//g, '');
+      const abertura = semComentario.indexOf('/*');
+      if (abertura !== -1) {
+        emComentario = true;
+        semComentario = semComentario.slice(0, abertura);
+      }
+      /*
+       * Comentario nao pinta nada, e `<code>` tambem nao: o catalogo cita os
+       * valores medidos como TEXTO, que e metade do que ele existe para fazer.
+       */
+      semComentario = semComentario.replace(/<code>.*?<\/code>/g, '').replace(/^\s*\*.*/, '').replace(/\/\/.*/, '');
       if (HEX.test(semComentario) || RGB.test(semComentario)) {
         /*
          * So bloqueia no que ja migrou. Header e Footer ainda sao componentes
@@ -150,7 +189,35 @@ async function hierarquiaHeadings(fontes) {
 }
 
 /* ------------------------------------------------------------------ *
- * 5. Isolamento das duas camadas no HTML gerado
+ * 5. Todo componente do sistema esta no catalogo
+ * ------------------------------------------------------------------ *
+ * "Catalogo escrito depois nunca e escrito" e uma frase do plano, e frase nao
+ * segura ninguem na proxima urgencia — foi assim que nasceu o ebook.astro com
+ * 140 estilos inline. Esta checagem transforma a regra em portao: componente
+ * que existe em src/components/primitivos ou src/components/layout e nao e
+ * importado pelo /design reprova o build.
+ *
+ * Ela nao verifica se TODAS as variantes estao demonstradas — isso nenhum
+ * script decide. Verifica a unica parte que da para verificar, que e a que
+ * costuma faltar: o componente inteiro.
+ */
+async function catalogoCobrePrimitivos(fontes) {
+  const catalogo = await readFile(join(RAIZ, CATALOGO), 'utf8');
+  const componentes = fontes.filter(
+    (f) => DIRETORIOS_DE_COMPONENTE.some((d) => f.startsWith(`${d}/`)) && f.endsWith('.astro')
+  );
+  for (const c of componentes) {
+    // O import cita o caminho, entao basta procurar o final dele.
+    const trecho = c.replace('src/', '../');
+    if (!catalogo.includes(trecho)) {
+      falhas.push(`${c}  nao aparece no catalogo (${CATALOGO}) — componente sem vitrine`);
+    }
+  }
+  return componentes.length;
+}
+
+/* ------------------------------------------------------------------ *
+ * 6. Isolamento das duas camadas no HTML gerado
  * ------------------------------------------------------------------ *
  * A invariante que custou mais caro para descobrir. Instalar o Tailwind e
  * importar a folha no BaseLayout fez 22 das 40 paginas divergirem do site
@@ -205,13 +272,14 @@ await semApply(fontes);
 await semCorLiteral(fontes);
 const estilosInline = await semEstiloInline(fontes);
 const headingsReprovados = await hierarquiaHeadings(fontes);
+const componentes = await catalogoCobrePrimitivos(fontes);
 const isolamento = await isolamentoNoBuild();
 
 console.log(`verifica-sistema: ${fontes.length} arquivos em src/\n`);
 
 console.log('BLOQUEIAM O BUILD');
 if (falhas.length === 0) {
-  console.log('  ok — nenhuma violacao no escopo ja migrado\n');
+  console.log(`  ok — nenhuma violacao no escopo ja migrado (${componentes} componentes, todos no catalogo)\n`);
 } else {
   for (const f of falhas) console.log(`  FALHA  ${f}`);
   console.log('');

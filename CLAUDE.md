@@ -19,14 +19,15 @@ O plano completo, com etapas e critérios, está em
 |---|---|
 | 0 — fundação (Tailwind, tokens, base, catálogo, invariantes) | concluída |
 | 0.5 — rede de segurança de geometria | concluída |
-| 1 — primitivos e catálogo | **próxima** |
-| 2–11 | não iniciadas |
+| 1 — primitivos e catálogo | concluída |
+| 2 — pipeline de imagens | **próxima** |
+| 3–11 | não iniciadas |
 
 **Páginas migradas: 1 de 41** (só o catálogo `/design`). Confira sempre com
 `node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
 nesta tabela.
 
-### As três regras que não podem ser quebradas
+### As quatro regras que não podem ser quebradas
 
 1. **A folha do design system entra pelo frontmatter da página**, nunca pelo
    `BaseLayout`. Importá-la no layout já fez 22 das 40 páginas divergirem — o
@@ -45,9 +46,18 @@ nesta tabela.
    [`src/styles/global.css`](src/styles/global.css). Esquecer não quebra o
    build: a utilitária simplesmente não é gerada e o estilo some.
 
-3. **Valor que vai para o `base.css` tem de ser medido**, com
-   `node scripts/medir-base.mjs`, nunca lido do `style.css`. O `padding` das
-   listas já entrou errado por leitura — 28px onde o valor real é 14px.
+3. **Valor que vai para o `base.css` ou para um componente tem de ser medido** —
+   `node scripts/medir-base.mjs` para o elemento nu, `node
+   scripts/medir-primitivos.mjs` para o que tem classe (botão, seção, container,
+   grade, ícone, e o hover de cada um). Nunca lido do `style.css`, nunca contado
+   no markup. O `padding` das listas já entrou errado por leitura (28px onde o
+   real é 14px), a largura do container por suposição (1140px onde o real é
+   1500px) e a cor de ação por contagem de ocorrências — as 123 do `#0c71c3` são
+   todas títulos de capítulo do ebook, nenhuma é botão.
+
+4. **Componente novo em `primitivos/` ou `layout/` entra no catálogo `/design`
+   no mesmo commit.** Não é convenção: `verifica-sistema.mjs` reprova o build se
+   o `/design` não importar o componente.
 
 ### Onde ficam as decisões
 
@@ -126,6 +136,15 @@ A lista vive em [`scripts/glifos.json`](scripts/glifos.json) e
 [`scripts/check-glifos.mjs`](scripts/check-glifos.mjs) aborta o build se o CSS
 purgado pedir um codepoint fora dela. Não desative essa guarda.
 
+**As páginas migradas já não usam webfont de ícone.** O
+[`<Icone>`](src/components/primitivos/Icone.astro) desenha SVG inline a partir de
+[`src/icones/glifos.ts`](src/icones/glifos.ts), que é **gerado** — rode
+`python scripts/glifos-para-svg.py` depois de mexer no `glifos.json`, nunca edite
+o arquivo à mão. [`tests/verify-icones.mjs`](tests/verify-icones.mjs) compara
+cada desenho com a webfont de origem e reprova codepoint trocado, contorno vazio
+ou eixo espelhado. As três webfonts continuam servindo as 40 páginas do tema até
+a Etapa 11.
+
 `public/webfonts/` é **gerado** a partir de `vendor/webfonts/`; nunca edite o
 primeiro à mão. E os `src:` dos `@font-face` carregam `?v=` porque `/webfonts/`
 é servido com `immutable` de um ano e os nomes não têm hash — trocar a fonte sem
@@ -153,14 +172,16 @@ erra no pixel.
 
 ```bash
 npm run build      # tipos, purga, glifos, invariantes do design system
-npm run verify     # comportamento + geometria (precisa do preview no ar)
+npm run verify     # comportamento + geometria + ícones (precisa do preview no ar)
 ```
 
 A suíte comportamental sozinha **não vê layout colapsar** — passou 14/14 durante
 todo o período em que a grade de logos estava quebrada. Quem cobre isso é a
-varredura de geometria, `tests/verify-geometria.mjs`: 40 páginas × 3 viewports,
-procurando caixa zerada, grade sem colunas, irmãos sobrepostos, imagem quebrada
-e transbordo horizontal.
+varredura de geometria, `tests/verify-geometria.mjs`: as 40 páginas mais o
+catálogo `/design` × 3 viewports, procurando caixa zerada, grade sem colunas,
+irmãos sobrepostos, imagem quebrada e transbordo horizontal. O catálogo entra
+porque é a única página que roda só sobre o sistema novo — primitivo quebrado
+aparece ali primeiro, e já apareceu.
 
 **Ela lê o código de saída, e zero bloqueios é o critério.** A lista "PENDENTE"
 é dívida herdada do tema e não reprova; ela vira bloqueante sozinha conforme

@@ -21,10 +21,11 @@
  *   PAGES=/index.html VIEWPORTS=desktop node tests/verify-geometria.mjs
  */
 import { chromium } from 'playwright';
-import { paginasSelecionadas, viewportsSelecionados } from './paginas.mjs';
+import { paginasSelecionadas, viewportsSelecionados, CATALOGO } from './paginas.mjs';
 
 const BASE = process.env.BASE || 'http://localhost:4330';
-const PAGINAS = paginasSelecionadas();
+/* O catalogo entra na varredura completa; com PAGES= a escolha e de quem roda. */
+const PAGINAS = process.env.PAGES ? paginasSelecionadas() : [...paginasSelecionadas(), CATALOGO];
 const VIEWPORTS = viewportsSelecionados();
 
 /**

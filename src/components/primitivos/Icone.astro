@@ -1,0 +1,60 @@
+---
+import { glifos, type NomeIcone } from '../../icones/glifos';
+
+/**
+ * Icone — SVG inline, no lugar de tres webfonts.
+ *
+ * O site desenha 16 simbolos. Para isso ele carrega tres webfonts subsetadas,
+ * um script Python de subset, uma guarda de build que aborta se o CSS pedir um
+ * codepoint fora da lista, e um `?v=` em cada `src:` porque `/webfonts/` e
+ * servido com `immutable` de um ano. Tudo isso existe para conter um modo de
+ * falha unico: glifo ausente vira tofu, que ocupa exatamente 1em e nao quebra
+ * nada — foi assim que as setas de 6 paginas sumiram sem erro de build.
+ *
+ * Em SVG inline nao ha o que faltar. O caminho e markup, `currentColor` herda a
+ * cor do texto, e um nome invalido vira erro de `astro check` em vez de um
+ * quadrado no lugar do desenho.
+ *
+ *   <Icone nome="whatsapp" rotulo="WhatsApp" />
+ *   <Icone nome="chevron-right" tamanho="sm" />
+ *
+ * Os contornos sao os das proprias fontes do tema, extraidos por
+ * `python scripts/glifos-para-svg.py`, e `tests/verify-icones.mjs` compara os
+ * dois desenhos lado a lado — trocar um codepoint ou espelhar um eixo reprova.
+ */
+interface Props {
+  nome: NomeIcone;
+  /** 16px (o `.fab` do rodape), 24px, 36px (o `.icon-box`) — os dois medidos. */
+  tamanho?: 'sm' | 'md' | 'lg';
+  /**
+   * Descricao para leitor de tela. COM rotulo o icone vira `img` com nome; SEM
+   * ele fica `aria-hidden`, que e o certo quando o texto ao lado ja diz a mesma
+   * coisa. O tema deixava todos anunciaveis e sem nome.
+   */
+  rotulo?: string;
+  class?: string;
+}
+
+const { nome, tamanho = 'md', rotulo, class: classe } = Astro.props;
+
+const glifo = glifos[nome];
+
+/* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
+const TAMANHOS = {
+  sm: 'size-4', // 16px, medido no .fab
+  md: 'size-6', // 24px
+  lg: 'size-9', // 36px, medido no .icon-box
+} as const;
+---
+
+<svg
+  class:list={['inline-block align-middle fill-current', TAMANHOS[tamanho], classe]}
+  viewBox={glifo.viewBox}
+  role={rotulo ? 'img' : undefined}
+  aria-label={rotulo}
+  aria-hidden={rotulo ? undefined : 'true'}
+  focusable="false"
+>
+  {rotulo && <title>{rotulo}</title>}
+  <path d={glifo.path}></path>
+</svg>

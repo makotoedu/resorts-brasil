@@ -280,7 +280,58 @@ portão que substitui o `120/120`.
 
 </details>
 
-### Etapa 1 — Primitivos e catálogo
+### Etapa 1 — Primitivos e catálogo ✅ CONCLUÍDA
+
+Os oito entregues: [Titulo](src/components/primitivos/Titulo.astro),
+[Texto](src/components/primitivos/Texto.astro),
+[Botao](src/components/primitivos/Botao.astro),
+[Icone](src/components/primitivos/Icone.astro),
+[Imagem](src/components/primitivos/Imagem.astro),
+[Secao](src/components/layout/Secao.astro),
+[Container](src/components/layout/Container.astro) e
+[Grade](src/components/layout/Grade.astro), todos no catálogo `/design` com as
+variantes e os cinco estados.
+
+**"Catálogo escrito depois nunca é escrito" virou portão**, e não frase:
+`verifica-sistema.mjs` reprova o build se um componente de `primitivos/` ou
+`layout/` não for importado pelo `/design`. Os oito também entraram em
+`MIGRADAS`, então cor literal e `style=` inline neles bloqueiam desde já.
+
+**Três valores do `tokens.css` não sobreviveram à medição.** O
+`medir-base.mjs` da Etapa 0 cobre o elemento nu; o que tem classe ficou de fora,
+e era ali que estavam os erros. `scripts/medir-primitivos.mjs` fechou o buraco —
+botão, seção, container, grade e ícone, com o **hover medido**:
+
+| token | estava | medido |
+|---|---|---|
+| `--container-conteudo` | 1140px (padrão do Bootstrap) | **1500px** |
+| `--color-acao-primaria` | `#0c71c3`, por contagem no markup | **`#2250fc`**, medido no `.btn` |
+| `--radius-sm` / `--radius-md` | a fração do tema, sob root de 14px | **os pixels medidos** |
+
+O primeiro sozinho teria feito a primeira página migrada nascer 24% mais estreita
+que o site. Detalhes e os quatro deltas deliberados em
+[docs/decisoes.md](docs/decisoes.md), "Etapa 1".
+
+**Dois refinos da lista foram antecipados**, porque um primitivo com
+implementação provisória contamina tudo que o usa:
+
+- **`<Icone>` já é SVG inline.** Os 16 contornos saem das próprias webfonts do
+  tema por `python scripts/glifos-para-svg.py`, e
+  [verify-icones.mjs](tests/verify-icones.mjs) compara desenho a desenho contra a
+  fonte de origem — o portão que faltava quando o subset apagou as setas de 6
+  páginas sem erro de build. A remoção das webfonts continua na Etapa 11.
+- **`<Grade>` já usa container query.** A contagem de colunas responde à largura
+  do pai, não à da janela, e com isso some a dependência das faixas que o
+  JavaScript aplicava no `<body>` — e o erro de ler o array errado, que já custou
+  22 comparações de tablet neste projeto. O `gap` também elimina a margem
+  negativa do `.row`, que é a origem das 72 pendências de transbordo.
+
+Duas mudanças de método: o `/design` entrou na varredura de geometria (e
+reprovou na primeira execução, por transbordo de 25px na escala tipográfica), e
+a purga passou a ignorar as páginas já migradas — o CSS do tema agora **encolhe a
+cada etapa** em vez de esperar a Etapa 11.
+
+<details><summary>Especificação original</summary>
 
 `Titulo`, `Texto`, `Botao`, `Imagem`, `Icone`, `Secao`, `Container`, `Grade`.
 Props tipadas com variantes enumeradas — o `astro check` já roda no build, então
@@ -289,6 +340,8 @@ variante inválida vira erro de compilação.
 Cada primitivo entra no catálogo `/design` com **todas** as variantes e os cinco
 estados (repouso, hover, `:focus-visible`, ativo, desabilitado) no mesmo commit
 que o componente. Catálogo escrito depois nunca é escrito.
+
+</details>
 
 ### Etapa 2 — Pipeline de imagens
 

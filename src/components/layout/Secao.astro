@@ -1,0 +1,71 @@
+---
+/**
+ * Secao — o ritmo vertical e a superficie.
+ *
+ * MEDIDO: o `section` do tema tem 80px de recuo em cima e embaixo, igual nos
+ * tres viewports; e o `md` daqui. Os outros degraus sao os `p-t-*` que o markup
+ * usa (`p-t-0`, `p-t-30`, `p-t-100`), agora nomeados em vez de numerados.
+ *
+ * `espacoTopo` e `espacoBase` existem porque secoes vizinhas com fundos iguais
+ * somam 160px de vao — o markup do tema resolvia isso com `p-t-0`, e a
+ * necessidade continua real.
+ *
+ *   <Secao><Container>...</Container></Secao>
+ *   <Secao fundo="clara" espacoTopo="nenhum">...</Secao>
+ *
+ * `fundo="inversa"` tambem marca a secao com `superficie-inversa`, a classe que
+ * o base.css usa para trocar a cor do contorno de foco — sobre fundo escuro o
+ * azul do foco some, e o teclado perderia a referencia.
+ */
+interface Props {
+  como?: 'section' | 'div' | 'header' | 'footer' | 'article' | 'aside';
+  espaco?: 'nenhum' | 'sm' | 'md' | 'lg' | 'xl';
+  /** Sobrepoe `espaco` so em cima. */
+  espacoTopo?: 'nenhum' | 'sm' | 'md' | 'lg' | 'xl';
+  /** Sobrepoe `espaco` so embaixo. */
+  espacoBase?: 'nenhum' | 'sm' | 'md' | 'lg' | 'xl';
+  fundo?: 'padrao' | 'clara' | 'inversa' | 'transparente';
+  id?: string;
+  class?: string;
+}
+
+const {
+  como = 'section',
+  espaco = 'md',
+  espacoTopo,
+  espacoBase,
+  fundo = 'padrao',
+  id,
+  class: classe,
+} = Astro.props;
+
+const Tag = como;
+
+/* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
+const TOPO = {
+  nenhum: 'pt-0',
+  sm: 'pt-secao-sm',
+  md: 'pt-secao-md',
+  lg: 'pt-secao-lg',
+  xl: 'pt-secao-xl',
+} as const;
+
+const BASE = {
+  nenhum: 'pb-0',
+  sm: 'pb-secao-sm',
+  md: 'pb-secao-md',
+  lg: 'pb-secao-lg',
+  xl: 'pb-secao-xl',
+} as const;
+
+const FUNDOS = {
+  padrao: 'bg-superficie text-texto',
+  clara: 'bg-superficie-clara text-texto',
+  inversa: 'superficie-inversa bg-superficie-inversa text-texto-inverso',
+  transparente: '',
+} as const;
+---
+
+<Tag id={id} class:list={[TOPO[espacoTopo ?? espaco], BASE[espacoBase ?? espaco], FUNDOS[fundo], classe]}>
+  <slot />
+</Tag>

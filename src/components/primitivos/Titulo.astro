@@ -1,0 +1,81 @@
+---
+/**
+ * Titulo — a tag e o tamanho como eixos separados.
+ *
+ * ESTE COMPONENTE EXISTE POR CAUSA DE UM NUMERO: 39 das 40 paginas do site tem
+ * hierarquia de heading quebrada, e a causa e sempre a mesma — escolher a tag
+ * pelo tamanho que ela desenha. `historia.astro:14` tem literalmente
+ * `<h1 class="text-md h2">`: um h1 que queria parecer h2.
+ *
+ * Aqui `nivel` decide a TAG (o que o leitor de tela e o Google enxergam) e
+ * `tamanho` decide a APARENCIA. Um h2 grande e um h1 discreto deixam de exigir
+ * uma classe que contradiga a tag, e o erro deixa de ter por onde voltar.
+ *
+ *   <Titulo nivel={2} tamanho="2xl">Nossos associados</Titulo>
+ *   <Titulo nivel={1} tamanho="md">Seja um associado</Titulo>
+ *
+ * Sem `tamanho`, vale o tamanho do base.css para aquela tag — que sao os valores
+ * medidos no tema. Passar `tamanho` e sempre uma decisao explicita.
+ */
+interface Props {
+  /** A tag. E o unico eixo que muda a semantica do documento. */
+  nivel: 1 | 2 | 3 | 4 | 5 | 6;
+  /** A aparencia. Omitido, herda o tamanho que o base.css da a essa tag. */
+  tamanho?: 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
+  cor?: 'padrao' | 'inverso' | 'sutil' | 'paragrafo';
+  alinhamento?: 'inicio' | 'centro' | 'fim';
+  peso?: 'medio' | 'semibold' | 'bold' | 'extrabold';
+  class?: string;
+}
+
+const { nivel, tamanho, cor = 'padrao', alinhamento, peso, class: classe } = Astro.props;
+
+const Tag = `h${nivel}` as const;
+
+/*
+ * Os mapas guardam a classe INTEIRA, escrita a mao. O Tailwind varre o codigo
+ * como texto: `text-${tamanho}` montado em tempo de execucao nao existe para
+ * ele, a utilitaria nao e gerada e o estilo some sem erro nenhum. Vale para
+ * todo componente deste diretorio.
+ */
+const TAMANHOS = {
+  md: 'text-md',
+  lg: 'text-lg',
+  xl: 'text-xl',
+  '2xl': 'text-2xl',
+  '3xl': 'text-3xl',
+  '4xl': 'text-4xl',
+} as const;
+
+const CORES = {
+  padrao: '',
+  inverso: 'text-texto-inverso',
+  sutil: 'text-texto-sutil',
+  paragrafo: 'text-texto-paragrafo',
+} as const;
+
+const ALINHAMENTOS = {
+  inicio: 'text-left',
+  centro: 'text-center',
+  fim: 'text-right',
+} as const;
+
+const PESOS = {
+  medio: 'font-medium',
+  semibold: 'font-semibold',
+  bold: 'font-bold',
+  extrabold: 'font-extrabold',
+} as const;
+---
+
+<Tag
+  class:list={[
+    tamanho && TAMANHOS[tamanho],
+    CORES[cor],
+    alinhamento && ALINHAMENTOS[alinhamento],
+    peso && PESOS[peso],
+    classe,
+  ]}
+>
+  <slot />
+</Tag>

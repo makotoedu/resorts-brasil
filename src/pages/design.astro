@@ -16,18 +16,32 @@
  */
 import '../styles/global.css';
 
+import Titulo from '../components/primitivos/Titulo.astro';
+import Texto from '../components/primitivos/Texto.astro';
+import Botao from '../components/primitivos/Botao.astro';
+import Icone from '../components/primitivos/Icone.astro';
+import Imagem from '../components/primitivos/Imagem.astro';
+import Secao from '../components/layout/Secao.astro';
+import Container from '../components/layout/Container.astro';
+import Grade from '../components/layout/Grade.astro';
+import { glifos, nomesDeIcone } from '../icones/glifos';
+
 const primitivas = [
   '--cor-navy-900',
   '--cor-ardosia-600',
   '--cor-cinza-500',
   '--cor-azul-600',
   '--cor-azul-500',
+  '--cor-azul-700',
   '--cor-carvao-900',
   '--cor-carvao-800',
   '--cor-branco',
   '--cor-nevoa-100',
+  '--cor-nevoa-50',
   '--cor-coral-500',
   '--cor-ambar-500',
+  '--cor-ambar-400',
+  '--cor-ambar-600',
   '--cor-indigo-700',
 ];
 
@@ -37,12 +51,33 @@ const semanticas = [
   '--color-texto-sutil',
   '--color-texto-inverso',
   '--color-acao-primaria',
+  '--color-acao-primaria-hover',
+  '--color-acao-destaque',
+  '--color-acao-destaque-hover',
   '--color-link',
   '--color-superficie',
+  '--color-superficie-clara',
   '--color-superficie-inversa',
   '--color-superficie-inversa-alt',
   '--color-borda',
   '--color-destaque',
+];
+
+/** As quatro variantes do <Botao>, com o que cada uma quer dizer. */
+const variantesBotao = [
+  { variante: 'primaria' as const, papel: 'a acao principal da tela' },
+  { variante: 'contorno' as const, papel: 'acao secundaria, mesmo peso visual menor' },
+  { variante: 'clara' as const, papel: 'sobre foto ou fundo escuro (17 usos no site)' },
+  { variante: 'destaque' as const, papel: 'chamada de conversao, uma por pagina' },
+];
+
+/** Os cinco estados. `estado` e a prop que existe so para esta pagina. */
+const estadosBotao = [
+  { rotulo: 'repouso', props: {} },
+  { rotulo: 'hover', props: { estado: 'hover' as const } },
+  { rotulo: 'foco', props: { estado: 'foco' as const } },
+  { rotulo: 'ativo', props: { estado: 'ativo' as const } },
+  { rotulo: 'desabilitado', props: { desabilitado: true } },
 ];
 
 /** Cada degrau com o par de pixels medido nas pontas da escala. */
@@ -200,11 +235,233 @@ const faixas = [
       </section>
 
       <section>
-        <h2>Componentes</h2>
-        <p class="legenda pendente">
-          Ainda vazio. Cada componente entra aqui — com todas as variantes e os cinco estados —
-          no mesmo commit em que é criado. Catálogo escrito depois nunca é escrito.
+        <h2>Primitivos</h2>
+        <p class="legenda">
+          Oito componentes: cinco de conteúdo e três de layout. Todos entram aqui com as
+          variantes e os estados no mesmo commit em que nascem —
+          <code>scripts/verifica-sistema.mjs</code> falha o build se um deles ficar de fora desta
+          página, porque catálogo escrito depois nunca é escrito.
         </p>
+      </section>
+
+      <section>
+        <h3>Título</h3>
+        <p class="legenda">
+          <code>nivel</code> escolhe a tag, <code>tamanho</code> escolhe a aparência. São eixos
+          separados de propósito: 39 das 40 páginas do site têm hierarquia quebrada, e sempre pela
+          mesma causa — escolher a tag pelo tamanho que ela desenha.
+        </p>
+        <div class="demo">
+          <Titulo nivel={2} tamanho="2xl">h2 no tamanho 2xl</Titulo>
+          <Titulo nivel={3} tamanho="xl">h3 no tamanho xl</Titulo>
+          <Titulo nivel={4} tamanho="lg">h4 no tamanho lg</Titulo>
+          <Titulo nivel={5} tamanho="md">h5 no tamanho md</Titulo>
+          <hr />
+          <p class="legenda">
+            O ponto do componente: aqui vai um <code>h6</code> — o último nível do documento —
+            desenhado no maior tamanho da escala. Sem os dois eixos, isso exigiria uma classe
+            contradizendo a tag.
+          </p>
+          <Titulo nivel={6} tamanho="3xl">h6 no tamanho 3xl</Titulo>
+          <hr />
+          <Titulo nivel={4} tamanho="lg" cor="sutil">cor sutil</Titulo>
+          <Titulo nivel={4} tamanho="lg" alinhamento="centro">alinhamento centro</Titulo>
+        </div>
+      </section>
+
+      <section>
+        <h3>Texto</h3>
+        <p class="legenda">
+          Sem props, é o parágrafo do <code>base.css</code> — <code>14px</code> e
+          <code>#525e75</code>, os valores medidos.
+          As props existem para os desvios, não para o caso comum.
+        </p>
+        <div class="demo">
+          <Texto>
+            Parágrafo padrão. A associação reúne os principais resorts do país e representa o setor
+            junto ao poder público, à imprensa e ao mercado.
+          </Texto>
+          <Texto tamanho="lg" cor="padrao">Texto lg, cor padrão — abertura de seção.</Texto>
+          <Texto tamanho="sm" cor="sutil">Texto sm, cor sutil — legenda e apoio.</Texto>
+          <Texto tamanho="xs" cor="destaque" peso="semibold">Texto xs, destaque, semibold.</Texto>
+          <Texto como="span" tamanho="sm">Um <code>span</code>, para uso dentro de frase.</Texto>
+        </div>
+      </section>
+
+      <section>
+        <h3>Botão</h3>
+        <p class="legenda">
+          Quatro variantes × três tamanhos × cinco estados. Os valores são medidos com
+          <code>scripts/medir-primitivos.mjs</code>, <strong>hover incluído</strong> — ele não
+          aparece no HTML nem no diff visual, então seria a parte mais fácil de inventar.
+          <code>href</code> decide a tag: com ele sai <code>&lt;a&gt;</code>, sem ele
+          <code>&lt;button&gt;</code>.
+        </p>
+
+        {
+          variantesBotao.map(({ variante, papel }) => (
+            <div
+              class:list={[
+                'demo',
+                'demo-botoes',
+                /* `superficie-inversa` nao e decoracao: e a marca que o base.css
+                   procura para trocar a cor do contorno de foco. */
+                variante === 'clara' && 'demo-escura superficie-inversa',
+              ]}
+            >
+              <p class="rotulo-demo">
+                <code>variante="{variante}"</code> <small>{papel}</small>
+              </p>
+              <div class="estados">
+                {estadosBotao.map(({ rotulo, props }) => (
+                  <span class="estado">
+                    <Botao variante={variante} {...props}>
+                      Associe-se
+                    </Botao>
+                    <small>{rotulo}</small>
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+
+        <div class="demo demo-botoes">
+          <p class="rotulo-demo"><code>tamanho</code> <small>sm · md · lg</small></p>
+          <div class="estados">
+            <span class="estado"><Botao tamanho="sm">Salvar</Botao><small>sm</small></span>
+            <span class="estado"><Botao tamanho="md">Associe-se</Botao><small>md (padrão)</small></span>
+            <span class="estado"><Botao tamanho="lg">Conheça os resorts</Botao><small>lg</small></span>
+          </div>
+          <p class="legenda">
+            O <code>lg</code> interpola fonte (13 → 16px) e recuo (24 → 40px) por
+            <code>clamp()</code>, com as pontas medidas — no tema isso saltava na media query.
+            Redimensione a janela.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>Ícone</h3>
+        <p class="legenda">
+          Os 16 símbolos do site, em SVG inline, extraídos das próprias webfonts do tema por
+          <code>python scripts/glifos-para-svg.py</code>.
+          <code>tests/verify-icones.mjs</code> compara cada desenho com a fonte de origem, então
+          codepoint trocado ou eixo espelhado reprova — a checagem que faltava quando o subset
+          apagou as setas de 6 páginas sem erro de build.
+        </p>
+        <ul class="icones">
+          {
+            nomesDeIcone.map((nome) => (
+              <li>
+                <Icone nome={nome} tamanho="lg" />
+                <code>{nome}</code>
+                <small>{glifos[nome].codepoint}</small>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="demo">
+          <p class="rotulo-demo"><code>tamanho</code> <small>sm 16px · md 24px · lg 36px</small></p>
+          <p>
+            <Icone nome="map-pin" tamanho="sm" />
+            <Icone nome="map-pin" tamanho="md" />
+            <Icone nome="map-pin" tamanho="lg" />
+          </p>
+          <p class="legenda">
+            Herdam a cor do texto (<code>currentColor</code>) e ficam <code>aria-hidden</code> por
+            padrão. Com <code>rotulo</code>, viram imagem com nome acessível:
+            <Icone nome="whatsapp" rotulo="WhatsApp" />
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>Imagem</h3>
+        <p class="legenda">
+          <code>alt</code>, <code>largura</code> e <code>altura</code> são obrigatórios no tipo — o
+          <code>astro check</code> passa a cobrar os três. Hoje 1 dos 193 <code>&lt;img&gt;</code>
+          do site tem <code>loading</code>; aqui o padrão é <code>lazy</code> e
+          <code>prioridade</code> é a exceção declarada. A Etapa 2 troca o miolo por
+          <code>astro:assets</code> sem mexer na API.
+        </p>
+        <div class="demo">
+          <Imagem
+            src="/images/hero/pexels-1134176.jpg"
+            alt=""
+            largura={2248}
+            altura={1500}
+            proporcao="larga"
+            ajuste="cobrir"
+            arredondada
+          />
+          <p class="legenda">
+            <code>proporcao="larga"</code> (3/2) com <code>ajuste="cobrir"</code>. No tema a altura
+            do hero era <code>height: 360px</code> em <code>style=</code> inline, que recorta mais
+            justamente onde há menos tela.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>Seção, Container e Grade</h3>
+        <p class="legenda">
+          Os três de layout. <code>Secao</code> dá ritmo vertical e superfície,
+          <code>Container</code> dá largura, <code>Grade</code> dá colunas. Ortogonais de
+          propósito: cada um resolve um eixo.
+        </p>
+
+        <div class="demo demo-sangrada">
+          <Secao espaco="sm" fundo="clara">
+            <Container>
+              <Titulo nivel={4} tamanho="lg">Seção clara, espaço sm</Titulo>
+              <Texto semMargem>
+                <code>fundo="clara"</code> é o <code>#f7f9fc</code> medido no
+                <code>.background-grey</code>. O container para em 1500px — o valor medido, não os
+                1140px do Bootstrap.
+              </Texto>
+            </Container>
+          </Secao>
+
+          <Secao espaco="sm" fundo="inversa">
+            <Container>
+              <Titulo nivel={4} tamanho="lg">Seção inversa</Titulo>
+              <Texto semMargem>
+                Aqui o parágrafo herda a cor da seção: o cinza padrão daria 2,1:1 de contraste
+                sobre este fundo. A mesma marca troca a cor do contorno de foco —
+                <a href="#foco-invertido" id="foco-invertido">navegue com Tab até este link</a>.
+              </Texto>
+            </Container>
+          </Secao>
+        </div>
+
+        <div class="demo">
+          <p class="rotulo-demo">
+            <code>&lt;Grade colunas={6}&gt;</code>
+            <small>2 → 3 → 6 colunas, por largura do pai</small>
+          </p>
+          <Grade colunas={6} espaco="sm">
+            {[1, 2, 3, 4, 5, 6].map((n) => <div class="celula">{n}</div>)}
+          </Grade>
+
+          <p class="rotulo-demo">
+            <code>&lt;Grade colunas={3}&gt;</code> <small>1 → 2 → 3</small>
+          </p>
+          <Grade colunas={3}>
+            {[1, 2, 3].map((n) => <div class="celula">{n}</div>)}
+          </Grade>
+
+          <p class="legenda">
+            A contagem responde à largura do <strong>pai</strong>, não à da janela — é uma container
+            query. Foi assim que a dependência das faixas aplicadas por JavaScript saiu do
+            caminho, e com ela o erro de ler o array de breakpoints errado. Estreite a janela: a
+            grade acompanha sem nenhuma media query.
+          </p>
+          <p class="legenda">
+            O <code>gap</code> de 28px reproduz o vão medido do <code>.row</code>, e sem a margem
+            negativa que faz as 40 páginas transbordarem 30px na horizontal no mobile.
+          </p>
+        </div>
       </section>
     </main>
   </body>
@@ -273,10 +530,16 @@ const faixas = [
     padding: 0;
   }
 
+  /*
+   * `wrap` e `min-width: 0` nao sao enfeite: sem eles o degrau 4xl (48px ja no
+   * minimo) somado aos 12rem do rotulo estoura a linha em 390px, e a varredura
+   * de geometria reprova o catalogo por transbordo horizontal — reprovou.
+   */
   .tipos li {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
-    gap: 1.5rem;
+    gap: 0.5rem 1.5rem;
     padding-block: 0.75rem;
     border-bottom: 1px solid var(--color-borda);
   }
@@ -284,10 +547,13 @@ const faixas = [
   .rotulo {
     flex: none;
     width: 12rem;
+    max-width: 100%;
   }
 
   .exemplo {
+    min-width: 0;
     line-height: 1.1;
+    overflow-wrap: anywhere;
   }
 
   .demo {
@@ -310,5 +576,84 @@ const faixas = [
     text-align: left;
     padding: 0.375rem 1.5rem 0.375rem 0;
     border-bottom: 1px solid var(--color-borda);
+  }
+
+  /* ---------------- demonstracoes de componente ---------------- */
+
+  .rotulo-demo {
+    margin-block: 1.5rem 0.75rem;
+    color: var(--color-texto-sutil);
+  }
+
+  .demo + .demo {
+    margin-top: 1rem;
+  }
+
+  .demo-botoes .estados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2rem;
+    align-items: flex-start;
+  }
+
+  .estado {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .estado small {
+    color: var(--color-texto-sutil);
+  }
+
+  /* A variante clara so existe sobre superficie escura; mostra-la sobre branco
+     seria mostrar um botao invisivel. */
+  .demo-escura {
+    background: var(--color-superficie-inversa);
+    border-color: transparent;
+  }
+
+  .demo-escura .rotulo-demo,
+  .demo-escura .estado small {
+    color: var(--color-texto-inverso);
+  }
+
+  .icones {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 1.25rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .icones li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 1rem 0.5rem;
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-sm);
+    text-align: center;
+  }
+
+  .icones small {
+    color: var(--color-texto-sutil);
+  }
+
+  /* As secoes tem fundo proprio e recuo proprio: o quadro da demo so as segura. */
+  .demo-sangrada {
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .celula {
+    background: var(--color-superficie-clara);
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem 0.5rem;
+    text-align: center;
   }
 </style>

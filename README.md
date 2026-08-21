@@ -29,7 +29,7 @@ aparecer, rode `npm approve-scripts sharp esbuild`.
 | `npm run build` | checa os tipos, gera `dist/`, purga o CSS e confere os glifos |
 | `npm run check` | só a checagem de tipos (`astro check`) |
 | `npm run preview` | serve o `dist/` gerado |
-| `npm run verify` | suíte de comportamento (precisa de um preview no ar) |
+| `npm run verify` | comportamento, geometria e ícones (precisa de um preview no ar) |
 
 Scripts auxiliares:
 
@@ -39,8 +39,11 @@ node scripts/check-glifos.mjs     # confere o subset de fontes (idem)
 node scripts/verifica-sistema.mjs # invariantes do design system (idem)
 #   DETALHE=1 ... lista o que ainda está pendente, arquivo a arquivo
 python scripts/subset-fonts.py    # regera public/webfonts/ a partir de vendor/
+python scripts/glifos-para-svg.py # regera src/icones/glifos.ts a partir das fontes
 node scripts/medir-base.mjs       # mede a base tipográfica do tema no navegador
-node tests/verify-geometria.mjs   # varredura de layout: 40 páginas × 3 viewports
+node scripts/medir-primitivos.mjs # mede botão, seção, container, grade e ícone
+node tests/verify-geometria.mjs   # varredura de layout: 41 páginas × 3 viewports
+node tests/verify-icones.mjs      # compara cada ícone SVG com a webfont de origem
 node tests/visual-diff.mjs        # compara o build com o site original
 #   PAGES=/index.html VIEWPORTS=desktop ... limita a rodada dos dois acima
 ```
@@ -49,8 +52,8 @@ node tests/visual-diff.mjs        # compara o build com o site original
 > a conversão automática de caminho do MSYS. Use
 > `MSYS_NO_PATHCONV=1 PAGES=/index.html node …`, ou rode pelo PowerShell.
 
-`npm run verify` roda comportamento e geometria; `verify:comportamento` e
-`verify:geometria` rodam um de cada vez.
+`npm run verify` roda os três; `verify:comportamento`, `verify:geometria` e
+`verify:icones` rodam um de cada vez.
 
 ### Design system
 
@@ -76,6 +79,15 @@ Ao migrar um componente ou página, acrescente o `@source` correspondente em
 [`src/styles/global.css`](src/styles/global.css) — sem ele as utilitárias não são
 geradas e o estilo some, sem erro de build.
 
+Os oito primitivos vivem em `src/components/primitivos/` (`Titulo`, `Texto`,
+`Botao`, `Icone`, `Imagem`) e `src/components/layout/` (`Secao`, `Container`,
+`Grade`). Componente novo nesses dois diretórios **precisa** entrar no catálogo
+`/design` no mesmo commit: `scripts/verifica-sistema.mjs` reprova o build se ele
+não for importado por lá.
+
+Valor de componente é medido, nunca lido: `node scripts/medir-primitivos.mjs`
+imprime botão, seção, container, grade e ícone nos três viewports, com o hover.
+
 O catálogo vivo fica em `/design`.
 
 ### URLs no preview local
@@ -91,11 +103,15 @@ src/i18n/ui.ts            rotas, títulos e strings dos 3 idiomas — comece aqu
 src/data/                 associados, parceiros, diretoria, contato
 src/layouts/              o layout único de todas as páginas
 src/components/           header, rodapé e as grades de dados
-src/pages/                as 40 páginas
+src/components/primitivos/  Titulo, Texto, Botao, Icone, Imagem
+src/components/layout/    Secao, Container, Grade
+src/styles/               tokens, base e a folha do design system
+src/icones/glifos.ts      os 16 ícones em SVG — GERADO, não edite
+src/pages/                as 40 páginas + o catálogo /design
 src/scripts/site.js       comportamentos de interface
 public/                   css, imagens, fontes e robots.txt
-scripts/                  purga de CSS e subset de fontes
-tests/                    verificação comportamental e diff visual
+scripts/                  purga, subset de fontes, medição e invariantes
+tests/                    comportamento, geometria, ícones e diff visual
 docs/                     documentação técnica
 ```
 

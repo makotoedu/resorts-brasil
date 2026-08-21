@@ -26,16 +26,20 @@
    * pontual.
    */
   --cor-navy-900: #001e6c; /* cor herdada do <body> (169 ocorrencias) */
-  --cor-ardosia-600: #525e75; /* paragrafo (30) */
+  --cor-ardosia-600: #525e75; /* paragrafo (30); tambem o texto do botao claro em hover, medido #4c5667 e consolidado aqui */
   --cor-cinza-500: #9aa0a6; /* .text-muted (42) */
-  --cor-azul-600: #0c71c3; /* acao, no markup (123) */
-  --cor-azul-500: #2250fc; /* link nu, herdado do tema (332) */
+  --cor-azul-600: #0c71c3; /* acento dos titulos do ebook — as 123 ocorrencias sao TODAS de ebook.astro */
+  --cor-azul-500: #2250fc; /* link nu e fundo do botao primario, medido (332) */
+  --cor-azul-700: #0333e8; /* medido: hover do botao primario */
   --cor-carvao-900: #0c101b; /* superficie escura (135) */
   --cor-carvao-800: #0e121d; /* superficie escura alternativa (6) */
   --cor-branco: #fff;
   --cor-nevoa-100: #e4e6ef; /* bordas */
+  --cor-nevoa-50: #f7f9fc; /* medido: fundo do .background-grey */
   --cor-coral-500: #fc575e; /* destaque/alerta (18) */
   --cor-ambar-500: #fac213;
+  --cor-ambar-400: #ffc107; /* medido: fundo do .btn-warning (o CTA da home) */
+  --cor-ambar-600: #d39e00; /* medido: hover do mesmo botao */
   --cor-indigo-700: #242f9b;
 
   /* ==========================================================
@@ -50,10 +54,21 @@
   --color-texto-sutil: var(--cor-cinza-500);
   --color-texto-inverso: var(--cor-branco);
 
-  --color-acao-primaria: var(--cor-azul-600);
+  /*
+   * A acao primaria e a azul-500, MEDIDA no `.btn` (rgb(34,80,252)). Esta linha
+   * apontava para a azul-600 (#0c71c3), valor lido da contagem de ocorrencias do
+   * markup — mas as 123 ocorrencias daquele hex sao todas titulos de capitulo do
+   * ebook, e nenhuma e botao. Era a armadilha de sempre: contar no HTML em vez
+   * de medir no navegador. Os hovers tambem sao medidos, com o mouse em cima.
+   */
+  --color-acao-primaria: var(--cor-azul-500);
+  --color-acao-primaria-hover: var(--cor-azul-700);
+  --color-acao-destaque: var(--cor-ambar-400);
+  --color-acao-destaque-hover: var(--cor-ambar-600);
   --color-link: var(--cor-azul-500);
 
   --color-superficie: var(--cor-branco);
+  --color-superficie-clara: var(--cor-nevoa-50);
   --color-superficie-inversa: var(--cor-carvao-900);
   --color-superficie-inversa-alt: var(--cor-carvao-800);
 
@@ -132,10 +147,19 @@
    */
   --spacing: 0.25rem;
 
-  --espaco-secao-sm: 2.5rem; /* 40px */
-  --espaco-secao-md: 5rem; /* 80px */
-  --espaco-secao-lg: 6.25rem; /* 100px */
-  --espaco-secao-xl: 9.375rem; /* 150px */
+  /*
+   * Os degraus de secao entram no namespace `--spacing-*` de proposito: assim o
+   * Tailwind gera `py-secao-md` e o componente consome o token em vez de um
+   * numero solto. Fora do namespace eles seriam decorativos — existiriam no
+   * arquivo e nao apareceriam em nenhuma utilitaria.
+   *
+   * `md` e 80px porque 80px e o que o `section` do tema mede, nos tres
+   * viewports; os outros tres degraus sao os `p-t-*` que o markup usa.
+   */
+  --spacing-secao-sm: 2.5rem; /* 40px */
+  --spacing-secao-md: 5rem; /* 80px — medido no section nu */
+  --spacing-secao-lg: 6.25rem; /* 100px */
+  --spacing-secao-xl: 9.375rem; /* 150px */
 
   /* ==========================================================
    * FAIXAS
@@ -159,13 +183,37 @@
   --breakpoint-lg: 64.0625rem; /* 1025px */
   --breakpoint-xl: 75rem; /* 1200px */
 
-  /* Largura do conteudo — o .container do tema para em 1140px no xl. */
-  --container-conteudo: 71.25rem; /* 1140px */
+  /*
+   * Largura do conteudo, MEDIDA: o `.container` do tema para em 1500px, com
+   * 30px de recuo ate 1023px e 14px a partir dai. A linha anterior dizia
+   * 1140px — o valor padrao do Bootstrap, que este tema sobrescreve. Ninguem
+   * teria notado antes da primeira pagina de conteudo migrar, e ela teria
+   * nascido 24% mais estreita que o site.
+   *
+   * O namespace `--container-*` gera `max-w-conteudo`.
+   */
+  --container-conteudo: 93.75rem; /* 1500px */
+
+  /*
+   * PROPORCAO
+   *
+   * O tema fixava `height: 360px` em `style=` inline nos heros, o que recorta
+   * mais quanto mais estreita e a tela — justamente onde ha menos imagem para
+   * perder. `--aspect-*` gera `aspect-larga`, e a caixa passa a acompanhar a
+   * largura. `video` (16/9) e `square` ja vem do Tailwind.
+   */
+  --aspect-larga: 3 / 2;
 
   /* ==========================================================
    * RAIO
-   * ========================================================== */
-  --radius-sm: 0.42rem; /* .dropdown-menu, .card do tema */
-  --radius-md: 0.82rem; /* .rounded do tema (105 usos) */
+   * ==========================================================
+   * Medidos no navegador: 5.88px no `.btn` e 11.48px no `.call-to-action`. Sao
+   * os 0.42rem e 0.82rem do tema resolvidos contra o root de 14px DELE. Como o
+   * root voltou para 16px (ver base.css), repetir a fracao em rem inflaria os
+   * dois em 14% — o mesmo erro que a escala tipografica ja evitou com os tokens
+   * compensados. Aqui a compensacao esta no valor.
+   */
+  --radius-sm: 0.3675rem; /* 5.88px — .btn, .dropdown-menu, .card */
+  --radius-md: 0.7175rem; /* 11.48px — .rounded (105 usos) */
   --radius-full: 9999px;
 }

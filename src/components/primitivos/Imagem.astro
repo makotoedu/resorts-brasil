@@ -1,0 +1,76 @@
+---
+/**
+ * Imagem — dimensao obrigatoria, lazy por padrao.
+ *
+ * O estado de partida: 8,5 MB em 200 arquivos, 1 dos 193 `<img>` com `loading`,
+ * e heros de 2250x1500 exibidos a 360px de largura. Nada disso e falta de
+ * cuidado pontual — e o que acontece quando cada `<img>` e uma decisao nova.
+ *
+ * As duas props que mais doem sao obrigatorias no tipo: `alt` (que o
+ * `astro check` passa a cobrar) e o par `largura`/`altura`, que reserva o
+ * espaco e elimina o pulo de layout. `alt=""` continua valido e e a forma certa
+ * de marcar imagem decorativa — o que nao da mais e esquecer de decidir.
+ *
+ *   <Imagem src="/images/hero/pexels-1134176.jpg" alt="Resort" largura={1200} altura={800} />
+ *   <Imagem ... prioridade proporcao="video" ajuste="cobrir" />
+ *
+ * ETAPA 2 TROCA O MIOLO, NAO A API. Quando as imagens saem de `public/` para
+ * `src/assets/`, o `<img>` daqui vira o `<Image>` do `astro:assets` com AVIF,
+ * WebP e `srcset`. Quem usa este componente nao muda nada — que e a razao de
+ * ele existir antes do pipeline.
+ */
+interface Props {
+  src: string;
+  /** Vazio marca imagem decorativa. O que nao existe e omitir. */
+  alt: string;
+  largura: number;
+  altura: number;
+  /** Primeira imagem visivel da pagina: carrega cedo, sem lazy. */
+  prioridade?: boolean;
+  proporcao?: 'video' | 'quadrada' | 'larga';
+  ajuste?: 'cobrir' | 'conter';
+  arredondada?: boolean;
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  largura,
+  altura,
+  prioridade = false,
+  proporcao,
+  ajuste,
+  arredondada = false,
+  class: classe,
+} = Astro.props;
+
+/* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
+const PROPORCOES = {
+  video: 'aspect-video',
+  quadrada: 'aspect-square',
+  larga: 'aspect-larga',
+} as const;
+
+const AJUSTES = {
+  cobrir: 'object-cover',
+  conter: 'object-contain',
+} as const;
+---
+
+<img
+  src={src}
+  alt={alt}
+  width={largura}
+  height={altura}
+  loading={prioridade ? 'eager' : 'lazy'}
+  decoding={prioridade ? 'sync' : 'async'}
+  fetchpriority={prioridade ? 'high' : undefined}
+  class:list={[
+    'max-w-full h-auto',
+    proporcao && PROPORCOES[proporcao],
+    ajuste && AJUSTES[ajuste],
+    arredondada && 'rounded-md',
+    classe,
+  ]}
+/>

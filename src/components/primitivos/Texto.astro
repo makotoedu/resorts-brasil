@@ -1,0 +1,81 @@
+---
+/**
+ * Texto — corpo, legenda e apoio.
+ *
+ * O par de <Titulo>: ali a tag e o tamanho se separam, aqui a tag e o PAPEL. Um
+ * paragrafo, um `<span>` dentro de uma frase e um item de lista compartilham a
+ * mesma escala e as mesmas cores sem que ninguem precise repetir a cadeia de
+ * utilitarias.
+ *
+ *   <Texto>Nossos planos sao feitos pelos resorts para os resorts.</Texto>
+ *   <Texto como="span" tamanho="sm" cor="sutil">Atualizado em agosto</Texto>
+ *
+ * Sem `tamanho` e sem `cor`, sai o que o base.css define para a tag — 14px e
+ * #525e75 no `p`, ambos medidos no tema.
+ */
+interface Props {
+  como?: 'p' | 'span' | 'div' | 'li' | 'strong' | 'small';
+  tamanho?: 'xs' | 'sm' | 'base' | 'md' | 'lg';
+  cor?: 'padrao' | 'paragrafo' | 'sutil' | 'inverso' | 'destaque';
+  peso?: 'normal' | 'medio' | 'semibold' | 'bold';
+  alinhamento?: 'inicio' | 'centro' | 'fim';
+  /** Remove a margem inferior — util quando o container ja controla o ritmo. */
+  semMargem?: boolean;
+  class?: string;
+}
+
+const {
+  como = 'p',
+  tamanho,
+  cor,
+  peso,
+  alinhamento,
+  semMargem = false,
+  class: classe,
+} = Astro.props;
+
+const Tag = como;
+
+/* Classes inteiras, pelo mesmo motivo explicado no Titulo.astro. */
+const TAMANHOS = {
+  xs: 'text-xs',
+  sm: 'text-sm',
+  base: 'text-base',
+  md: 'text-md',
+  lg: 'text-lg',
+} as const;
+
+const CORES = {
+  padrao: 'text-texto',
+  paragrafo: 'text-texto-paragrafo',
+  sutil: 'text-texto-sutil',
+  inverso: 'text-texto-inverso',
+  destaque: 'text-destaque',
+} as const;
+
+const PESOS = {
+  normal: 'font-normal',
+  medio: 'font-medium',
+  semibold: 'font-semibold',
+  bold: 'font-bold',
+} as const;
+
+const ALINHAMENTOS = {
+  inicio: 'text-left',
+  centro: 'text-center',
+  fim: 'text-right',
+} as const;
+---
+
+<Tag
+  class:list={[
+    tamanho && TAMANHOS[tamanho],
+    cor && CORES[cor],
+    peso && PESOS[peso],
+    alinhamento && ALINHAMENTOS[alinhamento],
+    semMargem && 'mb-0',
+    classe,
+  ]}
+>
+  <slot />
+</Tag>

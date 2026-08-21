@@ -1,0 +1,225 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+/**
+ * Botao — quatro variantes, tres tamanhos, cinco estados.
+ *
+ * O CSS aqui e escrito a mao, e nao montado em utilitarias, por uma razao: sao
+ * os ESTADOS que fazem um botao. Repouso, hover, foco de teclado, pressionado e
+ * desabilitado em quatro variantes dao vinte combinacoes; em utilitaria isso
+ * vira uma cadeia de `hover:` e `focus-visible:` que ninguem le e que a proxima
+ * variante copia errado. E a terceira disciplina do plano: quando precisar de
+ * CSS de verdade, escreva CSS de verdade.
+ *
+ * OS NUMEROS SAO MEDIDOS, com `node scripts/medir-primitivos.mjs`, inclusive os
+ * hovers — que nao aparecem no HTML nem no diff visual, entao seriam a parte
+ * mais facil de inventar. O que o tema resolvia com `line-height` fazendo as
+ * vezes de altura virou `padding` + `line-height` de verdade, e o que ele
+ * saltava na media query (13->16px de fonte, 24->40px de recuo no `lg`) agora
+ * interpola por `clamp()`, com as mesmas pontas.
+ *
+ *   <Botao href="/associe-se">Associe-se</Botao>
+ *   <Botao variante="contorno" tamanho="lg">Conheca os resorts</Botao>
+ *   <Botao tipo="submit" variante="destaque">Enviar</Botao>
+ *
+ * `href` decide a tag: com ele sai um `<a>`, sem ele um `<button>`. Nao ha prop
+ * para forcar — link que executa acao e botao que navega sao justamente os dois
+ * erros de acessibilidade que este componente evita.
+ */
+interface Props extends Omit<HTMLAttributes<'a'>, 'class' | 'href' | 'type'> {
+  /** Presente: vira `<a>`. Ausente: vira `<button>`. */
+  href?: string;
+  variante?: 'primaria' | 'contorno' | 'clara' | 'destaque';
+  tamanho?: 'sm' | 'md' | 'lg';
+  /** So no `<button>`. */
+  tipo?: 'button' | 'submit' | 'reset';
+  desabilitado?: boolean;
+  /** Ocupa a largura do pai — util em coluna estreita e no mobile. */
+  larguraTotal?: boolean;
+  /**
+   * Forca visualmente um estado. Existe para o catalogo /design conseguir
+   * mostrar os cinco lado a lado sem duplicar as regras: cada seletor de estado
+   * abaixo aceita tanto a pseudo-classe real quanto este atributo. Fora do
+   * catalogo nao ha motivo para usar.
+   */
+  estado?: 'hover' | 'foco' | 'ativo';
+  class?: string;
+}
+
+const {
+  href,
+  variante = 'primaria',
+  tamanho = 'md',
+  tipo = 'button',
+  desabilitado = false,
+  larguraTotal = false,
+  estado,
+  class: classe,
+  ...resto
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  class:list={['botao', `v-${variante}`, `t-${tamanho}`, larguraTotal && 'largura-total', classe]}
+  href={href && !desabilitado ? href : undefined}
+  type={href ? undefined : tipo}
+  disabled={href ? undefined : desabilitado || undefined}
+  aria-disabled={href && desabilitado ? 'true' : undefined}
+  data-estado={estado}
+  {...resto}
+>
+  <slot />
+</Tag>
+
+<style>
+  /*
+   * MEDIDO no tema, por variante e por tamanho:
+   *
+   *   tamanho  fonte      espacamento  recuo-x        altura
+   *   sm       11px       0.5px        12 -> 14px     28 -> 30px
+   *   md       12px       0.5px        14 -> 18px     32 -> 38px
+   *   lg       13 -> 16px 2px          24 -> 40px     38 -> 56px
+   *
+   * O `sm` sobe de 11 para 12px (o degrau `--text-xs`): 11px nao esta na escala
+   * e criar um degrau para um botao que so existe na faixa de cookies seria
+   * inverter a relacao entre sistema e excecao. Delta de 1px, deliberado.
+   */
+  .botao {
+    display: inline-block;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    /*
+     * `all` era o que o tema animava. Aqui a lista e explicita: animar tudo
+     * inclui `outline-color`, e o contorno de foco tem de aparecer na hora.
+     */
+    transition:
+      background-color 0.3s,
+      border-color 0.3s,
+      color 0.3s;
+  }
+
+  .largura-total {
+    display: block;
+    width: 100%;
+  }
+
+  /* ---------------- tamanhos ---------------- */
+
+  .t-sm {
+    padding: 0.375rem 0.875rem; /* 6px / 14px */
+    font-size: var(--text-xs);
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+  }
+
+  .t-md {
+    /* 8.8 -> 12px de altura e 14 -> 18px de recuo, ancorados em 390 e 1440. */
+    padding: clamp(0.55rem, 0.4757rem + 0.3048vw, 0.75rem)
+      clamp(0.875rem, 0.7821rem + 0.381vw, 1.125rem);
+    font-size: var(--text-xs);
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+  }
+
+  .t-lg {
+    padding: clamp(0.7rem, 0.5329rem + 0.6857vw, 1.15rem)
+      clamp(1.5rem, 1.1286rem + 1.5238vw, 2.5rem);
+    font-size: clamp(0.8125rem, 0.7429rem + 0.2857vw, 1rem);
+    line-height: 1.2;
+    letter-spacing: 2px;
+  }
+
+  /* ---------------- variantes ---------------- */
+
+  .v-primaria {
+    background-color: var(--color-acao-primaria);
+    border-color: var(--color-acao-primaria);
+    color: var(--color-texto-inverso);
+  }
+
+  .v-primaria:hover,
+  .v-primaria[data-estado='hover'] {
+    background-color: var(--color-acao-primaria-hover);
+    border-color: var(--color-acao-primaria-hover);
+  }
+
+  .v-contorno {
+    background-color: transparent;
+    border-color: var(--color-acao-primaria);
+    color: var(--color-acao-primaria);
+  }
+
+  .v-contorno:hover,
+  .v-contorno[data-estado='hover'] {
+    background-color: var(--color-acao-primaria);
+    color: var(--color-texto-inverso);
+  }
+
+  /* Para uso sobre foto ou superficie escura — e o `.btn-light.btn-outline`, a
+     variante mais usada do site (17 ocorrencias). */
+  .v-clara {
+    background-color: transparent;
+    border-color: var(--color-texto-inverso);
+    color: var(--color-texto-inverso);
+  }
+
+  /* O tema pintava este texto de #4c5667, um cinza que so aparecia aqui.
+     Consolidado no cinza de paragrafo (#525e75) — 6 pontos de diferenca em cada
+     canal, e uma primitiva a menos na paleta. */
+  .v-clara:hover,
+  .v-clara[data-estado='hover'] {
+    background-color: var(--color-texto-inverso);
+    color: var(--color-texto-paragrafo);
+  }
+
+  .v-destaque {
+    background-color: var(--color-acao-destaque);
+    border-color: var(--color-acao-destaque);
+    color: var(--color-texto-inverso);
+  }
+
+  .v-destaque:hover,
+  .v-destaque[data-estado='hover'] {
+    background-color: var(--color-acao-destaque-hover);
+    border-color: var(--color-acao-destaque-hover);
+  }
+
+  /* ---------------- estados comuns ---------------- */
+
+  /*
+   * O contorno de foco vem do base.css, que o aplica a todo `a`/`button`. Aqui
+   * so entra o `[data-estado]`, porque `:focus-visible` nao pode ser simulado —
+   * e o catalogo precisa mostrar esse estado parado.
+   */
+  .botao[data-estado='foco'] {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
+  }
+
+  /* Mesma troca que o base.css faz no `:focus-visible` de verdade: sobre fundo
+     escuro o azul do contorno desaparece. */
+  :global(.superficie-inversa) .botao[data-estado='foco'] {
+    outline-color: var(--color-texto-inverso);
+  }
+
+  .botao:active,
+  .botao[data-estado='ativo'] {
+    /* O tema nao tinha estado pressionado: o clique nao devolvia nada. */
+    transform: translateY(1px);
+  }
+
+  .botao:disabled,
+  .botao[aria-disabled='true'] {
+    opacity: 0.45;
+    cursor: not-allowed;
+    /* Sem isto o hover continua respondendo a um botao que nao faz nada. */
+    pointer-events: none;
+  }
+</style>

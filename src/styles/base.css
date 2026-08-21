@@ -63,7 +63,7 @@
    * a extremidade da escala, para que um h1 sem classe nasca correto. */
   h1 {
     font-size: var(--text-3xl);
-    margin-block: 0 var(--espaco-secao-sm);
+    margin-block: 0 var(--spacing-secao-sm);
   }
 
   h2 {
@@ -197,6 +197,27 @@
   /* Sobre fundo escuro o azul some; o branco mantem o contraste. */
   :where(.superficie-inversa) :where(a, button):focus-visible {
     outline-color: var(--color-texto-inverso);
+  }
+
+  /*
+   * O cinza de paragrafo (#525e75) da 2,1:1 sobre a superficie escura — reprova
+   * o criterio 1.4.3 da WCAG com folga. Dentro de uma secao invertida o texto
+   * herda a cor que ela definiu, em vez de cada componente ter de lembrar.
+   * Quem marca a secao e o <Secao fundo="inversa">.
+   */
+  :where(.superficie-inversa) :where(p, li, small) {
+    color: inherit;
+  }
+
+  /*
+   * O link tambem: #2250fc sobre a superficie escura da 2,6:1. Herdando a cor
+   * ele some do texto, entao o sublinhado volta a ser o que o distingue — que e
+   * como link se marcava antes de haver cor suficiente para dispensa-lo.
+   */
+  :where(.superficie-inversa) :where(a[href]) {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   /*

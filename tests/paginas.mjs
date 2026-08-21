@@ -54,6 +54,18 @@ export const PAGINAS = [
 ];
 
 /**
+ * O catalogo do design system.
+ *
+ * Fica fora da lista acima porque nao e pagina de conteudo — o diff visual nao
+ * tem contra o que compara-lo, ja que ele nao existe no site original. Mas a
+ * varredura de GEOMETRIA precisa dele, e por um motivo pratico: hoje ele e a
+ * unica pagina que roda so sobre o sistema novo, entao um primitivo quebrado
+ * aparece ali antes de aparecer em qualquer outro lugar. Aconteceu na Etapa 1 —
+ * a escala tipografica transbordava 25px no mobile e nenhum outro portao viu.
+ */
+export const CATALOGO = '/design.html';
+
+/**
  * As larguras sao uma por faixa do site, nao as do Tailwind:
  * xs 0-575 | sm 576-767 | md 768-1024 | lg 1025-1199 | xl 1200+
  *

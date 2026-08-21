@@ -25,6 +25,31 @@ com a checagem de isolamento do `verifica-sistema.mjs`.
 | 11 | `politica-de-privacidade` e afins, 3 idiomas | todos | correção | a tabela de cookies caiu de **15 linhas para 1**: listava cookies de uma plataforma de consentimento que nunca foi instalada, e omitia o único cookie real. Páginas ficam 7–8% mais curtas. Ver [decisoes.md](decisoes.md), "A tabela de cookies descrevia outro site" |
 | 1 | `en-us/board` | mobile | **não explicado** | 23px de diferença (4402 → 4379), mesma contagem de imagens. Marginal, anterior ao design system, sem bundle novo. Provavelmente o `<a>` sem `href` para membro sem LinkedIn, que substituiu o `href="#"` do original. Confirmar antes de migrar a página |
 
+## Etapa 1 — nenhum delta novo, quatro decisões latentes
+
+Medido em 21/08/2026, com `PAGES=/index.html,/associados.html,/publicacoes.html,/ebook.html`:
+**idênticas**, exceto as duas do `ebook` que já constam da linha de base. A etapa
+criou os oito primitivos e não migrou nenhuma página de conteúdo, então não
+havia pixel a mudar — o que ela mexeu foi só no que o `/design` carrega, e no
+`purge-css.mjs`, que passou a ignorar as páginas já migradas (a conferência
+acima existe justamente por causa dessa segunda mudança).
+
+As quatro decisões abaixo **ainda não aparecem em pixel**. Aparecerão quando a
+primeira página de conteúdo migrar, e é aqui que já estão classificadas — para
+que nenhuma delas seja confundida com regressão na Etapa 5:
+
+| decisão | tipo | efeito quando aparecer |
+|---|---|---|
+| botão `sm` de 11px para 12px | refino | só a faixa de cookies usa esse tamanho |
+| container deixa de travar em 540px entre 576 e 767px | correção | conteúdo mais largo nessa faixa; o degrau fazia a página *encolher* quando a tela crescia |
+| `#4c5667` consolidado em `#525e75` | refino | texto do botão claro em hover, 6 pontos por canal |
+| botão ganha estado pressionado | refino | o tema não devolvia nada ao clique |
+
+E três **correções de token** que não são delta e sim conserto: o container
+media 1500px e não 1140px, a cor de ação é `#2250fc` e não `#0c71c3`, e os raios
+carregavam a fração do root de 14px do tema. Ver [decisoes.md](decisoes.md),
+"Etapa 1".
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

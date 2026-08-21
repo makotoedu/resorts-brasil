@@ -964,3 +964,98 @@ documento, e no `<header>` ela vem antes do `<main>`: o `a` saía com 40px e pes
 800 (o logotipo) e o `ul` com `line-height: 80px` (a barra de navegação). Passou
 a medir dentro de `main`, excluindo o cromo, e a reportar o valor **dominante**
 por frequência, não o primeiro.
+
+## Etapa 1: três valores do `tokens.css` não resistiram à medição
+
+Os tokens da Etapa 0 foram medidos com `medir-base.mjs`, que cobre o **elemento
+nu** — `h1`–`h6`, `p`, `ul`, `a`, `body`. O que tem classe ficou de fora, e é ali
+que estavam os erros. `scripts/medir-primitivos.mjs` fechou o buraco: botão em
+cinco variantes, seção, container, grade e ícone, nos três viewports, **com o
+hover medido de mouse em cima** — o único estado que não aparece no HTML nem no
+diff visual, e portanto o mais fácil de inventar.
+
+Três correções saíram dali, todas do mesmo tipo (valor plausível, não medido):
+
+| token | estava | medido | como o erro entrou |
+|---|---|---|---|
+| `--container-conteudo` | 1140px | **1500px** | é o padrão do Bootstrap, que este tema sobrescreve |
+| `--color-acao-primaria` | `--cor-azul-600` (#0c71c3) | **`--cor-azul-500`** (#2250fc) | contagem de ocorrências no markup, não medição |
+| `--radius-sm` / `--radius-md` | 0.42rem / 0.82rem | **0.3675rem / 0.7175rem** | a fração do tema resolvida contra o root de 14px dele |
+
+O do container é o mais caro dos três: a primeira página de conteúdo migrada
+teria nascido **24% mais estreita** que o site, e sem referência de pixel
+ninguém saberia dizer se aquilo era o refino ou um defeito.
+
+O da ação primária é o mais instrutivo. O `#0c71c3` aparece 123 vezes no markup
+— parecia a cor de ação por volume. As 123 são **todas** títulos de capítulo do
+`ebook.astro`. Nenhuma é botão. Contar ocorrência de hex no HTML responde "qual
+cor aparece mais", que não é a pergunta.
+
+O dos raios é o `rem` de 14px de novo, um degrau abaixo: a escala tipográfica foi
+compensada na Etapa 0 e os raios ficaram com a fração original, que sob root de
+16px inflaria os dois em 14%.
+
+### O que muda de propósito
+
+Quatro deltas deliberados, registrados aqui porque nenhum aparece em pixel hoje
+— só quando a primeira página de conteúdo migrar:
+
+- **botão `sm` sobe de 11px para 12px.** 11px não está na escala, e criar um
+  degrau para um botão que só existe na faixa de cookies inverteria a relação
+  entre sistema e exceção;
+- **o container deixa de travar em 540px entre 576 e 767px.** É um degrau do
+  Bootstrap que faz o conteúdo *encolher* quando a tela cresce, e saltar para a
+  largura inteira em 768;
+- **o `#4c5667` do texto do botão claro em hover** foi consolidado no cinza de
+  parágrafo (`#525e75`), 6 pontos por canal;
+- **botão ganha estado pressionado.** O tema não devolvia nada ao clique.
+
+## Ícone: SVG antes da hora, e de propósito
+
+O plano previa os ícones em SVG lá na frente. Foram antecipados para a Etapa 1,
+porque `<Icone>` é um primitivo e um primitivo com implementação provisória
+contamina tudo que o usa.
+
+Os 16 contornos são extraídos **das próprias webfonts do tema**, por
+`python scripts/glifos-para-svg.py`, a partir de `scripts/glifos.json` — o mesmo
+inventário que o subset usa, e pela mesma razão de sempre: dois glifos entram por
+pseudo-elemento e não têm classe no HTML.
+
+O modo de falha aqui é idêntico ao que já custou caro neste projeto: contorno
+vazio, codepoint trocado ou eixo espelhado não quebram build nenhum, do mesmo
+jeito que o glifo ausente virava tofu. Daí `tests/verify-icones.mjs`, que
+compara **forma**: renderiza os dois desenhos grandes, recorta cada um no seu
+retângulo de tinta, reescala para 96×96 e mede a divergência. Assim a métrica da
+fonte — que o navegador resolve com a tabela OS/2, não com o `hhea` que o gerador
+leu — sai da conta e sobra o desenho.
+
+Calibração: os 16 ficam entre 0% e 5,1% de divergência; trocar entre si os dois
+glifos **mais parecidos do conjunto** (`chevron-right` e `chevron-up`) dá 33%. O
+limiar está em 8%. E o primeiro erro de execução do próprio teste serviu de teste
+negativo: a página montada com `setContent` não resolve `@font-face` relativo em
+`about:blank`, a webfont não carregou, e os 16 reprovaram por tofu — exatamente o
+sintoma que a checagem existe para pegar. A página passou a ser servida de dentro
+da origem do preview, por interceptação de rota.
+
+## O `/design` entrou na varredura de geometria
+
+Ele fica fora de `tests/paginas.mjs` porque não é página de conteúdo — o diff
+visual não tem contra o que compará-lo, já que não existe no site original. Mas
+hoje é a única página que roda **só** sobre o sistema novo, então um primitivo
+quebrado aparece ali antes de qualquer outro lugar.
+
+Valeu na primeira execução: a escala tipográfica do catálogo transbordava 25px na
+horizontal em 390px — rótulo de 12rem somado ao degrau `4xl`. Nenhum outro portão
+viu, e a página que existe para denunciar problema estava com um.
+
+## A purga agora encolhe sozinha
+
+`scripts/purge-css.mjs` alimentava o PurgeCSS com `dist/**/*.html`, o que incluía
+o `/design` — uma página que não carrega **uma linha** do tema mas cujas classes
+mantinham regras do tema vivas para as 40 que carregam. Medido: 1,1 KB a mais em
+`plugins.css` + `style.css`.
+
+Passou a considerar só as páginas que de fato referenciam `/css/*.css`. O efeito
+é o inverso e é automático: **cada página migrada sai da lista e leva junto as
+regras que só ela mantinha**, então o CSS do tema encolhe ao longo da migração em
+vez de ficar parado até a Etapa 11 apagá-lo.
