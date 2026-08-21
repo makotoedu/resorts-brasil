@@ -11,7 +11,8 @@ pega uma classe de problema que as outras deixam passar.
 npm run build
 ```
 
-Gera as 40 páginas e roda a purga de CSS. As URLs geradas precisam ser
+Gera as 40 páginas, roda a purga de CSS e confere o subset de fontes
+(`check-glifos.mjs`). As URLs geradas precisam ser
 idênticas às do site original — o site tem histórico de indexação e qualquer
 mudança de caminho exigiria redirect 301 no [`vercel.json`](../vercel.json).
 
@@ -34,9 +35,10 @@ npm run verify          # precisa de um preview rodando
 [`tests/verify-behaviors.mjs`](../tests/verify-behaviors.mjs) exercita num
 navegador real os comportamentos que o [`site.js`](../src/scripts/site.js)
 reimplementou depois da remoção do jQuery: menu mobile, seletor de idioma, hero
-(Ken Burns e legendas), carrossel de logos, contadores, abas, aviso de cookies e
-voltar ao topo. Também verifica ausência de erros de console em 6 páginas dos
-3 idiomas.
+(Ken Burns e legendas), carrossel de logos, contadores, abas e voltar ao topo.
+Mais duas famílias que não são do jQuery — o consentimento e os glifos do subset
+— descritas adiante. Também verifica ausência de erros de console em 6 páginas
+dos 3 idiomas.
 
 **Montado não é funcionando.** A verificação do Ken Burns conferia que o `<div>`
 existia e que a classe de animação estava aplicada — e passou durante todo o
@@ -59,6 +61,36 @@ primeira leitura pegava o item cru e a segunda o embrulhado: o valor mudava com
 o carrossel completamente parado. Hoje o teste espera o embrulho existir, compara
 o `src` do logo visível e espera passar de uma volta de autoplay. Ao escrever um
 teste de "mudou", confira **de que mudança** ele está falando.
+
+**O que sai pela rede, e não o que aparece na tela.** A verificação antiga do
+aviso de cookies media só o cosmético — a faixa aparece, some, grava um cookie —
+e passava 3/3 enquanto o GTM disparava antes de qualquer escolha e "Recusar" não
+recusava nada. Hoje o teste intercepta as requisições e exige **zero** contato
+com `googletagmanager`, `google-analytics`, `analytics.google` e `doubleclick`
+antes da decisão; depois, confere que aceitar carrega o container, que recusar
+não carrega, e que aceitar só "Desempenho" deixa `ad_storage` em `denied`.
+Mesma ideia para os vídeos: nenhum contato com o YouTube antes do clique.
+
+**Glifo: pinte no canvas, não meça a largura.** A verificação do subset compara o
+bitmap de cada codepoint com o de um codepoint sabidamente ausente da mesma
+família. Tofu é idêntico para qualquer codepoint que falte, então bitmaps iguais
+significam glifo perdido.
+
+Duas tentativas anteriores não serviram, e vale registrar para ninguém repetir:
+
+| tentativa | por que falha |
+|---|---|
+| medir a largura | o tofu ocupa 1em, e vários ícones também — `info-circle` e `dot-circle` dão os mesmos 100px que a caixa vazia |
+| `document.fonts.check()` | no Chromium responde `true` para codepoint ausente: verifica se a família carregou, não se ela tem o glifo |
+
+Conferido de propósito: com o subset antigo no lugar, a verificação reprova
+nomeando `chevron-right` e `dot-circle`.
+
+**Uma armadilha nova, de ordem de camadas.** A faixa de cookies agora aparece sem
+atraso e, sendo `position: fixed` com `z-index` 999, cobre o canto do
+`#scrollTop` (z-index 199). O teste do voltar-ao-topo passou a decidir antes de
+rolar a página. O encontro **não é regressão** — mesma CSS do original, onde o
+atraso de 2 s só escondia o problema do teste.
 
 Antes de rodar, suba o preview e ajuste a constante `BASE` do arquivo para a
 porta correta:
@@ -116,7 +148,54 @@ A refatoração fechou em **120/120 idênticas**, sem nenhuma divergência aceit
 progressão até lá foi 20 → 57 → 65 → 77 → 103 → 120, e cada salto correspondeu a
 uma causa raiz — todas descritas em [decisoes.md](decisoes.md).
 
-### O valor de referência hoje é 117/120
+### O valor de referência hoje é 93/120
+
+A terceira passagem (agosto/2026) acrescentou 24 divergências às 3 anteriores.
+Todas são **mudança pedida**, e nenhuma vem de fontes ou de consentimento:
+
+| comparações | o que mudou | por quê |
+|---|---|---|
+| 9 — `resorts-brasil`, 3 idiomas × 3 viewports | fachada no lugar do `<iframe>` | 4,6% a 6,7%, tudo dentro do retângulo do vídeo |
+| 6 — `ebook`, 3 idiomas × mobile e desktop | idem | 0,54% a 0,89%, rente ao limiar; o tablet fecha idêntico nos 3 idiomas |
+| 9 — as 3 políticas de privacidade × 3 viewports | tabela de cookies reescrita | a antiga descrevia outro site; a nova é menor (−608 a −1541px) |
+
+**As duas partes que mais mexeram no site não movem um pixel**, e isso foi
+conferido em rodada própria antes de seguir: o subset de fontes e o Google Fonts
+fecharam **117/120**, o valor de referência anterior, sem uma única divergência
+nova. Subset preserva as métricas de avanço, e `display=swap` não muda o estado
+assentado que o diff mede.
+
+O consentimento inteiro — faixa nova, terceiro botão, painel de categorias,
+botão de revogar no rodapé — **também não move pixel**, por construção:
+`.modal-strip` é `position: fixed` e o `FREEZE` do diff já esconde
+`.cookie-notify` e `.copyright-content`.
+
+#### O que a fachada dos vídeos custa, e o que não custa
+
+Os 4,6%–8,4% ficam **dentro do retângulo do vídeo**; o resto de cada página fecha
+idêntico. A fachada não tem como coincidir com o player do YouTube, que desenha
+barra de título, botão de compartilhar e o selo "Assista no YouTube".
+
+Duas medições que valem a pena registrar, porque a intuição errou nas duas:
+
+- **`object-fit: cover`, não `contain`.** A suposição era que o player
+  letterboxava o vídeo na caixa 1,65:1. Comparando as duas capturas lado a lado,
+  ele **sangra até as bordas**. O `contain` chegou a ser tentado: piorou o
+  enquadramento e não melhorou o diff.
+- **O `<iframe>` original era inline.** Um `<div>` block no lugar dele não cria
+  caixa de linha, e as 6 páginas encolhiam **7px** — o espaço do descendente da
+  fonte. Resolvido com `display: inline-block` no `.yt-facade`. Sem isso, o
+  deslocamento de 7px contaminava tudo abaixo do vídeo e inflava o percentual.
+
+`/ebook.html` fecha em 0,55% no mobile e 0,88% no desktop, e **idêntica no
+tablet**: o vídeo dele tem `controls=0`, então o player original desenha bem
+menos cromo para a fachada ter de imitar.
+
+A fachada é um `<a>` com `href` de verdade, não um `<button>` — sem JavaScript um
+botão aqui não faria nada e o visitante ficaria sem o vídeo. Trocar o elemento
+não moveu um pixel: as cinco comparações fecharam nos mesmos percentuais.
+
+### O valor de referência anterior era 117/120
 
 O refino de 20/08/2026 manteve 120/120 em tudo o que era SEO, acessibilidade e
 extração de dados — nada daquilo move um pixel em repouso. Depois disso,
@@ -128,8 +207,8 @@ extração de dados — nada daquilo move um pixel em repouso. Depois disso,
 | `/en-us/join-us` tablet (−197px) | idem | idem |
 | `/en-us/board` mobile (−23px, 6.42%) | cargos traduzidos | "Chair of the Board" cabe em 1 linha onde "Presidente do Conselho" ocupava 2, e "Vice President of Human Intelligence" em 2 onde o português ocupava 3 |
 
-**117/120 é o novo valor de referência.** Qualquer número menor é regressão;
-qualquer divergência fora dessas três também é.
+Qualquer número menor que **93/120** é regressão; qualquer divergência fora das
+27 listadas também é.
 
 Nos dois casos a divergência **só aparece onde o texto reflui**. `/en-us/join-us`
 fecha idêntica no desktop, porque 10 e 8 logos ocupam as mesmas duas linhas numa
@@ -254,9 +333,30 @@ Três coisas que já induziram a erro na leitura dos resultados:
 
 ---
 
+## 4. Rede, à mão
+
+O que a suíte automatiza vale confirmar uma vez com os olhos, nos três idiomas,
+com o navegador limpo:
+
+1. DevTools aberto na aba Network, `Disable cache`, cookies apagados.
+2. Carregar a home. **Nenhuma requisição para `googletagmanager.com`,
+   `google-analytics.com`, `doubleclick.net` ou `youtube.com`.** O
+   `fonts.googleapis.com` continua aparecendo — é a decisão registrada em
+   [decisoes.md](decisoes.md).
+3. Aceitar. O `gtm.js` aparece, e o cookie `rb_consent` fica com `a:1|p:1`.
+4. Clicar num vídeo em `/resorts-brasil`. Só então aparece
+   `youtube-nocookie.com`.
+5. Rodapé → "Preferências de cookies": o painel reabre com a escolha salva.
+
+---
+
 ## Antes de promover para produção
 
 1. As três camadas acima, limpas — ou com cada divergência explicada por escrito.
 2. Conferência manual do que os números não mostram: abrir `/associados` a
    768 px e confirmar a grade em 3 colunas com os logos a ~124 px.
-3. Deploy de preview na Vercel antes de promover.
+3. A conferência de rede da camada 4.
+4. Conferir que `/webfonts/` está sendo servido com a query de versão em vigor —
+   o `immutable` é de um ano, e uma fonte trocada sem trocar a query fica presa
+   no cache de quem já visitou.
+5. Deploy de preview na Vercel antes de promover.

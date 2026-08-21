@@ -21,27 +21,35 @@ src/
     parceiros.ts          mantenedores, parceiros e descontos
     diretoria.ts          diretoria e conselho consultivo
     contato.ts            endereço, e-mails e telefones
-  layouts/BaseLayout.astro  <head>, header, <main>, rodapé, cookies, scripts
+    cookies.ts            os cookies que o site grava, levantados por medição
+  layouts/BaseLayout.astro  <head>, consentimento, header, <main>, rodapé, scripts
   components/
     Header.astro          topbar, logo, seletor de idioma, navegação
-    Footer.astro          widgets do rodapé e copyright
+    Footer.astro          widgets do rodapé, copyright e revogar cookies
     SocialIcons.astro     os 4 links de rede social, com nome acessível
     AssociadosTabs.astro  as abas por região da página de associados
     CarrosselAssociados.astro  o carrossel de logos da home
     GradeLogos.astro      uma faixa de logos (mantenedores/parceiros/descontos)
     GradeMembros.astro    a grade de fotos da diretoria e do conselho
+    SecaoCookies.astro    a seção de cookies da política de privacidade
+    YouTube.astro         vídeo com fachada de clique-para-carregar
   pages/                  40 páginas — PT na raiz, en-us/ e es-es/
   scripts/site.js         os comportamentos de interface
 
 public/                   servido como está, na raiz do site
   css/                    plugins.css, style.css e ajustes.css
   images/                 198 arquivos
-  webfonts/               fontes de ícone (subsetadas)
+  webfonts/               fontes de ícone, geradas pelo subset (2,9 KB)
   robots.txt              aponta para o sitemap
+
+vendor/
+  webfonts/               as fontes originais do tema; public/webfonts/ é gerado
 
 scripts/
   purge-css.mjs           purga e minifica o CSS depois do build
-  subset-fonts.py         reduz as fontes aos glifos em uso
+  subset-fonts.py         gera public/webfonts/ a partir de vendor/ e glifos.json
+  glifos.json             os 16 glifos em uso — fonte única do subset e da guarda
+  check-glifos.mjs        aborta o build se o CSS pedir um glifo fora do subset
 
 tests/
   verify-behaviors.mjs    os comportamentos num navegador real
@@ -155,15 +163,19 @@ Três folhas, carregadas nesta ordem pelo [`BaseLayout`](../src/layouts/BaseLayo
 3. `ajustes.css` — **o que o tema resolvia em jQuery**
 
 A ordem importa: `ajustes.css` precisa vir depois de `style.css` para vencer na
-cascata. Ele é dividido em quatro seções, cada uma reparando algo que a remoção
-do jQuery deixou inerte:
+cascata. As quatro primeiras seções reparam algo que a remoção do jQuery deixou
+inerte; as quatro seguintes acrescentam o que o tema não previa:
 
-| seção | repara |
+| seção | repara / acrescenta |
 |---|---|
 | 1 | o deslocamento sob o cabeçalho transparente, que o `<main>` ativou por engano |
 | 2 | a visibilidade e as calhas das grades `.grid-layout` (Isotope) |
 | 3 | as 15 regras responsivas presas a `body.breakpoint-*` |
 | 4 | o contexto de empilhamento do slide, sem o qual o Ken Burns some |
+| 5 | foco visível por `:focus-visible`, que o tema apagava do site inteiro |
+| 6 | submenus da navegação abrindo também no foco, e não só no `:hover` |
+| 7 | o painel de categorias do consentimento, e o `[hidden]` da faixa |
+| 8 | a fachada dos vídeos do YouTube |
 
 Cada seção traz o porquê em comentário, com o trecho do tema que a originou.
 [decisoes.md](decisoes.md#a-armadilha-bodybreakpoint-) conta a história — é a
@@ -176,18 +188,25 @@ script `build` do `package.json`, então `npm run build` já faz tudo.
 
 Ao adicionar uma classe que só aparece via JavaScript, inclua-a na lista
 `runtimeClasses` do script de purga — o PurgeCSS não tem como enxergá-la no
-HTML estático.
+HTML estático. Isso vale para **seletor**, não só para classe: `iframe` está lá
+porque, depois da fachada dos vídeos, não existe um único `<iframe>` no HTML
+gerado — ele nasce no clique.
 
 ---
 
 ## JavaScript
 
-[`src/scripts/site.js`](../src/scripts/site.js) tem 9 comportamentos e ~9 KB
+[`src/scripts/site.js`](../src/scripts/site.js) tem 10 comportamentos e ~10 KB
 minificados, no lugar dos 504 KB de jQuery e do engine do tema.
 
 Menu mobile, seletor de idioma, hero (Ken Burns e legendas em cascata),
-carrossel de logos, grades masonry (.grid-layout), contadores, abas, aviso de
-cookies e voltar ao topo.
+carrossel de logos, grades masonry (.grid-layout), contadores, abas, faixa de
+cookies, fachada dos vídeos e voltar ao topo.
+
+A faixa de cookies aqui é **só a interface**. Quem grava o cookie, fala Consent
+Mode e decide carregar (ou não) o GTM é o bloco inline do `<head>` do
+`BaseLayout`, que expõe `window.rbConsent` — aquilo precisa rodar antes de
+qualquer rede, e este arquivo só roda no `DOMContentLoaded`.
 
 O módulo aplica **as mesmas classes de estado que o tema aplicava**
 (`.toggle-active`, `.mainMenu-open`, `.menu-animate`, `.dropdown-active`,

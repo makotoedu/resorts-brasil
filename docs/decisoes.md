@@ -54,8 +54,8 @@ O caso do Isotope ilustra por que a busca inicial não achou: procurei por
 `isotope`, `grid-filter` e `portfolio` no markup, mas a classe que dispara a
 inicialização é `grid-layout`. Cada um tem sua seção adiante.
 
-Sobraram 9 comportamentos reais, hoje em [`src/scripts/site.js`](../src/scripts/site.js),
-com cerca de 9 KB minificados.
+Sobraram 9 comportamentos reais, hoje em [`src/scripts/site.js`](../src/scripts/site.js).
+São 10 desde agosto/2026, com a fachada dos vídeos, e cerca de 10 KB minificados.
 
 Dois achados encurtaram bastante o trabalho:
 
@@ -287,7 +287,7 @@ de layout igual.**
 
 ## Subset de fonte em vez de SVG inline
 
-Os 14 ícones em uso (6 do FontAwesome, 8 do Inspiro) custavam 240 KB de fonte.
+Os 16 ícones em uso (8 do FontAwesome, 8 do Inspiro) custavam 247 KB de fonte.
 
 Trocar por SVG inline daria o melhor resultado teórico — zero requisição de
 fonte — mas exigiria editar `<i class="icon-*">` espalhado pelas 40 páginas, com
@@ -298,10 +298,143 @@ praticamente o mesmo ganho **sem tocar uma linha de markup ou CSS**, então o
 risco visual é zero. A família `fa-regular-400` sai por inteiro: nenhum ícone
 `.far` aparece em qualquer página.
 
-> **Ainda não aplicado.** O script está escrito e revisado, mas as fontes em
-> `public/webfonts/` continuam as originais (256 KB). Rodá-lo é a Fase 2.1 e
-> exige `fonttools`; depois de rodar, atualize os `@font-face` e passe o diff
-> visual, porque troca de fonte mexe em métrica de texto.
+**Aplicado em agosto/2026: 247 KB → 2,9 KB (−98,8%).** Junto vieram três
+correções que o script original não tinha:
+
+- **A lista de glifos estava incompleta e teria quebrado 6 páginas** — tem seção
+  própria adiante, é o achado principal.
+- **Origem e destino passaram a ser separados.** O script lia e escrevia em
+  `public/webfonts/`, apagando os originais: rodar duas vezes subsetava um
+  subset, e mudar a lista depois de commitado exigia recuperar do git. Hoje os
+  originais moram em `vendor/webfonts/` e `public/webfonts/` é inteiramente
+  gerado. Rodar duas vezes dá byte a byte o mesmo resultado.
+- **A `inspiro-icons` virou `woff2`.** Era o único arquivo do site ainda em
+  `woff`, o formato sem compressão Brotli.
+
+E uma armadilha de cache que só aparecia daqui a um ano: o `vercel.json` serve
+`/webfonts/` com `immutable, max-age=31536000` e **os nomes não têm hash**.
+Sobrescrever `fa-solid-900.woff2` no lugar entrega a fonte antiga a quem já
+visitou, por até 12 meses — inofensivo desta vez, porque o subset é subconjunto
+do que estava lá, mas fatal na próxima, quando um ícone novo virar tofu. A saída
+foi adotar o padrão que o próprio tema já usava em `inspiro-icons.woff?ijzgpf`:
+uma query de versão (`?v=2026-08`) em todos os `src:`, declarada em
+`scripts/glifos.json` e **conferida no build**.
+
+---
+
+## A quarta armadilha: o glifo que não tem classe
+
+O padrão das três armadilhas anteriores era *plugin removido, CSS inerte*. Esta
+é a mesma família com outra roupa: **inventário tirado do lugar errado**.
+
+A lista de codepoints do `subset-fonts.py` foi montada varrendo os
+`<i class="fa-*">` e `<i class="icon-*">` das 40 páginas. Dá 14 ícones. Mas dois
+glifos entram por **pseudo-elemento**, e pseudo-elemento não tem classe no HTML:
+
+```css
+.list-icon.list-icon-arrow  li:before { content: "\f054"; font-family: "Font Awesome 5 Free" }
+.list-icon.list-icon-circle li:before { content: "\f192"; font-family: "Font Awesome 5 Free" }
+```
+
+O `.list-icon li:before` fixa `font-weight: 900`, então os dois caem no
+`fa-solid-900` — a mesma fonte que o script reduzia a **um único glifo**
+(`U+F05A`, o `info-circle` da faixa de cookies).
+
+Rodar aquele script apagava as setas de `politica-de-privacidade` e as bolinhas
+de `historia`, **nos três idiomas**. Sem erro de build, sem erro de console, sem
+mudança de altura — o glifo ausente vira tofu, que ocupa exatamente 1em, e
+`historia` tem só 3 dessas listas.
+
+### A varredura certa é a do CSS purgado
+
+O `dist/css/` depois da purga é o único lugar onde sobra **exatamente** o que as
+40 páginas usam — pseudo-elemento incluído. E é fácil de ler: o lightningcss já
+converteu os escapes `\f054` em caractere literal, então basta varrer o
+intervalo de uso privado (`U+E000`–`U+F8FF`).
+
+Foi essa varredura que achou os dois. Ela virou
+[`scripts/check-glifos.mjs`](../scripts/check-glifos.mjs), encadeado no `build`
+depois da purga, no mesmo modelo do `purge-css.mjs`: **aborta, não avisa.**
+Confere três coisas — todo codepoint do CSS está em `scripts/glifos.json`, todo
+`src:` de fonte carrega a query de versão, e todo arquivo publicado é
+referenciado por alguma folha.
+
+Ela tem um falso positivo, e ele está anotado no JSON: `U+E919`
+(`.icon-award`) sobrevive à purga por causa do caminho
+`/images/ebook/icon-award.png` — o extrator do PurgeCSS casa a substring. Não
+existe `<i class="icon-award">` no site. O campo `ignorar` existe para isso, com
+o motivo por escrito.
+
+### Duas verificações, porque são duas coisas diferentes
+
+O `check-glifos` garante que **a lista cobre o que o CSS pede**. Não garante que
+o arquivo gerado contém os glifos da lista — um `pyftsubset` com a flag errada
+passa nele e falha no navegador.
+
+Por isso há também uma verificação na suíte comportamental. Ela pinta cada
+codepoint num `<canvas>` e compara com um codepoint sabidamente ausente da mesma
+família: tofu é idêntico para qualquer codepoint que falte, então bitmaps iguais
+significam glifo perdido.
+
+**Medir largura não serve**, e vale registrar por quê: o tofu ocupa 1em, e vários
+ícones também. O `info-circle` e o `dot-circle` medem exatamente os mesmos 100px
+que a caixa vazia. E `document.fonts.check()` **também não serve**: no Chromium
+ele responde `true` para um codepoint ausente, porque verifica se a família
+carregou, não se ela tem aquele glifo. As duas tentativas foram feitas antes de
+chegar no canvas.
+
+Conferido: com o subset antigo no lugar, a verificação reprova nomeando
+`chevron-right` e `dot-circle`.
+
+---
+
+## Google Fonts: o `@import` que ninguém via
+
+A linha 9 do `style.css` era:
+
+```css
+@import url("https://fonts.googleapis.com/css?family=Poppins:100,200,400,500,600,700,800|Nunito:300,400,600,700,800");
+```
+
+Ela sobrevivia à purga e ia para produção **na primeira linha do CSS**. Como
+`@import` dentro de folha, o navegador só descobria a fonte depois de baixar e
+analisar o `style.css` inteiro: HTML → `style.css` → `googleapis` → `gstatic`,
+três saltos em série, sem `preconnect` em nenhum.
+
+Foi para o `<head>` do `BaseLayout` como `<link>`, com os dois `preconnect`. É a
+**única edição de conteúdo** feita no `style.css` do tema, e não tinha
+alternativa: um `@import` não pode ser desfeito pelo `ajustes.css`.
+
+Três outras coisas mudaram junto, e todas vieram de medição:
+
+- **A Nunito saiu inteira.** Cinco pesos baixados, e **nenhuma regra
+  `font-family` em qualquer um dos três CSS a menciona** — a única ocorrência da
+  palavra no repositório era a própria URL do `@import`.
+- **O endpoint passou de `css?` (v1) para `css2`**, que aceita `display=swap`.
+  Sem ele o texto inteiro do site ficava invisível por até 3 s.
+- **A lista de pesos passou a ser a medida.** Varrendo `getComputedStyle` de
+  todo elemento com texto nas 14 páginas em português, o site renderiza Poppins
+  em **400, 500, 600, 700 e 800** e mais nada. O `@import` pedia 100 e 200, que
+  não aparecem em lugar nenhum, e as duas regras de peso 300 que sobrevivem à
+  purga (`.display-4` e `.heading-text.heading-section p`) **não casam elemento
+  algum** — não há `<p>` dentro daqueles `<div>`.
+
+Essa última merece atenção: a intuição dizia que trocar o peso 200 pelo 300
+mudaria os `.heading-text.heading-section p` das páginas do ebook, e a
+expectativa era divergência no diff. A medição mostrou que a regra é inerte, e a
+mudança saiu de graça. **Neste tema, meça antes de concluir pelo seletor** —
+vale para peso de fonte como valia para o `.dropdown-menu`.
+
+### O que ficou de fora, e por quê
+
+**Preload das faces não dá.** As URLs do `fonts.gstatic.com` são opacas e mudam
+sem aviso; um `<link rel="preload">` apontando para elas quebra em silêncio. É
+uma limitação direta de manter as fontes no Google.
+
+**O IP do visitante continua indo para o Google**, em toda visita, antes de
+qualquer consentimento — `preconnect` não muda isso, só o acelera. Auto-hospedar
+resolveria; a decisão foi manter. Fica registrado ao lado da foto do Unsplash em
+`/resorts-brasil`, que é a mesma natureza de decisão.
 
 ---
 
@@ -565,5 +698,168 @@ tradução, confira o texto no HTML gerado — está detalhado em
 - **O contador diz 83 resorts associados; a lista tem 78.**
 - **As páginas do ebook seguem em português nas três versões** — 1.089 linhas
   cada, é trabalho de tradutor.
-- **O aviso de cookies é decorativo:** o GTM dispara antes de qualquer escolha
-  do visitante, o que num site brasileiro é assunto de LGPD.
+
+---
+
+# O consentimento que não consentia
+
+Agosto/2026. Esta seção conta o segundo dos dois trabalhos da terceira passagem;
+o primeiro é o subset de fontes, acima.
+
+## O diagnóstico, medido
+
+O `BaseLayout` injetava `GTM-PK7DG6MD` de forma síncrona no `<head>`, mais um
+`<iframe>` de `noscript` no topo do `<body>`. A faixa aparecia **2 s depois** e
+gravava `cookiebar21_cbe=1` ou `=0` — valor que **nenhum código lia**. Aceitar e
+recusar faziam exatamente a mesma coisa.
+
+Antes de mexer, valeu medir o que de fato saía do navegador numa visita com
+cookie limpo, sem tocar em nada:
+
+| destino | o que é |
+|---|---|
+| `googletagmanager.com/gtm.js` e `/gtag/js` | o container e o carregador de tags |
+| `analytics.google.com/g/collect` | GA4 coletando o pageview |
+| `stats.g.doubleclick.net/g/collect` | GA4 com Google Signals |
+| `googleads.g.doubleclick.net/pagead/id`, `google.com.br/ads/ga-audiences` | remarketing |
+
+E os cookies gravados: `_ga` e `_ga_2S6ZPL4J2P`, ambos com **400 dias**. Esse
+sufixo é o ID da propriedade GA4 (`G-2S6ZPL4J2P`) — foi assim que se descobriu,
+de fora, o que o container carrega. **Medir foi o que produziu a tabela da
+política**; sem isso, ela teria sido escrita por suposição, como a anterior.
+
+## Bloquear, e não só sinalizar
+
+Havia duas posturas possíveis. O Consent Mode v2 sozinho mantém o GTM carregando
+sempre, com os sinais em `denied` — as tags do Google passam a mandar pings sem
+cookie. É o desenho que o Google recomenda, e preserva a modelagem de conversão.
+Mas ainda é uma requisição a um domínio do Google, com o IP do visitante, antes
+de qualquer escolha.
+
+A escolha foi **bloquear**: os defaults do Consent Mode ficam no `dataLayer`,
+inline e sem rede, e o `gtm.js` só é injetado depois da decisão. Recusa total não
+carrega o container — não há o que medir, e seria uma requisição a terceiro sem
+finalidade.
+
+Isso obriga o bloco a ser **inline e síncrono no `<head>`**, e não um módulo em
+`src/scripts/`: os defaults precisam preceder qualquer carregamento, e a decisão
+de injetar depende de ler o cookie sem esperar o `DOMContentLoaded`. Ele fica
+**antes dos `<link>` de CSS** de propósito — um `<script>` depois de uma folha
+pendente espera essa folha carregar para executar.
+
+O `<noscript>` saiu. Sem JavaScript não há como pedir nem registrar
+consentimento, então ele era a única coisa da página que ainda disparava
+incondicionalmente.
+
+## Três categorias, e o cookie novo
+
+A política publicada já prometia, por escrito, que o visitante podia *"escolher
+quais as categorias de cookies quer permitir ou recusar"*. O painel nunca
+existiu. As três categorias da interface são as mesmas três da política, pelo
+mesmo componente, então não têm como discordar.
+
+O `cookiebar21_cbe` **não é herdado**: guardava uma escolha que não controlava
+nada, tomada sem informação. Quem decidiu antes decide de novo, e o cookie velho
+é expirado. O novo é `rb_consent`, 180 dias, com uma versão no valor
+(`v1|a:1|p:0|t:…`) — quando uma categoria ou um fornecedor mudar, basta subir a
+versão para a faixa voltar.
+
+Duas decisões de interface que são de conformidade, não de estética:
+
+- **Os três botões usam a mesma classe.** O original punha `btn-outline` no
+  "Recusar" contra o `btn-light` sólido no "Aceitar" — recusar tem de ser tão
+  fácil e tão visível quanto aceitar.
+- **O atraso de 2 s virou zero.** Ele só fazia sentido quando a faixa era
+  decorativa; agora nada é medido enquanto ela não for respondida, e adiar a
+  pergunta é adiar a medição.
+
+A faixa mudou de lugar no DOM, para logo depois do skip link, e nasce `hidden`.
+São dois detalhes com o mesmo motivo: no original os botões ficavam na ordem de
+tabulação **mesmo fora da tela e mesmo para quem já tinha decidido** — a faixa
+sai de cena por `transform`, que não tira nada do foco.
+
+> O `[hidden]` precisou de reforço no `ajustes.css`: o tema dá
+> `display: inline-block` a `.modal-strip`, e declaração de autor vence o
+> `display: none` que o navegador aplica a `[hidden]`.
+
+## Custo zero no diff, e o motivo
+
+`.modal-strip` é `position: fixed`, portanto **fora do fluxo**: a faixa pode
+crescer, ganhar um terceiro botão e abrir um painel inteiro sem mover um pixel de
+página nenhuma. E o `visual-diff.mjs` já a escondia.
+
+O mesmo raciocínio escolheu onde pôr o botão de revogar. Ele foi para a faixa de
+copyright, que o diff **também** já esconde (o ano virou dinâmico), e não para a
+lista "Navegação" — lá, um `<li>` a mais mudaria a altura do rodapé em 39 páginas
+× 3 viewports.
+
+Vale como método: neste projeto, antes de escolher onde pôr uma coisa nova,
+olhe o que o `FREEZE` do diff visual já neutraliza.
+
+## Os vídeos, e o `iframe` que a purga levaria
+
+As 6 páginas com YouTube embutiam `youtube.com/embed` direto — contato no
+carregamento, antes de qualquer escolha, puxando junto `i.ytimg.com`,
+`doubleclick.net` e `jnn-pa.googleapis.com`. Viraram fachada de
+clique-para-carregar, com destino `youtube-nocookie.com`. **O clique é o
+consentimento daquele vídeo**, então a fachada não depende da faixa.
+
+A miniatura é local. Puxá-la de `i.ytimg.com` faria a fachada chamar a CDN do
+Google, que é o problema que ela existe para resolver.
+
+E a fachada é um `<a href>` de verdade, não um `<button>` — mesmo raciocínio do
+`href="#top"` do `#scrollTop`: sem JavaScript um botão aqui não faria nada e o
+visitante ficaria sem o vídeo. Com JavaScript, o `preventDefault` troca a fachada
+pelo embed ali mesmo; sem ele, o link leva à página do vídeo.
+
+E aqui apareceu mais uma da família "seletor que ninguém enxerga": depois da
+fachada e da saída do `<noscript>`, **não existe um único `<iframe>` nas 40
+páginas**. O PurgeCSS levaria embora o `iframe{width:100%}` do tema e o
+`.yt-facade iframe{height:100%}` do `ajustes.css` — e o `<iframe>`, que nasce no
+clique, nasceria com os 300×150 do padrão do navegador.
+
+`iframe` entrou na safelist do `purge-css.mjs`. É a primeira entrada que **não é
+uma classe**, e o comentário no arquivo explica por quê. O diff visual não pegaria:
+em repouso a página mostra a fachada, e o estrago só existe depois de um clique.
+
+## A tabela de cookies descrevia outro site
+
+A política listava `__privaci_cookie_consents` e mais três da mesma plataforma de
+consentimento — **que nunca foi instalada aqui** —, `Wordpress_test_cookie` (o
+site não é WordPress), `http_token` e `exitIntentFlag` (Poptin, ausente),
+`Mc_ session` e `_gali`, com validades vencidas em 2021 e 2023. E **não citava o
+único cookie que o site realmente gravava**.
+
+É resíduo do site anterior, copiado na migração. A seção inteira virou
+[`SecaoCookies.astro`](../src/components/SecaoCookies.astro) alimentado por
+[`src/data/cookies.ts`](../src/data/cookies.ts), pelo mesmo motivo de sempre:
+estava escrita à mão nos três idiomas, e conteúdo triplicado neste projeto sempre
+divergiu. Uma tabela de tratamento de dados desatualizada em um idioma só seria
+pior que um logo a menos.
+
+O componente **aborta o build** se faltar a finalidade de algum cookie em algum
+idioma. Célula vazia numa tabela dessas não pode passar em silêncio: ninguém
+repara, e ela vai ao ar afirmando nada sobre um cookie que existe.
+
+> **Duas pendências que não se resolvem no código.** Só o console do GTM diz o
+> que mais pode ser disparado por uma tag ainda não publicada — a tabela precisa
+> dessa conferência. E o texto é jurídico: vale revisão do cliente antes de
+> publicar, como se fez com os cargos da diretoria.
+>
+> Do lado do GTM, falta ainda configurar *verificações de consentimento
+> adicionais* por tag. Bloquear o carregamento cobre o pré-consentimento, mas não
+> cobre quem aceita só "Desempenho": aí o container carrega, e só as tags do
+> Google respeitam `ad_storage` sozinhas.
+
+## O que o `#scrollTop` revelou
+
+A verificação do voltar-ao-topo passou a falhar: a faixa, agora sem atraso, cobre
+o canto onde o botão vive (`z-index` 999 contra 199).
+
+O encontro **não é novo** — mesma CSS, mesmos z-index, e no original a faixa
+também passava por cima assim que aparecia. O atraso de 2 s só escondia o
+encontro do teste. O teste passou a decidir antes de rolar a página, que é o que
+um visitante faz.
+
+Fica registrado por ser o tipo de coisa que, daqui a um ano, parece regressão
+introduzida aqui.

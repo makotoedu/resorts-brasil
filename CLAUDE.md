@@ -62,6 +62,36 @@ O padrão comum às três: **plugin removido, CSS que dependia dele silenciosame
 inerte**. Procure por `z-index` negativo, `opacity: 0` e classes de estado antes
 de tirar qualquer script.
 
+## Antes de mexer em fonte de ícone ou em qualquer script de terceiro
+
+**Fonte de ícone: o inventário sai do CSS purgado, não das classes do HTML.**
+Dois glifos do site entram por pseudo-elemento — `.list-icon-arrow li:before`
+(`U+F054`) e `.list-icon-circle li:before` (`U+F192`) — e **pseudo-elemento não
+tem classe**. Um subset montado a partir dos `<i class="fa-*">` enxerga 14
+ícones; o número real é 16, e rodá-lo apagava as setas e bolinhas de 6 páginas
+sem erro nenhum: glifo ausente vira tofu, que ocupa exatamente 1em.
+
+A lista vive em [`scripts/glifos.json`](scripts/glifos.json) e
+[`scripts/check-glifos.mjs`](scripts/check-glifos.mjs) aborta o build se o CSS
+purgado pedir um codepoint fora dela. Não desative essa guarda.
+
+`public/webfonts/` é **gerado** a partir de `vendor/webfonts/`; nunca edite o
+primeiro à mão. E os `src:` dos `@font-face` carregam `?v=` porque `/webfonts/`
+é servido com `immutable` de um ano e os nomes não têm hash — trocar a fonte sem
+trocar a query entrega a antiga por 12 meses.
+
+**Terceiros: nada carrega antes do consentimento.** O GTM, e qualquer script de
+terceiro que venha a existir, é injetado pelo bloco inline do `<head>` do
+[`BaseLayout`](src/layouts/BaseLayout.astro), que expõe `window.rbConsent`. Não
+acrescente `<script src>` de outro domínio fora dele, nem um `<iframe>` de
+terceiro sem fachada de clique-para-carregar. Se a lista de cookies mudar,
+atualize [`src/data/cookies.ts`](src/data/cookies.ts) — a tabela da política nos
+três idiomas sai de lá — e suba a versão de `rb_consent`.
+
+Nota de purga: `iframe` está na safelist do `purge-css.mjs` porque, depois da
+fachada dos vídeos, **não existe um único `<iframe>` no HTML gerado** — ele nasce
+no clique. Vale para seletor de tag, não só para classe.
+
 Ao reproduzir qualquer coisa que o tema fazia em JavaScript, **leia o valor
 padrão junto com o atributo**. `data-margin` vale 20 nas grades e 10 nos
 carrosséis quando ausente, `data-autoplay` vale 7000, e `data-items` desdobra
@@ -105,6 +135,9 @@ Para poupar buscas: não há lightbox, formulário, carrossel com múltiplos sli
 nem cabeçalho fixo no scroll. O `functions.js` original
 inicializava tudo isso, mas nenhuma das 40 páginas usa — foi por isso que a
 remoção do jQuery coube em 8 KB.
+
+Também não há `<iframe>` no HTML gerado (os vídeos são fachada), nenhum ícone
+`.far`, e nenhuma regra que use Nunito — a fonte era baixada e nunca aplicada.
 
 ## Onde os dados moram
 

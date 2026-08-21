@@ -7,7 +7,7 @@ e hospedadas na Vercel.
 ## Requisitos
 
 - Node.js 20 ou superior (desenvolvido com a 24)
-- Python 3 com `fonttools` e `brotli`, só para rodar o subset de fontes
+- Python 3 com `fonttools` e `brotli`, só para regerar o subset de fontes
 
 ## Como rodar
 
@@ -26,7 +26,7 @@ aparecer, rode `npm approve-scripts sharp esbuild`.
 | comando | o que faz |
 |---|---|
 | `npm run dev` | servidor de desenvolvimento com recarga |
-| `npm run build` | checa os tipos, gera `dist/` e purga o CSS |
+| `npm run build` | checa os tipos, gera `dist/`, purga o CSS e confere os glifos |
 | `npm run check` | só a checagem de tipos (`astro check`) |
 | `npm run preview` | serve o `dist/` gerado |
 | `npm run verify` | suíte de comportamento (precisa de um preview no ar) |
@@ -35,7 +35,8 @@ Scripts auxiliares:
 
 ```bash
 node scripts/purge-css.mjs      # purga e minifica (já embutido no build)
-python scripts/subset-fonts.py  # reduz as fontes aos ícones em uso
+node scripts/check-glifos.mjs   # confere o subset de fontes (idem)
+python scripts/subset-fonts.py  # regera public/webfonts/ a partir de vendor/
 node tests/visual-diff.mjs      # compara o build com o site original
 #   PAGES=/index.html VIEWPORTS=desktop ... limita a rodada
 ```
@@ -87,6 +88,18 @@ armadilha específica deste tema que não é óbvia.
 `runtimeClasses` de [`scripts/purge-css.mjs`](scripts/purge-css.mjs), senão a
 purga remove o estilo dela.
 
+**Acrescentar um ícone** — o glifo precisa entrar em
+[`scripts/glifos.json`](scripts/glifos.json) e o subset precisa ser regerado,
+senão ele renderiza como tofu. O build avisa: `check-glifos.mjs` aborta se o CSS
+pedir um codepoint que não esteja no subset.
+
+**Mexer em cookies, GTM ou qualquer script de terceiro** — o consentimento fica
+no bloco inline do `<head>` de [`src/layouts/BaseLayout.astro`](src/layouts/BaseLayout.astro),
+que expõe `window.rbConsent`. Nada de terceiro pode ser carregado fora dele. Se a
+lista de cookies mudar, atualize [`src/data/cookies.ts`](src/data/cookies.ts) —
+a tabela da política sai de lá, nos três idiomas — e suba a versão do cookie
+`rb_consent` para que a faixa volte a perguntar.
+
 ## Estado da refatoração
 
 Feito e verificado:
@@ -119,10 +132,35 @@ divergência de layout registrada — o valor de referência do diff passou a se
   dos conselheiros **não** traduz — é nome próprio)
 - dois LinkedIn trocados na diretoria, corrigidos
 
+Terceira passagem, agosto/2026:
+
+- **Subset das fontes de ícone aplicado: 247 KB → 2,9 KB.** A lista de glifos do
+  script estava incompleta e teria apagado as setas e bolinhas de 6 páginas —
+  dois glifos entram por pseudo-elemento e não têm classe no HTML. Hoje
+  `scripts/check-glifos.mjs` aborta o build se o CSS pedir um glifo fora do
+  subset, e a suíte confere no navegador que os 16 renderizam.
+- **Google Fonts fora do caminho crítico** — o `@import` da linha 1 do CSS de
+  produção virou `<link>` com `preconnect` e `display=swap`; a Nunito saiu (5
+  pesos baixados sem uso) e a lista de pesos passou a ser a medida.
+- **Consentimento de verdade** — nada de Google é contatado antes da escolha,
+  com Consent Mode v2, três categorias, painel de preferências e revogação pelo
+  rodapé. Os vídeos do YouTube viraram fachada de clique-para-carregar.
+- **A tabela de cookies da política passou a descrever este site** — a anterior
+  listava uma plataforma de consentimento nunca instalada, cookies de WordPress
+  e de Poptin, com validades vencidas em 2021-2023.
+
+As três camadas passaram. O diff visual fechou **117/120 depois das fontes** —
+o valor de referência anterior, sem um pixel movido — e **93/120 no fim**, com as
+24 divergências novas todas explicadas em
+[docs/verificacao.md](docs/verificacao.md): o retângulo dos vídeos e a tabela de
+cookies, ambas mudanças pedidas. A suíte comportamental foi de 19 para 32
+verificações, todas passando.
+
+Peso final por pageview: **66,6 KB de CSS, 8,9 KB de JS e 2,9 KB de fonte de
+ícone** — contra 805 KB de CSS, 504 KB de JS e 247 KB de fonte no site original.
+
 Pendente:
 
-- **Subset das fontes de ícone** — `scripts/subset-fonts.py` está pronto mas não
-  foi rodado; `public/webfonts/` ainda tem os 253 KB originais.
 - **Otimização das imagens** — 198 arquivos, 7.7 MB, sem WebP. A home entrega
   **4,3 MB de imagem** contra 64 KB de CSS. Medido: WebP q90 sem redimensionar
   economiza 15%; q82 com teto de 1920px, 45%; AVIF q60, 54%. Recompressão muda
@@ -131,10 +169,16 @@ Pendente:
 - **Páginas do ebook em português nas três versões** — 1.089 linhas cada, é
   trabalho de tradutor. Ver o fim de [docs/decisoes.md](docs/decisoes.md).
 - **O contador diz 83 resorts associados; a lista tem 78.**
-- **Consentimento de cookies** — o GTM dispara antes de qualquer escolha do
-  visitante. Decisão do cliente, com implicação de LGPD.
+- **Conferência do cliente sobre cookies** — duas coisas que não se resolvem no
+  código: a tabela da política precisa do inventário de tags do console do
+  `GTM-PK7DG6MD`, e o texto é jurídico; e falta configurar no GTM as
+  *verificações de consentimento adicionais* por tag, sem as quais quem aceita
+  só "Desempenho" ainda dispararia tags de publicidade.
+- **Google Fonts continua no Google** — decisão registrada. O IP do visitante vai
+  para o Google em toda visita, antes de qualquer consentimento; auto-hospedar
+  resolveria.
 
-As duas primeiras mexem em renderização, então cada uma pede um diff visual
+A otimização de imagens mexe em renderização, então pede um diff visual
 próprio.
 
 ## Documentação
