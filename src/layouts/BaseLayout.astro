@@ -14,6 +14,35 @@ import {
   type RouteKey,
 } from '../i18n/ui';
 import { contato } from '../data/contato';
+/*
+ * NAO importe a folha do design system aqui.
+ *
+ * A primeira tentativa fez isso, contando com as camadas para proteger as
+ * paginas do tema. Nao protege. Medido: 22 das 40 paginas divergiram do site
+ * original so por a folha estar presente. As camadas garantem que o tema vence
+ * onde ele DECLARA a mesma propriedade; onde nao declara, o Preflight do
+ * Tailwind vence o padrao do navegador. Vazaram, entre outros:
+ *
+ *   border-*-style  none -> solid   (~2200 elementos; revela borda que o tema
+ *                                    escondia dando largura e deixando o estilo
+ *                                    em `none`)
+ *   display         inline -> block (124x, Preflight em img/svg)
+ *   max-width       none -> 100%    (221x, idem)
+ *   list-style-type circle -> none  (25x)
+ *
+ * Alem disso o Tailwind varre o `src/` e gera utilitarias para nomes de classe
+ * que o TEMA ja usa (`.container`, `.border`, `.table`, `.card`, `.row`...),
+ * colidindo com o CSS do tema — dai os `display: block -> grid` que apareceram.
+ *
+ * A folha entra por PAGINA, no frontmatter da pagina migrada:
+ *
+ *   import '../styles/global.css';
+ *   <BaseLayout legado={false} ...>
+ *
+ * O Astro empacota CSS pelo grafo de modulos de cada pagina, entao a folha so
+ * vai para o bundle de quem a importa. Pagina nao migrada fica sem ela — inerte
+ * por ausencia, que e mais forte do que inerte por cascata.
+ */
 
 interface Props {
   lang: Locale;
@@ -48,6 +77,17 @@ interface Props {
    * public/css/ajustes.css.
    */
   variacaoEbook?: boolean;
+  /**
+   * Carrega o CSS do tema Inspiro (plugins/style/ajustes).
+   *
+   * `true` enquanto a pagina nao foi migrada para o design system. Migrar uma
+   * pagina e, entre outras coisas, passar `legado={false}` aqui: sem isso o
+   * `style.css` — que e global e tem 110 `!important` — envenena a pagina nova.
+   *
+   * O padrao e `true` de proposito: pagina nova nasce no sistema novo so quando
+   * alguem afirma isso explicitamente, e nunca por esquecimento.
+   */
+  legado?: boolean;
 }
 
 const {
@@ -60,6 +100,7 @@ const {
   bodyClass = 'modern',
   mainClass,
   variacaoEbook = false,
+  legado = true,
 } = Astro.props;
 const t = ui[lang];
 
@@ -291,10 +332,28 @@ const orgJsonLd = {
     </script>
     <!-- end: Consentimento e Google Tag Manager -->
 
-    <link href="/css/plugins.css" rel="stylesheet" />
-    <link href="/css/style.css" rel="stylesheet" />
-    <!-- Correções ao tema (ver public/css/ajustes.css); precisa vir depois do style.css -->
-    <link href="/css/ajustes.css" rel="stylesheet" />
+    {
+      /*
+       * O CSS do tema, só nas páginas que ainda não migraram.
+       *
+       * A folha do design system (global.css) já foi importada acima e vale em
+       * toda página. Aqui, quando `legado` é true, vêm as três folhas do tema
+       * DEPOIS dela — e por ordem de origem o tema vence, então a página não
+       * migrada continua exatamente como está, inclusive o
+       * `:root { font-size: 14px }` do plugins.css.
+       *
+       * Página migrada passa `legado={false}` e fica só com o bundle novo.
+       * Quando a última migrar, esta prop e os três arquivos morrem juntos.
+       */
+      legado && (
+        <>
+          <link href="/css/plugins.css" rel="stylesheet" />
+          <link href="/css/style.css" rel="stylesheet" />
+          {/* Correções ao tema (ver public/css/ajustes.css); precisa vir depois do style.css */}
+          <link href="/css/ajustes.css" rel="stylesheet" />
+        </>
+      )
+    }
   </head>
 
   <body class={bodyClass || undefined}>

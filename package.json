@@ -5,14 +5,18 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && node scripts/purge-css.mjs && node scripts/check-glifos.mjs",
+    "build": "astro check && astro build && node scripts/purge-css.mjs && node scripts/check-glifos.mjs && node scripts/verifica-sistema.mjs",
     "check": "astro check",
     "preview": "astro preview",
-    "verify": "node tests/verify-behaviors.mjs"
+    "verify": "node tests/verify-behaviors.mjs && node tests/verify-geometria.mjs",
+    "verify:comportamento": "node tests/verify-behaviors.mjs",
+    "verify:geometria": "node tests/verify-geometria.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
-    "astro": "^6.3.1"
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^6.3.1",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

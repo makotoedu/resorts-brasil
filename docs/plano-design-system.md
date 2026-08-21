@@ -1,0 +1,436 @@
+# Design system Resorts Brasil — reconstrução da camada de apresentação
+
+## Contexto
+
+O site roda hoje sobre o tema Inspiro: 21.083 linhas de `style.css`, Bootstrap,
+196 cores, 110 `!important` e um vocabulário de classes que ninguém escolheu. A
+refatoração de 2026 tirou o jQuery e provou o custo dessa herança — três
+regressões silenciosas, todas do mesmo padrão (plugin removido, CSS que dependia
+dele ficou inerte), mais um script de purga que existe só para conter o tema e
+que já cortou o CSS a 11,7 KB com o build passando.
+
+O site é vivo e vai crescer: novas páginas, conteúdo e landing pages. Continuar
+sobre o tema significa que cada página nova nasce herdando a armadilha. A
+evidência disso já está no repositório: quando o projeto encontrou uma landing
+page, o resultado foi [ebook.astro](src/pages/ebook.astro) com 1.086 linhas e 140
+`style=` inline.
+
+O objetivo é substituir a camada de apresentação por um design system próprio —
+tokens, componentes com contrato, catálogo e invariantes verificadas no build —
+**preservando a aparência atual**, as 40 URLs e as três traduções.
+
+### O que a auditoria encontrou
+
+| achado | medida |
+|---|---|
+| CSS em produção (já purgado) | 68 KB, 751 blocos, 110 `!important` |
+| classes distintas em todo o markup | 196 |
+| `style=` inline | 549, sendo 420 nas 3 páginas de ebook |
+| imagens sem pipeline | 8,5 MB, 200 arquivos, `astro:assets` não usado |
+| heros superdimensionados | 3,2 MB em 9 arquivos, 2250×1500 exibidos a 360 px |
+| `<img>` com `loading=` | 1 de 193 |
+| hierarquia de headings quebrada | **39 das 40 páginas** (só a 404 passa) |
+| dado ainda em markup | 7 publicações, 4 estudos, 43 autores do ebook — × 3 idiomas |
+| HTML malformado | `<p>` fechado com `</h4>` nas 3 páginas de história, linha 17 |
+
+Divergências estruturais já existentes entre idiomas (mesma página, markup
+diferente): `index` tem um bloco de heading a mais que `home`/`inicio`;
+`associates` tem uma seção `box-fancy` que PT e ES não têm; `publicacoes` tem um
+`<br>` a mais e um `m-b-30` a menos que `publications`.
+
+---
+
+## Decisões travadas
+
+| decisão | valor |
+|---|---|
+| CSS | **Tailwind v4** via `@tailwindcss/vite` (`npx astro add tailwind`) — o `@astrojs/tailwind` está descontinuado |
+| Tokens | duas camadas: primitivos + semânticos, em `@theme` |
+| Alvo de navegadores | Safari 15.4+ / Chrome 105+ — destrava `@layer`, container queries, `:has()` |
+| `body class="modern"` | uniformizado nas 40 páginas (hoje 7 não têm) |
+| Modo escuro | **tokens preparados, tema não implementado** |
+| Refino visual | **aproveitar o que Astro + Tailwind oferecem**, inclusive quando muda pixel; o site continua reconhecível, não idêntico |
+| Conteúdo | Content Collections com schema enxuto, isolado para estender sem tocar páginas |
+| Ebook | dentro do plano, última etapa |
+
+### Refinos incluídos
+
+O ponto de reescrever é colher o que a stack nova oferece. Cada item abaixo
+altera pixels de propósito, mantendo layout, paleta e estrutura reconhecíveis:
+
+| refino | o que substitui | ganho |
+|---|---|---|
+| **Tipografia fluida** com `clamp()` | escala em degraus por breakpoint | fim dos saltos entre faixas; menos media queries |
+| **`text-wrap: balance`** em títulos, `pretty` em parágrafos | quebra de linha ao acaso | títulos sem órfã de uma palavra |
+| **View Transitions** do Astro (`<ClientRouter />`) | recarga dura entre páginas | navegação contínua nos 3 idiomas |
+| **Ícones em SVG inline** via `<Icone>` | webfonts subsetadas (2,9 KB) | some o FOIT, o [subset-fonts.py](scripts/subset-fonts.py) e o [check-glifos.mjs](scripts/check-glifos.mjs) — são só 16 ícones |
+| **Escala de espaço harmônica** | `0/5/10/20/30/40/80/100/150/200`, irregular | ritmo vertical coerente |
+| **Container queries** | classes de breakpoint aplicadas em JS | colunas do carrossel e das grades viram CSS; [site.js](src/scripts/site.js) encolhe |
+| **`:has()`** | classe manual `hero-fullscreen` | a página acerta sozinha |
+| **`aspect-ratio`** | `height: 360px` inline nos heros | hero responsivo de verdade |
+
+**Consequência de sequenciamento, e é a mais importante do plano:** com pixel
+livre, `visual-diff.mjs` deixa de ser portão e vira changelog revisado. A rede de
+segurança precisa mudar de lugar **antes** da primeira página migrar — daí a
+Etapa 0.5. Migrar sem ela é atravessar todo o projeto sem verificação
+automatizada de layout.
+
+---
+
+## Arquitetura alvo
+
+### Camadas de token
+
+Componente consome **apenas** a camada semântica. É o que torna um ajuste de
+marca ou um tema escuro uma edição de um arquivo em vez de uma varredura.
+
+```
+src/styles/tokens.css
+  @theme {
+    /* primitivos — os valores medidos do site atual */
+    --color-azul-600: #0c71c3;
+    --color-carvao-900: #0c101b;
+    ...
+    /* semânticos — o que os componentes usam */
+    --color-acao-primaria: var(--color-azul-600);
+    --color-superficie-inversa: var(--color-carvao-900);
+    --color-texto-sutil: ...;
+  }
+```
+
+As 21 cores reais do markup consolidam em ~8 primitivas e ~15 papéis. Espaço,
+tipo, raio e sombra saem dos valores medidos, **não redesenhados**.
+
+### Estrutura de arquivos
+
+```
+src/styles/
+  tokens.css       @theme — fonte única de cor, tipo, espaço, raio, sombra
+  base.css         elementos: h1–h6, p, a, ul, table, :focus-visible
+  global.css       @import "tailwindcss" + os dois acima
+src/components/
+  primitivos/      Titulo, Texto, Botao, Imagem, Icone
+  layout/          Secao, Container, Grade
+  padroes/         CartaoMembro, CaixaIcone, CartaoPublicacao, ChamadaAcao,
+                   Hero, FaixaDestaque, ListaIcones, Contador, Abas
+  (existentes)     Header, Footer, SocialIcons, YouTube, GradeLogos,
+                   GradeMembros, CarrosselAssociados, AssociadosTabs,
+                   SecaoCookies
+src/content/       publicacoes/, estudos/ — Content Collections com Zod
+src/pages/design/  catálogo vivo, noindex, fora do sitemap
+```
+
+### As quatro disciplinas
+
+1. **Componente para o que se repete, utilitária para o que é único.** As
+   utilitárias moram *dentro* do componente. `team-member` aparece 124 vezes —
+   vira `<CartaoMembro>`, não uma cadeia copiada.
+2. **`@theme` é a fonte única.** Nada de `bg-[#0c71c3]` fora de exceção
+   justificada.
+3. **Nada de `@apply`.** Quando precisar de CSS de verdade, escreva CSS de
+   verdade em `<style>` com escopo.
+4. **CSS complexo fica em `<style>` comentado.** Kenburns, carrossel, masonry,
+   estados de menu — exatamente onde o projeto já se queimou três vezes.
+
+### Nível semântico ≠ tamanho visual
+
+A causa dos 39 headings quebrados é escolher a tag pelo tamanho
+([historia.astro:14](src/pages/historia.astro#L14) tem `<h1 class="text-md h2">`).
+O componente separa os dois eixos:
+
+```astro
+<Titulo nivel={2} tamanho="md">
+```
+
+`nivel` controla a tag, `tamanho` controla a aparência. Enquanto a tag carregar
+o estilo, o erro volta na próxima página.
+
+---
+
+## Estratégia de migração
+
+**Strangler por página, sempre nos três idiomas juntos.** Migrar um idioma
+sozinho é exatamente como as divergências atuais nasceram.
+
+O mecanismo que torna isso seguro: [BaseLayout.astro](src/layouts/BaseLayout.astro)
+ganha uma prop `legado`. Página não migrada continua recebendo os `<link>` de
+`plugins.css` / `style.css` / `ajustes.css`; página migrada não recebe nenhum
+deles e usa só o bundle novo. Sem isso, o `style.css` global envenena a página
+migrada — ele é global e tem 110 `!important`.
+
+Quando a última página migrar, a prop e os três arquivos morrem juntos.
+
+---
+
+## Etapas
+
+### Etapa 0 — Fundação ✅ CONCLUÍDA
+
+Tailwind v4.3.3 via `@tailwindcss/vite`; tokens em duas camadas
+([tokens.css](src/styles/tokens.css)) e base restaurada
+([base.css](src/styles/base.css)) a partir de valores **medidos** por
+[medir-base.mjs](scripts/medir-base.mjs); catálogo em `/design`; invariantes em
+[verifica-sistema.mjs](scripts/verifica-sistema.mjs), ligadas ao build.
+
+**O plano errou o mecanismo de isolamento.** A prop `legado` sozinha não
+protege: importar a folha no layout fez 22 das 40 páginas divergirem, porque
+`@layer` garante que o tema vence só onde ele *declara a mesma propriedade* — o
+Preflight vaza no resto (`border-style` none→solid em ~2200 elementos,
+`display` inline→block em img/svg, `max-width`, `list-style-type`), e a varredura
+automática do Tailwind ainda colide com nomes de classe do tema. A folha passou a
+entrar pelo **frontmatter da página migrada**, com `source(none)` e `@source`
+explícitos. Isolamento por ausência, verificado no `dist/`.
+
+**`1rem` valia 14px** (`:root{font-size:14px}` do tema) — encolheria a escala do
+Tailwind em 12,5% e anula a preferência de fonte do navegador. Root de volta a
+100%, tokens compensando.
+
+Detalhes em [docs/decisoes.md](docs/decisoes.md), seção "Design system".
+
+<details><summary>Especificação original</summary>
+
+- `npx astro add tailwind`; `src/styles/global.css` importado pelo BaseLayout.
+- Prop `legado` no BaseLayout, `true` por padrão. Nada muda de aparência.
+- **Medir a base do tema no navegador**, não ler o CSS: valores computados de
+  `h1`–`h6`, `p`, `ul`, `a`, `body` (tamanho, peso, `line-height`, margens) nas
+  40 páginas × 3 viewports.
+- Essas medidas viram **âncoras do `clamp()`**: o valor de mobile é o mínimo, o
+  de desktop é o máximo, e o meio da escala passa a interpolar em vez de saltar.
+  É onde o refino entra sem descaracterizar nada — os extremos continuam sendo
+  os de hoje.
+- `tokens.css` com as duas camadas; escala de espaço harmônica derivada da
+  irregular atual.
+- ~~`<ClientRouter />` no BaseLayout.~~ **Adiado — ver nota abaixo.**
+- Rota `/design` vazia, `noindex`, fora do sitemap
+  ([astro.config.mjs](astro.config.mjs) já tem `filter`).
+
+> **Risco principal do projeto inteiro está aqui.** O Preflight do Tailwind zera
+> margens e estilos de heading e lista. `base.css` precisa reestabelecer a base
+> **antes** de qualquer página migrar, senão cada página migrada carrega o
+> desvio e ninguém sabe se a diferença é o refino ou o reset.
+> Verificação: página de teste com um de cada elemento, comparada lado a lado
+> com a mesma página servida pelo tema, nos 3 viewports.
+
+</details>
+
+#### Nota de execução — View Transitions adiadas para depois da Etapa 3
+
+O plano previa `<ClientRouter />` aqui. A leitura do [site.js](src/scripts/site.js)
+mostrou que o custo é maior do que uma troca de evento:
+
+- **6 listeners persistentes** em `document`/`window` (resize ×3, click, scroll,
+  load), **1 `setInterval`** (autoplay do carrossel de logos, linha 239) e **1
+  `IntersectionObserver`** (contadores, linha 346). Com `astro:page-load`
+  ingênuo, tudo isso **acumula a cada navegação** — o carrossel aceleraria
+  progressivamente e nunca pararia. É defeito visível, não teórico.
+- Exige um ciclo de vida real: `AbortController` por página, `signal` em cada
+  listener, e teardown em `astro:before-swap`.
+- **GTM**: sem carga de página, o pageview não dispara sozinho. Precisa de push
+  manual no `astro:page-load`, e com Consent Mode no meio.
+
+Fazer isso agora seria refatorar um `site.js` que a Etapa 3 vai encolher de novo
+— as container queries tiram dele a lógica de faixa. Ordem melhor: migrar as
+funções, deixar o arquivo no formato final, e só então instalar o ciclo de vida
+e o `<ClientRouter />` de uma vez. **Nada do refino se perde; muda a ordem.**
+
+### Etapa 0.5 — Mudar a rede de segurança de lugar ✅ CONCLUÍDA
+
+Entregue em [tests/verify-geometria.mjs](tests/verify-geometria.mjs), com a lista
+de páginas compartilhada em [tests/paginas.mjs](tests/paginas.mjs) para não
+divergir do diff visual. Ligada ao `npm run verify`.
+
+**Linha de base: 120 verificações, zero bloqueios.** Nenhuma seção colapsada,
+imagem quebrada, grade sem colunas ou sobreposição em nenhuma das 40 páginas × 3
+viewports.
+
+**72 pendências, todas o mesmo defeito herdado:** o `.row` do Bootstrap tem
+margem negativa e faz a página transbordar 30px no mobile e 12px no desktop —
+medido idêntico no site original. É dívida do tema, não regressão, e é uma das
+coisas que a migração deve **consertar**, não herdar. Vira bloqueante página a
+página conforme cada uma migra.
+
+Duas correções de método durante a construção, ambas achadas por teste negativo
+com defeitos plantados: filtrar visibilidade só por `display` acusou 36 abas
+fechadas como defeito; filtrar também pela caixa consertou aquilo e desligou a
+detecção de colapso (5 defeitos plantados, 2 achados). `checkVisibility()`
+separa "não renderizado" de "renderizado com caixa zero", que é a distinção de
+que a suíte inteira depende.
+
+<details><summary>Especificação original</summary>
+
+Precede qualquer migração de página. Hoje o layout é protegido pelo diff visual;
+com pixel livre isso acaba, e [verify-behaviors.mjs](tests/verify-behaviors.mjs)
+(496 linhas, 14 checagens) passa a carregar a carga sozinho. Ele já passou
+14/14 durante todo o período em que a grade de logos estava quebrada — do jeito
+que está, não serve.
+
+Expandir para cobrir o que o diff cobria, medindo **geometria**, não pixel:
+
+- toda grade e todo carrossel: número de colunas por faixa, altura de célula
+  não-zero, sem sobreposição — a checagem que teria pego a grade de logos;
+- todo hero: altura renderizada dentro de uma faixa esperada, imagem carregada,
+  `.kenburns-bg` visível e animando;
+- nenhuma seção com altura zero em nenhuma das 40 páginas × 3 viewports —
+  varredura barata que pega colapso de layout;
+- sem overflow horizontal em nenhuma página × viewport;
+- os estados de menu, dropdown, abas e cookies que já existem.
+
+Isso roda em segundos contra o preview, não nos 15 minutos do diff visual, e é o
+portão que substitui o `120/120`.
+
+</details>
+
+### Etapa 1 — Primitivos e catálogo
+
+`Titulo`, `Texto`, `Botao`, `Imagem`, `Icone`, `Secao`, `Container`, `Grade`.
+Props tipadas com variantes enumeradas — o `astro check` já roda no build, então
+variante inválida vira erro de compilação.
+
+Cada primitivo entra no catálogo `/design` com **todas** as variantes e os cinco
+estados (repouso, hover, `:focus-visible`, ativo, desabilitado) no mesmo commit
+que o componente. Catálogo escrito depois nunca é escrito.
+
+### Etapa 2 — Pipeline de imagens
+
+O maior ganho de performance disponível e um componente de design system: toda
+landing page futura nasce otimizada sem ninguém lembrar.
+
+- Imagens que passam pelo pipeline migram `public/images/` → `src/assets/`;
+  `favicon.png` e `og-image.png` **ficam em `public/`** (referenciados
+  externamente).
+- `<Imagem>` embrulha o `<Image>` do `astro:assets` com padrões corretos:
+  AVIF/WebP, `srcset`, `loading="lazy"` (exceto o primeiro hero de cada página),
+  `decoding="async"`, `width`/`height` obrigatórios.
+- **Heros:** hoje são `background-image` em `style=` inline, o que impede
+  `srcset` e lazy. Viram `<Image>` com `object-fit: cover` dentro de um
+  contêiner com `aspect-ratio`, no lugar do `height: 360px` fixo — a caixa passa
+  a acompanhar a largura em vez de recortar mais em tela estreita.
+- `sharp` já está instalado.
+
+### Etapa 3 — Padrões
+
+`CartaoMembro` (124 usos), `ChamadaAcao` (51), `CaixaIcone` (36),
+`CartaoPublicacao` (27), `ListaIcones` (24), `Hero`, `FaixaDestaque`, `Contador`,
+`Abas`. Portar os componentes existentes para os primitivos novos.
+
+### Etapa 4 — Conteúdo
+
+Content Collections com Zod para publicações (7) e estudos (4). Schema enxuto,
+mas isolado: acrescentar campo depois não toca as páginas. Campo faltando vira
+erro de build.
+
+### Etapas 5–9 — Páginas, do mais simples ao mais arriscado
+
+| etapa | páginas (× 3 idiomas) | por que aqui |
+|---|---|---|
+| 5 | `404`, `historia`, `fale-conosco`, `diretoria` | pequenas e isoladas; corrige o `<p></h4>` |
+| 6 | `termos-de-uso`, `politica-de-privacidade` | muito texto, pouca estrutura — valida `base.css` |
+| 7 | `publicacoes`, `estatisticas-e-estudos` | estreia as Content Collections |
+| 8 | `associados`, `associe-se`, `apoie`, `resorts-brasil` | componentes de dado já existem |
+| 9 | `index` / `home` / `inicio` | maior visibilidade; carrossel e kenburns |
+
+Em cada página, três correções deliberadas: hierarquia de headings, `bodyClass`
+uniformizado, e as divergências entre idiomas resolvidas por componentização.
+
+### Etapa 10 — Ebook
+
+1.086 linhas × 3. Os 43 cartões de autor são 700 dessas linhas e 129 dos 140
+estilos inline. Extrair para `src/data/autores-ebook.ts` seguindo a regra já
+estabelecida no [CLAUDE.md](CLAUDE.md): nome, foto, cargo e LinkedIn não
+traduzem; o título do capítulo traduz e vai para `ui.ts`. A página deve cair
+para ~350 linhas.
+
+A paleta escura própria do ebook entra como **variantes de token**, não como
+cores literais — é o teste real de que a camada semântica funciona.
+
+### Etapa 11 — Demolição
+
+Remover `public/css/`, `public/webfonts/`, [purge-css.mjs](scripts/purge-css.mjs),
+[check-glifos.mjs](scripts/check-glifos.mjs), [subset-fonts.py](scripts/subset-fonts.py),
+a prop `legado`, e as dependências `purgecss` e `lightningcss`. Some junto a
+dependência de Python do projeto — o `README` deixa de pedir `fonttools` e
+`brotli`.
+
+Reescrever a seção "Antes de mexer em CSS" do [CLAUDE.md](CLAUDE.md): as três
+armadilhas documentadas são todas do tema e deixam de existir. No lugar entram as
+regras do sistema novo — as quatro disciplinas e as invariantes.
+
+---
+
+## Invariantes verificadas no build
+
+`scripts/verifica-sistema.mjs`, no `npm run build`, **aborta em vez de avisar** —
+mesmo padrão da guarda de purga e do [check-glifos.mjs](scripts/check-glifos.mjs):
+
+- nenhuma cor hex literal fora de `tokens.css`;
+- nenhum `@apply`; nenhuma classe arbitrária `[...]` fora de allowlist;
+- nenhum `style=` inline fora de allowlist;
+- hierarquia de headings válida nas 40 páginas (um `h1`, primeiro, sem saltos);
+- contraste AA nos pares de token que de fato se encontram;
+- todo elemento focável com `:focus-visible` visível (Playwright).
+
+É isto que separa um design system profissional de um conjunto de componentes:
+**o build falha quando alguém sai do sistema.**
+
+---
+
+## Verificação
+
+O site original continua recuperável — `git archive 74fc1fd`, conforme
+[docs/verificacao.md](docs/verificacao.md). A referência sobrevive à reescrita.
+
+### Os portões duros
+
+Com pixel livre, `120/120` deixa de ser critério. O que **falha o build ou a
+etapa**:
+
+1. `npm run check` — tipos e contratos de componente.
+2. `npm run verify` — a suíte comportamental expandida na Etapa 0.5. **É aqui
+   que a rede de segurança de layout passa a morar.**
+3. `node scripts/verifica-sistema.mjs` — as invariantes do design system.
+4. **Orçamento de performance**, novo e agora mensurável: peso de CSS, de JS e
+   de imagem por página, com teto. Sem o portão de pixel, é o que impede o
+   projeto de ficar mais bonito e mais lento ao mesmo tempo.
+
+### O diff visual, agora como changelog
+
+`node tests/visual-diff.mjs` continua rodando por etapa, com `PAGES=` restrito —
+mas o resultado é **revisado, não aprovado automaticamente**. Cada página com
+delta acima do limiar entra em `docs/deltas-visuais.md` com captura, viewport e
+uma linha de motivo, classificada como:
+
+- **refino** — tipografia fluida, balanceamento, espaçamento harmônico;
+- **correção** — headings, `bodyClass`, divergência entre idiomas resolvida;
+- **regressão** — volta para a etapa.
+
+Antes dele, sempre: **comparação de HTML gerado normalizado** contra o build
+anterior — ignora `href`/`alt`/`aria-*`/`rel`/`target` e compara sequência de
+tags, classes e texto. É o método do `CLAUDE.md`, custa segundos e pega omissão
+de markup sem pagar os 15 minutos do diff.
+
+Ao final, rodada completa das 40 páginas × 3 viewports e uma revisão do
+`deltas-visuais.md` inteiro de uma vez — é o momento em que dá para ver se o
+conjunto ficou coerente, coisa que a revisão etapa a etapa não mostra.
+
+---
+
+## Riscos
+
+| risco | mitigação |
+|---|---|
+| Preflight do Tailwind muda a base tipográfica | `base.css` derivado de valores **medidos no navegador** na Etapa 0, validado antes de qualquer página migrar |
+| `style.css` global envenena página migrada | prop `legado` no BaseLayout |
+| Pipeline de imagem altera dimensão renderizada | `width`/`height` obrigatórios no `<Imagem>`; diff visual pega |
+| Reintroduzir as armadilhas do tema | as três (`grid-loaded`, `z-index` do kenburns, classes de breakpoint em JS) somem por construção; [site.js](src/scripts/site.js) encolhe |
+| Uniformizar `bodyClass` muda 7 páginas | mudança aceita e registrada em `docs/deltas-visuais.md`, revisada página a página |
+| **Perder o portão de pixel sem substituto** | Etapa 0.5 precede toda migração; sem ela o projeto anda sem rede |
+| Regressão se esconder entre os refinos | classificação obrigatória de cada delta (refino / correção / regressão) — delta sem classificação bloqueia a etapa |
+| View Transitions quebrarem o `site.js` | inicializadores migram para `astro:page-load` na Etapa 0, antes de qualquer página nova |
+| Ficar mais bonito e mais lento | orçamento de performance como portão duro |
+| Landing page urgente furar o sistema | catálogo + invariantes que quebram o build |
+
+## Fora de escopo
+
+Biblioteca no Figma e diretriz de marca — o design system tem uma metade de
+design que vive fora do código. O que este plano entrega é a metade de
+implementação, completa e verificada.

@@ -1,0 +1,314 @@
+---
+/**
+ * Catalogo vivo do design system.
+ *
+ * Nao usa o BaseLayout de proposito: aquele traz Header e Footer, que ainda
+ * dependem do tema. Este e o unico lugar do site que roda exclusivamente sobre
+ * o sistema novo, entao serve tambem como deteccao precoce — se o base.css
+ * estiver errado, aparece aqui antes de qualquer pagina de conteudo migrar.
+ *
+ * As cores sao renderizadas com `var(--token)`, nunca com o valor literal: o
+ * swatch nao tem como divergir do tokens.css, e um nome de token que deixe de
+ * existir aparece como quadro sem cor em vez de passar despercebido.
+ *
+ * Fora do indice e fora do sitemap (ver o `filter` em astro.config.mjs).
+ * Conta para o PAGINAS_ESPERADAS do scripts/purge-css.mjs.
+ */
+import '../styles/global.css';
+
+const primitivas = [
+  '--cor-navy-900',
+  '--cor-ardosia-600',
+  '--cor-cinza-500',
+  '--cor-azul-600',
+  '--cor-azul-500',
+  '--cor-carvao-900',
+  '--cor-carvao-800',
+  '--cor-branco',
+  '--cor-nevoa-100',
+  '--cor-coral-500',
+  '--cor-ambar-500',
+  '--cor-indigo-700',
+];
+
+const semanticas = [
+  '--color-texto',
+  '--color-texto-paragrafo',
+  '--color-texto-sutil',
+  '--color-texto-inverso',
+  '--color-acao-primaria',
+  '--color-link',
+  '--color-superficie',
+  '--color-superficie-inversa',
+  '--color-superficie-inversa-alt',
+  '--color-borda',
+  '--color-destaque',
+];
+
+/** Cada degrau com o par de pixels medido nas pontas da escala. */
+const escalaTipo = [
+  { token: '--text-xs', rotulo: 'xs', nota: '12px' },
+  { token: '--text-sm', rotulo: 'sm', nota: '13px' },
+  { token: '--text-base', rotulo: 'base', nota: '14px — corpo' },
+  { token: '--text-md', rotulo: 'md', nota: '18px' },
+  { token: '--text-lg', rotulo: 'lg', nota: '19 → 25px' },
+  { token: '--text-xl', rotulo: 'xl', nota: '24 → 34px' },
+  { token: '--text-2xl', rotulo: '2xl', nota: '30 → 50px' },
+  { token: '--text-3xl', rotulo: '3xl', nota: '40 → 62px' },
+  { token: '--text-4xl', rotulo: '4xl', nota: '48 → 90px' },
+];
+
+const faixas = [
+  { nome: 'xs', faixa: '0 – 575' },
+  { nome: 'sm', faixa: '576 – 767' },
+  { nome: 'md', faixa: '768 – 1024' },
+  { nome: 'lg', faixa: '1025 – 1199' },
+  { nome: 'xl', faixa: '1200+' },
+];
+---
+
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Catálogo — Design System Resorts Brasil</title>
+    <!--
+      A fonte. Faltava, e o catalogo parecia certo so nas maquinas que ja tem
+      Poppins instalada — o `document.fonts.check('14px Poppins')` respondia
+      "disponivel" por causa da fonte do sistema, nao do carregamento. Num
+      visitante sem ela, o catalogo caia na fallback e mostrava uma escala
+      tipografica que nao e a do site.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    />
+  </head>
+  <body>
+    <main class="catalogo">
+      <header class="cabecalho">
+        <h1>Design system</h1>
+        <p>
+          Catálogo vivo. Todos os valores vêm de <code>src/styles/tokens.css</code>, medidos com
+          <code>scripts/medir-base.mjs</code> — nenhum foi redesenhado.
+        </p>
+      </header>
+
+      <section>
+        <h2>Cor — primitivas</h2>
+        <p class="legenda">O valor cru. Componente nunca consome desta camada.</p>
+        <ul class="swatches">
+          {
+            primitivas.map((t) => (
+              <li>
+                <span class="amostra" style={`background: var(${t})`} />
+                <code>{t}</code>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section>
+        <h2>Cor — semânticas</h2>
+        <p class="legenda">
+          O papel. É esta a camada que os componentes usam, e é por ela que um tema escuro
+          entraria sem tocar em nenhum componente.
+        </p>
+        <ul class="swatches">
+          {
+            semanticas.map((t) => (
+              <li>
+                <span class="amostra" style={`background: var(${t})`} />
+                <code>{t}</code>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section>
+        <h2>Tipografia</h2>
+        <p class="legenda">
+          Escala fluida por <code>clamp()</code>. As âncoras são os valores medidos em 390px e
+          1440px — os extremos são os do site atual, o que muda é o meio, que antes saltava na
+          media query. Redimensione a janela para ver.
+        </p>
+        <ul class="tipos">
+          {
+            escalaTipo.map((e) => (
+              <li>
+                <span class="rotulo">
+                  <code>{e.token}</code> <small>{e.nota}</small>
+                </span>
+                <span class="exemplo" style={`font-size: var(${e.token})`}>
+                  Resorts Brasil
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section>
+        <h2>Elementos base</h2>
+        <p class="legenda">
+          O que o <code>base.css</code> restaura depois do Preflight do Tailwind. Se algo aqui
+          divergir do tema, o erro está no <code>base.css</code> e não na página que o revelou.
+        </p>
+        <div class="demo">
+          <p class="nota-h1">
+            O <code>h1</code> é o título desta página, acima — a demonstração não repete a tag
+            para a página não ficar com dois.
+          </p>
+          <h2>Título h2</h2>
+          <h3>Título h3</h3>
+          <h4>Título h4</h4>
+          <p>
+            Parágrafo de corpo. A associação reúne os principais resorts do país e representa o
+            setor junto ao poder público, à imprensa e ao mercado.
+          </p>
+          <p>
+            Texto com <strong>destaque forte</strong>, um <a href="#">link</a> e um
+            <small>texto reduzido</small>.
+          </p>
+          <ul>
+            <li>Item de lista não ordenada</li>
+            <li>Segundo item</li>
+          </ul>
+          <hr />
+        </div>
+      </section>
+
+      <section>
+        <h2>Faixas</h2>
+        <p class="legenda">
+          São as do site, não as padrão do Tailwind. O <code>lg</code> em 1025px é proposital —
+          ler o array errado já custou 22 comparações de tablet reprovadas neste projeto.
+        </p>
+        <table>
+          <thead>
+            <tr><th>classe</th><th>faixa</th></tr>
+          </thead>
+          <tbody>
+            {faixas.map((f) => (<tr><td><code>{f.nome}</code></td><td>{f.faixa}</td></tr>))}
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Componentes</h2>
+        <p class="legenda pendente">
+          Ainda vazio. Cada componente entra aqui — com todas as variantes e os cinco estados —
+          no mesmo commit em que é criado. Catálogo escrito depois nunca é escrito.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  /*
+   * Estilo do proprio catalogo. Deliberadamente neutro e fora do sistema: se o
+   * catalogo usasse os tokens para se desenhar, um token quebrado quebraria a
+   * pagina que deveria denuncia-lo.
+   */
+  .catalogo {
+    max-width: 60rem;
+    margin-inline: auto;
+    padding: 3rem 1.5rem 6rem;
+  }
+
+  .cabecalho {
+    border-bottom: 1px solid var(--color-borda);
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+  }
+
+  section {
+    margin-block: 3.5rem;
+  }
+
+  .legenda {
+    max-width: 46rem;
+  }
+
+  .legenda.pendente {
+    border-left: 3px solid var(--color-destaque);
+    padding-left: 1rem;
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8125rem;
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .swatches li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .amostra {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-sm);
+    flex: none;
+  }
+
+  .tipos {
+    list-style: none;
+    padding: 0;
+  }
+
+  .tipos li {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding-block: 0.75rem;
+    border-bottom: 1px solid var(--color-borda);
+  }
+
+  .rotulo {
+    flex: none;
+    width: 12rem;
+  }
+
+  .exemplo {
+    line-height: 1.1;
+  }
+
+  .demo {
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+  }
+
+  .nota-h1 {
+    border-left: 3px solid var(--color-borda);
+    padding-left: 1rem;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.375rem 1.5rem 0.375rem 0;
+    border-bottom: 1px solid var(--color-borda);
+  }
+</style>

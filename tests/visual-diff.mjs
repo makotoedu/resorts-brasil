@@ -11,36 +11,18 @@ import { chromium } from 'playwright';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { paginasSelecionadas, viewportsSelecionados } from './paginas.mjs';
 
 const ORIGINAL = process.env.ORIGINAL || 'http://localhost:4340';
 const NOVO = process.env.NOVO || 'http://localhost:4330';
 const OUT = 'tests/visual-diff';
 
-// PAGES=/index.html,/ebook.html limita a rodada a essas paginas, para reconferir
-// um grupo sem pagar os 15 minutos da varredura completa.
-const PAGES = process.env.PAGES ? process.env.PAGES.split(',') : [
-  '/index.html', '/resorts-brasil.html', '/diretoria.html', '/historia.html',
-  '/associados.html', '/associe-se.html', '/publicacoes.html',
-  '/estatisticas-e-estudos.html', '/apoie.html', '/fale-conosco.html',
-  '/ebook.html', '/politica-de-privacidade.html', '/termos-de-uso.html', '/404.html',
-  '/en-us/home.html', '/en-us/resorts-brasil.html', '/en-us/board.html',
-  '/en-us/history.html', '/en-us/associates.html', '/en-us/join-us.html',
-  '/en-us/publications.html', '/en-us/statistics-and-studies.html',
-  '/en-us/support-tourism.html', '/en-us/contact-us.html', '/en-us/ebook.html',
-  '/en-us/privacy-policy.html', '/en-us/terms-of-use.html',
-  '/es-es/inicio.html', '/es-es/resorts-brasil.html', '/es-es/directorio.html',
-  '/es-es/historia.html', '/es-es/asociados.html', '/es-es/asociese.html',
-  '/es-es/publicaciones.html', '/es-es/estadisticas-y-estudios.html',
-  '/es-es/apoye.html', '/es-es/contactenos.html', '/es-es/ebook.html',
-  '/es-es/politica-de-privacidad.html', '/es-es/terminos-de-uso.html',
-];
-
-// VIEWPORTS=desktop restringe a rodada, no mesmo espirito de PAGES acima.
-const VIEWPORTS = [
-  { name: 'mobile', width: 390, height: 844 },
-  { name: 'tablet', width: 768, height: 1024 },
-  { name: 'desktop', width: 1440, height: 900 },
-].filter((v) => !process.env.VIEWPORTS || process.env.VIEWPORTS.split(',').includes(v.name));
+// A lista de paginas e os viewports moram em tests/paginas.mjs, compartilhados
+// com a suite de geometria. PAGES=/index.html,/ebook.html e VIEWPORTS=desktop
+// limitam a rodada, para reconferir um grupo sem pagar os 15 minutos da
+// varredura completa.
+const PAGES = paginasSelecionadas();
+const VIEWPORTS = viewportsSelecionados().map((v) => ({ name: v.nome, width: v.width, height: v.height }));
 
 /** Neutraliza o que muda entre execucoes e falsearia o diff. */
 const FREEZE = `

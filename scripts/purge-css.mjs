@@ -18,7 +18,8 @@ const DIST = new URL('../dist/', import.meta.url);
 const CSS_DIR = new URL('css/', DIST);
 
 /** Paginas esperadas em dist/. Mudou? Confira antes de atualizar o numero. */
-const PAGINAS_ESPERADAS = 40;
+/* 40 paginas de conteudo + o catalogo do design system em /design. */
+const PAGINAS_ESPERADAS = 41;
 
 /**
  * Teto de reducao por arquivo. O purge normal fica entre 84% e 98%; passar

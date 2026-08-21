@@ -1,0 +1,171 @@
+/*
+ * Tokens do design system — a fonte unica de cor, tipo, espaco e faixa.
+ *
+ * Os valores NAO foram redesenhados: saem de `node scripts/medir-base.mjs`,
+ * que le os valores computados no navegador nas 40 paginas x 3 viewports. Ler
+ * o style.css daria outra resposta — sao 21 mil linhas e a regra que parece
+ * valer frequentemente nao e a que vence.
+ *
+ * Duas camadas, e a separacao e o ponto:
+ *
+ *   PRIMITIVOS  nomeiam o valor cru (--cor-navy-900: #001e6c)
+ *   SEMANTICOS  nomeiam o papel    (--color-texto: var(--cor-navy-900))
+ *
+ * Componente consome SO a camada semantica. E o que faz um ajuste de marca, ou
+ * um tema escuro, caber numa edicao deste arquivo em vez de uma varredura por
+ * 40 paginas. Cor literal dentro de componente e barrada pelo
+ * scripts/verifica-sistema.mjs.
+ */
+
+@theme {
+  /* ==========================================================
+   * PRIMITIVOS — cor
+   * ==========================================================
+   * As 21 cores do markup consolidadas. A contagem entre parenteses e de
+   * ocorrencias medidas, para deixar claro o que e estrutural e o que e
+   * pontual.
+   */
+  --cor-navy-900: #001e6c; /* cor herdada do <body> (169 ocorrencias) */
+  --cor-ardosia-600: #525e75; /* paragrafo (30) */
+  --cor-cinza-500: #9aa0a6; /* .text-muted (42) */
+  --cor-azul-600: #0c71c3; /* acao, no markup (123) */
+  --cor-azul-500: #2250fc; /* link nu, herdado do tema (332) */
+  --cor-carvao-900: #0c101b; /* superficie escura (135) */
+  --cor-carvao-800: #0e121d; /* superficie escura alternativa (6) */
+  --cor-branco: #fff;
+  --cor-nevoa-100: #e4e6ef; /* bordas */
+  --cor-coral-500: #fc575e; /* destaque/alerta (18) */
+  --cor-ambar-500: #fac213;
+  --cor-indigo-700: #242f9b;
+
+  /* ==========================================================
+   * SEMANTICOS — cor
+   * ==========================================================
+   * O que os componentes usam. Um tema escuro redefine daqui para baixo e nao
+   * toca em mais nada — e por isso que os primitivos existem separados, mesmo
+   * sem tema escuro implementado hoje.
+   */
+  --color-texto: var(--cor-navy-900);
+  --color-texto-paragrafo: var(--cor-ardosia-600);
+  --color-texto-sutil: var(--cor-cinza-500);
+  --color-texto-inverso: var(--cor-branco);
+
+  --color-acao-primaria: var(--cor-azul-600);
+  --color-link: var(--cor-azul-500);
+
+  --color-superficie: var(--cor-branco);
+  --color-superficie-inversa: var(--cor-carvao-900);
+  --color-superficie-inversa-alt: var(--cor-carvao-800);
+
+  --color-borda: var(--cor-nevoa-100);
+  --color-destaque: var(--cor-coral-500);
+
+  /* ==========================================================
+   * TIPOGRAFIA
+   * ==========================================================
+   * Poppins e a unica familia em uso — 773 de 773 elementos medidos.
+   *
+   * A ESCALA E FLUIDA POR clamp(), e as ancoras sao medidas: o minimo e o valor
+   * que o site tem hoje no viewport de 390px, o maximo e o de 1440px. Os
+   * extremos continuam sendo os atuais; o que muda e o meio, que hoje SALTA na
+   * media query e passa a interpolar.
+   *
+   * Isto substitui o `calc(rem + vw)` do Bootstrap (RFS), que o tema usa em
+   * h1-h4: aquele calculo nao tem piso nem teto proprios — depende de uma media
+   * query em 1200px para parar de crescer. O clamp() carrega os tres numeros.
+   *
+   * ATENCAO AO REM. O tema fixa `:root { font-size: 14px }` no plugins.css,
+   * entao 1rem vale 14px no site atual. Duas consequencias:
+   *
+   *   1. a escala padrao do Tailwind (montada em rem sobre 16px) encolheria
+   *      12,5% em silencio se o root continuasse em 14px;
+   *   2. fixar o root em px anula a preferencia de tamanho de fonte do
+   *      navegador do usuario, que e falha de acessibilidade.
+   *
+   * Por isso o root volta a 100% (ver base.css) e os tokens abaixo expressam em
+   * rem sobre 16px o MESMO tamanho em pixel que foi medido. Renderizacao
+   * identica, preferencia do usuario respeitada, escala do Tailwind alinhada.
+   */
+  --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+
+  /* 12px */
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.6;
+  /* 13px */
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.6;
+  /* 14px — corpo; line-height 23.8/14 = 1.7 medido */
+  --text-base: 0.875rem;
+  --text-base--line-height: 1.7;
+  /* 18px */
+  --text-md: 1.125rem;
+  --text-md--line-height: 1.4;
+  /* 19px -> 25px (h3 e o unico elemento nu que muda de faixa) */
+  --text-lg: clamp(1.1875rem, 1.0223rem + 0.678vw, 1.5625rem);
+  --text-lg--line-height: 1.5;
+  /* 24px -> 34px */
+  --text-xl: clamp(1.5rem, 1.2248rem + 1.1299vw, 2.125rem);
+  --text-xl--line-height: 1.25;
+  /* 30px -> 50px */
+  --text-2xl: clamp(1.875rem, 1.3246rem + 2.2599vw, 3.125rem);
+  --text-2xl--line-height: 1.2;
+  /* 40px -> 62px */
+  --text-3xl: clamp(2.5rem, 1.8946rem + 2.4859vw, 3.875rem);
+  --text-3xl--line-height: 1.15;
+  /* 48px -> 90px — so o hero do ebook chega aqui */
+  --text-4xl: clamp(3rem, 1.8443rem + 4.7458vw, 5.625rem);
+  --text-4xl--line-height: 1.1;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* ==========================================================
+   * ESPACO
+   * ==========================================================
+   * A escala do tema era 0/5/10/20/30/40/80/100/150/200 — irregular, com salto
+   * de 40 para 80. Substituida pela escala de 4px do Tailwind (`--spacing`),
+   * que gera p-1..p-64 sem enumerar nada. Os degraus de secao, que sao os
+   * unicos valores grandes de fato usados, ficam nomeados abaixo.
+   */
+  --spacing: 0.25rem;
+
+  --espaco-secao-sm: 2.5rem; /* 40px */
+  --espaco-secao-md: 5rem; /* 80px */
+  --espaco-secao-lg: 6.25rem; /* 100px */
+  --espaco-secao-xl: 9.375rem; /* 150px */
+
+  /* ==========================================================
+   * FAIXAS
+   * ==========================================================
+   * NAO sao as faixas padrao do Tailwind. Sao as do site, documentadas no
+   * CLAUDE.md e originalmente aplicadas por JavaScript pelo plugin breakpoints:
+   *
+   *   xs 0-575 | sm 576-767 | md 768-1024 | lg 1025-1199 | xl 1200+
+   *
+   * O `lg` em 1025px e incomum e proposital: e o valor que o site usa, e trocar
+   * por 1024 desloca a faixa inteira. Ler o array errado ja custou 22
+   * comparacoes de tablet reprovadas neste projeto — o erro acerta nos extremos
+   * e se esconde no meio da escala.
+   *
+   * Os mesmos valores governam o numero de colunas do carrossel de logos. Com
+   * container queries (ver os componentes de grade), essa contagem sai do
+   * JavaScript e vira CSS.
+   */
+  --breakpoint-sm: 36rem; /* 576px */
+  --breakpoint-md: 48rem; /* 768px */
+  --breakpoint-lg: 64.0625rem; /* 1025px */
+  --breakpoint-xl: 75rem; /* 1200px */
+
+  /* Largura do conteudo — o .container do tema para em 1140px no xl. */
+  --container-conteudo: 71.25rem; /* 1140px */
+
+  /* ==========================================================
+   * RAIO
+   * ========================================================== */
+  --radius-sm: 0.42rem; /* .dropdown-menu, .card do tema */
+  --radius-md: 0.82rem; /* .rounded do tema (105 usos) */
+  --radius-full: 9999px;
+}

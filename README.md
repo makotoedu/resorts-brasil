@@ -34,12 +34,49 @@ aparecer, rode `npm approve-scripts sharp esbuild`.
 Scripts auxiliares:
 
 ```bash
-node scripts/purge-css.mjs      # purga e minifica (já embutido no build)
-node scripts/check-glifos.mjs   # confere o subset de fontes (idem)
-python scripts/subset-fonts.py  # regera public/webfonts/ a partir de vendor/
-node tests/visual-diff.mjs      # compara o build com o site original
-#   PAGES=/index.html VIEWPORTS=desktop ... limita a rodada
+node scripts/purge-css.mjs        # purga e minifica (já embutido no build)
+node scripts/check-glifos.mjs     # confere o subset de fontes (idem)
+node scripts/verifica-sistema.mjs # invariantes do design system (idem)
+#   DETALHE=1 ... lista o que ainda está pendente, arquivo a arquivo
+python scripts/subset-fonts.py    # regera public/webfonts/ a partir de vendor/
+node scripts/medir-base.mjs       # mede a base tipográfica do tema no navegador
+node tests/verify-geometria.mjs   # varredura de layout: 40 páginas × 3 viewports
+node tests/visual-diff.mjs        # compara o build com o site original
+#   PAGES=/index.html VIEWPORTS=desktop ... limita a rodada dos dois acima
 ```
+
+> No Git Bash, `PAGES=/index.html` vira `C:/Program Files/Git/index.html` —
+> a conversão automática de caminho do MSYS. Use
+> `MSYS_NO_PATHCONV=1 PAGES=/index.html node …`, ou rode pelo PowerShell.
+
+`npm run verify` roda comportamento e geometria; `verify:comportamento` e
+`verify:geometria` rodam um de cada vez.
+
+### Design system
+
+A migração para o design system próprio (Tailwind v4 + tokens) está em curso, e
+as duas camadas convivem: cada página carrega **uma** delas, nunca as duas.
+
+Página do tema não muda de nada. Página migrada importa a folha no próprio
+frontmatter e desliga o tema:
+
+```astro
+---
+import '../styles/global.css';
+---
+<BaseLayout legado={false} ...>
+```
+
+A folha **não** pode ser importada pelo layout — o Preflight do Tailwind vaza
+para as páginas do tema e alterou 22 das 40 na primeira tentativa. O motivo e a
+medição estão em [docs/decisoes.md](docs/decisoes.md), "A folha nova não pode
+entrar pelo layout".
+
+Ao migrar um componente ou página, acrescente o `@source` correspondente em
+[`src/styles/global.css`](src/styles/global.css) — sem ele as utilitárias não são
+geradas e o estilo some, sem erro de build.
+
+O catálogo vivo fica em `/design`.
 
 ### URLs no preview local
 

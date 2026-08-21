@@ -1,0 +1,42 @@
+/*
+ * Folha unica do design system. Importada uma vez, pelo BaseLayout.
+ *
+ * A ordem importa:
+ *
+ *   1. tailwindcss  traz o Preflight (o reset) e as camadas theme/base/utilities
+ *   2. tokens.css   declara o @theme, que alimenta as utilitarias
+ *   3. base.css     restaura a base tipografica que o Preflight zera
+ *
+ * COMO ESTA FOLHA CHEGA NUMA PAGINA. Pelo frontmatter da propria pagina, nunca
+ * pelo BaseLayout:
+ *
+ *   import '../styles/global.css';
+ *   <BaseLayout legado={false} ...>
+ *
+ * A primeira tentativa importou no layout, contando com `@layer` para proteger
+ * as paginas do tema. Nao protegeu — 22 das 40 divergiram do site original so
+ * pela presenca da folha. Camada garante que o tema vence onde ele DECLARA a
+ * mesma propriedade; onde nao declara, o Preflight vence o padrao do navegador.
+ * O detalhe esta comentado em src/layouts/BaseLayout.astro.
+ *
+ * Por isso o isolamento agora e por AUSENCIA: o Astro empacota CSS pelo grafo
+ * de modulos de cada pagina, entao quem nao importa nao recebe. Pagina do tema
+ * fica literalmente sem o arquivo, e nenhuma vigilancia de cascata e
+ * necessaria.
+ *
+ * `source(none)` mais os `@source` explicitos existem pelo mesmo motivo, do
+ * outro lado: por padrao o Tailwind varre o `src/` inteiro e gera utilitarias
+ * para nomes de classe que o TEMA usa — `.container`, `.border`, `.table`,
+ * `.card`, `.row`, `.small`, `.active` — colidindo com o CSS dele. Registrando
+ * as fontes uma a uma, so o que ja migrou entra na varredura.
+ *
+ * ACRESCENTE UM @source A CADA COMPONENTE OU PAGINA MIGRADA. Esquecer disso
+ * nao quebra o build: a utilitaria simplesmente nao e gerada e o estilo some.
+ */
+@import 'tailwindcss' source(none);
+
+@source '../styles';
+@source '../pages/design.astro';
+
+@import './tokens.css';
+@import './base.css';

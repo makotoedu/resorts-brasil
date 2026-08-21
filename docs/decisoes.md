@@ -863,3 +863,104 @@ um visitante faz.
 
 Fica registrado por ser o tipo de coisa que, daqui a um ano, parece regressão
 introduzida aqui.
+
+# Design system: Tailwind v4 sobre o tema
+
+## A folha nova não pode entrar pelo layout
+
+A instalação do Tailwind v4 (`@tailwindcss/vite`, via `astro add tailwind`) foi
+feita importando `src/styles/global.css` no `BaseLayout`, para valer em todas as
+páginas — as migradas e as que ainda usam o tema.
+
+A hipótese era que as camadas bastavam: o Tailwind emite tudo dentro de
+`@layer theme, base, components, utilities`, e CSS **sem** camada vence CSS
+**em** camada, independentemente da ordem dos `<link>`. O tema é todo sem
+camada, logo continuaria ganhando.
+
+A primeira medição pareceu confirmar. Numa página legada, `:root` seguia em
+14px, e `body`, `h1`, `h3`, `p` e `li` mantinham os mesmos valores computados de
+antes da instalação.
+
+**Estava errado, e o erro era de escopo.** A camada garante que o tema vence onde
+ele *declara a mesma propriedade*. Onde o tema não declara, o Preflight vence o
+padrão do navegador — e aí muda a página. O diff visual reprovou 22 das 40.
+
+O vazamento, medido comparando cada página consigo mesma com a folha ligada e
+desligada:
+
+| propriedade | sem a folha | com a folha | ocorrências |
+|---|---|---|---|
+| `border-*-style` | `none` | `solid` | ~2200 |
+| `display` (img, svg) | `inline` | `block` | 124 |
+| `max-width` (img, svg) | `none` | `100%` | 221 |
+| `list-style-type` | `circle` | `none` | 25 |
+| `tab-size` | `8` | `4` | 2382 |
+
+O `border-style` é o mais instrutivo. Parece inerte por vir com largura zero —
+não é: elementos a que o tema dá `border-width` sem dar `border-style` contavam
+com o `none` padrão para ficarem invisíveis. Com `solid`, a borda desenha.
+
+Havia um segundo vazamento, em sentido contrário: por padrão o Tailwind varre o
+`src/` inteiro e **gera utilitárias para nomes de classe que o tema já usa** —
+`.container`, `.border`, `.table`, `.card`, `.row`, `.small`, `.active`. Elas
+colidem com o CSS do tema. Foi o que produziu os `display: block -> grid` que
+apareceram na varredura.
+
+### A saída foi isolamento por ausência
+
+Conter o vazamento pela cascata (uma classe `tema-legado` desfazendo o Preflight)
+funciona para o caso conhecido e deixa a próxima regra vazar em silêncio — o
+padrão que este projeto já pagou três vezes.
+
+A folha passou a entrar pelo **frontmatter da página migrada**, nunca pelo
+layout:
+
+```astro
+---
+import '../styles/global.css';
+---
+<BaseLayout legado={false} ...>
+```
+
+O Astro empacota CSS pelo grafo de módulos de cada página, então quem não importa
+não recebe. Página do tema fica literalmente sem o arquivo. Verificado no build:
+`historia.html` não tem nenhum `<link>` para `/_astro/`, e `design.html` não tem
+nenhum para `/css/`.
+
+Do outro lado, `@import 'tailwindcss' source(none)` mais `@source` explícitos
+tiram da varredura tudo que ainda não migrou, eliminando a colisão de nomes.
+
+**Acrescente um `@source` a cada componente ou página migrada.** Esquecer não
+quebra o build: a utilitária simplesmente não é gerada e o estilo some.
+
+A invariante virou checagem no `scripts/verifica-sistema.mjs`, sobre o `dist/`:
+nenhuma página pode carregar as duas camadas, e nenhuma pode ficar sem as duas.
+É afirmação sobre o artefato, não sobre a intenção.
+
+## O `rem` valia 14px
+
+O `plugins.css` fixava `:root { font-size: 14px }`. Duas consequências que só
+apareceram ao montar os tokens:
+
+1. a escala do Tailwind é montada em `rem` sobre 16px — mantido o root em 14px,
+   todo valor padrão encolheria 12,5% em silêncio;
+2. fixar o root em `px` **anula a preferência de tamanho de fonte do navegador**,
+   o que é falha de acessibilidade, não detalhe de escala.
+
+O root voltou a `100%` no `base.css` e os tokens expressam, em `rem` sobre 16px,
+o mesmo tamanho em pixel que foi medido. Renderização igual, preferência do
+usuário devolvida, escala alinhada.
+
+## A base foi medida, não lida
+
+Os valores de `src/styles/base.css` saem de `scripts/medir-base.mjs`, que lê os
+valores computados no navegador em 9 páginas × 3 viewports. O `style.css` tem 21
+mil linhas e a regra que parece valer frequentemente não é a que vence — a cor
+herdada do `<body>`, por exemplo, é `#001e6c` (medida em 169 elementos) e não a
+`#1e2022` que o `plugins.css` declara.
+
+A primeira versão do medidor pegava a **primeira** ocorrência de cada tag no
+documento, e no `<header>` ela vem antes do `<main>`: o `a` saía com 40px e peso
+800 (o logotipo) e o `ul` com `line-height: 80px` (a barra de navegação). Passou
+a medir dentro de `main`, excluindo o cromo, e a reportar o valor **dominante**
+por frequência, não o primeiro.

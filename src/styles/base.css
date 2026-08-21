@@ -1,0 +1,223 @@
+/*
+ * Base tipografica dos elementos nus.
+ *
+ * POR QUE ESTE ARQUIVO EXISTE, e por que ele precede qualquer migracao de
+ * pagina: o Preflight do Tailwind zera margens, tamanhos e pesos de heading,
+ * lista e paragrafo. Sem restaurar a base antes, cada pagina migrada carrega o
+ * desvio do reset junto com o refino, e ninguem consegue dizer qual diferenca e
+ * intencional. Era o risco numero um do plano.
+ *
+ * Todos os valores abaixo saem de `node scripts/medir-base.mjs`, que mede no
+ * navegador — nao foram lidos do style.css. O script imprime a mesma tabela e
+ * pode ser reexecutado para conferir este arquivo contra o tema.
+ *
+ * Os pixels medidos estao anotados em cada regra. Eles sao expressos em rem
+ * sobre root de 16px (ver a nota do rem em tokens.css), entao o valor
+ * renderizado e o mesmo que o tema produz hoje.
+ */
+
+@layer base {
+  /*
+   * O tema fixava `:root { font-size: 14px }`. Voltar para 100% devolve ao
+   * usuario a preferencia de tamanho de fonte do navegador — que o valor em px
+   * anulava — e realinha a escala do Tailwind, montada em rem sobre 16px.
+   * Nenhum tamanho renderizado muda: os tokens compensam.
+   */
+  :root {
+    font-size: 100%;
+  }
+
+  body {
+    /* medido: 14px / 400 / 23.2px (1.657) / #001e6c */
+    color: var(--color-texto);
+    background-color: var(--color-superficie);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.657;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /*
+   * Headings herdam a cor do body (#001e6c medido em 169 elementos), nao a
+   * #1e2022 que o plugins.css declara — o style.css vence. Foi um dos casos em
+   * que ler o CSS teria dado a resposta errada.
+   */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: inherit;
+    font-weight: var(--font-weight-semibold);
+    /*
+     * Titulo curto sem orfa de uma palavra. Nao existia no tema; entra como
+     * refino e muda quebra de linha de proposito.
+     */
+    text-wrap: balance;
+  }
+
+  /* Nenhum h1 nu existe hoje — os 9 do site carregam classe. O valor abaixo e
+   * a extremidade da escala, para que um h1 sem classe nasca correto. */
+  h1 {
+    font-size: var(--text-3xl);
+    margin-block: 0 var(--espaco-secao-sm);
+  }
+
+  h2 {
+    /* medido: 18px / 600 / 23px / mb 16px */
+    font-size: var(--text-md);
+    line-height: 1.278;
+    margin-block: 0 1rem;
+  }
+
+  h3 {
+    /* medido: 19px (mobile) -> 25px (tablet+) / 600 / 1.5 / mt 10px mb 10px.
+     * O unico elemento nu que muda de faixa no tema; agora interpola. */
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    margin-block: 0.625rem;
+  }
+
+  h4 {
+    /* medido: 19px / 600 / 32px (1.684) / mb 8px */
+    font-size: var(--text-lg);
+    line-height: 1.684;
+    margin-block: 0 0.5rem;
+  }
+
+  h5,
+  h6 {
+    font-size: var(--text-md);
+    margin-block: 0 0.5rem;
+  }
+
+  p {
+    /* medido: 14px / 400 / 23.8px (1.7) / mb 14px / #525e75 */
+    color: var(--color-texto-paragrafo);
+    margin-block: 0 0.875rem;
+    /* Refino: evita orfa e rio no corpo. Sem efeito onde nao ha suporte. */
+    text-wrap: pretty;
+  }
+
+  a {
+    /* medido: #2250fc, sem sublinhado */
+    color: var(--color-link);
+    text-decoration: none;
+  }
+
+  /* O tema tratava `<a>` sem href como texto; preservado para nao criar link
+   * aparente onde nao ha destino (ver GradeMembros). */
+  a:not([href]) {
+    color: inherit;
+  }
+
+  /*
+   * medido no `ul` nu: mb 14px, padding-inline-start 14px, list-style disc.
+   *
+   * O `padding` daqui ja esteve errado em 28px, valor LIDO do plugins.css
+   * (`padding-left: 2rem` com root de 14px) em vez de medido — o style.css
+   * sobrescreve para 1rem e o valor real e a metade. O medir-base.mjs passou a
+   * coletar `paddingInlineStart` e `listStyleType` por causa disso.
+   *
+   * O `list-style-type` precisa ser reafirmado: o Preflight zera marcadores de
+   * lista, e sem esta linha as listas de conteudo — politica de privacidade,
+   * termos de uso — perdem o ponto silenciosamente.
+   */
+  ul,
+  ol {
+    margin-block: 0 0.875rem;
+    padding-inline-start: 0.875rem;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  ul ul,
+  ol ol {
+    margin-block-end: 0;
+  }
+
+  li {
+    /* medido: 14px / 400 / 1.657 */
+    line-height: 1.657;
+  }
+
+  small {
+    font-size: 0.875em;
+  }
+
+  b,
+  strong {
+    /* medido 600, e nao os 700 que o plugins.css declara */
+    font-weight: var(--font-weight-semibold);
+  }
+
+  hr {
+    border: 0;
+    border-block-start: 1px solid var(--color-borda);
+    margin-block: 2rem;
+  }
+
+  img {
+    vertical-align: middle;
+  }
+
+  table {
+    border-collapse: collapse;
+    caption-side: bottom;
+  }
+
+  th {
+    font-weight: var(--font-weight-semibold);
+    text-align: inherit;
+  }
+
+  /*
+   * Foco visivel — portado do ajustes.css, onde entrou porque o tema aplicava
+   * `outline: none` casado com :hover e reprovava o criterio 2.4.7 da WCAG.
+   *
+   * :focus-visible e nao :focus de proposito: o navegador so pinta quando o
+   * foco veio do teclado, entao o clique de mouse continua sem contorno. Por
+   * isso esta secao nao aparece no diff visual — ele nunca foca nada; quem a
+   * cobre e a suite comportamental.
+   */
+  :where(a, button, [tabindex], summary):focus-visible {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
+  }
+
+  /* Sobre fundo escuro o azul some; o branco mantem o contraste. */
+  :where(.superficie-inversa) :where(a, button):focus-visible {
+    outline-color: var(--color-texto-inverso);
+  }
+
+  /*
+   * O tema respeitava prefers-reduced-motion so no scroll-behavior. Aqui vale
+   * para tudo: quem pediu menos movimento nao deveria depender de cada
+   * componente lembrar.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    :root {
+      scroll-behavior: smooth;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

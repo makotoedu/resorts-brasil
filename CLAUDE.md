@@ -6,6 +6,57 @@ Site institucional estático da Associação Brasileira de Resorts: 40 páginas 
 Leia o [README.md](README.md) para comandos e estrutura, e
 [docs/](docs/) para arquitetura, decisões e verificação.
 
+## LEIA PRIMEIRO: há uma migração em curso
+
+O site está sendo movido do tema Inspiro para um design system próprio
+(Tailwind v4 + tokens). **As duas camadas convivem, e cada página carrega
+exatamente uma delas.**
+
+O plano completo, com etapas e critérios, está em
+[docs/plano-design-system.md](docs/plano-design-system.md). O estado atual:
+
+| etapa | situação |
+|---|---|
+| 0 — fundação (Tailwind, tokens, base, catálogo, invariantes) | concluída |
+| 0.5 — rede de segurança de geometria | concluída |
+| 1 — primitivos e catálogo | **próxima** |
+| 2–11 | não iniciadas |
+
+**Páginas migradas: 1 de 41** (só o catálogo `/design`). Confira sempre com
+`node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
+nesta tabela.
+
+### As três regras que não podem ser quebradas
+
+1. **A folha do design system entra pelo frontmatter da página**, nunca pelo
+   `BaseLayout`. Importá-la no layout já fez 22 das 40 páginas divergirem — o
+   Preflight do Tailwind vaza para onde o tema não declara a mesma propriedade,
+   e `@layer` não protege disso. Ver [docs/decisoes.md](docs/decisoes.md),
+   "A folha nova não pode entrar pelo layout".
+
+   ```astro
+   ---
+   import '../styles/global.css';
+   ---
+   <BaseLayout legado={false} ...>
+   ```
+
+2. **Todo componente ou página migrada precisa de um `@source`** em
+   [`src/styles/global.css`](src/styles/global.css). Esquecer não quebra o
+   build: a utilitária simplesmente não é gerada e o estilo some.
+
+3. **Valor que vai para o `base.css` tem de ser medido**, com
+   `node scripts/medir-base.mjs`, nunca lido do `style.css`. O `padding` das
+   listas já entrou errado por leitura — 28px onde o valor real é 14px.
+
+### Onde ficam as decisões
+
+- tokens e escala → [`src/styles/tokens.css`](src/styles/tokens.css)
+- base dos elementos → [`src/styles/base.css`](src/styles/base.css)
+- por que cada coisa é assim → [docs/decisoes.md](docs/decisoes.md), seção
+  "Design system"
+- o que pode divergir do site original → [docs/deltas-visuais.md](docs/deltas-visuais.md)
+
 ## Antes de mexer em CSS
 
 Este projeto tem uma armadilha que não é óbvia e já causou uma regressão.
@@ -100,19 +151,28 @@ erra no pixel.
 
 ## Antes de declarar qualquer coisa pronta
 
-Rode o diff visual:
-
 ```bash
-node tests/visual-diff.mjs      # precisa dos dois servidores no ar
+npm run build      # tipos, purga, glifos, invariantes do design system
+npm run verify     # comportamento + geometria (precisa do preview no ar)
 ```
 
-`npm run verify` passou 14/14 durante todo o período em que a grade de logos
-estava quebrada — teste de comportamento verifica estados pontuais e não vê
-layout colapsar. O procedimento completo está em
-[docs/verificacao.md](docs/verificacao.md).
+A suíte comportamental sozinha **não vê layout colapsar** — passou 14/14 durante
+todo o período em que a grade de logos estava quebrada. Quem cobre isso é a
+varredura de geometria, `tests/verify-geometria.mjs`: 40 páginas × 3 viewports,
+procurando caixa zerada, grade sem colunas, irmãos sobrepostos, imagem quebrada
+e transbordo horizontal.
 
-Ao ler o resultado, confira a linha `N/120 comparacoes identicas`, não o código
-de saída.
+**Ela lê o código de saída, e zero bloqueios é o critério.** A lista "PENDENTE"
+é dívida herdada do tema e não reprova; ela vira bloqueante sozinha conforme
+cada página migra.
+
+O `node tests/visual-diff.mjs` continua existindo, mas **não é mais portão** — o
+pixel agora muda de propósito. Ele é changelog: cada divergência entra em
+[docs/deltas-visuais.md](docs/deltas-visuais.md) classificada como refino,
+correção ou regressão. `N/120` deixou de ser critério, e altura de página não é
+critério nenhum.
+
+O procedimento completo está em [docs/verificacao.md](docs/verificacao.md).
 
 ## Convenções
 

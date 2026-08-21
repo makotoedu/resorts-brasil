@@ -1,7 +1,12 @@
 # Verificação
 
-O projeto tem três camadas de verificação. Elas não são redundantes: cada uma
+O projeto tem quatro camadas de verificação. Elas não são redundantes: cada uma
 pega uma classe de problema que as outras deixam passar.
+
+Com a reconstrução da camada de apresentação, **o peso mudou de camada**. O diff
+visual deixou de ser portão — pixel passa a mudar de propósito — e a varredura de
+geometria (seção 2b) assumiu a proteção do layout. Ver
+[deltas-visuais.md](deltas-visuais.md).
 
 ---
 
@@ -11,8 +16,9 @@ pega uma classe de problema que as outras deixam passar.
 npm run build
 ```
 
-Gera as 40 páginas, roda a purga de CSS e confere o subset de fontes
-(`check-glifos.mjs`). As URLs geradas precisam ser
+Gera as 41 páginas (40 de conteúdo + o catálogo em `/design`), roda a purga de
+CSS, confere o subset de fontes (`check-glifos.mjs`) e as invariantes do design
+system (`verifica-sistema.mjs`). As URLs geradas precisam ser
 idênticas às do site original — o site tem histórico de indexação e qualquer
 mudança de caminho exigiria redirect 301 no [`vercel.json`](../vercel.json).
 
@@ -110,7 +116,57 @@ esperar 400 ms antes de medir.
 
 ---
 
-## 3. Diff visual — a que realmente importa
+## 2b. Varredura de geometria — a rede de layout
+
+```bash
+npm run verify:geometria      # precisa do preview no ar
+```
+
+40 páginas × 3 viewports, em cerca de 2 minutos. É a camada que substituiu o
+diff visual como portão de layout.
+
+**Por que ela existe.** `npm run verify` passou 14/14 durante todo o período em
+que a grade de logos estava quebrada: teste de comportamento verifica estados
+pontuais e não vê layout colapsar. Enquanto havia fidelidade pixel a pixel, quem
+cobria esse buraco era o diff visual. Ele saiu; isto entrou.
+
+**O que mede**, tudo geometria e nada de pixel:
+
+| checagem | o que pega |
+|---|---|
+| transbordo horizontal | conteúdo empurrando a página para os lados |
+| seção com altura zero | seção que existe no DOM e não ocupa área |
+| imagem quebrada | `naturalWidth === 0` — caminho errado |
+| filho de grade sem tamanho | a falha do `.grid-loaded`, que deixou 6 páginas invisíveis |
+| irmãos de grade sobrepostos | masonry posicionando errado |
+| grade colapsou para 1 coluna | grade larga com tudo empilhado |
+
+**O que ela deliberadamente NÃO mede: altura de página.** Decisão do projeto —
+altura não é critério. Uma página pode encurtar 800px por ter menos conteúdo; o
+que ela não pode é encurtar porque uma seção virou zero, e é isso que as
+checagens acima separam.
+
+**Duas listas, não uma.** Página migrada **bloqueia**; página do tema
+**reporta**. O tema chega com defeito próprio — o `.row` do Bootstrap tem margem
+negativa e transborda 30px no mobile e 12px no desktop, medido idêntico no site
+original. Um portão que sempre falha não é portão. `DETALHE=1` lista as
+pendências inteiras.
+
+**A distinção que a suíte depende de acertar** é entre elemento *não
+renderizado* (aba fechada — pular) e *renderizado com caixa zero* (colapso —
+acusar). Errar isso a quebra nas duas direções, e ambas aconteceram durante a
+construção: filtrar só por `display` próprio acusou 36 abas fechadas em
+`/associados` como defeito; passar a filtrar também pela caixa consertou aquilo e
+**desligou a detecção de colapso** — um teste com cinco defeitos plantados passou
+a achar dois. Quem responde a primeira pergunta sem responder a segunda é
+`checkVisibility()`.
+
+Daí a regra: **ao mexer nesta suíte, plante defeitos e confirme que ela os
+pega.** Teste que nunca falha não protege nada.
+
+---
+
+## 3. Diff visual — hoje um changelog
 
 ```bash
 # terminal 1: o site original
@@ -129,6 +185,15 @@ node tests/visual-diff.mjs
 página inteira das **40 páginas em 3 viewports** (390, 768 e 1440 px) entre o
 site original e o build atual — 120 comparações. Divergências acima de 0.5% dos
 pixels geram um PNG do diff em `tests/visual-diff/`.
+
+> **O resultado é revisado, não aprovado.** Enquanto a refatoração buscava
+> fidelidade pixel a pixel, `120/120` era o critério. Na reconstrução da camada
+> de apresentação o pixel muda de propósito, e este script vira changelog: cada
+> divergência entra em [deltas-visuais.md](deltas-visuais.md) classificada como
+> **refino**, **correção** ou **regressão**. Delta sem classificação bloqueia a
+> etapa — é o que impede uma regressão de se esconder no meio dos refinos.
+>
+> As linhas `ALTURA` deixaram de contar: altura de página não é critério.
 
 O script congela animações, transições e os elementos que mudam entre execuções,
 para não gerar falso positivo:

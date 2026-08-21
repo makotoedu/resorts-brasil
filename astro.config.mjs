@@ -3,6 +3,8 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { routes, htmlLang, locales, defaultLocale } from './src/i18n/ui.ts';
 
+import tailwindcss from '@tailwindcss/vite';
+
 /**
  * Alternates de cada pagina, indexadas pela URL sem extensao.
  *
@@ -49,8 +51,9 @@ export default defineConfig({
 
   integrations: [
     sitemap({
-      // A 404 nao e uma pagina de conteudo e nao tem traducao.
-      filter: (page) => !page.endsWith('/404'),
+      // A 404 nao e uma pagina de conteudo e nao tem traducao; /design e o
+      // catalogo do design system, interno e marcado com noindex.
+      filter: (page) => !page.endsWith('/404') && !page.endsWith('/design'),
       serialize(item) {
         // O build gera .html; a URL publica nao tem extensao (cleanUrls).
         const caminho = new URL(item.url).pathname.replace(/\.html$/, '');
@@ -65,4 +68,8 @@ export default defineConfig({
       },
     }),
   ],
+
+  vite: {
+    plugins: [tailwindcss()]
+  }
 });

@@ -1,0 +1,4427 @@
+[
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 256,
+    "paginas": [
+      "/index.html",
+      "/publicacoes.html",
+      "/ebook.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 5
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 256,
+    "paginas": [
+      "/index.html",
+      "/publicacoes.html",
+      "/ebook.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 5
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 256,
+    "paginas": [
+      "/index.html",
+      "/publicacoes.html",
+      "/ebook.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 5
+  },
+  {
+    "viewport": "mobile",
+    "tag": "li",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "40px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 76,
+    "paginas": [
+      "/index.html",
+      "/associados.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "tablet",
+    "tag": "li",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "40px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 76,
+    "paginas": [
+      "/index.html",
+      "/associados.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "desktop",
+    "tag": "li",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "40px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 76,
+    "paginas": [
+      "/index.html",
+      "/associados.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 73,
+    "paginas": [
+      "/index.html",
+      "/associados.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 73,
+    "paginas": [
+      "/index.html",
+      "/associados.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 73,
+    "paginas": [
+      "/index.html",
+      "/associados.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h3",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "16px",
+      "fontWeight": "500",
+      "lineHeight": "22px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 41,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h3",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "16px",
+      "fontWeight": "500",
+      "lineHeight": "22px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 41,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h3",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "16px",
+      "fontWeight": "500",
+      "lineHeight": "22px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 41,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "p",
+    "classes": "text-muted",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "10px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(154, 160, 166)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 41,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "p",
+    "classes": "text-muted",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "10px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(154, 160, 166)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 41,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "p",
+    "classes": "text-muted",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "10px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(154, 160, 166)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 41,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "p",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 28,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "p",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 28,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "p",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 28,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "p",
+    "classes": "m-b-5",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "5px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 24,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "p",
+    "classes": "m-b-5",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "5px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 24,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "p",
+    "classes": "m-b-5",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "5px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 24,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "strong",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "600",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 24,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "strong",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "600",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 24,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "strong",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "600",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 24,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "item-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 18,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "item-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 18,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "item-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 18,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h3",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "35.2856px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "10px",
+      "marginBottom": "10px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 18,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h3",
+    "classes": "",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "600",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "10px",
+      "marginBottom": "10px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 18,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h3",
+    "classes": "",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "600",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "10px",
+      "marginBottom": "10px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 18,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "mobile",
+    "tag": "p",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 18,
+    "paginas": [
+      "/publicacoes.html",
+      "/associados.html",
+      "/termos-de-uso.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "tablet",
+    "tag": "p",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 18,
+    "paginas": [
+      "/publicacoes.html",
+      "/associados.html",
+      "/termos-de-uso.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "desktop",
+    "tag": "p",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 18,
+    "paginas": [
+      "/publicacoes.html",
+      "/associados.html",
+      "/termos-de-uso.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "mobile",
+    "tag": "li",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "10px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 12,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "li",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "10px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 12,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "li",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "10px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 12,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "p",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 12,
+    "paginas": [
+      "/historia.html",
+      "/publicacoes.html",
+      "/associados.html",
+      "/termos-de-uso.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "tablet",
+    "tag": "p",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 12,
+    "paginas": [
+      "/historia.html",
+      "/publicacoes.html",
+      "/associados.html",
+      "/termos-de-uso.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "desktop",
+    "tag": "p",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 12,
+    "paginas": [
+      "/historia.html",
+      "/publicacoes.html",
+      "/associados.html",
+      "/termos-de-uso.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "8px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 9,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "8px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 9,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "8px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 9,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "body",
+    "classes": "modern",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 7,
+    "paginas": [
+      "/index.html",
+      "/historia.html",
+      "/publicacoes.html",
+      "/associados.html",
+      "/404.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 7
+  },
+  {
+    "viewport": "tablet",
+    "tag": "body",
+    "classes": "modern",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 7,
+    "paginas": [
+      "/index.html",
+      "/historia.html",
+      "/publicacoes.html",
+      "/associados.html",
+      "/404.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 7
+  },
+  {
+    "viewport": "desktop",
+    "tag": "body",
+    "classes": "modern",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 7,
+    "paginas": [
+      "/index.html",
+      "/historia.html",
+      "/publicacoes.html",
+      "/associados.html",
+      "/404.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 7
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h1",
+    "classes": "text-md h2",
+    "props": {
+      "fontSize": "32px",
+      "fontWeight": "500",
+      "lineHeight": "40px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 7,
+    "paginas": [
+      "/index.html",
+      "/historia.html",
+      "/publicacoes.html",
+      "/associados.html",
+      "/termos-de-uso.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 7
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h1",
+    "classes": "text-md h2",
+    "props": {
+      "fontSize": "62px",
+      "fontWeight": "500",
+      "lineHeight": "68px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 7,
+    "paginas": [
+      "/index.html",
+      "/historia.html",
+      "/publicacoes.html",
+      "/associados.html",
+      "/termos-de-uso.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 7
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h1",
+    "classes": "text-md h2",
+    "props": {
+      "fontSize": "62px",
+      "fontWeight": "500",
+      "lineHeight": "68px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 7,
+    "paginas": [
+      "/index.html",
+      "/historia.html",
+      "/publicacoes.html",
+      "/associados.html",
+      "/termos-de-uso.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 7
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h4",
+    "classes": "text-center",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 6,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h4",
+    "classes": "text-center",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 6,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h4",
+    "classes": "text-center",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 6,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "mobile",
+    "tag": "li",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 6,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "li",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 6,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "li",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 6,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "ul",
+    "classes": "grid grid-5-columns text-center",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 6,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "tablet",
+    "tag": "ul",
+    "classes": "grid grid-5-columns text-center",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 6,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "desktop",
+    "tag": "ul",
+    "classes": "grid grid-5-columns text-center",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 6,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "item-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "28px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "item-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "28px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "item-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "28px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h2",
+    "classes": "",
+    "props": {
+      "fontSize": "18px",
+      "fontWeight": "600",
+      "lineHeight": "23px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-0.1px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h2",
+    "classes": "",
+    "props": {
+      "fontSize": "18px",
+      "fontWeight": "600",
+      "lineHeight": "23px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-0.1px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h2",
+    "classes": "",
+    "props": {
+      "fontSize": "18px",
+      "fontWeight": "600",
+      "lineHeight": "23px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-0.1px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "24px",
+      "fontWeight": "600",
+      "lineHeight": "26px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-0.7px",
+      "marginTop": "0px",
+      "marginBottom": "10px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/index.html",
+      "/associados.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "24px",
+      "fontWeight": "600",
+      "lineHeight": "26px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-0.7px",
+      "marginTop": "0px",
+      "marginBottom": "10px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/index.html",
+      "/associados.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "34px",
+      "fontWeight": "600",
+      "lineHeight": "40px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-0.7px",
+      "marginTop": "0px",
+      "marginBottom": "30px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/index.html",
+      "/associados.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 4
+  },
+  {
+    "viewport": "mobile",
+    "tag": "li",
+    "classes": "nav-item",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "-2px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "li",
+    "classes": "nav-item",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "-2px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "li",
+    "classes": "nav-item",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "-2px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 5,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "nav-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "-1px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "none",
+      "color": "rgba(60, 64, 67, 0.8)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "nav-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "-1px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "none",
+      "color": "rgba(60, 64, 67, 0.8)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "nav-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "-1px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "none",
+      "color": "rgba(60, 64, 67, 0.8)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h2",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "40px",
+      "fontWeight": "500",
+      "lineHeight": "44px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-0.7px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h2",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "40px",
+      "fontWeight": "500",
+      "lineHeight": "44px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-0.7px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h2",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "48px",
+      "fontWeight": "500",
+      "lineHeight": "56px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-0.7px",
+      "marginTop": "0px",
+      "marginBottom": "60px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "ul",
+    "classes": "grid grid-6-columns text-center",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "ul",
+    "classes": "grid grid-6-columns text-center",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "ul",
+    "classes": "grid grid-6-columns text-center",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 4,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "btn btn-warning btn-lg",
+    "props": {
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "lineHeight": "36px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "item-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "btn btn-warning btn-lg",
+    "props": {
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "lineHeight": "36px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "item-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "btn btn-warning btn-lg",
+    "props": {
+      "fontSize": "16px",
+      "fontWeight": "600",
+      "lineHeight": "28px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "40px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "item-link",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "1px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h2",
+    "classes": "m-b-30",
+    "props": {
+      "fontSize": "40px",
+      "fontWeight": "700",
+      "lineHeight": "40px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "30px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h2",
+    "classes": "m-b-30",
+    "props": {
+      "fontSize": "40px",
+      "fontWeight": "700",
+      "lineHeight": "40px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "30px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h2",
+    "classes": "m-b-30",
+    "props": {
+      "fontSize": "60px",
+      "fontWeight": "700",
+      "lineHeight": "68px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "30px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/index.html",
+      "/en-us/home.html",
+      "/es-es/inicio.html"
+    ],
+    "usos": 3
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h3",
+    "classes": "m-b-0",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "500",
+      "lineHeight": "35.2856px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h3",
+    "classes": "m-b-0",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h3",
+    "classes": "m-b-0",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "8px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(252, 87, 94)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "8px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(252, 87, 94)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "8px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(252, 87, 94)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "ul",
+    "classes": "list-icon list-icon-circle list-icon-colored",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "ul",
+    "classes": "list-icon list-icon-circle list-icon-colored",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "ul",
+    "classes": "list-icon list-icon-circle list-icon-colored",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 3,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "btn btn-ebook btn-lg",
+    "props": {
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "lineHeight": "36px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "btn btn-ebook btn-lg",
+    "props": {
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "lineHeight": "36px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "btn btn-ebook btn-lg",
+    "props": {
+      "fontSize": "16px",
+      "fontWeight": "600",
+      "lineHeight": "28px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "40px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "body",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/termos-de-uso.html",
+      "/ebook.html"
+    ],
+    "usos": 2
+  },
+  {
+    "viewport": "tablet",
+    "tag": "body",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/termos-de-uso.html",
+      "/ebook.html"
+    ],
+    "usos": 2
+  },
+  {
+    "viewport": "desktop",
+    "tag": "body",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/termos-de-uso.html",
+      "/ebook.html"
+    ],
+    "usos": 2
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h3",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "500",
+      "lineHeight": "35.2856px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/publicacoes.html",
+      "/associados.html"
+    ],
+    "usos": 2
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h3",
+    "classes": "m-b-0",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "500",
+      "lineHeight": "35.2856px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/publicacoes.html",
+      "/associados.html"
+    ],
+    "usos": 2
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h3",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "500",
+      "lineHeight": "35.2856px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "12px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h3",
+    "classes": "",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/publicacoes.html",
+      "/associados.html"
+    ],
+    "usos": 2
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h3",
+    "classes": "m-b-0",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/publicacoes.html",
+      "/associados.html"
+    ],
+    "usos": 2
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h3",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "12px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h3",
+    "classes": "",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/publicacoes.html",
+      "/associados.html"
+    ],
+    "usos": 2
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h3",
+    "classes": "m-b-0",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/publicacoes.html",
+      "/associados.html"
+    ],
+    "usos": 2
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h3",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "12px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "ul",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "ul",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "ul",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 2,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "btn btn-light btn-outline",
+    "props": {
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "lineHeight": "30px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "btn",
+    "props": {
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "lineHeight": "30px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "btn btn-outline",
+    "props": {
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "lineHeight": "30px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "nav-link active",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "-1px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "none",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "btn btn-lg",
+    "props": {
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "lineHeight": "36px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "btn btn-ebook btn-lg",
+    "props": {
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "lineHeight": "36px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "20px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "a",
+    "classes": "yt-facade-btn",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "btn btn-light btn-outline",
+    "props": {
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "lineHeight": "30px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "btn",
+    "props": {
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "lineHeight": "30px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "btn btn-outline",
+    "props": {
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "lineHeight": "30px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "14px",
+      "listStyleType": "disc",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "nav-link active",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "-1px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "none",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "btn btn-lg",
+    "props": {
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "lineHeight": "36px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "btn btn-ebook btn-lg",
+    "props": {
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "lineHeight": "36px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "20px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "a",
+    "classes": "yt-facade-btn",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "btn btn-light btn-outline",
+    "props": {
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "lineHeight": "14px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "18px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "btn",
+    "props": {
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "lineHeight": "14px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "18px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "btn btn-outline",
+    "props": {
+      "fontSize": "12px",
+      "fontWeight": "600",
+      "lineHeight": "14px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "18px",
+      "listStyleType": "disc",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/publicacoes.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "nav-link active",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "-1px",
+      "paddingInlineStart": "24px",
+      "listStyleType": "none",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "btn btn-lg",
+    "props": {
+      "fontSize": "16px",
+      "fontWeight": "600",
+      "lineHeight": "28px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "0px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "40px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "btn btn-ebook btn-lg",
+    "props": {
+      "fontSize": "16px",
+      "fontWeight": "600",
+      "lineHeight": "28px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "2px",
+      "marginTop": "20px",
+      "marginBottom": "6px",
+      "paddingInlineStart": "40px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "uppercase"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "a",
+    "classes": "yt-facade-btn",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(34, 80, 252)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h1",
+    "classes": "text-md",
+    "props": {
+      "fontSize": "32px",
+      "fontWeight": "600",
+      "lineHeight": "40px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h1",
+    "classes": "text-medium",
+    "props": {
+      "fontSize": "30px",
+      "fontWeight": "800",
+      "lineHeight": "33px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "20px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/404.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h1",
+    "classes": "text-md",
+    "props": {
+      "fontSize": "62px",
+      "fontWeight": "600",
+      "lineHeight": "68px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h1",
+    "classes": "text-medium",
+    "props": {
+      "fontSize": "50px",
+      "fontWeight": "800",
+      "lineHeight": "55px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "20px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/404.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h1",
+    "classes": "text-md",
+    "props": {
+      "fontSize": "62px",
+      "fontWeight": "600",
+      "lineHeight": "68px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "30px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h1",
+    "classes": "text-medium",
+    "props": {
+      "fontSize": "50px",
+      "fontWeight": "800",
+      "lineHeight": "55px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "20px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/404.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h2",
+    "classes": "text-lg",
+    "props": {
+      "fontSize": "40px",
+      "fontWeight": "700",
+      "lineHeight": "40px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-0.8px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h2",
+    "classes": "",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h2",
+    "classes": "text-medium text-light",
+    "props": {
+      "fontSize": "30px",
+      "fontWeight": "800",
+      "lineHeight": "33px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h2",
+    "classes": "text-lg",
+    "props": {
+      "fontSize": "80px",
+      "fontWeight": "700",
+      "lineHeight": "60px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-1.6px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h2",
+    "classes": "",
+    "props": {
+      "fontSize": "33px",
+      "fontWeight": "500",
+      "lineHeight": "45.0001px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h2",
+    "classes": "text-medium text-light",
+    "props": {
+      "fontSize": "50px",
+      "fontWeight": "800",
+      "lineHeight": "55px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h2",
+    "classes": "text-lg",
+    "props": {
+      "fontSize": "90px",
+      "fontWeight": "700",
+      "lineHeight": "100px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "-1.8px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h2",
+    "classes": "",
+    "props": {
+      "fontSize": "33px",
+      "fontWeight": "500",
+      "lineHeight": "45.0001px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h2",
+    "classes": "text-medium text-light",
+    "props": {
+      "fontSize": "50px",
+      "fontWeight": "800",
+      "lineHeight": "55px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "16px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h3",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "500",
+      "lineHeight": "35.2856px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "12px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h3",
+    "classes": "",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "12px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h3",
+    "classes": "",
+    "props": {
+      "fontSize": "24.9999px",
+      "fontWeight": "500",
+      "lineHeight": "37.4999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "12px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h4",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h4",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h4",
+    "classes": "",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h4",
+    "classes": "text-light",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "600",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/ebook.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "h5",
+    "classes": "text-muted",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "lineHeight": "26px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(154, 160, 166)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/index.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "h5",
+    "classes": "text-muted",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "lineHeight": "26px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(154, 160, 166)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/index.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "h5",
+    "classes": "text-muted",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "lineHeight": "26px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "0.5px",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(154, 160, 166)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/index.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "p",
+    "classes": "text-bold",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "700",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "p",
+    "classes": "text-bold",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "700",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "p",
+    "classes": "lead",
+    "props": {
+      "fontSize": "19px",
+      "fontWeight": "400",
+      "lineHeight": "31.9999px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/404.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "p",
+    "classes": "text-bold",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "700",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "p",
+    "classes": "text-bold",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "700",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "p",
+    "classes": "lead",
+    "props": {
+      "fontSize": "17.5px",
+      "fontWeight": "400",
+      "lineHeight": "29.75px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/404.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "p",
+    "classes": "text-bold",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "700",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(255, 255, 255)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/historia.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "p",
+    "classes": "text-bold",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "700",
+      "lineHeight": "23.8px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "p",
+    "classes": "lead",
+    "props": {
+      "fontSize": "17.5px",
+      "fontWeight": "400",
+      "lineHeight": "29.75px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "14px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/404.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "small",
+    "classes": "",
+    "props": {
+      "fontSize": "12.25px",
+      "fontWeight": "400",
+      "lineHeight": "20.825px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "small",
+    "classes": "",
+    "props": {
+      "fontSize": "12.25px",
+      "fontWeight": "400",
+      "lineHeight": "20.825px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "small",
+    "classes": "",
+    "props": {
+      "fontSize": "12.25px",
+      "fontWeight": "400",
+      "lineHeight": "20.825px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "0px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "disc",
+      "color": "rgb(82, 94, 117)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/termos-de-uso.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "mobile",
+    "tag": "ul",
+    "classes": "nav nav-tabs nav-justified",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "30px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "tablet",
+    "tag": "ul",
+    "classes": "nav nav-tabs nav-justified",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "30px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  },
+  {
+    "viewport": "desktop",
+    "tag": "ul",
+    "classes": "nav nav-tabs nav-justified",
+    "props": {
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "lineHeight": "23.2px",
+      "fontFamily": "Poppins, sans-serif",
+      "letterSpacing": "normal",
+      "marginTop": "0px",
+      "marginBottom": "30px",
+      "paddingInlineStart": "0px",
+      "listStyleType": "none",
+      "color": "rgb(0, 30, 108)",
+      "textTransform": "none"
+    },
+    "ocorrencias": 1,
+    "paginas": [
+      "/associados.html"
+    ],
+    "usos": 1
+  }
+]
