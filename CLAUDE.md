@@ -21,8 +21,9 @@ O plano completo, com etapas e critérios, está em
 | 0.5 — rede de segurança de geometria | concluída |
 | 1 — primitivos e catálogo | concluída |
 | 2 — pipeline de imagens | concluída |
-| 3 — padrões (CartaoMembro, Hero, Abas…) | **próxima** |
-| 4–11 | não iniciadas |
+| 3 — padrões (CartaoMembro, Hero, Abas…) | concluída |
+| 4 — conteúdo (Content Collections) | **próxima** |
+| 5–11 | não iniciadas |
 
 **Páginas migradas: 1 de 41** (só o catálogo `/design`). Confira sempre com
 `node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
@@ -50,15 +51,18 @@ nesta tabela.
 3. **Valor que vai para o `base.css` ou para um componente tem de ser medido** —
    `node scripts/medir-base.mjs` para o elemento nu, `node
    scripts/medir-primitivos.mjs` para o que tem classe (botão, seção, container,
-   grade, ícone, e o hover de cada um). Nunca lido do `style.css`, nunca contado
-   no markup. O `padding` das listas já entrou errado por leitura (28px onde o
-   real é 14px), a largura do container por suposição (1140px onde o real é
-   1500px) e a cor de ação por contagem de ocorrências — as 123 do `#0c71c3` são
-   todas títulos de capítulo do ebook, nenhuma é botão.
+   grade, ícone), e `node scripts/medir-padroes.mjs` para as composições (cartão,
+   chamada, hero, abas…), sempre com o **hover** junto. Nunca lido do
+   `style.css`, nunca contado no markup. O `padding` das listas já entrou errado
+   por leitura (28px onde o real é 14px), a largura do container por suposição
+   (1140px onde o real é 1500px), e **duas cores por contagem de ocorrências**:
+   as 123 do `#0c71c3` são todas títulos de capítulo do ebook e nenhuma é botão,
+   e as 141 do `#0c101b` são todas do ebook também — a superfície escura da
+   chamada de ação é o navy, medido.
 
-4. **Componente novo em `primitivos/` ou `layout/` entra no catálogo `/design`
-   no mesmo commit.** Não é convenção: `verifica-sistema.mjs` reprova o build se
-   o `/design` não importar o componente.
+4. **Componente novo em `primitivos/`, `layout/` ou `padroes/` entra no catálogo
+   `/design` no mesmo commit.** Não é convenção: `verifica-sistema.mjs` reprova o
+   build se o `/design` não importar o componente.
 
 ### Onde ficam as decisões
 

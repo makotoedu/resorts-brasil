@@ -1,0 +1,91 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Icone from '../primitivos/Icone.astro';
+
+/**
+ * LinkAcao — o `.item-link` do tema: "Saiba mais >".
+ *
+ * Nao e botao. E o link discreto que fecha um cartao ou uma chamada, e aparece
+ * dentro de tres padroes diferentes (chamada de acao, cartao de publicacao,
+ * cartao de modalidade). Sem ele, esses tres repetiriam a mesma cadeia de
+ * marcacao e o mesmo hover — e o hover foi justamente o que este projeto
+ * aprendeu a nao inventar.
+ *
+ *   <LinkAcao href="/apoie">Saiba mais</LinkAcao>
+ *   <LinkAcao href="https://..." externo seta={false}>Leia agora</LinkAcao>
+ *
+ * MEDIDO em `.item-link` (scripts/medir-padroes.mjs): 14px, cor do texto do
+ * site (navy) em repouso e cor de acao no hover. Nao e azul em repouso — quem
+ * lesse o CSS suporia que sim, porque `a` nu e azul; aqui o `.item-link` vence.
+ */
+interface Props extends Omit<HTMLAttributes<'a'>, 'class' | 'href'> {
+  href: string;
+  /** Abre em outra aba com `rel` seguro. */
+  externo?: boolean;
+  /** O chevron depois do texto. O tema o punha em 5 dos 6 links da home. */
+  seta?: boolean;
+  cor?: 'padrao' | 'inverso';
+  class?: string;
+}
+
+const {
+  href,
+  externo = false,
+  seta = true,
+  cor = 'padrao',
+  class: classe,
+  ...resto
+} = Astro.props;
+---
+
+<a
+  class:list={['link-acao', cor === 'inverso' && 'inverso', classe]}
+  href={href}
+  target={externo ? '_blank' : undefined}
+  rel={externo ? 'noopener noreferrer' : undefined}
+  {...resto}
+>
+  <slot />
+  {/* aria-hidden: o chevron repete o que o texto ja diz. */}
+  {seta && <Icone nome="chevron-right" tamanho="sm" class="seta" />}
+</a>
+
+<style>
+  .link-acao {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--color-texto);
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  /* Medido com o mouse em cima. */
+  .link-acao:hover {
+    color: var(--color-acao-primaria);
+  }
+
+  /*
+   * Sobre foto e sobre superficie escura. O base.css devolve `color: inherit` e
+   * sublinhado a todo `a[href]` dentro de `.superficie-inversa`, porque la o
+   * azul do link some; aqui o mesmo problema aparece sobre a foto, onde nem a
+   * marca de secao existe. A seta desliza no lugar do sublinhado.
+   */
+  .inverso {
+    color: var(--color-texto-inverso);
+  }
+
+  .inverso:hover {
+    color: var(--color-texto-inverso);
+  }
+
+  .seta {
+    transition: transform 0.3s;
+  }
+
+  .link-acao:hover .seta {
+    transform: translateX(0.25rem);
+  }
+</style>

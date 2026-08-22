@@ -1,0 +1,156 @@
+---
+import Icone from '../primitivos/Icone.astro';
+
+/**
+ * ListaIcones — a lista cujo marcador e um simbolo.
+ *
+ * 24 usos: os 12 fundadores na pagina de historia (bolinha) e as quatro listas
+ * da politica de privacidade (seta), nos tres idiomas.
+ *
+ *   <ListaIcones marcador="circulo" itens={['Accor Sofitel', 'Costao do Santinho']} />
+ *   <ListaIcones marcador="seta" itens={fontes} colunas={2} />
+ *
+ * ESTE E O COMPONENTE QUE FECHA A ARMADILHA MAIS CARA DO PROJETO.
+ *
+ * No tema, os dois marcadores sao pseudo-elementos: `.list-icon-circle li:before`
+ * (U+F192) e `.list-icon-arrow li:before` (U+F054). Pseudo-elemento NAO TEM
+ * CLASSE — e por isso que um subset de fonte montado a partir dos `<i class>`
+ * do HTML enxergava 14 icones onde havia 16, e rodá-lo apagava as setas e
+ * bolinhas de 6 paginas sem erro nenhum de build: glifo ausente vira tofu, que
+ * ocupa exatamente 1em e nao muda altura nenhuma.
+ *
+ * Aqui o marcador e `<svg>` no markup. Nao ha fonte para faltar, nao ha
+ * codepoint para trocar, e um nome invalido vira erro de `astro check`.
+ *
+ * MEDIDO (scripts/medir-padroes.mjs): recuo de 20px, marcador de 12px na cor de
+ * acao, 10px entre itens.
+ */
+interface Props {
+  /** `circulo` e o U+F192 do tema; `seta` e o U+F054. */
+  marcador?: 'circulo' | 'seta';
+  /**
+   * Os itens, em texto simples — que e o que as cinco listas do site sao.
+   * Contrato estreito de proposito: com `<slot>` cada `<li>` teria de trazer o
+   * proprio marcador, e voltariamos a depender de quem escreve lembrar disso.
+   */
+  itens: string[];
+  /**
+   * Colunas, por largura do PAI (container query, como a <Grade>). A pagina de
+   * historia dividia os 12 fundadores em tres `<ul>` de quatro itens, o que
+   * quebra a lista em tres listas para o leitor de tela e obriga a reequilibrar
+   * a mao quando o conteudo muda.
+   */
+  colunas?: 1 | 2 | 3;
+  /** `paragrafo` para texto corrido; `padrao` herda a cor do contexto. */
+  cor?: 'padrao' | 'paragrafo';
+  class?: string;
+}
+
+const { marcador = 'circulo', itens, colunas = 1, cor = 'padrao', class: classe } = Astro.props;
+
+const ICONES = { circulo: 'dot-circle', seta: 'chevron-right-solido' } as const;
+---
+
+<!--
+  A caixa externa e o container da consulta. Um elemento nao pode consultar o
+  proprio tamanho — seria circular — entao a lista precisa de um pai declarado.
+  Mesma estrutura da <Grade>, e pelo mesmo motivo.
+-->
+<div class="caixa">
+  <ul
+    class:list={[
+      'lista',
+      `colunas-${colunas}`,
+      cor === 'paragrafo' && 'cor-paragrafo',
+      classe,
+    ]}
+  >
+    {
+      itens.map((item) => (
+        <li>
+          {/* Sem `rotulo`: o marcador e decoracao, e o texto do item ja e o
+              conteudo. Anuncia-lo faria o leitor de tela dizer "bolinha" 12
+              vezes na pagina de historia. */}
+          <Icone nome={ICONES[marcador]} class="marcador" />
+          <span>{item}</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .caixa {
+    container-type: inline-size;
+  }
+
+  .lista {
+    /* O base.css devolve `disc` e 14px de recuo a todo `ul`; aqui o marcador e
+       proprio, entao os dois saem. */
+    list-style: none;
+    padding-inline-start: 0;
+    margin-block: 0 0.875rem;
+  }
+
+  .lista li {
+    display: flex;
+    align-items: baseline;
+    /* MEDIDO: 20px de recuo e 10px entre itens. O recuo era `margin-left` no
+       `<li>` com o marcador puxado de volta por posicionamento absoluto; aqui
+       ele e o vao do flex, entao nada precisa ser posicionado. */
+    gap: 0.5rem;
+    margin-inline-start: 0.75rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .lista li:last-child {
+    margin-bottom: 0;
+  }
+
+  /*
+   * 12px medidos, e o <Icone> nao tem esse degrau — o menor dele e 16px, o
+   * tamanho do glifo do rodape. Criar um degrau de 12px no primitivo por causa
+   * de um marcador inverteria a relacao entre sistema e excecao, entao o
+   * ajuste fica aqui, onde a excecao mora.
+   *
+   * `flex: none` porque um `<svg>` em flex encolhe quando o texto e longo.
+   */
+  .lista :global(.marcador) {
+    flex: none;
+    width: 0.75rem;
+    height: 0.75rem;
+    color: var(--color-acao-primaria);
+    /* `baseline` num svg alinha pela borda de baixo; este recuo poe o marcador
+       na linha do texto em vez de sobre ela. */
+    transform: translateY(0.05em);
+  }
+
+  .cor-paragrafo {
+    color: var(--color-texto-paragrafo);
+  }
+
+  /* Colunas por largura do pai — mesma disciplina da <Grade>. */
+  .colunas-2,
+  .colunas-3 {
+    display: block;
+  }
+
+  @container (min-width: 30rem) {
+    .colunas-2,
+    .colunas-3 {
+      columns: 2;
+    }
+  }
+
+  @container (min-width: 48rem) {
+    .colunas-3 {
+      columns: 3;
+    }
+  }
+
+  /* Sem isto uma linha de item quebra entre duas colunas. */
+  .colunas-2 li,
+  .colunas-3 li {
+    break-inside: avoid;
+  }
+</style>

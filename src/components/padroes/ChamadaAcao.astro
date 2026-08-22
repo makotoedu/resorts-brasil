@@ -1,0 +1,211 @@
+---
+import Imagem from '../primitivos/Imagem.astro';
+
+/**
+ * ChamadaAcao — o bloco destacado, em quatro superficies.
+ *
+ * 51 usos do `.call-to-action`, e nao e um so desenho: o mesmo nome de classe
+ * cobre o bloco cinza com titulo e texto, o bloco escuro, e o cartao sobre foto
+ * com veu que a home repete seis vezes. Sao a mesma caixa com fundos diferentes,
+ * e e assim que entram aqui — `fundo` e a unica prop que muda de verdade.
+ *
+ *   <ChamadaAcao>...</ChamadaAcao>
+ *   <ChamadaAcao fundo="marca">...</ChamadaAcao>
+ *   <ChamadaAcao fundo="imagem" imagem="/images/hero/pexels-1072842.jpg" alt="">
+ *     <Titulo nivel={3} tamanho="lg" cor="inverso">Apoie o Turismo</Titulo>
+ *     <LinkAcao href="/apoie" cor="inverso">Saiba mais</LinkAcao>
+ *   </ChamadaAcao>
+ *
+ * MEDIDO (scripts/medir-padroes.mjs), e o recuo e o unico numero que muda de
+ * faixa: 26px em cima / 26px nos lados / 18px embaixo no mobile e no tablet,
+ * indo a 46 / 50 / 34 no desktop. No tema isso saltava na media query; aqui
+ * interpola por `clamp()`, com as pontas medidas. Raio 11,48px (`--radius-md`).
+ *
+ * DUAS COISAS MUDAM DE PROPOSITO NA VARIANTE COM FOTO:
+ *
+ *   1. A foto era `background-image` num `style=` inline com `height: 360px`.
+ *      Fundo de CSS nao tem `srcset` nem lazy: os seis cartoes da home baixavam
+ *      seis originais inteiros. Aqui e um <Imagem> de verdade, com o pipeline
+ *      da Etapa 2, e a altura vem de `proporcao` — a caixa acompanha a largura
+ *      em vez de recortar mais justamente onde ha menos tela.
+ *   2. O veu era um `.bg-overlay` com `opacity: 0.5` sobre um preto de 0,59.
+ *      Opacidade de camada esmaece tambem o que estiver DENTRO dela; aqui a
+ *      transparencia esta na propria cor (`--color-veu`), medida no efeito
+ *      final. E o mesmo cuidado que o kenburns deste projeto ja custou uma vez.
+ */
+interface Props {
+  fundo?: 'clara' | 'marca' | 'imagem' | 'transparente';
+  /** So com `fundo="imagem"`. Caminho publico (`/images/...`). */
+  imagem?: string;
+  /** Vazio marca foto decorativa — que e o caso quando o texto ja diz tudo. */
+  alt?: string;
+  /** Sem ela, a caixa tem a altura do conteudo. Substitui o `height: 360px`. */
+  proporcao?: 'larga' | 'video' | 'quadrada';
+  alinhamento?: 'inicio' | 'centro';
+  /** Onde o conteudo encosta. O tema chamava de `text-bottom`. */
+  conteudo?: 'centro' | 'fim';
+  /** Primeira imagem visivel da pagina: carrega sem lazy. */
+  prioridade?: boolean;
+  /** O `sizes` da foto. Diga-o sempre que o bloco nao ocupar a janela inteira. */
+  tamanhos?: string;
+  como?: 'div' | 'section' | 'article' | 'aside';
+  class?: string;
+}
+
+const {
+  fundo = 'clara',
+  imagem,
+  alt = '',
+  proporcao,
+  alinhamento = 'inicio',
+  conteudo = 'centro',
+  prioridade = false,
+  tamanhos = '(min-width: 64rem) 33vw, 100vw',
+  como = 'div',
+  class: classe,
+} = Astro.props;
+
+const Tag = como;
+
+if (fundo === 'imagem' && !imagem) {
+  throw new Error('ChamadaAcao: fundo="imagem" exige a prop `imagem`.');
+}
+
+/* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
+const PROPORCOES = {
+  larga: 'p-larga',
+  video: 'p-video',
+  quadrada: 'p-quadrada',
+} as const;
+---
+
+<Tag
+  class:list={[
+    'chamada',
+    `f-${fundo}`,
+    alinhamento === 'centro' && 'centro',
+    conteudo === 'fim' && 'conteudo-fim',
+    proporcao && PROPORCOES[proporcao],
+    /* A mesma marca que o base.css procura para trocar a cor do contorno de
+       foco: sobre fundo escuro o azul do foco desaparece. */
+    (fundo === 'marca' || fundo === 'imagem') && 'superficie-inversa',
+    classe,
+  ]}
+>
+  {
+    fundo === 'imagem' && (
+      <>
+        <Imagem
+          src={imagem!}
+          alt={alt}
+          escala="largura-total"
+          tamanhos={tamanhos}
+          ajuste="cobrir"
+          prioridade={prioridade}
+          class="foto"
+        />
+        <span class="veu" aria-hidden="true" />
+      </>
+    )
+  }
+  <div class="interior">
+    <slot />
+  </div>
+</Tag>
+
+<style>
+  .chamada {
+    position: relative;
+    /* MEDIDO nas duas pontas, 390px e 1440px: 26 -> 46 em cima, 26 -> 50 nos
+       lados, 18 -> 34 embaixo. No tema os tres saltavam na media query. */
+    padding: clamp(1.625rem, 1.1607rem + 1.9048vw, 2.875rem)
+      clamp(1.625rem, 1.0679rem + 2.2857vw, 3.125rem)
+      clamp(1.125rem, 0.7536rem + 1.5238vw, 2.125rem);
+    border-radius: var(--radius-md);
+    /* A foto e o veu sao filhos posicionados; sem isto eles vazam dos cantos. */
+    overflow: hidden;
+  }
+
+  .centro {
+    text-align: center;
+  }
+
+  /* ---------------- superficies ---------------- */
+
+  .f-clara {
+    background-color: var(--color-superficie-clara);
+  }
+
+  /* MEDIDO em `.call-to-action.background-dark`: o navy do site, e nao o carvao
+     do ebook. Ver a nota de `--color-superficie-marca` no tokens.css. */
+  .f-marca {
+    background-color: var(--color-superficie-marca);
+    color: var(--color-texto-inverso);
+  }
+
+  .f-imagem {
+    color: var(--color-texto-inverso);
+  }
+
+  /* ---------------- a foto e o veu ---------------- */
+
+  /*
+   * `inset: 0` e nao `z-index` negativo. O kenburns do tema ficava atras do
+   * fundo do proprio slide por depender de um contexto de empilhamento que o
+   * plugin criava, e o zoom parou de acontecer quando o plugin saiu — sem
+   * quebrar nenhum teste. Aqui a ordem e a do documento: foto, veu, interior.
+   */
+  .chamada :global(.foto) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .veu {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-veu);
+  }
+
+  .interior {
+    position: relative;
+  }
+
+  /* ---------------- proporcao ---------------- */
+
+  /*
+   * Substitui o `height: 360px` do `style=` inline.
+   *
+   * `min-height: fit-content` junto do `aspect-ratio` nao e detalhe: sozinho, o
+   * `aspect-ratio` fixa a altura pela largura e o conteudo que nao couber
+   * TRANSBORDA. Este site tem tres idiomas, e o titulo alemao de um cartao
+   * nunca tem o tamanho do portugues — a caixa precisa poder crescer. Com os
+   * dois, a proporcao vale como piso e o texto manda quando e maior.
+   */
+  .p-larga,
+  .p-video,
+  .p-quadrada {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: fit-content;
+  }
+
+  .p-larga {
+    aspect-ratio: var(--aspect-larga);
+  }
+
+  .p-video {
+    aspect-ratio: 16 / 9;
+  }
+
+  .p-quadrada {
+    aspect-ratio: 1 / 1;
+  }
+
+  .conteudo-fim {
+    justify-content: flex-end;
+  }
+</style>

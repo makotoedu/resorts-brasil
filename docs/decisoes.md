@@ -1205,3 +1205,199 @@ nenhum CSS mencionam**: `logo.png`, `logo.svg`, dois de `publicacoes/`, onze de
 
 Ficaram no repositório de propósito — remover conteúdo é decisão de quem edita o
 site, não da migração. `DETALHE=1 node scripts/imagens.mjs` lista os nomes.
+
+# Etapa 3 — padrões
+
+Nove composições estavam previstas; foram entregues **dez**, e o décimo explica a
+etapa melhor que os outros nove. O `.item-link` do tema — "Saiba mais >" — aparece
+dentro da chamada de ação, do cartão de publicação e do cartão de modalidade. Sem
+componente, os três repetiriam a mesma marcação **e o mesmo hover**, que é
+justamente a parte que este projeto aprendeu a não inventar.
+
+| padrão | substitui | usos no site |
+|---|---|---|
+| [`CartaoMembro`](../src/components/padroes/CartaoMembro.astro) | `.team-member` | 124 |
+| [`ChamadaAcao`](../src/components/padroes/ChamadaAcao.astro) | `.call-to-action`, 3 superfícies | 51 |
+| [`CaixaIcone`](../src/components/padroes/CaixaIcone.astro) | `.icon-box.small.clean` | 36 |
+| [`CartaoPublicacao`](../src/components/padroes/CartaoPublicacao.astro) | `.post-item` | 27 |
+| [`LinkAcao`](../src/components/padroes/LinkAcao.astro) | `.item-link` | ~78 |
+| [`ListaIcones`](../src/components/padroes/ListaIcones.astro) | `.list-icon-circle` e `-arrow` | 24 |
+| [`Hero`](../src/components/padroes/Hero.astro) | `.inspiro-slider` e o Ken Burns | 3 |
+| [`FaixaDestaque`](../src/components/padroes/FaixaDestaque.astro) | `.box-fancy.section-fullwidth` | 15 |
+| [`Contador`](../src/components/padroes/Contador.astro) | `.counter[data-to]` | 15 |
+| [`Abas`](../src/components/padroes/Abas.astro) | `.nav-tabs` e o `tabs()` do `site.js` | 3 |
+
+Os valores saem de [`scripts/medir-padroes.mjs`](../scripts/medir-padroes.mjs),
+terceiro da família do `medir-base.mjs` e do `medir-primitivos.mjs`. Ele mede as
+nove composições no navegador, nos três viewports, com o **hover incluído** — o
+`.item-link`, o LinkedIn do cartão e a aba inativa têm estado, e estado não
+aparece no HTML nem no diff visual.
+
+## "Portar os componentes existentes" não cabia nesta etapa
+
+O plano fechava a Etapa 3 com uma linha: *"Portar os componentes existentes para
+os primitivos novos."* Ela não foi executada — e não por falta de tempo.
+**Fazê-la agora quebraria as páginas do tema.**
+
+`GradeMembros`, `GradeLogos`, `CarrosselAssociados` e `AssociadosTabs` são
+renderizados pelas 40 páginas que ainda carregam o `style.css`. Reescrevê-los com
+os primitivos novos significa emitir markup que só o design system estiliza — e a
+regra número um do projeto é que a folha nova entra pelo frontmatter da **página**
+migrada, nunca pelo layout. Portar o componente sem migrar a página o deixaria
+sem estilo nenhum.
+
+Ou seja: **portar aqueles componentes é migrar as páginas deles**, que é o que as
+Etapas 5–9 fazem. Cada padrão desta etapa é o substituto que já espera:
+
+| componente do tema | vira | etapa |
+|---|---|---|
+| `GradeMembros` | `<Grade>` de `<CartaoMembro>` | 5 (diretoria) |
+| `AssociadosTabs` | `<Abas>` com `<Grade>` dentro | 8 (associados) |
+| `GradeLogos` e `CarrosselAssociados` | `<Grade>` de `<Imagem>` | 8 e 9 |
+
+## A superfície escura da marca não era a superfície inversa
+
+`--color-superficie-inversa` valia `#0c101b`, e esse valor tinha sido obtido por
+**contagem de ocorrências no markup** — 135 delas. Medindo
+`.call-to-action.background-dark` no navegador, a cor é `rgb(0, 30, 108)`: o navy
+do site.
+
+As ocorrências do carvão são reais, mas as 141 estão todas nas três páginas do
+**ebook**, que tem paleta própria. São duas superfícies escuras com papéis
+diferentes, e achatar as duas num token só pintaria a chamada de ação de
+preto-azulado sem que ninguém tivesse pedido. Entrou `--color-superficie-marca`.
+
+É o mesmo erro de método que a Etapa 1 encontrou em `--color-acao-primaria`
+(`#0c71c3` por contagem, `#2250fc` medido no `.btn`). **Contar no HTML continua
+não sendo medir.**
+
+## O `:where()` que zerava a própria regra
+
+O `base.css` tinha, desde a Etapa 0:
+
+```css
+:where(.superficie-inversa) :where(p, li, small) { color: inherit; }
+```
+
+A intenção: dentro de uma seção escura o parágrafo herda a cor da seção em vez do
+cinza `#525e75`, que sobre navy dá 1,5:1. **A regra nunca valeu.** `:where()` zera
+a especificidade do que está dentro dele, então o seletor inteiro pesa `0-0-0` e
+perde para o `p { color: var(--color-texto-paragrafo) }` de vinte linhas acima,
+que pesa `0-0-1`.
+
+Nada acusou: o diff visual não tem seção escura para comparar (o `/design` não
+existe no site original), a varredura de geometria não lê cor, e a checagem de
+contraste que o plano prevê ainda não está implementada. **Apareceu numa captura
+de tela da chamada de ação escura** — cinza sobre navy, medido em
+`rgb(82, 94, 117)` sobre `rgb(0, 30, 108)`.
+
+A classe saiu do `:where()` e passou a carregar o peso (`0-1-0`); a lista de
+elementos continua dentro dele, barata, para que um componente consiga sobrepor
+quando quiser. O mesmo valia para a regra irmã do `a[href]`.
+
+Vale como aviso geral: **um seletor inteiramente dentro de `:where()` só vence o
+padrão do navegador.** Contra qualquer declaração de tipo, ele perde.
+
+## O véu, o `z-index` e a lição de sempre
+
+A quarta armadilha do tema seria fácil de reintroduzir. O `.bg-overlay` era uma
+camada com `background: rgba(0,0,0,0.59)` **e** `opacity: 0.5` — e opacidade de
+camada esmaece também o que estiver dentro dela. O `.kenburns-bg` tinha
+`z-index: -1` e dependia de um contexto de empilhamento que o flickity criava;
+sem o plugin, o zoom parou de acontecer sem quebrar nenhum teste.
+
+Nos padrões novos não há `opacity` de camada nem `z-index` negativo: a foto é um
+filho posicionado por `inset: 0`, o véu vem depois dela e o conteúdo depois do
+véu — a ordem do documento faz o empilhamento. `--color-veu` carrega a
+transparência na própria cor, com o valor **medido no efeito final** (0,295,
+arredondado para 0,3).
+
+## Três coisas que dependiam do JavaScript e não deviam
+
+Nenhuma era bug conhecido. As três apareceram ao reescrever o padrão:
+
+1. **O número do contador não existia sem script.** O markup era
+   `<span data-to="83"></span>` — vazio. Quem escrevia o valor era o `counters()`.
+   Sem JavaScript, a seção mostrava cinco rótulos sem número: "Resorts
+   Associados", "Quartos", "Estados". O dado, que é a única coisa que a seção
+   existe para dizer, dependia de uma animação. Agora o valor final é o conteúdo
+   do elemento, e a animação apenas conta **até** ele.
+
+2. **As legendas do hero nasciam com `opacity: 0`.** É exatamente a forma da
+   regressão que deixou seis páginas deste projeto invisíveis quando o Isotope
+   saiu. O `<Hero>` faz a cascata com `animation-fill-mode: both` a partir de um
+   quadro transparente: se a animação não rodar, o texto fica visível. A falha
+   aponta para o lado seguro por escolha, não por acaso.
+
+3. **`prefers-reduced-motion` zerava a duração e não o atraso.** Bastava enquanto
+   ninguém escalonava entradas. O `<Hero>` escalona três, em 1s, 1,35s e 1,7s — e
+   com `both` o quadro inicial vale durante o atraso. Quem pedisse menos
+   movimento ficaria 1,7s olhando para um hero sem título. `animation-delay: 0s`
+   entrou na mesma regra do `base.css`.
+
+## O que o catálogo pegou antes de qualquer página
+
+Duas vezes — e é para isso que ele entrou na varredura de geometria na Etapa 1.
+
+A primeira: a `<FaixaDestaque>` com seis blocos num container de 862px deu 144px
+por bloco, dos quais 92 eram recuo, e o título saiu **cortado dos dois lados**. A
+escada de colunas tinha sido copiada da `<Grade>` (30rem e 48rem), mas as células
+da `<Grade>` não têm recuo próprio e as da faixa têm. Duas correções: a escada
+passou a esperar 64rem e 80rem para 4 a 6 colunas, e o recuo ganhou teto
+proporcional ao bloco — `min(clamp(…), 15%)`, onde os 15% são a proporção
+**medida** no desktop (73px num bloco de 489px). Nos casos reais os dois valores
+coincidem; o `min` só age quando o bloco é estreito demais para o recuo que a
+janela pediria.
+
+A segunda: `"21 mil"` quebrava em duas linhas no `<Contador>`, e cada indicador da
+fileira ficava com uma altura diferente, desalinhando os rótulos. O sufixo saiu
+para um elemento próprio — em corpo menor, porque em 50px ele competia com o
+número — e isso resolveu de passagem um problema que ainda não tinha aparecido: a
+animação reescreve `textContent` a cada quadro, o que apagaria qualquer marcação
+dentro do mesmo nó.
+
+## Quatro tons novos, e o contraste que eles corrigem
+
+A `<FaixaDestaque>` precisava de cinco cores que só existiam como
+`style="background-color: #570A57"` no markup — 24 ocorrências somadas nos três
+idiomas. Entraram como primitivas (`--cor-indigo-900`, `--cor-verde-600`,
+`--cor-roxo-800`, `--cor-magenta-700`), e o `#efb72c` de `/resorts-brasil` foi
+consolidado no `--cor-ambar-500` que `/historia` já usava para a mesma faixa: dois
+amarelos a 11 pontos de distância pintando a mesma coisa é ruído, não decisão.
+
+Cada tom semântico traz o **próprio par de texto**, e é aí que está a correção. O
+tema escrevia branco sobre todos os cinco fundos:
+
+| fundo | texto do tema | contraste | texto novo | contraste |
+|---|---|---|---|---|
+| âmbar `#fac213` | branco | **1,6:1** | navy | 9,1:1 |
+| verde `#28b055` | branco | **2,9:1** | navy | 5,2:1 |
+| índigo, índigo-escuro, roxo, magenta | branco | 7,1:1 a 17:1 | branco | inalterado |
+
+Os dois primeiros reprovam o critério 1.4.3 da WCAG com folga. O par vive no
+`tokens.css`, e não dentro do componente, para que a escolha não possa divergir do
+fundo: quem passa `tom="ambar"` não tem como pedir texto branco.
+
+## Sangria sem `100vw`
+
+O `.section-fullwidth` do tema somava `width: 100vw` a uma margem negativa. `100vw`
+**inclui a barra de rolagem**, então toda página com aquela classe transbordava
+alguns pixels na horizontal — e transbordo horizontal é um dos cinco defeitos que
+a varredura de geometria procura.
+
+A `<FaixaDestaque>` não tem truque de sangria nenhum: ela ocupa a largura de quem
+a contém. Para ir de borda a borda, basta colocá-la dentro de `<Secao>` **sem**
+`<Container>`, já que a seção é larga e o container é que estreita. Composição no
+lugar de conta.
+
+## O catálogo engordou 62 KB, e está certo
+
+`/design` passou de 78 KB para 140 KB e o orçamento de performance reprovou —
+corretamente, porque ele é uma catraca e não sabe distinguir conteúdo novo de
+peso desnecessário. A linha de base foi regravada depois de conferir, no
+`git diff`, que **só as duas linhas do `/design` mudaram**.
+
+Vale registrar de onde vêm os 52 KB de HTML: cada `<Icone>` embute o caminho SVG
+inteiro, e o catálogo agora desenha o mesmo chevron cerca de dez vezes. Numa
+página de conteúdo isso não se repete assim; se algum dia repetir, a saída é um
+sprite com `<use>` — não vale antecipar.

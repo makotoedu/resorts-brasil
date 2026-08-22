@@ -37,10 +37,27 @@
   --cor-nevoa-100: #e4e6ef; /* bordas */
   --cor-nevoa-50: #f7f9fc; /* medido: fundo do .background-grey */
   --cor-coral-500: #fc575e; /* destaque/alerta (18) */
-  --cor-ambar-500: #fac213;
+  --cor-ambar-500: #fac213; /* faixa de destaque; absorve o #efb72c da mesma faixa em outra pagina */
   --cor-ambar-400: #ffc107; /* medido: fundo do .btn-warning (o CTA da home) */
   --cor-ambar-600: #d39e00; /* medido: hover do mesmo botao */
   --cor-indigo-700: #242f9b;
+
+  /*
+   * As quatro faixas de destaque que faltavam. Sao fundos editoriais de secao
+   * inteira — os tres eixos da associacao e as duas modalidades de apoio — e no
+   * markup do tema estavam como `style="background-color: #570A57"`, 24
+   * ocorrencias somadas nos tres idiomas. Nomeadas aqui, elas saem do markup.
+   *
+   * O #efb72c da mesma faixa em /resorts-brasil foi consolidado no ambar-500
+   * acima: as duas paginas pintam a mesma coisa com dois amarelos a 11 pontos
+   * de distancia, e isso e ruido, nao decisao.
+   */
+  --cor-indigo-900: #15184b;
+  --cor-verde-600: #28b055;
+  --cor-roxo-800: #570a57;
+  --cor-magenta-700: #a91079;
+
+  --cor-preto: #000; /* so o veu sobre foto; nenhum texto usa */
 
   /* ==========================================================
    * SEMANTICOS — cor
@@ -72,8 +89,50 @@
   --color-superficie-inversa: var(--cor-carvao-900);
   --color-superficie-inversa-alt: var(--cor-carvao-800);
 
+  /*
+   * A superficie escura da MARCA, que nao e a mesma coisa que a inversa.
+   *
+   * Medida em `.call-to-action.background-dark` (scripts/medir-padroes.mjs):
+   * rgb(0, 30, 108) — o navy do site, e nao o carvao. O carvao existe mesmo,
+   * mas so no ebook, onde sao 141 ocorrencias nas tres paginas. Duas superficies
+   * escuras diferentes, cada uma com o seu papel; achatar as duas em um token so
+   * pintaria a chamada de acao de preto-azulado sem que ninguem pedisse.
+   */
+  --color-superficie-marca: var(--cor-navy-900);
+
   --color-borda: var(--cor-nevoa-100);
   --color-destaque: var(--cor-coral-500);
+
+  /*
+   * ACENTOS — fundos de faixa editorial.
+   *
+   * Cada um vem com o seu par de texto, e isso e a parte que importa. O tema
+   * escrevia texto branco sobre TODOS eles: sobre o ambar isso da 1,6:1 e sobre
+   * o verde 2,9:1, os dois reprovando o criterio 1.4.3 da WCAG com folga. Os
+   * mesmos fundos com o navy do site dao 9,1:1 e 5,2:1. O par vive aqui em vez
+   * de dentro do componente para que a escolha nao possa divergir do fundo.
+   */
+  --color-acento-ambar: var(--cor-ambar-500);
+  --color-acento-ambar-texto: var(--cor-navy-900);
+  --color-acento-verde: var(--cor-verde-600);
+  --color-acento-verde-texto: var(--cor-navy-900);
+  --color-acento-indigo: var(--cor-indigo-700);
+  --color-acento-indigo-texto: var(--cor-branco);
+  --color-acento-indigo-escuro: var(--cor-indigo-900);
+  --color-acento-indigo-escuro-texto: var(--cor-branco);
+  --color-acento-roxo: var(--cor-roxo-800);
+  --color-acento-roxo-texto: var(--cor-branco);
+  --color-acento-magenta: var(--cor-magenta-700);
+  --color-acento-magenta-texto: var(--cor-branco);
+
+  /*
+   * O veu sobre foto. MEDIDO no `.bg-overlay`: rgba(0,0,0,0.59) pintado num
+   * elemento com `opacity: 0.5`, o que da 0,295 de preto efetivo. Aqui e uma
+   * cor so, com a opacidade ja embutida — camada com `opacity` propria esmaece
+   * tambem o que estiver dentro dela, e foi assim que o kenburns deste projeto
+   * ja se perdeu uma vez.
+   */
+  --color-veu: rgb(0 0 0 / 0.3);
 
   /* ==========================================================
    * TIPOGRAFIA

@@ -43,10 +43,24 @@ const MIGRADAS = [
   'src/components/layout/Secao.astro',
   'src/components/layout/Container.astro',
   'src/components/layout/Grade.astro',
+  'src/components/padroes/CartaoMembro.astro',
+  'src/components/padroes/ChamadaAcao.astro',
+  'src/components/padroes/CaixaIcone.astro',
+  'src/components/padroes/CartaoPublicacao.astro',
+  'src/components/padroes/LinkAcao.astro',
+  'src/components/padroes/ListaIcones.astro',
+  'src/components/padroes/Hero.astro',
+  'src/components/padroes/FaixaDestaque.astro',
+  'src/components/padroes/Contador.astro',
+  'src/components/padroes/Abas.astro',
 ];
 
 /** Onde vivem os componentes do sistema novo, e o catalogo que os documenta. */
-const DIRETORIOS_DE_COMPONENTE = ['src/components/primitivos', 'src/components/layout'];
+const DIRETORIOS_DE_COMPONENTE = [
+  'src/components/primitivos',
+  'src/components/layout',
+  'src/components/padroes',
+];
 const CATALOGO = 'src/pages/design.astro';
 
 const falhas = [];

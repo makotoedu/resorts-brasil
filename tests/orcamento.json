@@ -360,13 +360,13 @@
     "total": 113230
   },
   "/design.html|mobile": {
-    "html": 56360,
-    "css": 23212,
+    "html": 109755,
+    "css": 33926,
     "js": 0,
     "imagem": 0,
     "fonte": 0,
     "outro": 0,
-    "total": 79572
+    "total": 143681
   },
   "/index.html|desktop": {
     "html": 40207,
@@ -729,12 +729,12 @@
     "total": 113230
   },
   "/design.html|desktop": {
-    "html": 56360,
-    "css": 23212,
+    "html": 109755,
+    "css": 33926,
     "js": 0,
     "imagem": 0,
     "fonte": 0,
     "outro": 0,
-    "total": 79572
+    "total": 143681
   }
 }

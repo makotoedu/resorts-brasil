@@ -1,0 +1,163 @@
+---
+import Imagem from '../primitivos/Imagem.astro';
+import Titulo from '../primitivos/Titulo.astro';
+import Texto from '../primitivos/Texto.astro';
+import LinkAcao from './LinkAcao.astro';
+
+/**
+ * CartaoPublicacao — capa, ano, titulo, resumo e o link para ler.
+ *
+ * 27 usos entre publicacoes e estudos nos tres idiomas. E o padrao que a Etapa 4
+ * vai alimentar com Content Collections: quando as publicacoes virarem conteudo
+ * tipado, so muda quem chama este componente, nao ele.
+ *
+ *   <CartaoPublicacao
+ *     titulo="Cartilha ESG Resorts Brasil"
+ *     resumo="Direcionamentos para implantacao de boas praticas no setor"
+ *     capa="/images/publicacoes/cartilha-esg-resorts-brasil.jpg"
+ *     href="https://drive.google.com/..."
+ *     etiqueta="2022"
+ *     rotuloLink="Leia agora"
+ *   />
+ *
+ * MEDIDO (scripts/medir-padroes.mjs): borda de 1px, raio 11,48px, capa na
+ * largura do cartao, etiqueta absoluta a 11px do topo e 10px da direita com
+ * fundo da cor de acao, corpo com 24px de recuo, titulo de 18px com 16px de
+ * folga e resumo de 14px.
+ *
+ * A CAPA E UM LINK COMO O TITULO, e nao um link separado. No tema a imagem e o
+ * "Leia agora" eram dois `<a>` para o mesmo destino, e o titulo nao era link
+ * nenhum — quem navega por teclado passava duas vezes pela mesma publicacao e
+ * nunca pelo nome dela. Aqui o titulo carrega o link e a capa fica
+ * `aria-hidden`, entao a publicacao aparece uma vez, pelo nome.
+ */
+interface Props {
+  titulo: string;
+  resumo?: string;
+  /** Caminho publico (`/images/...`). */
+  capa: string;
+  href: string;
+  /** O ano, no distintivo sobre a capa. */
+  etiqueta?: string;
+  /** Texto do link. Traduz, entao vem de fora. */
+  rotuloLink?: string;
+  /** Nivel do heading. Depende da pagina, nao do desenho — ver <Titulo>. */
+  nivel?: 1 | 2 | 3 | 4 | 5 | 6;
+  /** Destino externo (o acervo mora no Drive): abre em outra aba. */
+  externo?: boolean;
+  /** O `sizes` da capa. O padrao serve a grade de 3 a 5 colunas. */
+  tamanhos?: string;
+  class?: string;
+}
+
+const {
+  titulo,
+  resumo,
+  capa,
+  href,
+  etiqueta,
+  rotuloLink,
+  nivel = 3,
+  externo = true,
+  tamanhos = '(min-width: 64rem) 20rem, (min-width: 30rem) 45vw, 90vw',
+  class: classe,
+} = Astro.props;
+---
+
+<article class:list={['cartao', classe]}>
+  <div class="capa">
+    <Imagem
+      src={capa}
+      alt=""
+      escala="largura-total"
+      tamanhos={tamanhos}
+      class="imagem"
+    />
+    {etiqueta && <span class="etiqueta">{etiqueta}</span>}
+  </div>
+  <div class="corpo">
+    <Titulo nivel={nivel} tamanho="md" class="titulo">
+      <a href={href} target={externo ? '_blank' : undefined} rel={externo ? 'noopener noreferrer' : undefined}>
+        {titulo}
+      </a>
+    </Titulo>
+    {resumo && <Texto cor="paragrafo">{resumo}</Texto>}
+    {
+      /* Um segundo caminho para o mesmo destino, e de proposito: e o alvo de
+         clique grande que o cartao precisa. Fica fora da ordem de tabulacao
+         (`tabindex="-1"`) para nao duplicar a parada do titulo. */
+      rotuloLink && (
+        <LinkAcao href={href} externo={externo} class="link" tabindex="-1" aria-hidden="true">
+          {rotuloLink}
+        </LinkAcao>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .cartao {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-md);
+    /* Corta a capa nos cantos de cima sem que ela repita o raio. */
+    overflow: hidden;
+    /* Numa grade de alturas desiguais, o cartao ocupa a celula inteira — e o
+       que dispensa o empacotamento masonry que o tema fazia em JavaScript. */
+    height: 100%;
+  }
+
+  .capa {
+    position: relative;
+  }
+
+  .cartao :global(.imagem) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* MEDIDO: 11px do topo, 10px da direita, recuo de 2px por 16px, 13px, pilula
+     na cor de acao. */
+  .etiqueta {
+    position: absolute;
+    top: 0.6875rem;
+    right: 0.625rem;
+    padding: 0.125rem 1rem;
+    background-color: var(--color-acao-primaria);
+    border-radius: var(--radius-full);
+    color: var(--color-texto-inverso);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+  }
+
+  .corpo {
+    /* 24px medidos nos quatro lados. */
+    padding: 1.5rem;
+    /* Empurra o link para a base quando os resumos tem alturas diferentes: sem
+       isto, uma fileira de cartoes fica com os links em degrau. */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .cartao :global(.titulo) {
+    margin-block: 0 1rem;
+  }
+
+  /* O titulo e o link, entao ele nao pode ficar azul: dentro do cartao a cor de
+     link disputaria com a etiqueta e com o proprio "Leia agora". */
+  .cartao :global(.titulo a) {
+    color: inherit;
+  }
+
+  .cartao :global(.titulo a:hover) {
+    color: var(--color-acao-primaria);
+  }
+
+  .cartao :global(.link) {
+    margin-top: auto;
+  }
+</style>

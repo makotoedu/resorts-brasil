@@ -24,8 +24,19 @@ import Imagem from '../components/primitivos/Imagem.astro';
 import Secao from '../components/layout/Secao.astro';
 import Container from '../components/layout/Container.astro';
 import Grade from '../components/layout/Grade.astro';
+import CartaoMembro from '../components/padroes/CartaoMembro.astro';
+import ChamadaAcao from '../components/padroes/ChamadaAcao.astro';
+import CaixaIcone from '../components/padroes/CaixaIcone.astro';
+import CartaoPublicacao from '../components/padroes/CartaoPublicacao.astro';
+import LinkAcao from '../components/padroes/LinkAcao.astro';
+import ListaIcones from '../components/padroes/ListaIcones.astro';
+import Hero from '../components/padroes/Hero.astro';
+import FaixaDestaque from '../components/padroes/FaixaDestaque.astro';
+import Contador from '../components/padroes/Contador.astro';
+import Abas from '../components/padroes/Abas.astro';
 import { glifos, nomesDeIcone } from '../icones/glifos';
 import { regioesAssociados } from '../data/associados';
+import { diretoria, cargoEm } from '../data/diretoria';
 
 /**
  * Quatro logos reais, tirados de `src/data/associados.ts` sem tocar no arquivo.
@@ -99,6 +110,56 @@ const escalaTipo = [
   { token: '--text-2xl', rotulo: '2xl', nota: '30 → 50px' },
   { token: '--text-3xl', rotulo: '3xl', nota: '40 → 62px' },
   { token: '--text-4xl', rotulo: '4xl', nota: '48 → 90px' },
+];
+
+/**
+ * Quatro membros reais da diretoria e as duas primeiras regiões de associados,
+ * lidos de `src/data/` sem tocar em nada. Vale o mesmo que valeu para os logos
+ * na Etapa 1: um catálogo com dado inventado esconde justamente o caso difícil
+ * — o nome comprido, o cargo de duas linhas, o conselheiro sem LinkedIn.
+ */
+const membrosDemo = diretoria.slice(0, 4);
+const regioesDemo = regioesAssociados.slice(0, 3);
+
+/** As três publicações mais recentes, com as capas que o site já tem. */
+const publicacoesDemo = [
+  {
+    titulo: 'Cartilha ESG Resorts Brasil',
+    resumo: 'Direcionamentos para implantação de boas práticas no setor',
+    capa: '/images/publicacoes/cartilha-esg-resorts-brasil.jpg',
+    etiqueta: '2022',
+  },
+  {
+    titulo: 'A Gestão da Jornada do Viajante',
+    resumo: 'Novo contexto, transformações nos negócios e soluções digitais…',
+    capa: '/images/publicacoes/a-gestao-da-jornada-do-viajante.jpg',
+    etiqueta: '2022',
+  },
+  {
+    titulo: 'Memórias, sustentabilidade e um olhar para o futuro',
+    resumo: 'Vinte anos atrás, iniciou-se um movimento de união…',
+    capa: '/images/publicacoes/memorias-sustentabilidade-e-um-olhar-para-o-futuro.jpg',
+    etiqueta: '2021',
+  },
+];
+
+/** Os cinco indicadores da página de associados, com os valores reais. */
+const indicadores = [
+  { ate: 83, rotulo: 'Resorts Associados' },
+  { ate: 21, sufixo: ' mil', rotulo: 'Quartos' },
+  { ate: 20, sufixo: ' mil', rotulo: 'Empregos Diretos' },
+  { ate: 16, rotulo: 'Estados' },
+  { ate: 5, rotulo: 'Regiões do Brasil' },
+];
+
+/** Os seis tons de acento, com o par de contraste que cada um carrega. */
+const tonsDeFaixa = [
+  { tom: 'ambar' as const, nota: 'texto navy — 9,1:1' },
+  { tom: 'verde' as const, nota: 'texto navy — 5,2:1' },
+  { tom: 'indigo' as const, nota: 'texto branco' },
+  { tom: 'indigo-escuro' as const, nota: 'texto branco' },
+  { tom: 'roxo' as const, nota: 'texto branco' },
+  { tom: 'magenta' as const, nota: 'texto branco' },
 ];
 
 const faixas = [
@@ -500,6 +561,426 @@ const faixas = [
           <p class="legenda">
             O <code>gap</code> de 28px reproduz o vão medido do <code>.row</code>, e sem a margem
             negativa que faz as 40 páginas transbordarem 30px na horizontal no mobile.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Padrões</h2>
+        <p class="legenda">
+          Dez composições, feitas com os primitivos acima. A diferença entre as duas camadas não é
+          de tamanho: primitivo é vocabulário, padrão é <strong>uma decisão de desenho já tomada</strong> —
+          onde fica a foto, qual é a hierarquia, o que acontece no hover. Os números saem de
+          <code>scripts/medir-padroes.mjs</code>, que mede as nove composições do tema no navegador.
+        </p>
+        <p class="legenda">
+          Cada padrão abaixo diz quantas vezes o markup que ele substitui aparece hoje no site. É a
+          conta que decidiu a ordem da Etapa 3: <code>.team-member</code> aparece 124 vezes, e
+          nenhuma delas é um componente.
+        </p>
+      </section>
+
+      <section>
+        <h3>CartaoMembro</h3>
+        <p class="legenda">
+          124 usos. Foto quadrada, nome, cargo e o perfil no LinkedIn. Os quatro cartões abaixo são
+          membros reais de <code>src/data/diretoria.ts</code> — inclusive o caso difícil, que é o
+          cargo de duas linhas.
+        </p>
+        <div class="demo">
+          <Grade colunas={4} espaco="md">
+            {
+              membrosDemo.map((m) => (
+                <CartaoMembro
+                  nome={m.nome}
+                  cargo={cargoEm(m.cargo, 'pt-br')}
+                  foto={m.foto}
+                  linkedin={m.linkedin}
+                  nivel={4}
+                />
+              ))
+            }
+          </Grade>
+          <p class="legenda">
+            <strong>Sem perfil, o símbolo fica e o link some.</strong> O markup original usava
+            <code>href="#"</code>: um link visível, focável e sem destino. Some-lo por completo
+            também não serve — mudaria a altura de um cartão no meio da grade.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>ChamadaAcao</h3>
+        <p class="legenda">
+          51 usos. O mesmo nome de classe cobria três desenhos no tema; aqui é uma caixa com quatro
+          superfícies, e <code>fundo</code> é a única prop que muda de verdade.
+        </p>
+
+        <div class="demo">
+          <p class="rotulo-demo"><code>fundo="clara"</code> <small>o padrão</small></p>
+          <ChamadaAcao>
+            <Titulo nivel={4} tamanho="xl">
+              Buscamos ajudar a transformar o setor de turismo no Brasil.
+            </Titulo>
+            <Texto>
+              Nossos planos e projetos são feitos pelos resorts para os resorts.
+            </Texto>
+            <Botao href="#chamada-clara">Associe-se</Botao>
+          </ChamadaAcao>
+        </div>
+
+        <div class="demo">
+          <p class="rotulo-demo">
+            <code>fundo="marca"</code> <small>o navy medido, não o carvão do ebook</small>
+          </p>
+          <ChamadaAcao fundo="marca" alinhamento="centro">
+            <Titulo nivel={4} tamanho="lg" cor="inverso">
+              Quer ajudar a transformar o turismo brasileiro?
+            </Titulo>
+            <Texto semMargem>
+              A cor de fundo é <code>--color-superficie-marca</code>, medida em
+              <code>.call-to-action.background-dark</code>.
+            </Texto>
+          </ChamadaAcao>
+        </div>
+
+        <div class="demo">
+          <p class="rotulo-demo">
+            <code>fundo="imagem"</code> <small>substitui o <code>height: 360px</code> inline</small>
+          </p>
+          <Grade colunas={3} espaco="sm">
+            <ChamadaAcao
+              fundo="imagem"
+              imagem="/images/hero/pexels-1072842.jpg"
+              alt=""
+              proporcao="larga"
+              alinhamento="centro"
+              conteudo="fim"
+              tamanhos="(min-width: 48rem) 18rem, 90vw"
+            >
+              <Titulo nivel={4} tamanho="lg" cor="inverso">Apoie o Turismo</Titulo>
+              <LinkAcao href="#apoie" cor="inverso">Saiba mais</LinkAcao>
+            </ChamadaAcao>
+            <ChamadaAcao
+              fundo="imagem"
+              imagem="/images/hero/pexels-1437264.jpg"
+              alt=""
+              proporcao="larga"
+              alinhamento="centro"
+              conteudo="fim"
+              tamanhos="(min-width: 48rem) 18rem, 90vw"
+            >
+              <Titulo nivel={4} tamanho="lg" cor="inverso">Seja um associado</Titulo>
+              <LinkAcao href="#associe" cor="inverso">Associe-se</LinkAcao>
+            </ChamadaAcao>
+            <ChamadaAcao
+              fundo="imagem"
+              imagem="/images/hero/pexels-450062.jpg"
+              alt=""
+              proporcao="larga"
+              alinhamento="centro"
+              conteudo="fim"
+              tamanhos="(min-width: 48rem) 18rem, 90vw"
+            >
+              <Titulo nivel={4} tamanho="lg" cor="inverso">Turistech Hub</Titulo>
+              <LinkAcao href="#turistech" cor="inverso">Saiba mais</LinkAcao>
+            </ChamadaAcao>
+          </Grade>
+          <p class="legenda">
+            A foto passa pelo pipeline da Etapa 2 — no tema eram seis originais inteiros baixados
+            por <code>background-image</code> em <code>style=</code> inline, sem
+            <code>srcset</code> e sem <em>lazy</em>. O véu é uma cor com transparência
+            (<code>--color-veu</code>) e não uma camada com <code>opacity</code>: opacidade de
+            camada esmaeceria também o texto dentro dela.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>LinkAcao</h3>
+        <p class="legenda">
+          O <code>.item-link</code> do tema, e o único padrão que não estava na lista da Etapa 3.
+          Ele entrou porque aparece dentro de três outros — chamada, cartão de publicação e cartão
+          de modalidade — e sem ele os três repetiriam a mesma marcação e o
+          <strong>mesmo hover</strong>, que é a parte que este projeto aprendeu a não inventar.
+        </p>
+        <div class="demo demo-botoes">
+          <div class="estados">
+            <span class="estado"><LinkAcao href="#link-repouso">Saiba mais</LinkAcao><small>repouso</small></span>
+            <span class="estado"><LinkAcao href="#link-sem-seta" seta={false}>Leia agora</LinkAcao><small>sem seta</small></span>
+            <span class="estado"><LinkAcao href="https://exemplo.org" externo>Acesse o guia</LinkAcao><small>externo</small></span>
+          </div>
+          <p class="legenda">
+            Em repouso ele é da cor do texto, e <strong>não</strong> azul. Quem lesse o CSS suporia
+            o contrário, porque <code>a</code> nu é azul — aqui o <code>.item-link</code> vence.
+            Passe o mouse: a cor vira a de ação e a seta desliza.
+          </p>
+        </div>
+        <div class="demo demo-escura superficie-inversa">
+          <p class="rotulo-demo"><code>cor="inverso"</code> <small>sobre foto ou fundo escuro</small></p>
+          <LinkAcao href="#link-inverso" cor="inverso">Saiba mais</LinkAcao>
+        </div>
+      </section>
+
+      <section>
+        <h3>CaixaIcone</h3>
+        <p class="legenda">
+          36 usos. Glifo de 36px numa caixa de 46px, título e uma frase — os oito benefícios de ser
+          associado e os canais da página de contato.
+        </p>
+        <div class="demo">
+          <Grade colunas={4} espaco="md">
+            <CaixaIcone icone="check-circle" titulo="Feiras" nivel={4}>
+              <Texto>Participação nas principais feiras do setor em estande cooperado.</Texto>
+            </CaixaIcone>
+            <CaixaIcone icone="check-circle" titulo="B2B" nivel={4}>
+              <Texto>Rodadas de negócio em formatos inovadores com clientes.</Texto>
+            </CaixaIcone>
+            <CaixaIcone icone="check-circle" titulo="Estudos" nivel={4} tom="acao">
+              <Texto>Acesso a estudos e estatísticas exclusivos para associados.</Texto>
+            </CaixaIcone>
+            <CaixaIcone icone="map-pin" titulo="Onde estamos" nivel={4} alinhamento="centro">
+              <Texto>Alinhamento centro, para blocos de contato.</Texto>
+            </CaixaIcone>
+          </Grade>
+          <p class="legenda">
+            <strong>O ícone deixou de ser link.</strong> No tema ele vinha dentro de
+            <code>&lt;a href="#"&gt;</code> — repetido 36 vezes, focável, sem destino.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>CartaoPublicacao</h3>
+        <p class="legenda">
+          27 usos. É o padrão que a Etapa 4 vai alimentar com Content Collections: quando as
+          publicações virarem conteúdo tipado, muda quem chama o componente, não ele.
+        </p>
+        <div class="demo">
+          <Grade colunas={3} espaco="md">
+            {
+              publicacoesDemo.map((p) => (
+                <CartaoPublicacao
+                  titulo={p.titulo}
+                  resumo={p.resumo}
+                  capa={p.capa}
+                  etiqueta={p.etiqueta}
+                  href="https://drive.google.com/"
+                  rotuloLink="Leia agora"
+                  nivel={4}
+                  tamanhos="(min-width: 48rem) 18rem, 90vw"
+                />
+              ))
+            }
+          </Grade>
+          <p class="legenda">
+            <strong>O título é o link, e a capa não é.</strong> No tema a imagem e o "Leia agora"
+            eram dois <code>&lt;a&gt;</code> para o mesmo destino e o título não era link nenhum:
+            quem navega por teclado passava duas vezes pela mesma publicação e nunca pelo nome dela.
+          </p>
+          <p class="legenda">
+            Os cartões têm a mesma altura e os links ficam alinhados na base mesmo com resumos de
+            tamanhos diferentes — é o que dispensa o empacotamento <em>masonry</em> que o tema fazia
+            em JavaScript, e com ele a classe <code>.grid-loaded</code> que já deixou seis páginas
+            invisíveis.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>ListaIcones</h3>
+        <p class="legenda">
+          24 usos, e o componente que fecha a armadilha mais cara do projeto: os dois marcadores do
+          tema são <strong>pseudo-elementos</strong>, e pseudo-elemento não tem classe. Um subset de
+          fonte montado a partir dos <code>&lt;i class&gt;</code> do HTML enxergava 14 ícones onde
+          havia 16, e apagava as setas e bolinhas de 6 páginas sem erro de build — glifo ausente
+          vira tofu, que ocupa exatamente 1em.
+        </p>
+        <div class="demo">
+          <p class="rotulo-demo"><code>marcador="circulo"</code> <small>U+F192, a página de história</small></p>
+          <ListaIcones
+            marcador="circulo"
+            colunas={3}
+            itens={[
+              'Accor Sofitel',
+              'Blue Tree Park Angra dos Reis',
+              'Costão do Santinho Resort',
+              'Hotel do Frade',
+              'Mabu Hotéis & Resorts',
+              'Pousada do Rio Quente',
+              'Club Hotel Salinas do Maragogi',
+              'Summerville Hotel',
+              'Tropical Manaus',
+            ]}
+          />
+          <p class="legenda">
+            <code>colunas={3}</code> por <em>container query</em>. A página de história dividia os
+            12 fundadores em três <code>&lt;ul&gt;</code> de quatro — o que faz três listas para o
+            leitor de tela e obriga a reequilibrar à mão quando o conteúdo muda.
+          </p>
+        </div>
+        <div class="demo">
+          <p class="rotulo-demo"><code>marcador="seta"</code> <small>U+F054, a política de privacidade</small></p>
+          <ListaIcones
+            marcador="seta"
+            cor="paragrafo"
+            itens={[
+              'Quando você se associa à Resorts Brasil.',
+              'Pela área de associado localizada em nosso website.',
+              'Quando você entra em contato conosco por telefone, e-mail ou presencialmente.',
+            ]}
+          />
+        </div>
+      </section>
+
+      <section>
+        <h3>Hero</h3>
+        <p class="legenda">
+          Substitui o <code>.inspiro-slider</code> da home, que tem <strong>um</strong> slide: não é
+          carrossel, é uma foto com legenda. O tema montava isso com um plugin de slider, um de
+          animação e um bloco de JavaScript que criava a camada de zoom em tempo de execução.
+        </p>
+        <div class="demo demo-sangrada">
+          <Hero
+            imagem="/images/hero/pexels-775687.jpg"
+            alt=""
+            sobretitulo="Em todo o Brasil"
+            titulo="Viva a experiência de um Resort"
+            nivel={2}
+            prioridade={false}
+            tamanhos="(min-width: 63.75rem) 57rem, 100vw"
+          >
+            <Botao href="#hero-associados" variante="destaque" tamanho="lg">Conheça os resorts</Botao>
+          </Hero>
+        </div>
+        <p class="legenda pendente">
+          <strong>As três armadilhas do tema morrem aqui, e são a mesma:</strong> plugin removido,
+          CSS que dependia dele silenciosamente inerte. O <code>.kenburns-bg</code> tinha
+          <code>z-index: -1</code> e dependia de um contexto de empilhamento que o flickity criava —
+          sem ele o zoom parou de acontecer, sem mudar altura e sem quebrar teste nenhum. As
+          legendas nasciam com <code>opacity: 0</code> e só o JavaScript devolvia
+          <code>opacity: 1</code>. Aqui a cascata é CSS com
+          <code>animation-fill-mode: both</code>: <strong>se a animação não rodar, o texto
+          aparece</strong>. A falha aponta para o lado seguro por escolha, não por acaso.
+        </p>
+      </section>
+
+      <section>
+        <h3>FaixaDestaque</h3>
+        <p class="legenda">
+          O <code>.box-fancy.section-fullwidth</code>: os três eixos da associação, as duas
+          modalidades de apoio, os dois blocos de publicação da história. Os seis tons e o par de
+          contraste de cada um:
+        </p>
+        <div class="demo demo-sangrada">
+          <FaixaDestaque tons={['ambar', 'verde', 'indigo']}>
+            <Fragment slot="1">
+              <Titulo nivel={4} tamanho="3xl">RE</Titulo>
+              <Texto semMargem><code>ambar</code> — {tonsDeFaixa[0].nota}</Texto>
+            </Fragment>
+            <Fragment slot="2">
+              <Titulo nivel={4} tamanho="3xl">SO</Titulo>
+              <Texto semMargem><code>verde</code> — {tonsDeFaixa[1].nota}</Texto>
+            </Fragment>
+            <Fragment slot="3">
+              <Titulo nivel={4} tamanho="3xl">RT</Titulo>
+              <Texto semMargem><code>indigo</code> — {tonsDeFaixa[2].nota}</Texto>
+            </Fragment>
+          </FaixaDestaque>
+        </div>
+
+        <div class="demo demo-sangrada">
+          <FaixaDestaque tons={['indigo-escuro', 'roxo', 'magenta']}>
+            <Fragment slot="1">
+              <Titulo nivel={4} tamanho="xl">Sensibilizar o olhar</Titulo>
+              <Texto semMargem><code>indigo-escuro</code> — {tonsDeFaixa[3].nota}</Texto>
+            </Fragment>
+            <Fragment slot="2">
+              <Titulo nivel={4} tamanho="xl">Parceiro</Titulo>
+              <Texto>Empresas que apoiam iniciativas pontuais da associação.</Texto>
+              <Botao href="#faixa-parceiro" variante="clara">Fale conosco</Botao>
+            </Fragment>
+            <Fragment slot="3">
+              <Titulo nivel={4} tamanho="xl">Mantenedor</Titulo>
+              <Texto>Empresas com relação mínima de 12 meses.</Texto>
+              <Botao href="#faixa-mantenedor" variante="clara">Fale conosco</Botao>
+            </Fragment>
+          </FaixaDestaque>
+        </div>
+        <p class="legenda">
+          O segundo exemplo é o caso que decidiu a forma da API: <strong>dois dos cinco usos do
+          site têm um botão dentro do bloco</strong>. Com um array de dados na prop, esse botão
+          exigiria um campo <code>acao</code> que só serviria àquele caso — daí os blocos entrarem
+          por slot, e só o tom vir como dado.
+        </p>
+        <p class="legenda">
+          <strong>A cor do texto não é escolha de quem usa.</strong> Cada tom traz o próprio par no
+          <code>tokens.css</code>, e é aí que está a correção: o tema escrevia branco sobre os
+          cinco fundos, e sobre o âmbar isso dá 1,6:1 e sobre o verde 2,9:1 — os dois reprovando o
+          critério 1.4.3 da WCAG. Com o navy do site nos dois, são 9,1:1 e 5,2:1.
+        </p>
+        <p class="legenda">
+          Não há truque de sangria no componente. O <code>.section-fullwidth</code> do tema somava
+          <code>width: 100vw</code> a uma margem negativa, e <code>100vw</code> inclui a barra de
+          rolagem — toda página com aquela classe transbordava na horizontal. Para ir de borda a
+          borda, basta pôr a faixa dentro de <code>&lt;Secao&gt;</code> sem
+          <code>&lt;Container&gt;</code>.
+        </p>
+      </section>
+
+      <section>
+        <h3>Contador</h3>
+        <p class="legenda">
+          Os cinco indicadores da página de associados. Role até aqui com a página no topo para ver
+          a contagem: ela dispara quando o número entra na tela, e uma vez só.
+        </p>
+        <div class="demo">
+          <Grade colunas={6} espaco="sm">
+            {indicadores.map((i) => <Contador ate={i.ate} de={1} sufixo={i.sufixo} rotulo={i.rotulo} />)}
+          </Grade>
+          <p class="legenda">
+            <strong>O número está no HTML.</strong> No tema o elemento vinha vazio —
+            <code>&lt;span data-to="83"&gt;&lt;/span&gt;</code> — e quem escrevia o valor era o
+            JavaScript: sem script, a seção mostrava cinco rótulos sem número nenhum. O dado, que é
+            a única coisa que ela existe para dizer, dependia de uma animação.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>Abas</h3>
+        <p class="legenda">
+          As cinco regiões da página de associados. Substitui o
+          <code>data-bs-toggle="tab"</code> do Bootstrap e o bloco <code>tabs()</code> do
+          <code>site.js</code>. Navegue pelas setas: só a aba selecionada fica na ordem de
+          tabulação, e as outras se alcançam pelo teclado — é o que o padrão ARIA pede.
+        </p>
+        <div class="demo">
+          <Abas
+            rotuloLista="Regiões"
+            abas={regioesDemo.map((r) => ({ id: r.id, rotulo: r.id.toUpperCase() }))}
+          >
+            <Fragment slot="sudeste">
+              <Titulo nivel={4} tamanho="lg">Sudeste</Titulo>
+              <Texto>
+                {regioesDemo[0].estados.map((e) => e.estado).join(' · ')}
+              </Texto>
+            </Fragment>
+            <Fragment slot="sul">
+              <Titulo nivel={4} tamanho="lg">Sul</Titulo>
+              <Texto>{regioesDemo[1].estados.map((e) => e.estado).join(' · ')}</Texto>
+            </Fragment>
+            <Fragment slot="norte">
+              <Titulo nivel={4} tamanho="lg">Norte</Titulo>
+              <Texto>{regioesDemo[2].estados.map((e) => e.estado).join(' · ')}</Texto>
+            </Fragment>
+          </Abas>
+          <p class="legenda">
+            A aba é <code>&lt;button&gt;</code> e não <code>&lt;a href="#regiao"&gt;</code>: o link
+            mudava a URL a cada clique e a Voltar do navegador virava um passeio pelas abas. O
+            painel inativo recebe <code>hidden</code>, e não uma classe — conteúdo escondido por
+            classe continua achável pela busca da página, e a pessoa "encontra" um resort que não
+            está na tela.
           </p>
         </div>
       </section>

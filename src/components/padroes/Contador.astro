@@ -1,0 +1,137 @@
+---
+import Texto from '../primitivos/Texto.astro';
+
+/**
+ * Contador — o numero que sobe quando entra na tela.
+ *
+ * Os cinco indicadores da pagina de associados (83 resorts, 21 mil quartos, 20
+ * mil empregos, 16 estados, 5 regioes), nos tres idiomas.
+ *
+ *   <Contador ate={83} rotulo="Resorts Associados" />
+ *   <Contador ate={21} sufixo=" mil" rotulo="Quartos" />
+ *
+ * MEDIDO (scripts/medir-padroes.mjs): numero de 50px, rotulo de 14px no cinza
+ * de paragrafo.
+ *
+ * O NUMERO ESTA NO HTML, e essa e a correcao que importa.
+ *
+ * No tema o elemento vinha VAZIO — `<span data-to="83"></span>` — e quem
+ * escrevia o valor era o JavaScript. Sem script, ou antes dele, a pagina
+ * mostrava cinco rotulos sem numero nenhum: "Resorts Associados", "Quartos",
+ * "Estados". O dado, que e a unica coisa que a secao existe para dizer, dependia
+ * de uma animacao. Aqui o valor final e o conteudo do elemento; a animacao
+ * apenas conta ATE ele, e so quando ha JavaScript e o visitante nao pediu menos
+ * movimento.
+ *
+ * A escala fluida do <Titulo> deixa o numero em 30px no celular e 50px no
+ * desktop. No tema eram 50px fixos, o que empilhava cinco numeros enormes numa
+ * coluna de 330px — delta deliberado, registrado em docs/deltas-visuais.md.
+ */
+interface Props {
+  /** O valor final. E ele que aparece no HTML. */
+  ate: number;
+  /** Onde a contagem comeca. O tema usava 1. */
+  de?: number;
+  /** " mil", "%", "+" — vai colado ao numero. */
+  sufixo?: string;
+  rotulo: string;
+  /** Duracao da contagem em ms. 500 e o valor do tema. */
+  duracao?: number;
+  class?: string;
+}
+
+const { ate, de = 0, sufixo = '', rotulo, duracao = 500, class: classe } = Astro.props;
+---
+
+<div class:list={['contador', classe]}>
+  <p class="numero">
+    {/*
+      O sufixo fica FORA do elemento que a contagem escreve. A versao anterior
+      punha "21 mil" inteiro num so no, e a animacao reescrevia o texto a cada
+      quadro — o que apagaria qualquer marcacao dentro dele. Separados, o sufixo
+      pode ter tamanho proprio e a contagem so troca o numero.
+    */}
+    <span data-contador data-de={de} data-ate={ate} data-duracao={duracao}>{ate}</span
+    >{sufixo && <span class="sufixo">{sufixo}</span>}
+  </p>
+  <Texto cor="paragrafo" semMargem>{rotulo}</Texto>
+</div>
+
+<script>
+  /*
+   * Sobe de `data-de` ate o valor que ja esta no elemento, quando ele entra na
+   * tela. Se este script nao rodar, o numero permanece — ver a nota do
+   * componente.
+   *
+   * O observador se desliga item a item (`unobserve`), entao a contagem
+   * acontece uma vez por numero e nao volta a cada rolagem.
+   */
+  const numeros = document.querySelectorAll<HTMLElement>('[data-contador]');
+
+  if (numeros.length) {
+    const semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!semMovimento) {
+      const contar = (el: HTMLElement) => {
+        const de = Number(el.dataset.de) || 0;
+        const ate = Number(el.dataset.ate) || 0;
+        const duracao = Number(el.dataset.duracao) || 500;
+        const inicio = performance.now();
+
+        const passo = (agora: number) => {
+          const avanco = Math.min((agora - inicio) / duracao, 1);
+          el.textContent = String(Math.round(de + (ate - de) * avanco));
+          if (avanco < 1) requestAnimationFrame(passo);
+        };
+        requestAnimationFrame(passo);
+      };
+
+      const observador = new IntersectionObserver(
+        (entradas) => {
+          for (const entrada of entradas) {
+            if (!entrada.isIntersecting) continue;
+            contar(entrada.target as HTMLElement);
+            observador.unobserve(entrada.target);
+          }
+        },
+        { threshold: 0.5 }
+      );
+
+      numeros.forEach((el) => observador.observe(el));
+    }
+  }
+</script>
+
+<style>
+  .contador {
+    text-align: center;
+  }
+
+  /*
+   * `<p>` e nao heading: o numero nao e titulo de nada, e no tema ele era um
+   * `<div class="counter display-4">` que so parecia um. Como `<p>`, ele nao
+   * entra no sumario da pagina — que e uma das 39 hierarquias quebradas.
+   */
+  .numero {
+    color: var(--color-texto);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.2;
+    margin-block: 0 0.25rem;
+    /* A contagem troca o texto quadro a quadro; sem uma largura estavel, o
+       rotulo abaixo dança enquanto o numero cresce de 1 para 83. */
+    font-variant-numeric: tabular-nums;
+    /* "21 mil" quebrava em duas linhas numa coluna estreita, e ai cada
+       indicador da fileira ficava com uma altura, desalinhando os rotulos. */
+    white-space: nowrap;
+  }
+
+  /*
+   * O sufixo em corpo menor. Em 50px ele competia com o numero — "21 mil"
+   * parecia duas informacoes do mesmo peso, quando a unidade e apoio.
+   */
+  .sufixo {
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-medium);
+  }
+</style>

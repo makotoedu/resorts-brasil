@@ -1,0 +1,222 @@
+---
+/**
+ * Abas — navegacao por paineis, com o padrao ARIA completo.
+ *
+ * As cinco regioes da pagina de associados, nos tres idiomas. Substitui o
+ * `data-bs-toggle="tab"` do Bootstrap e o bloco `tabs()` do site.js.
+ *
+ *   <Abas
+ *     rotuloLista="Regioes"
+ *     abas={[{ id: 'sudeste', rotulo: 'Sudeste' }, { id: 'sul', rotulo: 'Sul' }]}
+ *   >
+ *     <Fragment slot="sudeste">…</Fragment>
+ *     <Fragment slot="sul">…</Fragment>
+ *   </Abas>
+ *
+ * MEDIDO (scripts/medir-padroes.mjs): recuo de 14px por 24px na aba, 14px / 500,
+ * borda de 2px embaixo da lista na cor de borda e da aba ativa na cor de acao,
+ * cantos de cima com o raio pequeno, 30px abaixo da lista. O hover da aba
+ * inativa tambem foi medido, com o mouse em cima: ela assume a cor de acao.
+ *
+ * TRES DIFERENCAS EM RELACAO AO TEMA:
+ *
+ *   1. A aba e `<button>`, e nao `<a href="#regiao">`. O link mudava a URL a
+ *      cada clique e a Voltar do navegador virava um passeio pelas abas.
+ *   2. O painel inativo recebe `hidden`, e nao uma classe que o CSS esconde.
+ *      Conteudo escondido por classe continua no sumario do leitor de tela e
+ *      continua encontravel pela busca da pagina — a pessoa "acha" um resort
+ *      que nao esta na tela.
+ *   3. A cor da aba inativa passa a ser o cinza de paragrafo. O tema usava
+ *      rgba(60,64,67,.8), um cinza que so existia aqui.
+ *
+ * SEM JAVASCRIPT, O `<noscript>` abaixo devolve todos os paineis. Nao e um
+ * detalhe de gentileza: seis paginas deste projeto ja ficaram INVISIVEIS porque
+ * o CSS mantinha `opacity: 0` e quem devolvia a visibilidade era um plugin.
+ * Aqui, sem script, a pagina vira uma lista longa — feia, e inteira.
+ */
+interface Aba {
+  /** Vira o id do painel e a ancora do `aria-controls`. */
+  id: string;
+  /** O texto da aba. Traduz, entao vem de fora. */
+  rotulo: string;
+}
+
+interface Props {
+  abas: Aba[];
+  /** Nome da lista para o leitor de tela ("Regioes"). Traduz. */
+  rotuloLista: string;
+  class?: string;
+}
+
+const { abas, rotuloLista, class: classe } = Astro.props;
+
+if (!abas.length) throw new Error('Abas: a lista de abas esta vazia.');
+
+/*
+ * O conteudo de cada painel vem por slot nomeado. `Astro.slots.render` e a via
+ * para nome dinamico — `<slot name={variavel} />` nao e resolvido.
+ */
+const paineis = await Promise.all(
+  abas.map(async (aba) => ({
+    ...aba,
+    html: Astro.slots.has(aba.id) ? await Astro.slots.render(aba.id) : '',
+  }))
+);
+---
+
+<div class:list={['abas', classe]}>
+  <div class="lista" role="tablist" aria-label={rotuloLista}>
+    {
+      abas.map((aba, i) => (
+        <button
+          type="button"
+          class:list={['aba', i === 0 && 'ativa']}
+          id={`aba-${aba.id}`}
+          role="tab"
+          aria-controls={`painel-${aba.id}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? undefined : -1}
+        >
+          {aba.rotulo}
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    paineis.map((painel, i) => (
+      <div
+        class="painel"
+        id={`painel-${painel.id}`}
+        role="tabpanel"
+        aria-labelledby={`aba-${painel.id}`}
+        tabindex="0"
+        hidden={i !== 0}
+        set:html={painel.html}
+      />
+    ))
+  }
+
+  <noscript>
+    {/*
+      `is:inline` para o Astro deixar esta folha ONDE ela esta. Sem isso ele a
+      trata como estilo de componente, iça para o topo do bundle e a regra passa
+      a valer sempre — escondendo nada e revelando os cinco paineis para todo
+      mundo. O seletor usa o papel ARIA, e nao uma classe, porque a classe seria
+      escopada e o `is:inline` nao recebe o atributo de escopo.
+    */}
+    <style is:inline>
+      [role='tabpanel'][hidden] {
+        display: block !important;
+      }
+    </style>
+  </noscript>
+</div>
+
+<script>
+  /*
+   * Tabulacao rotativa (roving tabindex): so a aba selecionada fica na ordem de
+   * tabulacao, e as outras se alcancam pelas setas. E o que o padrao ARIA de
+   * abas pede, e o que o `tabs()` do site.js ja fazia — este script substitui
+   * aquele bloco.
+   */
+  for (const grupo of document.querySelectorAll<HTMLElement>('[role="tablist"]')) {
+    const abas = [...grupo.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    if (!abas.length) continue;
+
+    const raiz = grupo.parentElement;
+    if (!raiz) continue;
+
+    const ativar = (aba: HTMLButtonElement, focar = false) => {
+      for (const outra of abas) {
+        const alvo = outra.getAttribute('aria-controls');
+        const painel = alvo ? raiz.querySelector<HTMLElement>(`#${CSS.escape(alvo)}`) : null;
+        const ativa = outra === aba;
+
+        outra.classList.toggle('ativa', ativa);
+        outra.setAttribute('aria-selected', String(ativa));
+        if (ativa) outra.removeAttribute('tabindex');
+        else outra.setAttribute('tabindex', '-1');
+        if (painel) painel.hidden = !ativa;
+      }
+      if (focar) aba.focus();
+    };
+
+    grupo.addEventListener('click', (e) => {
+      const aba = (e.target as HTMLElement).closest<HTMLButtonElement>('[role="tab"]');
+      if (aba) ativar(aba);
+    });
+
+    grupo.addEventListener('keydown', (e) => {
+      const atual = abas.indexOf(document.activeElement as HTMLButtonElement);
+      if (atual === -1) return;
+
+      const passo = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      let alvo: HTMLButtonElement | undefined;
+      if (passo) alvo = abas[(atual + passo + abas.length) % abas.length];
+      else if (e.key === 'Home') alvo = abas[0];
+      else if (e.key === 'End') alvo = abas[abas.length - 1];
+      else return;
+
+      e.preventDefault();
+      if (alvo) ativar(alvo, true);
+    });
+  }
+</script>
+
+<style>
+  /* MEDIDO: borda de 2px na cor de borda, 30px ate o conteudo. */
+  .lista {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--color-borda);
+    margin-bottom: 1.875rem;
+  }
+
+  /* MEDIDO: 14px por 24px de recuo, 14px / 500, cantos de cima com o raio
+     pequeno, borda de 2px embaixo — a mesma espessura da lista, para que a aba
+     ativa cubra a linha em vez de somar-se a ela. */
+  .aba {
+    flex: 1 1 auto;
+    padding: 0.875rem 1.5rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    margin-bottom: -2px;
+    background: none;
+    color: var(--color-texto-paragrafo);
+    font: inherit;
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    text-align: center;
+    cursor: pointer;
+    transition:
+      color 0.3s,
+      border-color 0.3s;
+  }
+
+  /* Medido com o mouse em cima. */
+  .aba:hover {
+    color: var(--color-acao-primaria);
+  }
+
+  .ativa {
+    color: var(--color-acao-primaria);
+    border-bottom-color: var(--color-acao-primaria);
+  }
+
+  /*
+   * O painel e focavel (`tabindex="0"`) porque o padrao ARIA manda o foco ir
+   * dele para o conteudo depois da aba. Sem isto, o contorno de foco apareceria
+   * em volta de um bloco inteiro sem que ninguem tenha pedido — por isso ele so
+   * aparece quando o foco veio do teclado, que e o que `:focus-visible` faz.
+   */
+  .painel:focus {
+    outline: none;
+  }
+
+  .painel:focus-visible {
+    outline: 2px solid var(--color-link);
+    outline-offset: 4px;
+  }
+</style>

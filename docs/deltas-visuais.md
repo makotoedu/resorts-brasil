@@ -65,6 +65,36 @@ com acento no nome, que o regex da ponte não via.
 O peso, que agora tem portão próprio, está em
 [verificacao.md](verificacao.md#2d-orçamento-de-performance--a-catraca-de-peso).
 
+## Etapa 3 — nenhum delta novo, dez decisões latentes
+
+Medido em 21/08/2026, com `PAGES=/index.html,/associados.html,/historia.html`:
+**9/9 idênticas**. A etapa criou os dez padrões e não migrou nenhuma página, então
+não havia pixel a mudar — as três páginas escolhidas são as que os padrões vão
+substituir primeiro (hero e chamadas, contador e abas, lista com marcador).
+
+As decisões abaixo **ainda não aparecem em pixel**. Aparecerão quando as páginas
+delas migrarem, nas Etapas 5–9, e ficam classificadas aqui para que nenhuma seja
+confundida com regressão:
+
+| decisão | padrão | tipo | efeito quando aparecer |
+|---|---|---|---|
+| texto navy no lugar de branco sobre âmbar e verde | `FaixaDestaque` | correção | 1,6:1 → 9,1:1 e 2,9:1 → 5,2:1; reprovavam o critério 1.4.3 da WCAG |
+| parágrafo em seção escura herda a cor da seção | `base.css` | correção | a regra existia desde a Etapa 0 e nunca valeu — cinza sobre navy, 1,5:1 |
+| o número do contador passa a existir sem JavaScript | `Contador` | correção | sem script, a seção mostrava cinco rótulos sem número |
+| ícone da caixa deixa de ser `<a href="#">` | `CaixaIcone` | correção | 36 links focáveis sem destino saem da ordem de tabulação |
+| título do cartão de publicação vira o link; a capa sai | `CartaoPublicacao` | correção | o teclado passava duas vezes pela publicação e nunca pelo nome dela |
+| hero: `height: 360px` → proporção, e altura em 72% da janela | `ChamadaAcao`, `Hero` | refino | a caixa acompanha a largura em vez de recortar mais em tela estreita |
+| nome do membro de 16px para 18px | `CartaoMembro` | refino | 16px não está na escala; mesmo raciocínio do botão `sm` |
+| cargo do membro troca `#1e2022` pelo cinza de parágrafo | `CartaoMembro` | refino | o rótulo secundário tinha mais peso visual que o nome |
+| número do contador vira fluido (30 → 50px) | `Contador` | refino | no mobile eram cinco números de 50px numa coluna de 330px |
+| título do cartão de publicação e da caixa de ícone com peso 600 | `CaixaIcone` | refino | 700 era a exceção de um bloco só |
+
+Duas mudanças que **não** são delta e sim conserto de token, no mesmo espírito das
+três da Etapa 1: `--color-superficie-marca` nasceu porque o
+`.call-to-action.background-dark` é navy e não carvão, e o `#efb72c` foi
+consolidado no `--cor-ambar-500` que outra página já usava para a mesma faixa.
+Ver [decisoes.md](decisoes.md), "Etapa 3".
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

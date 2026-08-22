@@ -1,0 +1,202 @@
+---
+/**
+ * FaixaDestaque — a faixa de blocos coloridos, de borda a borda.
+ *
+ * E o `.box-fancy.section-fullwidth` do tema: os tres eixos da associacao em
+ * /resorts-brasil, as duas modalidades de apoio em /apoie e os dois blocos de
+ * publicacao em /historia. Sempre a mesma coisa — dois ou tres blocos com
+ * fundos proprios, ocupando a largura inteira da janela.
+ *
+ *   <FaixaDestaque tons={['ambar', 'indigo-escuro', 'verde']}>
+ *     <div slot="1"><Titulo nivel={2} tamanho="4xl">RE</Titulo>…</div>
+ *     <div slot="2">…</div>
+ *     <div slot="3">…</div>
+ *   </FaixaDestaque>
+ *
+ * O NUMERO DE BLOCOS SAI DE `tons`, e os blocos entram por slots numerados. O
+ * caminho obvio seria receber um array de dados, mas dois dos cinco usos do site
+ * tem um botao dentro do bloco — dado nao carrega botao, e a versao com array
+ * teria uma prop `acao` que so serve para aquele caso.
+ *
+ * A COR DO TEXTO NAO E ESCOLHA DE QUEM USA. Cada tom traz o proprio par no
+ * tokens.css, e ai esta a unica correcao deliberada deste componente: o tema
+ * escrevia BRANCO sobre todos os cinco fundos, e sobre o ambar isso da 1,6:1 e
+ * sobre o verde 2,9:1 — os dois reprovando o criterio 1.4.3 da WCAG com folga.
+ * Com o navy do site nos dois, sao 9,1:1 e 5,2:1. Os outros tres fundos sao
+ * escuros e continuam com texto branco.
+ *
+ * MEDIDO (scripts/medir-padroes.mjs): recuo de 40px no mobile a 73px no
+ * desktop — no tema era percentual da coluna (10%, 5% e 15%, por faixa), o que
+ * fazia o bloco do tablet ter MENOS respiro que o do celular.
+ */
+const TONS = {
+  ambar: 't-ambar',
+  verde: 't-verde',
+  indigo: 't-indigo',
+  'indigo-escuro': 't-indigo-escuro',
+  roxo: 't-roxo',
+  magenta: 't-magenta',
+} as const;
+
+export type Tom = keyof typeof TONS;
+
+interface Props {
+  /** Um tom por bloco. O tamanho do array e o numero de colunas (1 a 6). */
+  tons: Tom[];
+  class?: string;
+}
+
+const { tons, class: classe } = Astro.props;
+
+if (tons.length < 1 || tons.length > 6) {
+  throw new Error(`FaixaDestaque: 1 a 6 blocos; recebeu ${tons.length}.`);
+}
+
+/* Os slots sao "1".."6" — nomes fixos, porque slot com nome montado em tempo de
+   execucao nao e resolvido pelo Astro. */
+const blocos = tons.map((tom, i) => ({ tom, slot: String(i + 1) }));
+---
+
+<div class:list={['caixa', classe]}>
+  <div class={`faixa colunas-${tons.length}`}>
+    {
+      blocos.map(({ tom, slot }) => (
+        <div class:list={['bloco', TONS[tom]]}>
+          {slot === '1' && <slot name="1" />}
+          {slot === '2' && <slot name="2" />}
+          {slot === '3' && <slot name="3" />}
+          {slot === '4' && <slot name="4" />}
+          {slot === '5' && <slot name="5" />}
+          {slot === '6' && <slot name="6" />}
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .caixa {
+    container-type: inline-size;
+  }
+
+  /*
+   * NAO HA TRUQUE DE SANGRIA AQUI, e e deliberado.
+   *
+   * O tema tinha `.section-fullwidth`, que somava `width: 100vw` a uma margem
+   * negativa. `100vw` INCLUI a barra de rolagem, entao toda pagina com essa
+   * classe transbordava alguns pixels na horizontal — e transbordo horizontal e
+   * um dos cinco defeitos que a varredura de geometria procura.
+   *
+   * A faixa ocupa a largura de quem a contem. Para ir de borda a borda, basta
+   * coloca-la dentro de <Secao> SEM <Container> — a secao ja e larga, e o
+   * container e que estreita. Composicao no lugar de conta.
+   */
+  .faixa {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  /*
+   * A escada de colunas nao e uma so: cada contagem espera a largura de que
+   * PRECISA. Uma tabela unica em 30rem/48rem, que era a da <Grade>, colocou
+   * seis blocos num container de 862px — 144px por bloco, dos quais 92 eram
+   * recuo — e o titulo saiu cortado nos dois lados. A <Grade> nao tem esse
+   * problema porque as celulas dela nao tem recuo proprio; aqui tem, e o recuo
+   * come a largura antes do texto.
+   */
+  @container (min-width: 30rem) {
+    .colunas-2,
+    .colunas-3,
+    .colunas-4,
+    .colunas-5,
+    .colunas-6 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @container (min-width: 48rem) {
+    .colunas-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @container (min-width: 64rem) {
+    .colunas-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @container (min-width: 80rem) {
+    .colunas-5 {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .colunas-6 {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  .bloco {
+    /*
+     * MEDIDO nas duas pontas: 40px em 390px de janela, 73px em 1440px.
+     *
+     * O `min(..., 15%)` fecha o mesmo buraco por outro lado. A parte em `vw`
+     * mede a JANELA, e um bloco estreito dentro de uma janela larga receberia
+     * recuo de bloco largo. Os 15% sao a proporcao MEDIDA no desktop (73px num
+     * bloco de 489px), entao nos casos reais os dois valores coincidem e o
+     * `min` nao muda nada; ele so age quando o bloco e estreito demais para o
+     * recuo que a janela pediria.
+     */
+    padding: min(clamp(2.5rem, 1.734rem + 3.1429vw, 4.5625rem), 15%);
+    text-align: center;
+  }
+
+  /* ---------------- tons ---------------- */
+
+  .t-ambar {
+    background-color: var(--color-acento-ambar);
+    color: var(--color-acento-ambar-texto);
+  }
+
+  .t-verde {
+    background-color: var(--color-acento-verde);
+    color: var(--color-acento-verde-texto);
+  }
+
+  .t-indigo {
+    background-color: var(--color-acento-indigo);
+    color: var(--color-acento-indigo-texto);
+  }
+
+  .t-indigo-escuro {
+    background-color: var(--color-acento-indigo-escuro);
+    color: var(--color-acento-indigo-escuro-texto);
+  }
+
+  .t-roxo {
+    background-color: var(--color-acento-roxo);
+    color: var(--color-acento-roxo-texto);
+  }
+
+  .t-magenta {
+    background-color: var(--color-acento-magenta);
+    color: var(--color-acento-magenta-texto);
+  }
+
+  /*
+   * Dentro do bloco, tudo herda a cor do tom. Sem isto o paragrafo e a lista
+   * viriam com o cinza do base.css, que sobre o roxo da 2,4:1 — e a decisao de
+   * contraste que o tom acabou de tomar seria desfeita pelo elemento seguinte.
+   */
+  .bloco :global(p),
+  .bloco :global(li),
+  .bloco :global(h1),
+  .bloco :global(h2),
+  .bloco :global(h3),
+  .bloco :global(h4),
+  .bloco :global(h5),
+  .bloco :global(h6),
+  .bloco :global(small) {
+    color: inherit;
+  }
+</style>

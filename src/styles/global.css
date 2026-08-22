@@ -39,6 +39,7 @@
 @source '../pages/design.astro';
 @source '../components/primitivos';
 @source '../components/layout';
+@source '../components/padroes';
 
 @import './tokens.css';
 @import './base.css';

@@ -203,9 +203,21 @@
    * O cinza de paragrafo (#525e75) da 2,1:1 sobre a superficie escura — reprova
    * o criterio 1.4.3 da WCAG com folga. Dentro de uma secao invertida o texto
    * herda a cor que ela definiu, em vez de cada componente ter de lembrar.
-   * Quem marca a secao e o <Secao fundo="inversa">.
+   * Quem marca a secao e o <Secao fundo="inversa"> ou a <ChamadaAcao>.
+   *
+   * ATENCAO A ESTE SELETOR. Ele ja esteve escrito
+   * `:where(.superficie-inversa) :where(p, li, small)`, e nessa forma NUNCA
+   * VALEU: `:where()` zera a especificidade do que esta dentro dele, entao a
+   * regra inteira pesava 0-0-0 e perdia para o `p { color: ... }` de vinte
+   * linhas acima, que pesa 0-0-1. O resultado era cinza sobre navy — 1,5:1
+   * medido —, e nada acusava, porque o diff visual nao tinha secao escura para
+   * comparar e a suite de geometria nao le cor.
+   *
+   * A classe fica FORA do `:where()` de proposito: ela e quem precisa carregar
+   * o peso. O que continua dentro e a lista de elementos, que so precisa ser
+   * barata para o componente conseguir sobrepor quando quiser.
    */
-  :where(.superficie-inversa) :where(p, li, small) {
+  .superficie-inversa :where(p, li, small) {
     color: inherit;
   }
 
@@ -213,8 +225,10 @@
    * O link tambem: #2250fc sobre a superficie escura da 2,6:1. Herdando a cor
    * ele some do texto, entao o sublinhado volta a ser o que o distingue — que e
    * como link se marcava antes de haver cor suficiente para dispensa-lo.
+   *
+   * Mesma correcao de especificidade da regra acima, e pelo mesmo motivo.
    */
-  :where(.superficie-inversa) :where(a[href]) {
+  .superficie-inversa :where(a[href]) {
     color: inherit;
     text-decoration: underline;
     text-underline-offset: 0.2em;
@@ -236,6 +250,16 @@
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      /*
+       * O `delay` junto do `duration`, e nao so o `duration`.
+       *
+       * Uma cascata de entrada (o <Hero> tem tres, escalonadas em 1s, 1,35s e
+       * 1,7s) parte de um quadro transparente com `animation-fill-mode: both`.
+       * Zerar so a duracao deixa o ATRASO de pe: quem pediu menos movimento
+       * ficaria 1,7s olhando para um hero sem titulo. Com os dois zerados, o
+       * conteudo aparece de imediato, que e o que "menos movimento" quer dizer.
+       */
+      animation-delay: 0s !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;

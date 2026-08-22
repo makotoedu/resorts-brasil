@@ -401,11 +401,63 @@ landing page futura nasce otimizada sem ninguém lembrar.
 
 </details>
 
-### Etapa 3 — Padrões
+### Etapa 3 — Padrões ✅ CONCLUÍDA
+
+Os nove previstos, mais um: [`LinkAcao`](src/components/padroes/LinkAcao.astro),
+o `.item-link` do tema. Ele entrou porque vive dentro de três dos outros —
+chamada, cartão de publicação e cartão de modalidade — e sem componente os três
+repetiriam a mesma marcação **e o mesmo hover**, que é a parte que este projeto
+aprendeu a não inventar. Todos no catálogo `/design`, e `verifica-sistema.mjs`
+passou a cobrir `padroes/` no mesmo portão que já cobria `primitivos/` e
+`layout/`.
+
+Os valores saem de [`medir-padroes.mjs`](scripts/medir-padroes.mjs), terceiro da
+família do `medir-base` e do `medir-primitivos`, com o **hover medido**.
+
+**A última linha da especificação original não foi executada, e não podia ser.**
+"Portar os componentes existentes para os primitivos novos" significa emitir
+markup que só o design system estiliza — e a folha nova entra pelo frontmatter da
+*página*, nunca pelo layout. Portar `GradeMembros` sem migrar `/diretoria` a
+deixaria sem estilo nenhum. Portar aqueles quatro componentes **é** migrar as
+páginas deles, que é o que as Etapas 5–9 fazem; cada padrão desta etapa é o
+substituto que já espera. A tabela está em [docs/decisoes.md](docs/decisoes.md),
+"Etapa 3".
+
+**Um token estava errado pelo mesmo motivo de sempre.**
+`--color-superficie-inversa` (`#0c101b`) veio de contagem de ocorrências; medido,
+o `.call-to-action.background-dark` é o navy do site. As 141 ocorrências do
+carvão estão todas no ebook, que tem paleta própria — são duas superfícies com
+papéis diferentes, e entrou `--color-superficie-marca`. Terceira vez que contar
+no HTML dá resposta diferente de medir no navegador.
+
+**Uma regra do `base.css` nunca tinha valido.**
+`:where(.superficie-inversa) :where(p, li, small)` pesa `0-0-0` e perdia para o
+`p` de vinte linhas acima — então o parágrafo em seção escura ficava cinza sobre
+navy, 1,5:1. Nenhum portão via: o diff visual não tem seção escura para comparar,
+a geometria não lê cor, e a checagem de contraste ainda não existe. Apareceu numa
+captura de tela.
+
+**Três dependências de JavaScript que não deveriam existir foram desfeitas:** o
+número do contador não existia sem script (`<span data-to="83"></span>` vazio),
+as legendas do hero nasciam com `opacity: 0` — a mesma forma da regressão que
+deixou seis páginas invisíveis —, e `prefers-reduced-motion` zerava a duração da
+animação mas não o atraso.
+
+**O catálogo reprovou duas vezes antes de qualquer página migrar**, que é a razão
+de ele estar na varredura de geometria: a faixa de seis blocos cortava o título,
+e o `"21 mil"` do contador quebrava em duas linhas e desalinhava a fileira.
+
+Diff visual em `/index`, `/associados` e `/historia`: **9/9 idênticas** — a etapa
+não migrou página nenhuma. Detalhes em [docs/decisoes.md](docs/decisoes.md),
+"Etapa 3".
+
+<details><summary>Especificação original</summary>
 
 `CartaoMembro` (124 usos), `ChamadaAcao` (51), `CaixaIcone` (36),
 `CartaoPublicacao` (27), `ListaIcones` (24), `Hero`, `FaixaDestaque`, `Contador`,
 `Abas`. Portar os componentes existentes para os primitivos novos.
+
+</details>
 
 ### Etapa 4 — Conteúdo
 

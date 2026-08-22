@@ -1,0 +1,97 @@
+---
+import Icone from '../primitivos/Icone.astro';
+import Titulo from '../primitivos/Titulo.astro';
+import type { NomeIcone } from '../../icones/glifos';
+
+/**
+ * CaixaIcone — simbolo, titulo curto e uma frase.
+ *
+ * 36 usos do `.icon-box.small.clean`: os oito beneficios de ser associado, os
+ * canais da pagina de contato, e o mesmo bloco repetido nos tres idiomas.
+ *
+ *   <CaixaIcone icone="check-circle" titulo="Feiras">
+ *     Participacao nas principais feiras do setor em estande cooperado.
+ *   </CaixaIcone>
+ *
+ * MEDIDO (scripts/medir-padroes.mjs): glifo de 36px numa caixa de 46px, 16px
+ * ate o titulo, titulo de 18px com entrelinha de 25px e 4px ate o texto, texto
+ * de 14px com entrelinha de 22,4px.
+ *
+ * DOIS DESVIOS DELIBERADOS:
+ *
+ *   1. O icone deixa de ser link. No tema ele vinha dentro de `<a href="#">` —
+ *      um link visivel, focavel, sem destino e repetido 36 vezes, que so
+ *      atrapalhava quem navega por teclado ou leitor de tela.
+ *   2. O peso do titulo cai de 700 para 600. E o peso semibold que o base.css
+ *      mede em todo heading do site; 700 aqui era a excecao de um bloco so.
+ */
+interface Props {
+  icone: NomeIcone;
+  titulo: string;
+  /** Nivel do heading. Depende da pagina, nao do desenho — ver <Titulo>. */
+  nivel?: 1 | 2 | 3 | 4 | 5 | 6;
+  alinhamento?: 'inicio' | 'centro';
+  /** Cor do simbolo. `acao` destaca a lista inteira sem tocar no texto. */
+  tom?: 'padrao' | 'acao';
+  class?: string;
+}
+
+const { icone, titulo, nivel = 3, alinhamento = 'inicio', tom = 'padrao', class: classe } = Astro.props;
+---
+
+<div class:list={['caixa', alinhamento === 'centro' && 'centro', tom === 'acao' && 'tom-acao', classe]}>
+  {/* aria-hidden por omissao do `rotulo`: o titulo logo abaixo diz a mesma
+      coisa, e anunciar os dois faria o leitor de tela repetir cada item. */}
+  <Icone nome={icone} tamanho="lg" class="simbolo" />
+  <Titulo nivel={nivel} tamanho="md" class="titulo">{titulo}</Titulo>
+  <div class="texto">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .caixa {
+    /* 50px medidos abaixo de cada caixa. Quando a caixa esta numa <Grade>, o
+       `gap` ja cuida do vao — dai a margem ficar so embaixo. */
+    margin-bottom: 3.125rem;
+  }
+
+  .centro {
+    text-align: center;
+  }
+
+  /*
+   * Caixa de 46px para um glifo de 36px, medidos. O <Icone tamanho="lg"> ja
+   * desenha os 36px; os 46 vem daqui, e sao eles que dao a linha de base comum
+   * quando varias caixas ficam lado a lado com glifos de alturas diferentes.
+   */
+  .caixa :global(.simbolo) {
+    display: block;
+    width: 2.875rem;
+    height: 2.875rem;
+    margin-bottom: 1rem;
+  }
+
+  .centro :global(.simbolo) {
+    margin-inline: auto;
+  }
+
+  .tom-acao :global(.simbolo) {
+    color: var(--color-acao-primaria);
+  }
+
+  .caixa :global(.titulo) {
+    line-height: 1.39; /* 25px sobre 18px, medido */
+    margin-block: 0 0.25rem;
+  }
+
+  /* O <slot> costuma trazer um <p>, que ja tem cor e margem do base.css. Esta
+     regra so acerta a entrelinha medida (22,4px sobre 14px). */
+  .texto {
+    line-height: 1.6;
+  }
+
+  .texto :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

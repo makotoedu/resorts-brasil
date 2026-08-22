@@ -1,0 +1,160 @@
+---
+import Imagem from '../primitivos/Imagem.astro';
+import Titulo from '../primitivos/Titulo.astro';
+import Texto from '../primitivos/Texto.astro';
+import Icone from '../primitivos/Icone.astro';
+
+/**
+ * CartaoMembro — foto, nome, cargo e o perfil no LinkedIn.
+ *
+ * O PADRAO MAIS REPETIDO DO SITE: 124 usos do `.team-member`, entre diretoria e
+ * conselho consultivo nos tres idiomas. Cada um deles e hoje uma cadeia de seis
+ * `<div>` copiada a mao, e e por isso que este e o primeiro da Etapa 3.
+ *
+ *   <CartaoMembro nome="..." cargo="Presidente" foto="/images/diretoria/x.jpg" />
+ *
+ * OS VALORES SAO MEDIDOS, com `node scripts/medir-padroes.mjs`:
+ *
+ *   cartao   fundo branco, cantos arredondados, conteudo centralizado
+ *   foto     quadrada (1/1 em todos os viewports), 20px ate o nome
+ *   nome     16px / 500
+ *   cargo    13px / 400
+ *   social   circulo de 32px, borda de 1px, glifo de 16px
+ *            hover: fundo cinza claro e cor de acao — medido com o mouse em cima
+ *
+ * TRES DELTAS DELIBERADOS, todos anotados em docs/deltas-visuais.md:
+ *
+ *   1. O nome sobe de 16 para 18px (`--text-md`). 16px nao esta na escala, e
+ *      criar um degrau para um cartao inverteria a relacao entre sistema e
+ *      excecao — o mesmo raciocinio que o <Botao> ja aplicou no `sm`.
+ *   2. O cargo troca o #1e2022 (quase preto) pelo cinza de paragrafo. Ele e um
+ *      rotulo secundario e estava desenhado com mais peso visual que o nome.
+ *   3. O cartao usa o raio do sistema no lugar dos 4px do tema, que nao batiam
+ *      nem com os 5,88px da propria foto logo abaixo.
+ */
+interface Props {
+  nome: string;
+  cargo: string;
+  /** Caminho publico (`/images/...`) — resolvido por src/imagens.ts. */
+  foto: string;
+  /** Ausente: o cartao mantem o simbolo, sem link. Ver a nota abaixo. */
+  linkedin?: string;
+  /**
+   * Nivel do heading do nome. E prop porque depende de onde a grade esta na
+   * pagina, e nao do desenho do cartao — que e exatamente a separacao que o
+   * <Titulo> existe para manter.
+   */
+  nivel?: 1 | 2 | 3 | 4 | 5 | 6;
+  /**
+   * O `sizes` da foto. O padrao serve a grade de 6 colunas da diretoria; uma
+   * grade mais larga deve dizer a sua largura, senao o navegador baixa a maior
+   * variante para uma caixa pequena.
+   */
+  tamanhos?: string;
+  class?: string;
+}
+
+const {
+  nome,
+  cargo,
+  foto,
+  linkedin,
+  nivel = 3,
+  tamanhos = '(min-width: 64rem) 15rem, (min-width: 30rem) 33vw, 50vw',
+  class: classe,
+} = Astro.props;
+
+/*
+ * Sem perfil, o simbolo continua no lugar mas deixa de ser link.
+ *
+ * O markup original punha `href="#"`: um link visivel, focavel e sem destino —
+ * o teclado parava nele e nao acontecia nada. O GradeMembros do tema ja tinha
+ * corrigido para um `<a>` sem href; aqui nem isso, porque `<a>` sem href e um
+ * elemento sem papel. Some-lo por completo tambem nao serve: mudaria a altura
+ * de um cartao no meio da grade.
+ */
+const Marca = linkedin ? 'a' : 'span';
+---
+
+<div class:list={['cartao', classe]}>
+  <Imagem
+    src={foto}
+    alt={nome}
+    largura={340}
+    altura={340}
+    proporcao="quadrada"
+    ajuste="cobrir"
+    tamanhos={tamanhos}
+    class="foto"
+  />
+  <div class="descricao">
+    <Titulo nivel={nivel} tamanho="md" peso="medio" class="nome">{nome}</Titulo>
+    <Texto tamanho="sm" cor="paragrafo" semMargem>{cargo}</Texto>
+    <Marca
+      class="social"
+      href={linkedin || undefined}
+      target={linkedin ? '_blank' : undefined}
+      rel={linkedin ? 'noopener noreferrer' : undefined}
+      aria-label={linkedin ? `${nome} no LinkedIn` : undefined}
+    >
+      <Icone nome="linkedin" tamanho="sm" />
+    </Marca>
+  </div>
+</div>
+
+<style>
+  .cartao {
+    background-color: var(--color-superficie);
+    border-radius: var(--radius-sm);
+    /* Medido no tema. E o que corta a foto nos cantos de cima sem que ela
+       precise repetir o raio do cartao. */
+    overflow: hidden;
+    text-align: center;
+  }
+
+  /* A foto e quadrada nos tres viewports — medido, nao arbitrado. O
+     <Imagem proporcao="quadrada"> ja da a caixa; aqui so a largura. */
+  .cartao :global(.foto) {
+    width: 100%;
+    display: block;
+  }
+
+  .descricao {
+    /* 20px medidos entre a foto e o nome. */
+    padding: 1.25rem 0.5rem 1.5rem;
+  }
+
+  .cartao :global(.nome) {
+    margin-block: 0 0.25rem;
+  }
+
+  /* Circulo de 32px com borda de 1px, medido. O glifo de 16px vem do
+     <Icone tamanho="sm">, que e o mesmo tamanho medido no rodape. */
+  .social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin-top: 0.625rem;
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-full);
+    color: var(--color-texto);
+    transition:
+      background-color 0.3s,
+      color 0.3s;
+  }
+
+  /* Medido com o mouse em cima: fundo cinza claro e a cor de acao no glifo. */
+  a.social:hover {
+    background-color: var(--color-superficie-clara);
+    color: var(--color-acao-primaria);
+  }
+
+  /* Sem perfil o simbolo fica, mas apagado — assim a ausencia se le, em vez de
+     parecer um botao que nao responde. */
+  span.social {
+    color: var(--color-texto-sutil);
+    border-color: var(--color-borda);
+  }
+</style>

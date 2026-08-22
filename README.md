@@ -42,6 +42,7 @@ python scripts/subset-fonts.py    # regera public/webfonts/ a partir de vendor/
 python scripts/glifos-para-svg.py # regera src/icones/glifos.ts a partir das fontes
 node scripts/medir-base.mjs       # mede a base tipográfica do tema no navegador
 node scripts/medir-primitivos.mjs # mede botão, seção, container, grade e ícone
+node scripts/medir-padroes.mjs    # mede as 9 composições do tema (cartão, hero, abas…)
 node scripts/medir-imagens.mjs    # tamanho x fidelidade por formato e qualidade
 node scripts/imagens.mjs          # ponte e purga de imagens (já embutido no build)
 node tests/verify-geometria.mjs   # varredura de layout: 41 páginas × 3 viewports
@@ -82,14 +83,21 @@ Ao migrar um componente ou página, acrescente o `@source` correspondente em
 [`src/styles/global.css`](src/styles/global.css) — sem ele as utilitárias não são
 geradas e o estilo some, sem erro de build.
 
-Os oito primitivos vivem em `src/components/primitivos/` (`Titulo`, `Texto`,
-`Botao`, `Icone`, `Imagem`) e `src/components/layout/` (`Secao`, `Container`,
-`Grade`). Componente novo nesses dois diretórios **precisa** entrar no catálogo
-`/design` no mesmo commit: `scripts/verifica-sistema.mjs` reprova o build se ele
-não for importado por lá.
+O sistema tem três camadas de componente:
 
-Valor de componente é medido, nunca lido: `node scripts/medir-primitivos.mjs`
-imprime botão, seção, container, grade e ícone nos três viewports, com o hover.
+- `src/components/primitivos/` — `Titulo`, `Texto`, `Botao`, `Icone`, `Imagem`
+- `src/components/layout/` — `Secao`, `Container`, `Grade`
+- `src/components/padroes/` — `CartaoMembro`, `ChamadaAcao`, `CaixaIcone`,
+  `CartaoPublicacao`, `LinkAcao`, `ListaIcones`, `Hero`, `FaixaDestaque`,
+  `Contador`, `Abas`
+
+Componente novo nesses três diretórios **precisa** entrar no catálogo `/design`
+no mesmo commit: `scripts/verifica-sistema.mjs` reprova o build se ele não for
+importado por lá.
+
+Valor de componente é medido, nunca lido: `medir-primitivos.mjs` imprime botão,
+seção, container, grade e ícone; `medir-padroes.mjs` imprime as nove composições
+do tema. Os dois rodam nos três viewports, com o hover.
 
 O catálogo vivo fica em `/design`.
 
@@ -108,6 +116,7 @@ src/layouts/              o layout único de todas as páginas
 src/components/           header, rodapé e as grades de dados
 src/components/primitivos/  Titulo, Texto, Botao, Icone, Imagem
 src/components/layout/    Secao, Container, Grade
+src/components/padroes/   CartaoMembro, ChamadaAcao, Hero, Abas, …
 src/styles/               tokens, base e a folha do design system
 src/icones/glifos.ts      os 16 ícones em SVG — GERADO, não edite
 src/imagens.ts            resolve /images/… para o módulo otimizado
