@@ -1401,3 +1401,116 @@ Vale registrar de onde vêm os 52 KB de HTML: cada `<Icone>` embute o caminho SV
 inteiro, e o catálogo agora desenha o mesmo chevron cerca de dez vezes. Numa
 página de conteúdo isso não se repete assim; se algum dia repetir, a saída é um
 sprite com `<use>` — não vale antecipar.
+
+# Etapa 4 — conteúdo
+
+Duas coleções, 9 itens, 27 blocos de markup a menos. O schema está em
+[`src/content.config.ts`](../src/content.config.ts), os dados em
+[`src/content/`](../src/content/), e quem resolve idioma e ordem é
+[`src/conteudo.ts`](../src/conteudo.ts).
+
+## O número do plano estava errado, e pelo motivo de sempre
+
+O plano dizia "publicações (7)". São **5**. O 7 é a contagem de arquivos em
+`src/assets/imagens/publicacoes/`, e duas daquelas capas não são referenciadas
+por página nenhuma — `impacto-ibs-cbs-2023.jpg` e
+`importancia-socioeconomica-do-turismo-2023.jpg`, que já apareciam na lista de 17
+imagens órfãs da Etapa 2.
+
+É o terceiro caso do mesmo método: contar artefatos e supor que a contagem
+descreve o conteúdo. Antes foram as 123 ocorrências de `#0c71c3` (todas do ebook,
+nenhuma botão) e as 141 de `#0c101b` (idem). Agora, duas capas sem publicação.
+
+## Por que YAML, e por que um arquivo por coleção
+
+O `file()` loader do Astro lê JSON, YAML ou TOML e devolve um item por elemento
+do array. YAML porque um mapa de traduções em YAML se lê como uma tabela, e
+porque não há corpo de texto para justificar Markdown — o `resumo` é uma linha, e
+traduz, então não poderia ser o corpo de um `.md` de qualquer forma.
+
+Um arquivo por coleção, e não um por publicação, porque é assim que o resto do
+projeto guarda dado: `src/data/associados.ts` tem os 78 resorts num arquivo só.
+Nove itens em dois arquivos ficam legíveis; nove arquivos de dez linhas, não.
+
+## O campo que às vezes traduz
+
+Publicação e estudo têm, no mesmo item, campos que traduzem (título, resumo) e
+campos que não (URL do PDF, capa). E o título nem sempre traduz: dois dos quatro
+estudos foram publicados só em português, e o "Radar Resorts Brasil Jul/25" é
+nome próprio.
+
+É o mesmo problema que o `cargo` do [`diretoria.ts`](../src/data/diretoria.ts) já
+tinha resolvido — cargo de diretoria traduz, empresa de conselheiro não —, e a
+solução é a mesma:
+
+```ts
+const traduzivel = z.union([z.string(), z.object(porIdioma)]);
+```
+
+`porIdioma` é declarado como `Record<Locale, z.ZodString>`. Isso amarra o schema
+ao `src/i18n/ui.ts`: **um quarto idioma no projeto para de compilar aqui**, em vez
+de gerar três páginas com um campo vazio. E quando o campo é mapa, os três
+idiomas são obrigatórios — "esqueci de traduzir" vira erro de build.
+
+## A coleção que existe por causa de um defeito real
+
+Os dois estudos mais recentes — a Cartilha Executiva da Reforma Tributária e a
+Pesquisa de Canais de Distribuição — foram acrescentados direto no markup das
+três páginas. A tradução ficou pela metade: as páginas inglesa e espanhola
+passaram a ter **dois cartões dizendo "Leia agora"** e dois dizendo "Read now" /
+"Lea ahora", lado a lado.
+
+Não é descuido de quem editou; é o que acontece quando a mesma informação existe
+em 27 lugares. O rótulo agora vem do `ui.ts`, onde ele é um só por idioma.
+
+## O `alt` era o nome acessível do link, e ninguém tinha percebido
+
+Nas páginas de publicações, as capas tinham `alt="capa"`. Como a imagem é o único
+conteúdo do `<a>` que a envolve, esse texto **é** o nome acessível do link: quinze
+links diferentes, todos anunciados como "capa". Nas páginas de estudos era pior
+de outro jeito — o `alt` era descritivo, mas em português nas três traduções.
+
+O `alt` passou a ser o título da publicação, nos dois casos. Não muda pixel, e
+some na Etapa 7: no `<CartaoPublicacao>` o título é que carrega o link, e a capa
+volta a ser decorativa com `alt=""`.
+
+## O espaço que o Astro come
+
+`{t.leiaAgora} <i class="icon-chevron-right" />` gera `Leia agora<i>`, sem o
+espaço: o Astro apara o espaço em branco em volta de uma expressão. O chevron
+ficou colado na palavra nas seis páginas.
+
+Quem pegou foi a **comparação de HTML normalizado**, antes de qualquer captura de
+tela — o método que o [CLAUDE.md](../CLAUDE.md) manda usar ao extrair markup para
+componente. Vale acrescentar à lista de coisas que só ele pega, ao lado dos 11
+`<div class="line">` e dos `</div>` do carrossel: **espaço em branco significativo
+ao lado de expressão**. A correção é `{t.leiaAgora}{' '}`.
+
+## Uma divergência antiga que só agora foi medida
+
+O diff visual das seis páginas deu 17/18. A que sobra, `/publicacoes` no mobile,
+**não é desta etapa**: reconstruí os builds da Etapa 2 e da Etapa 3 e os três dão
+o mesmo 9,06% com +47px de altura.
+
+A causa está no `gridLayout()` do [`site.js`](../src/scripts/site.js), o
+substituto do Isotope. Medido nos dois lados, os cartões têm largura, altura e
+coluna idênticas; o que muda é o empilhamento a partir do terceiro, 23px por
+cartão. O Isotope punha `margin: 0 -30px -30px 0` na grade e absorvia parte do
+recuo inferior do item; o nosso empilha pela altura cheia.
+
+Não foi corrigida, e a razão é de sequenciamento: `gridLayout()` desaparece na
+Etapa 7, quando publicações e estudos passarem a usar `<CartaoPublicacao>` dentro
+de `<Grade>` — grade CSS, sem empacotamento em JavaScript. Está registrada em
+[deltas-visuais.md](deltas-visuais.md) como pendência com prazo: se a Etapa 7 não
+zerar, vira regressão.
+
+Vale a nota de método: a Etapa 2 registrou "as seis páginas idênticas, incluindo
+`publicacoes`". A divergência já existia. O que aquela rodada não fez foi separar
+os viewports no relato — ela é só do mobile.
+
+## O `z` mudou de porta no Astro 6
+
+`import { z } from 'astro:content'` está deprecado; o Astro 6 empacota Zod v4 e o
+reexporta em `astro/zod`. Continua funcionando, mas enche o `astro check` de
+avisos — e `z.string().url()` também saiu, em favor de `z.url()`. Os dois estão
+atualizados no schema.

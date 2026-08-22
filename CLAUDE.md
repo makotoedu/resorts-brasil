@@ -22,8 +22,9 @@ O plano completo, com etapas e critérios, está em
 | 1 — primitivos e catálogo | concluída |
 | 2 — pipeline de imagens | concluída |
 | 3 — padrões (CartaoMembro, Hero, Abas…) | concluída |
-| 4 — conteúdo (Content Collections) | **próxima** |
-| 5–11 | não iniciadas |
+| 4 — conteúdo (Content Collections) | concluída |
+| 5 — páginas pequenas (404, história, contato, diretoria) | **próxima** |
+| 6–11 | não iniciadas |
 
 **Páginas migradas: 1 de 41** (só o catálogo `/design`). Confira sempre com
 `node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
@@ -273,6 +274,18 @@ Editar markup de página para acrescentar um resort ou um parceiro é o caminho
 errado — foi exatamente assim que a home em espanhol ficou com um logo a menos e
 a página inglesa de associe-se com dois parceiros a mais.
 
+**Publicações e estudos são Content Collections**, não `src/data/`: os dados
+ficam em [`src/content/*.yaml`](src/content/), o schema em
+[`src/content.config.ts`](src/content.config.ts) e o acesso em
+[`src/conteudo.ts`](src/conteudo.ts). Página nenhuma chama `getCollection` —
+elas pedem `publicacoesEm(lang)` e recebem strings já resolvidas.
+
+Ali um mesmo item mistura o que traduz com o que não traduz, e o campo carrega
+essa distinção como o `cargo` da diretoria já fazia: **string quando não traduz,
+mapa por idioma quando traduz** — e nesse caso o Zod exige os três. Acrescentar
+um estudo é acrescentar um item ao YAML; fazê-lo no markup foi o que deixou dois
+cartões dizendo "Leia agora" nas páginas inglesa e espanhola.
+
 ## Ao extrair markup para componente
 
 O diff visual custa 15 minutos e diz só que a página mudou. Antes dele, compare
@@ -280,15 +293,20 @@ o **HTML gerado**: normalize o espaço em branco, ignore os atributos que não
 afetam layout (`href`, `alt`, `aria-*`, `rel`, `target`) e compare a sequência de
 tags, classes e texto. A divergência aparece em segundos, com o nome da tag.
 
-Duas omissões que só esse método pegou, e que nenhum erro de build revelaria:
+Três omissões que só esse método pegou, e que nenhum erro de build revelaria:
 
 - os 11 `<div class="line">` entre estados na página de associados — separadores
   visuais que um extrator focado em dados não captura;
 - os `</div>` de fechamento do carrossel da home, engolidos por um recorte que ia
-  até o próximo comentário HTML. Teria fechado o `<section>` cedo demais.
+  até o próximo comentário HTML. Teria fechado o `<section>` cedo demais;
+- o **espaço em branco ao lado de uma expressão**: o Astro apara o espaço em
+  volta de `{...}`, então `{t.leiaAgora} <i>` gera `Leia agora<i>` e o ícone cola
+  na palavra. Aconteceu nas seis páginas de publicações e estudos ao mesmo
+  tempo. A correção é `{t.leiaAgora}{' '}`.
 
 Ao trocar um bloco por componente, prefira recortar um trecho **balanceado**
-(um `<ul>…</ul>` inteiro) a recortar até um comentário.
+(um `<ul>…</ul>` inteiro) a recortar até um comentário — e confira a contagem de
+`<div>` contra a de `</div>` no recorte antes de aplicar.
 
 ## Antes de concluir que algo do tema está quebrado
 

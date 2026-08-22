@@ -380,6 +380,15 @@ export const ui = {
     cookieAlwaysOn: 'Sempre ativos',
     cookieManage: 'Preferências de cookies',
     cookieClose: 'Fechar',
+    /*
+     * O rotulo do link de publicacoes e estudos.
+     *
+     * Estava escrito 27 vezes no markup, e por isso estava errado em quatro
+     * delas: os dois estudos acrescentados por ultimo levaram "Leia agora" para
+     * dentro das paginas inglesa e espanhola, ao lado de dois cartoes que ja
+     * diziam "Read now" e "Lea ahora". Aqui e um so.
+     */
+    leiaAgora: 'Leia agora',
     videoPlay: 'Assistir ao vídeo',
     videoInstitucional: 'Vídeo institucional da Resorts Brasil',
     videoEbook: 'Vídeo de apresentação do e-book',
@@ -457,6 +466,7 @@ export const ui = {
     cookieAlwaysOn: 'Always on',
     cookieManage: 'Cookie preferences',
     cookieClose: 'Close',
+    leiaAgora: 'Read now',
     videoPlay: 'Watch the video',
     videoInstitucional: 'Resorts Brasil institutional video',
     videoEbook: 'E-book presentation video',
@@ -533,6 +543,7 @@ export const ui = {
     cookieAlwaysOn: 'Siempre activas',
     cookieManage: 'Preferencias de cookies',
     cookieClose: 'Cerrar',
+    leiaAgora: 'Lea ahora',
     videoPlay: 'Ver el vídeo',
     videoInstitucional: 'Vídeo institucional de Resorts Brasil',
     videoEbook: 'Vídeo de presentación del e-book',

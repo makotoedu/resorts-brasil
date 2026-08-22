@@ -1,0 +1,63 @@
+---
+import { publicacoesEm } from '../conteudo';
+import { ui, type Locale } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+const publicacoes = await publicacoesEm(lang);
+
+/**
+ * Os cartoes de publicacao, ainda no markup do tema.
+ *
+ * COMPONENTE DE TRANSICAO, e vale dizer isso alto: ele emite `.post-item`,
+ * `.post-item-wrap` e `.item-link`, que sao classes do Inspiro. Nao vive em
+ * `padroes/` e nao entra no catalogo /design — a versao do design system e o
+ * <CartaoPublicacao>, que ja existe. A troca acontece na Etapa 7, quando as tres
+ * paginas migrarem; deste lado, o que muda e so de onde vem o dado.
+ *
+ * Substitui 15 blocos de ~18 linhas escritos a mao (5 publicacoes x 3 idiomas).
+ *
+ * O `<div class="grid-layout post-5-columns">` fica de FORA, na pagina: a versao
+ * portuguesa nao tem o `m-b-30` que as outras duas tem, e unificar isso agora
+ * mudaria o pixel de uma pagina do tema sem que a etapa peca por isso. E uma das
+ * divergencias que a Etapa 7 resolve, e ate la ela continua visivel onde esta.
+ *
+ * O `alt` passou a ser o titulo, no lugar de `alt="capa"`. A imagem e o unico
+ * conteudo do `<a>` que a envolve, entao o `alt` E o nome acessivel do link — e
+ * "capa" era o nome de quinze links diferentes. Muda leitor de tela, nao muda
+ * pixel.
+ */
+---
+
+{
+  publicacoes.map((p) => (
+    <div class="post-item border">
+      <div class="post-item-wrap rounded">
+        <div class="post-image">
+          <a href={p.url} target="_blank" rel="noopener noreferrer">
+            <img alt={p.titulo} src={p.capa} />
+          </a>
+          <span class="post-meta-category">{p.ano}</span>
+        </div>
+        <div class="post-item-description">
+          <h2>{p.titulo}</h2>
+          <p>{p.resumo}</p>
+          {/*
+            O `{' '}` nao e enfeite. O Astro apara o espaco em branco em volta de
+            uma expressao, entao `{t.leiaAgora} <i>` gera `Leia agora<i>` — o
+            chevron colado na palavra. A comparacao de HTML normalizado pegou
+            isso nas seis paginas antes de qualquer diff visual rodar.
+          */}
+          <a href={p.url} target="_blank" rel="noopener noreferrer" class="item-link">
+            {t.leiaAgora}{' '}
+            <i class="icon-chevron-right" />
+          </a>
+        </div>
+      </div>
+    </div>
+  ))
+}

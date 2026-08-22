@@ -1,0 +1,84 @@
+# Publicacoes da Resorts Brasil.
+#
+# Schema em src/content.config.ts; quem le e resolve o idioma e src/conteudo.ts.
+# Campo faltando, ou idioma faltando num campo que traduz, ABORTA O BUILD.
+#
+# Os textos abaixo sao os que ja estavam nas tres paginas de idioma, palavra por
+# palavra — inclusive as reticencias dos resumos, que sao do original.
+#
+# `ordem` e a posicao na pagina, do topo para baixo. Nao e derivada do `ano`
+# porque duas publicacoes empatam em 2022 e outras duas em 2020.
+
+- id: cartilha-esg-resorts-brasil
+  ordem: 1
+  ano: 2022
+  capa: /images/publicacoes/cartilha-esg-resorts-brasil.jpg
+  url: https://drive.google.com/file/d/1DGEOHuJVlPhR7b4iSVQCZDqpviZSeu3c/view
+  titulo:
+    pt-br: Cartilha ESG Resorts Brasil
+    en-us: ESG Resorts Brasil Booklet
+    es-es: Cartilla ESG Resorts Brasil
+  resumo:
+    pt-br: Direcionamentos para implantação de boas práticas no setor
+    en-us: Guidelines for implementing good practices in the industry
+    es-es: Direccionamientos para implementación de buenas prácticas en el sector
+
+- id: a-gestao-da-jornada-do-viajante
+  ordem: 2
+  ano: 2022
+  capa: /images/publicacoes/a-gestao-da-jornada-do-viajante.jpg
+  url: https://drive.google.com/file/d/1xrhzqxzn4P5vkLH-q1PKkk9ljiDS-Tjc/view
+  titulo:
+    pt-br: A Gestão da Jornada do Viajante
+    en-us: Managing the Traveller's Journey
+    es-es: La Gestión de la Jornada del Viajero
+  resumo:
+    pt-br: Novo contexto, transformações nos negócios e soluções digitais...
+    en-us: New context, business transformations and digital solutions...
+    es-es: Nuevo contexto, transformaciones en los negocios y soluciones digitales...
+
+- id: memorias-sustentabilidade-e-um-olhar-para-o-futuro
+  ordem: 3
+  ano: 2021
+  capa: /images/publicacoes/memorias-sustentabilidade-e-um-olhar-para-o-futuro.jpg
+  url: https://drive.google.com/file/d/1wbxXZPjaewuA0fq6Fsh79_Ztv8dbjhWe/view
+  titulo:
+    pt-br: Memórias, sustentabilidade e um olhar para o futuro
+    en-us: Memories, sustainability and a look to the future
+    # O original tem "Y una marida hacia el futuro" — "marida" no lugar de
+    # "mirada", e o "Y" em maiuscula no meio da frase. Preservado como esta:
+    # corrigir texto publicado e decisao de quem edita o site, nao da migracao.
+    # Registrado em docs/decisoes.md, "Etapa 4".
+    es-es: Memorias, sustentabilidad Y una marida hacia el futuro
+  resumo:
+    pt-br: Vinte anos atrás, iniciou-se um movimento de união...
+    en-us: Twenty years ago, a movement of unity began...
+    es-es: Veinte años atrás, se inició un movimiento de unión...
+
+- id: guia-do-viajante-responsavel
+  ordem: 4
+  ano: 2020
+  capa: /images/publicacoes/guia-do-viajante-responsavel.jpg
+  url: https://drive.google.com/file/d/1ypL8zoFP8NExwSGdi8tz77XGgYyZy00b/view
+  titulo:
+    pt-br: Guia do viajante responsável
+    en-us: Responsible traveler guide
+    es-es: Guía del viajero responsable
+  resumo:
+    pt-br: A viagem segura depende de todos nós. Movimento Supera Turismo Brasil.
+    en-us: Safe travel depends on all of us. Supera Turismo Brasil Movement.
+    es-es: El viaje seguro depende de todos nosotros. Movimiento Supera Turismo Brasil.
+
+- id: protocolos-de-higiene-e-seguranca-meios-de-hospedagem
+  ordem: 5
+  ano: 2020
+  capa: /images/publicacoes/protocolos-de-higiene-e-seguranca-meios-de-hospedagem.jpg
+  url: https://drive.google.com/file/d/1yX9MSMxMl9PHU74Pqg5qzIfyVFzB7BIv/view
+  titulo:
+    pt-br: Protocolos de higiene e segurança em meios de hospedagem
+    en-us: Hygiene and safety protocols in lodging facilities
+    es-es: Protocolos de higiene y seguridad en medios de hospedaje
+  resumo:
+    pt-br: As premissas abaixo apresentadas foram...
+    en-us: The premises presented below were...
+    es-es: Las premisas abajo presentadas fueron...

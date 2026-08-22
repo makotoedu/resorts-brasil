@@ -459,11 +459,52 @@ não migrou página nenhuma. Detalhes em [docs/decisoes.md](docs/decisoes.md),
 
 </details>
 
-### Etapa 4 — Conteúdo
+### Etapa 4 — Conteúdo ✅ CONCLUÍDA
+
+Duas coleções em [`src/content.config.ts`](src/content.config.ts), carregadas do
+`file()` loader sobre YAML: [`publicacoes.yaml`](src/content/publicacoes.yaml) e
+[`estudos.yaml`](src/content/estudos.yaml). Quem resolve o idioma e a ordem é
+[`src/conteudo.ts`](src/conteudo.ts); as páginas só pedem
+`publicacoesEm('en-us')` e recebem strings prontas.
+
+**São 5 publicações, não 7.** O número do plano veio de contar arquivos em
+`src/assets/imagens/publicacoes/`, e duas daquelas capas não são referenciadas
+por página nenhuma — estão entre as 17 imagens órfãs que a Etapa 2 já havia
+listado. Mesmo erro de método das cores contadas no markup, agora em imagem.
+
+**A coleção de estudos é o melhor argumento da etapa.** Os dois estudos mais
+recentes foram acrescentados direto no markup dos três idiomas, e a tradução
+ficou pela metade: as páginas inglesa e espanhola diziam **"Leia agora"** nos
+dois primeiros cartões e "Read now" / "Lea ahora" nos dois últimos. O rótulo
+passou para o `ui.ts`, e o defeito deixa de ter por onde voltar.
+
+O campo traduzível segue o precedente do `cargo` em `src/data/diretoria.ts`:
+string quando não traduz (nome próprio, título publicado só em português), mapa
+por idioma quando traduz — e aí o Zod **exige os três**. O `Record<Locale, …>` do
+schema amarra isso ao `src/i18n/ui.ts`: um quarto idioma para de compilar aqui,
+em vez de gerar página com campo vazio.
+
+Dois componentes de transição, [`ListaPublicacoes`](src/components/ListaPublicacoes.astro)
+e [`ListaEstudos`](src/components/ListaEstudos.astro), ainda emitem o markup do
+tema — eles somem na Etapa 7, quando as três páginas passarem para o
+`<CartaoPublicacao>`. Substituíram 27 blocos escritos à mão.
+
+**A comparação de HTML normalizado pegou uma regressão que o diff visual não
+pegaria**: o Astro apara o espaço em volta de uma expressão, então
+`{t.leiaAgora} <i>` gerava `Leia agora<i>` — o chevron colado na palavra, nas
+seis páginas.
+
+Diff visual nas seis: **17/18 idênticas**. A única divergência é anterior e não
+foi introduzida aqui — verificada nos builds da Etapa 2 e da Etapa 3, com o mesmo
+número. Ver [docs/deltas-visuais.md](docs/deltas-visuais.md), "Etapa 4".
+
+<details><summary>Especificação original</summary>
 
 Content Collections com Zod para publicações (7) e estudos (4). Schema enxuto,
 mas isolado: acrescentar campo depois não toca as páginas. Campo faltando vira
 erro de build.
+
+</details>
 
 ### Etapas 5–9 — Páginas, do mais simples ao mais arriscado
 

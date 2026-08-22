@@ -95,6 +95,53 @@ três da Etapa 1: `--color-superficie-marca` nasceu porque o
 consolidado no `--cor-ambar-500` que outra página já usava para a mesma faixa.
 Ver [decisoes.md](decisoes.md), "Etapa 3".
 
+## Etapa 4 — um delta novo, e uma divergência antiga que apareceu
+
+Medido em 22/08/2026, nas seis páginas de publicações e estudos: **17/18
+idênticas**.
+
+O delta novo é o que a etapa existia para causar:
+
+| páginas | viewports | tipo | motivo |
+|---|---|---|---|
+| `en-us/statistics-and-studies`, `es-es/estadisticas-y-estudios` | todos | correção | os dois primeiros cartões diziam "Leia agora", em português, porque os estudos mais novos foram acrescentados no markup dos três idiomas sem passar pela tradução. Agora o rótulo vem do `ui.ts` |
+
+Ele ficou **abaixo do limiar de 0,5%** e por isso não aparece no resultado do
+diff — são duas palavras num cartão pequeno. Quem o pegou foi a comparação de
+HTML normalizado, que é justamente por isso o primeiro passo do procedimento.
+
+Uma correção que não muda pixel nenhum: o `alt` das capas passou a ser o título
+da publicação. Era `alt="capa"` em quinze links diferentes nas páginas de
+publicações, e um texto em português nas três páginas de estudos. Como a imagem é
+o único conteúdo do `<a>` que a envolve, esse `alt` **é** o nome acessível do
+link.
+
+### A divergência de `/publicacoes` no mobile é anterior, e está medida
+
+`/publicacoes.html` no mobile diverge do original em **9,06%, com +47px de
+altura**. Não foi introduzida aqui: o mesmo número sai dos builds da **Etapa 2** e
+da **Etapa 3**, conferido reconstruindo os dois estados.
+
+O mecanismo, medido no navegador nos dois lados:
+
+| | grade | posição dos cartões 3, 4 e 5 |
+|---|---|---|
+| original (Isotope) | `margin: 0 -30px -30px 0`, altura 3420px | 1823 · 2521 · 3196 |
+| hoje (`gridLayout()`) | sem margem, altura 3467px | 1846 · 2544 · 3219 |
+
+Os cartões têm largura, altura e coluna idênticas; o que difere é o empilhamento,
+23px por cartão a partir do terceiro. O Isotope absorvia parte do recuo inferior
+do item com aquela margem negativa, e o `gridLayout()` do
+[`site.js`](../src/scripts/site.js) empilha pela altura cheia.
+
+**Não foi corrigida de propósito.** O conserto seria em `gridLayout()`, e esse
+bloco desaparece na Etapa 7: as páginas de publicações e estudos passam a usar
+`<CartaoPublicacao>` dentro de `<Grade>`, que é grade CSS e não empacotamento em
+JavaScript. Corrigir agora é trabalho que a etapa seguinte joga fora.
+
+Fica aqui como **pendência com prazo**: se a Etapa 7 não zerar essa divergência,
+ela vira regressão.
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

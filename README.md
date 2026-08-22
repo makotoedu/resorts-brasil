@@ -112,6 +112,9 @@ o `cleanUrls` da Vercel deixa `/historia` como a URL canônica.
 ```
 src/i18n/ui.ts            rotas, títulos e strings dos 3 idiomas — comece aqui
 src/data/                 associados, parceiros, diretoria, contato
+src/content/              publicações e estudos (Content Collections, YAML)
+src/content.config.ts     o schema Zod das duas coleções
+src/conteudo.ts           lê as coleções e resolve idioma e ordem
 src/layouts/              o layout único de todas as páginas
 src/components/           header, rodapé e as grades de dados
 src/components/primitivos/  Titulo, Texto, Botao, Icone, Imagem
@@ -141,6 +144,13 @@ nunca os componentes. As strings dos três idiomas ficam todas lá.
 **Acrescentar ou tirar um resort, parceiro ou membro da diretoria** — edite o
 arquivo correspondente em [`src/data/`](src/data/). Os três idiomas mudam juntos,
 que é o ponto: quando isso era markup, as versões divergiram.
+
+**Acrescentar uma publicação ou um estudo** — acrescente um item em
+[`src/content/publicacoes.yaml`](src/content/publicacoes.yaml) ou
+[`src/content/estudos.yaml`](src/content/estudos.yaml). Campo faltando aborta o
+build; campo que traduz exige os três idiomas. Quando isso era markup, os dois
+estudos mais recentes entraram sem tradução e as páginas inglesa e espanhola
+ficaram com dois cartões dizendo "Leia agora".
 
 **Adicionar uma página** — acrescente a chave em `routes`, o `title`/`description`
 em `meta` e os rótulos em `ui` no [`src/i18n/ui.ts`](src/i18n/ui.ts), depois crie

@@ -1,0 +1,57 @@
+---
+import { estudosEm } from '../conteudo';
+import { ui, type Locale } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+const estudos = await estudosEm(lang);
+
+/**
+ * Os cartoes de estudo, ainda no markup do tema.
+ *
+ * Irmao do ListaPublicacoes, e como ele um COMPONENTE DE TRANSICAO: emite
+ * classes do Inspiro e sai na Etapa 7, quando as tres paginas migrarem para o
+ * <CartaoPublicacao>. Substitui 12 blocos escritos a mao (4 estudos x 3
+ * idiomas).
+ *
+ * Estudo nao tem resumo nem ano — nao e recorte deste componente, e o que as
+ * paginas sempre mostraram.
+ *
+ * DUAS CORRECOES DE CONTEUDO SAEM DAQUI, e as duas mudam o HTML gerado:
+ *
+ *   o rotulo do link vem do ui.ts. Nas paginas inglesa e espanhola, os dois
+ *   primeiros cartoes diziam "Leia agora" — em portugues — porque foram
+ *   acrescentados no markup dos tres idiomas sem passar pela traducao;
+ *
+ *   o `alt` passou a ser o titulo. Era "Capa da Cartilha Executiva Reforma
+ *   Tributaria", em portugues nas tres paginas, e como a imagem e o unico
+ *   conteudo do `<a>`, esse texto E o nome acessivel do link. O titulo serve
+ *   melhor a essa funcao do que "Capa da" mais o titulo.
+ */
+---
+
+{
+  estudos.map((e) => (
+    <div class="post-item border">
+      <div class="post-item-wrap rounded">
+        <div class="post-image">
+          <a href={e.url} target="_blank" rel="noopener noreferrer">
+            <img src={e.capa} alt={e.titulo} />
+          </a>
+        </div>
+        <div class="post-item-description">
+          <h2>{e.titulo}</h2>
+          {/* O `{' '}` e obrigatorio — ver a nota no ListaPublicacoes.astro. */}
+          <a href={e.url} target="_blank" rel="noopener noreferrer" class="item-link">
+            {t.leiaAgora}{' '}
+            <i class="icon-chevron-right" />
+          </a>
+        </div>
+      </div>
+    </div>
+  ))
+}

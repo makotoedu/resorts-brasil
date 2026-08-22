@@ -1,0 +1,41 @@
+# Estatisticas e estudos do setor.
+#
+# Schema em src/content.config.ts; quem le e resolve o idioma e src/conteudo.ts.
+#
+# ESTA COLECAO E O MELHOR ARGUMENTO PARA A ETAPA 4. Dois dos quatro estudos
+# foram acrescentados depois, direto no markup das tres paginas, e a traducao
+# ficou pela metade: nas paginas inglesa e espanhola, os dois primeiros cartoes
+# diziam "Leia agora" e os dois ultimos "Read now" / "Lea ahora". O rotulo do
+# link saiu daqui para o src/i18n/ui.ts, onde ele e um so — e o defeito deixa de
+# ter por onde voltar.
+#
+# Tres dos quatro titulos NAO traduzem, e por isso sao string simples: dois sao
+# publicacoes que a associacao lancou so em portugues, e o Radar e nome proprio.
+# So "Hotelaria em Numeros" tem as tres versoes, e por isso e mapa.
+
+- id: cartilha-executiva-reforma-tributaria
+  ordem: 1
+  titulo: Cartilha Executiva Reforma Tributaria
+  capa: /images/estatisticas-e-estudos/cartilha-executiva-reforma-tributaria-resorts-brasil-2026.png
+  url: https://drive.google.com/file/d/1rfKxFznjwbnodOxtYlys0Qg74AJ02Hku/view?usp=sharing
+
+- id: pesquisa-canais-de-distribuicao
+  ordem: 2
+  titulo: Pesquisa Canais de Distribuição
+  capa: /images/estatisticas-e-estudos/pesquisa-canais-de-distribuicao.jpg
+  url: https://drive.google.com/file/d/1lhSPpB84LxfSYUEp_wpMFcBqquS0_wz6/view?usp=sharing
+
+- id: radar-resorts-brasil
+  ordem: 3
+  titulo: Radar Resorts Brasil Jul/25
+  capa: /images/estatisticas-e-estudos/radar-resorts-brasil.jpg
+  url: https://drive.google.com/file/d/12oUWoUkp56U8zrqGJgQYfqhI9w8FaDQK/view?usp=sharing
+
+- id: hotelaria-em-numeros
+  ordem: 4
+  capa: /images/estatisticas-e-estudos/hotelaria-em-numeros.jpg
+  url: https://drive.google.com/file/d/18qStZLOeHsfQet0Ie2bfqseliKuI5PDa/view?usp=sharing
+  titulo:
+    pt-br: Hotelaria em Números
+    en-us: Hotel Industry in Figures
+    es-es: Hotelaría en Números
