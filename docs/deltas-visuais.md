@@ -50,6 +50,21 @@ media 1500px e não 1140px, a cor de ação é `#2250fc` e não `#0c71c3`, e os 
 carregavam a fração do root de 14px do tema. Ver [decisoes.md](decisoes.md),
 "Etapa 1".
 
+## Etapa 2 — nenhum delta novo
+
+Medido em 21/08/2026, com as seis páginas mais dependentes de imagem
+(`index`, `associados`, `diretoria`, `publicacoes`, `ebook`, `es-es/asociados`):
+**idênticas**, exceto as duas do `ebook` que já constam da linha de base.
+
+Era a conferência que a etapa exigia. As 198 imagens saíram de `public/images/`
+para `src/assets/imagens/`, e as 40 páginas do tema continuam pedindo
+`/images/…` — se a ponte do `scripts/imagens.mjs` tivesse deixado alguma para
+trás, apareceria aqui como imagem quebrada. Duas quase ficaram: os dois arquivos
+com acento no nome, que o regex da ponte não via.
+
+O peso, que agora tem portão próprio, está em
+[verificacao.md](verificacao.md#2d-orçamento-de-performance--a-catraca-de-peso).
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

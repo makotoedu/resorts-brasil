@@ -1,49 +1,123 @@
 ---
+import { Picture } from 'astro:assets';
+import type { ImageOutputFormat } from 'astro';
+import { imagem } from '../../imagens';
+
 /**
- * Imagem — dimensao obrigatoria, lazy por padrao.
+ * Imagem — o pipeline, com dimensao obrigatoria e lazy por padrao.
  *
  * O estado de partida: 8,5 MB em 200 arquivos, 1 dos 193 `<img>` com `loading`,
  * e heros de 2250x1500 exibidos a 360px de largura. Nada disso e falta de
  * cuidado pontual — e o que acontece quando cada `<img>` e uma decisao nova.
  *
- * As duas props que mais doem sao obrigatorias no tipo: `alt` (que o
- * `astro check` passa a cobrar) e o par `largura`/`altura`, que reserva o
- * espaco e elimina o pulo de layout. `alt=""` continua valido e e a forma certa
- * de marcar imagem decorativa — o que nao da mais e esquecer de decidir.
+ * O QUE ESTE COMPONENTE FAZ POR QUEM O USA, sem ninguem lembrar:
  *
- *   <Imagem src="/images/hero/pexels-1134176.jpg" alt="Resort" largura={1200} altura={800} />
- *   <Imagem ... prioridade proporcao="video" ajuste="cobrir" />
+ *   AVIF e WebP com fallback no formato original, gerados no build;
+ *   `srcset` e `sizes` derivados da escala declarada;
+ *   `width`/`height` sempre presentes, entao a caixa e reservada e nao ha pulo;
+ *   `loading="lazy"` e `decoding="async"`, menos onde `prioridade` diz o contrario.
  *
- * ETAPA 2 TROCA O MIOLO, NAO A API. Quando as imagens saem de `public/` para
- * `src/assets/`, o `<img>` daqui vira o `<Image>` do `astro:assets` com AVIF,
- * WebP e `srcset`. Quem usa este componente nao muda nada — que e a razao de
- * ele existir antes do pipeline.
+ *   <Imagem src="/images/hero/pexels-1134176.jpg" alt="" escala="largura-total" />
+ *   <Imagem src="/images/associados/almenat.png" alt="Almenat" largura={180} />
+ *
+ * `src` aceita o CAMINHO PUBLICO ANTIGO (`/images/...`), resolvido por
+ * src/imagens.ts. E o que permite os 183 caminhos de `src/data/` continuarem
+ * como estao — dado nao vira import. Caminho inexistente aborta o build em vez
+ * de virar 404 silencioso.
+ *
+ * SVG passa direto, sem pipeline: rasterizar um vetor para AVIF e trocar um
+ * arquivo pequeno e nitido em qualquer escala por um grande e fixo.
  */
 interface Props {
-  src: string;
+  /** Caminho publico (`/images/...`) ou a imagem ja importada. */
+  src: string | ImageMetadata;
   /** Vazio marca imagem decorativa. O que nao existe e omitir. */
   alt: string;
-  largura: number;
-  altura: number;
+  /**
+   * Como a imagem se relaciona com a largura disponivel — o modelo do proprio
+   * Astro, que decide o `srcset`:
+   *
+   *   ajustada       cresce ate `largura` e para (cartao, retrato, logo grande)
+   *   fixa           sempre `largura`, com a variante 2x para telas densas
+   *   largura-total  ocupa a largura do pai (hero, faixa)
+   *
+   * Sem `escala`: `ajustada` quando ha `largura`, `largura-total` quando nao ha
+   * — porque sem largura declarada nao existe teto a respeitar.
+   */
+  escala?: 'ajustada' | 'fixa' | 'largura-total';
+  /** Largura RENDERIZADA, nao a do arquivo. E dela que sai o `srcset`. */
+  largura?: number;
+  altura?: number;
+  /** O atributo `sizes`. Sem ele, `largura-total` assume 100vw. */
+  tamanhos?: string;
   /** Primeira imagem visivel da pagina: carrega cedo, sem lazy. */
   prioridade?: boolean;
   proporcao?: 'video' | 'quadrada' | 'larga';
   ajuste?: 'cobrir' | 'conter';
   arredondada?: boolean;
+  /** Padrao 50 — medido, ver a nota de QUALIDADE abaixo. */
+  qualidade?: number;
   class?: string;
 }
 
 const {
   src,
   alt,
+  escala,
   largura,
   altura,
+  tamanhos,
   prioridade = false,
   proporcao,
   ajuste,
   arredondada = false,
+  qualidade = 50,
   class: classe,
 } = Astro.props;
+
+const fonte = typeof src === 'string' ? imagem(src) : src;
+
+/*
+ * AVIF com reserva em WebP, e nao a escada de tres formatos que o <Picture>
+ * monta por padrao. O alvo do projeto e Safari 15.4+ / Chrome 105+ (ver
+ * docs/plano-design-system.md): o AVIF cobre Chrome 105+ e Safari 16.4+, e o
+ * WebP cobre todo o resto do alvo, desde o Safari 14. A escada de JPEG que
+ * sobrava so seria baixada por navegador FORA do alvo — e custava 1,9 MB de
+ * `dist/` so no hero do catalogo, medidos.
+ */
+const FORMATOS: ImageOutputFormat[] = ['avif'];
+const FORMATO_DE_RESERVA: ImageOutputFormat = 'webp';
+
+/*
+ * QUALIDADE 50, e o numero e medido — `node scripts/medir-imagens.mjs`.
+ *
+ * O pipeline nasceu com 80, o costume, e a primeira medicao pareceu dizer que o
+ * AVIF era pior: 96 KB contra 62 KB do WebP em 640px de largura. A conclusao
+ * estava errada, e o erro e instrutivo — `quality` NAO e uma escala comum entre
+ * codecs, entao 80 em AVIF e 80 em WebP nao sao o mesmo pedido.
+ *
+ * Comparando pela FIDELIDADE em vez do numero, com pixelmatch contra o
+ * original, em foto, retrato e logo chapado:
+ *
+ *   hero 1080px    AVIF q50   87 KB   0,00% de pixels percebidos diferentes
+ *                  WebP q80  150 KB   0,00%
+ *                  original  646 KB
+ *
+ * Abaixo de 50 aparece diferenca (0,08% no AVIF, 0,18% no WebP em q40). Acima
+ * de 50 so aumenta o arquivo. Entao 50 e o piso, nao um chute conservador.
+ */
+
+/*
+ * Sem largura declarada nao ha teto: `constrained` devolveria srcset vazio
+ * (ver getWidths no proprio Astro), o que daria uma imagem so, do tamanho do
+ * arquivo. `full-width` gera a escada de larguras.
+ */
+const ESCALAS = {
+  ajustada: 'constrained',
+  fixa: 'fixed',
+  'largura-total': 'full-width',
+} as const;
+const layout = ESCALAS[escala ?? (largura ? 'ajustada' : 'largura-total')];
 
 /* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
 const PROPORCOES = {
@@ -52,25 +126,47 @@ const PROPORCOES = {
   larga: 'aspect-larga',
 } as const;
 
-const AJUSTES = {
-  cobrir: 'object-cover',
-  conter: 'object-contain',
-} as const;
+const AJUSTES = { cobrir: 'cover', conter: 'contain' } as const;
+
+/*
+ * O SVG do logotipo e o unico vetor do acervo. `<Picture>` com formatos raster
+ * o rasterizaria; aqui ele sai como veio.
+ */
+const vetor = fonte.format === 'svg';
 ---
 
-<img
-  src={src}
-  alt={alt}
-  width={largura}
-  height={altura}
-  loading={prioridade ? 'eager' : 'lazy'}
-  decoding={prioridade ? 'sync' : 'async'}
-  fetchpriority={prioridade ? 'high' : undefined}
-  class:list={[
-    'max-w-full h-auto',
-    proporcao && PROPORCOES[proporcao],
-    ajuste && AJUSTES[ajuste],
-    arredondada && 'rounded-md',
-    classe,
-  ]}
-/>
+{
+  vetor ? (
+    <img
+      src={fonte.src}
+      alt={alt}
+      width={largura ?? fonte.width}
+      height={altura ?? fonte.height}
+      loading={prioridade ? 'eager' : 'lazy'}
+      decoding={prioridade ? 'sync' : 'async'}
+      class:list={[
+        'max-w-full h-auto',
+        proporcao && PROPORCOES[proporcao],
+        arredondada && 'rounded-md',
+        classe,
+      ]}
+    />
+  ) : (
+    <Picture
+      src={fonte}
+      alt={alt}
+      layout={layout}
+      width={largura}
+      height={altura}
+      sizes={tamanhos}
+      formats={FORMATOS}
+      fallbackFormat={FORMATO_DE_RESERVA}
+      quality={qualidade}
+      fit={ajuste && AJUSTES[ajuste]}
+      loading={prioridade ? 'eager' : 'lazy'}
+      decoding={prioridade ? 'sync' : 'async'}
+      fetchpriority={prioridade ? 'high' : undefined}
+      class:list={[proporcao && PROPORCOES[proporcao], arredondada && 'rounded-md', classe]}
+    />
+  )
+}

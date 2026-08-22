@@ -1,6 +1,6 @@
 # Verificação
 
-O projeto tem quatro camadas de verificação. Elas não são redundantes: cada uma
+O projeto tem cinco camadas de verificação. Elas não são redundantes: cada uma
 pega uma classe de problema que as outras deixam passar.
 
 Com a reconstrução da camada de apresentação, **o peso mudou de camada**. O diff
@@ -17,8 +17,8 @@ npm run build
 ```
 
 Gera as 41 páginas (40 de conteúdo + o catálogo em `/design`), roda a purga de
-CSS, confere o subset de fontes (`check-glifos.mjs`) e as invariantes do design
-system (`verifica-sistema.mjs`). As URLs geradas precisam ser
+CSS, a ponte e a purga de imagens (`imagens.mjs`), confere o subset de fontes
+(`check-glifos.mjs`) e as invariantes do design system (`verifica-sistema.mjs`). As URLs geradas precisam ser
 idênticas às do site original — o site tem histórico de indexação e qualquer
 mudança de caminho exigiria redirect 301 no [`vercel.json`](../vercel.json).
 
@@ -203,6 +203,40 @@ A página de teste é servida de dentro da origem do preview, por interceptaçã
 rota, e não com `setContent`: em `about:blank` o `@font-face` com URL relativa
 não resolve, a webfont não carrega e os 16 reprovam por tofu — o oposto do que a
 checagem quer dizer. Sem preview no ar, o `goto` falha com mensagem clara.
+
+
+## 2d. Orçamento de performance — a catraca de peso
+
+```bash
+npm run verify:orcamento                       # precisa do preview no ar
+ATUALIZAR=1 node tests/verify-orcamento.mjs    # regrava a linha de base
+```
+
+[`tests/verify-orcamento.mjs`](../tests/verify-orcamento.mjs) mede, no
+navegador, quantos bytes cada página baixa até o `load`, separados por tipo, em
+390 e 1440 px. É o quarto portão duro previsto no plano.
+
+**Por que existe.** Sem o diff visual como critério, nada impede o site de ficar
+mais bonito e mais lento ao mesmo tempo: comportamento e geometria passam felizes
+com um hero de 646 KB.
+
+**É catraca, não teto.** Um teto único reprovaria a home e liberaria a 404 no
+mesmo número. Cada página tem a própria linha de base em `tests/orcamento.json`,
+e o que reprova é **engordar** mais de 5%. Quando uma página emagrece — que é o
+que a migração faz —, o relatório pede a regravação da base, e o peso não volta.
+
+Dois cuidados que o script já resolve, e que custaram uma medição errada cada:
+
+- **um contexto de navegador por página**, e não por viewport. Com um contexto
+  só, a segunda página em diante herda CSS, JS e fontes do cache, e o número
+  passa a medir a ordem da lista: na primeira execução só a `index` aparecia com
+  67 KB de CSS, e as outras 40 com zero;
+- **terceiro não entra na conta** (o Google Fonts). Não é peso que este
+  repositório controla, e a rede mudaria o número sem ninguém tocar no site.
+
+A linha de base inicial, com o tema ainda em 40 páginas: `index` 4,4 MB (4,3 MB
+de imagem), `ebook` 1,1 MB, `associe-se` 770 KB, `404` 100 KB, e o catálogo
+`/design` — a única migrada — em **78 KB**.
 
 ## 3. Diff visual — hoje um changelog
 
@@ -455,7 +489,7 @@ com o navegador limpo:
 
 ## Antes de promover para produção
 
-1. As quatro camadas acima, limpas — ou com cada divergência explicada por
+1. As cinco camadas acima, limpas — ou com cada divergência explicada por
    escrito.
 2. Conferência manual do que os números não mostram: abrir `/associados` a
    768 px e confirmar a grade em 3 colunas com os logos a ~124 px.

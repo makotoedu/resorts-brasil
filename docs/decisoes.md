@@ -1059,3 +1059,149 @@ Passou a considerar só as páginas que de fato referenciam `/css/*.css`. O efei
 é o inverso e é automático: **cada página migrada sai da lista e leva junto as
 regras que só ela mantinha**, então o CSS do tema encolhe ao longo da migração em
 vez de ficar parado até a Etapa 11 apagá-lo.
+
+# Etapa 2 — pipeline de imagens
+
+## O acervo saiu de `public/`, e as 40 páginas do tema não souberam
+
+O `astro:assets` só otimiza o que está em `src/`, então as 198 imagens foram
+para `src/assets/imagens/`. Só que nenhuma página de conteúdo migrou ainda, e as
+40 do tema pedem `/images/…` por HTTP — em 162 `<img src>` e 42
+`background-image` inline. Mover sem mais nada quebraria o acervo inteiro delas.
+
+A saída é [`scripts/imagens.mjs`](../scripts/imagens.mjs), que lê o HTML gerado e
+copia para `dist/images/` **exatamente as imagens que ainda são pedidas**. É o
+mesmo mecanismo que o `purge-css.mjs` passou a usar na Etapa 1, e pela mesma
+razão: cada página migrada leva junto o que só ela mantinha, então o peso cai a
+cada etapa em vez de esperar a Etapa 11. Quando a última página migrar, o script
+copia zero e pode ser apagado.
+
+De quebra, uma guarda que não existia: **referência sem arquivo aborta o build**.
+Antes, caminho de imagem errado atravessava tudo e virava 404 no navegador.
+
+### A ordem no `npm run build` importa
+
+O script roda **depois** do `purge-css.mjs`. Rodando antes, ele lê o `style.css`
+inteiro do tema, que referencia oito imagens que nunca existiram neste projeto
+(`expand.png`, `triangle-divider-top.png`, quatro `overlay-pattern/`…) — sobras
+de um tema comprado. A guarda abortava o build por causa de regras que a purga
+apaga em seguida.
+
+### Dois arquivos com acento quase viraram 404
+
+O primeiro relatório listou 19 imagens "sem nenhuma referência". Dezessete são
+peso morto de verdade. As outras duas — `Patrícia-Azevedo.jpg` e
+`Paulo-Mélega.jpg`, do ebook — **estão em uso**, e o que não funcionava era o
+regex da ponte: `[A-Za-z0-9._%\-/]+` parece cobrir nome de arquivo e não cobre os
+deste site. As duas não eram copiadas, e não entravam na lista de faltantes
+porque não eram sequer vistas. Passou a ser "tudo menos delimitador".
+
+A lição não é sobre acentos: **classe de caracteres permitidos é uma suposição
+sobre os dados**; classe de delimitadores é um fato sobre o formato.
+
+## O `import.meta.glob` custou 8,5 MB que ninguém pediu
+
+[`src/imagens.ts`](../src/imagens.ts) resolve `/images/almenat.png` para o módulo
+otimizado com um `import.meta.glob` eager. É o que permite os **183 caminhos de
+`src/data/` continuarem strings** — sem ele, adotar o pipeline significaria
+trocar cada `logo: '/images/…'` por um `import`, que é exatamente o contrário da
+regra "dado não é markup".
+
+O preço apareceu na medição: o Vite **emite todo arquivo importado**, usado ou
+não. As 198 imagens foram parar em `dist/_astro/`, 8,5 MB duplicados ao lado da
+ponte. O `dist/` foi de 9 MB para 25 MB.
+
+A purga do que ninguém referencia entrou no mesmo script, pelo mesmo critério do
+CSS. Não é gambiarra: é a contrapartida honesta de um mapa que existe para
+manter o dado simples.
+
+## `quality: 80` fazia o AVIF ser 50% maior que o WebP
+
+A primeira medição do pipeline pareceu dizer que AVIF não valia a pena:
+
+| largura | AVIF q80 | WebP q80 |
+|---|---|---|
+| 640 | 96 KB | 62 KB |
+| 1280 | 292 KB | 197 KB |
+| 2048 | 585 KB | 415 KB |
+
+A conclusão estava errada, e o erro é instrutivo: **`quality` não é uma escala
+comum entre codecs.** 80 em AVIF pede muito mais fidelidade do que 80 em WebP, e
+comparar os dois no mesmo número compara duas coisas diferentes.
+
+[`scripts/medir-imagens.mjs`](../scripts/medir-imagens.mjs) refaz a pergunta pela
+fidelidade, com pixelmatch contra o original — a mesma métrica do
+`verify-icones.mjs`, e pelo mesmo motivo: ela responde "dá para ver?", que é a
+pergunta. Em foto, retrato e logo chapado:
+
+| | q40 | q50 | q80 |
+|---|---|---|---|
+| AVIF (hero 1080px) | 59 KB, 0,08% | **87 KB, 0,00%** | 225 KB, 0,00% |
+| WebP (hero 1080px) | 80 KB, 0,18% | 93 KB, 0,04% | 150 KB, 0,00% |
+
+**50 é o piso medido**, não um chute conservador: abaixo dele aparece diferença
+perceptível, acima só aumenta o arquivo. Resultado no hero da home: 646 KB de
+JPEG viram 36 KB no mobile e 113 KB em 1280px.
+
+E o teste teve o próprio defeito de método: a primeira versão comparava com
+`removeAlpha()`, o que confronta os RGB de pixels **transparentes** — cada codec
+os preenche como quer. O logo aparecia com 6% de diferença em toda qualidade de
+WebP, número que não mudava com `quality` justamente porque não era compressão.
+Achatar sobre branco compara o que o olho vê.
+
+### Um formato a menos
+
+`formats={['avif']}` com `fallbackFormat="webp"`, e não a escada de três que o
+`<Picture>` monta por padrão. O alvo do projeto é Safari 15.4+ / Chrome 105+: o
+AVIF cobre Chrome 105+ e Safari 16.4+, e o WebP cobre o resto do alvo desde o
+Safari 14. A escada de JPEG só seria baixada por navegador fora do alvo, e
+custava 1,9 MB de `dist/` só no hero do catálogo.
+
+## O `sizes` não é opcional de fato
+
+Com `escala="largura-total"` e sem `tamanhos`, o navegador assume `100vw`. O hero
+do catálogo vive dentro de 60rem, então ele baixava a variante de 1440px para uma
+caixa de 862px — pipeline inteiro montado, e ainda assim o dobro do necessário.
+
+A regra que ficou registrada no catálogo: **se a imagem não ocupa a largura da
+janela, diga a largura que ela ocupa.**
+
+## Orçamento de performance: catraca, não teto
+
+[`tests/verify-orcamento.mjs`](../tests/verify-orcamento.mjs) é o quarto portão
+duro previsto no plano, e o que faltava. Sem o diff visual como critério, nada
+impedia o site de ficar mais bonito e mais lento ao mesmo tempo — comportamento e
+geometria passam felizes com um hero de 646 KB.
+
+Teto único não serviria: reprovaria a home e liberaria a 404 no mesmo número.
+Cada página tem a própria linha de base em `tests/orcamento.json`, e o que
+reprova é **engordar** acima de 5%. Página migrada emagrece, a base é regravada
+mais apertada, e o peso nunca volta.
+
+A primeira execução mediu errado, e o defeito é o mesmo de sempre — medir a
+ordem em vez do objeto: com um contexto de navegador por viewport, a segunda
+página em diante herdava CSS, JS e fontes do cache, e só a `index` aparecia com
+67 KB de CSS. Passou a ser um contexto por página, que é também o caso real de um
+visitante novo.
+
+A linha de base inicial, com o tema ainda em 40 páginas:
+
+| página | peso | imagem |
+|---|---|---|
+| `index` (e as duas traduções) | 4,4 MB | 4,3 MB |
+| `ebook` | 1,1 MB | 1,0 MB |
+| `associe-se` | 770 KB | 744 KB |
+| `404` | 100 KB | 5 KB |
+| `design` (a única migrada) | **78 KB** | 0 KB |
+
+Os 67 KB de CSS do tema contra os 23 KB do design system aparecem em toda linha.
+
+## Dezessete imagens que ninguém pede
+
+O relatório da ponte separa "já pelo pipeline" de "sem nenhuma referência". A
+segunda lista tem 17 arquivos, ~460 KB, que **nenhuma página, nenhum dado e
+nenhum CSS mencionam**: `logo.png`, `logo.svg`, dois de `publicacoes/`, onze de
+`parceiros/` e quatro de `associados/`.
+
+Ficaram no repositório de propósito — remover conteúdo é decisão de quem edita o
+site, não da migração. `DETALHE=1 node scripts/imagens.mjs` lista os nomes.

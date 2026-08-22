@@ -29,7 +29,7 @@ aparecer, rode `npm approve-scripts sharp esbuild`.
 | `npm run build` | checa os tipos, gera `dist/`, purga o CSS e confere os glifos |
 | `npm run check` | só a checagem de tipos (`astro check`) |
 | `npm run preview` | serve o `dist/` gerado |
-| `npm run verify` | comportamento, geometria e ícones (precisa de um preview no ar) |
+| `npm run verify` | comportamento, geometria, ícones e orçamento (precisa de um preview no ar) |
 
 Scripts auxiliares:
 
@@ -42,8 +42,11 @@ python scripts/subset-fonts.py    # regera public/webfonts/ a partir de vendor/
 python scripts/glifos-para-svg.py # regera src/icones/glifos.ts a partir das fontes
 node scripts/medir-base.mjs       # mede a base tipográfica do tema no navegador
 node scripts/medir-primitivos.mjs # mede botão, seção, container, grade e ícone
+node scripts/medir-imagens.mjs    # tamanho x fidelidade por formato e qualidade
+node scripts/imagens.mjs          # ponte e purga de imagens (já embutido no build)
 node tests/verify-geometria.mjs   # varredura de layout: 41 páginas × 3 viewports
 node tests/verify-icones.mjs      # compara cada ícone SVG com a webfont de origem
+node tests/verify-orcamento.mjs   # peso por página; ATUALIZAR=1 regrava a linha de base
 node tests/visual-diff.mjs        # compara o build com o site original
 #   PAGES=/index.html VIEWPORTS=desktop ... limita a rodada dos dois acima
 ```
@@ -52,8 +55,8 @@ node tests/visual-diff.mjs        # compara o build com o site original
 > a conversão automática de caminho do MSYS. Use
 > `MSYS_NO_PATHCONV=1 PAGES=/index.html node …`, ou rode pelo PowerShell.
 
-`npm run verify` roda os três; `verify:comportamento`, `verify:geometria` e
-`verify:icones` rodam um de cada vez.
+`npm run verify` roda os quatro; `verify:comportamento`, `verify:geometria`,
+`verify:icones` e `verify:orcamento` rodam um de cada vez.
 
 ### Design system
 
@@ -107,6 +110,8 @@ src/components/primitivos/  Titulo, Texto, Botao, Icone, Imagem
 src/components/layout/    Secao, Container, Grade
 src/styles/               tokens, base e a folha do design system
 src/icones/glifos.ts      os 16 ícones em SVG — GERADO, não edite
+src/imagens.ts            resolve /images/… para o módulo otimizado
+src/assets/imagens/       o acervo (public/images/ só tem favicon e og-image)
 src/pages/                as 40 páginas + o catálogo /design
 src/scripts/site.js       comportamentos de interface
 public/                   css, imagens, fontes e robots.txt

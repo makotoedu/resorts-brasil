@@ -38,6 +38,23 @@ export default defineConfig({
 
   trailingSlash: 'never',
 
+  /*
+   * Pipeline de imagens (Etapa 2).
+   *
+   * `responsiveStyles` faz o Astro emitir as regras de `height: auto`,
+   * `max-width` e `object-fit` que as imagens responsivas precisam. Elas NAO
+   * vazam para o tema: o CSS entra pelo modulo virtual do `astro:assets`, que
+   * so e importado por quem usa o <Imagem> — o mesmo isolamento por ausencia
+   * que protege a folha do design system. E os seletores sao todos
+   * `:where([data-astro-image])`, atributo que nenhum markup do tema tem.
+   *
+   * `layout` fica indefinido de proposito: cada uso declara a escala, porque um
+   * padrao global aqui viraria a decisao que ninguem toma.
+   */
+  image: {
+    responsiveStyles: true,
+  },
+
   i18n: {
     locales: ['pt-br', 'en-us', 'es-es'],
     defaultLocale: 'pt-br',

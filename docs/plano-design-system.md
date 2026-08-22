@@ -343,7 +343,46 @@ que o componente. Catálogo escrito depois nunca é escrito.
 
 </details>
 
-### Etapa 2 — Pipeline de imagens
+### Etapa 2 — Pipeline de imagens ✅ CONCLUÍDA
+
+As 198 imagens saíram para `src/assets/imagens/` (`favicon.png` e `og-image.png`
+ficaram em `public/`), e o `<Imagem>` passou a entregar AVIF com reserva em WebP,
+`srcset`, `sizes`, dimensão sempre presente e `loading="lazy"` por padrão.
+
+**O acervo mudou de lugar sem que as 40 páginas do tema soubessem.**
+[`scripts/imagens.mjs`](scripts/imagens.mjs) lê o HTML gerado e copia para
+`dist/images/` só o que ainda é pedido pelo caminho antigo — mesmo mecanismo que
+o `purge-css.mjs` adotou na Etapa 1, e com o mesmo efeito: cada página migrada
+leva junto o que só ela mantinha.
+
+**Os 183 caminhos de `src/data/` não mudaram uma linha.**
+[`src/imagens.ts`](src/imagens.ts) resolve `/images/…` para o módulo otimizado,
+então `logo: '/images/associados/almenat.png'` continua sendo dado, e não
+`import`. O preço apareceu medindo: o Vite emite todo arquivo importado, usado ou
+não — 8,5 MB duplicados no `dist/`. A purga do que ninguém referencia entrou no
+mesmo script.
+
+**`quality: 80` fazia o AVIF sair 50% MAIOR que o WebP.** `quality` não é escala
+comum entre codecs. Medindo por fidelidade
+([`scripts/medir-imagens.mjs`](scripts/medir-imagens.mjs), pixelmatch contra o
+original), **50 é o piso**: abaixo aparece diferença perceptível, acima só
+aumenta o arquivo. O hero de 646 KB entrega 36 KB no mobile e 113 KB em 1280px.
+
+**O quarto portão duro passou a existir:**
+[`tests/verify-orcamento.mjs`](tests/verify-orcamento.mjs) grava o peso de cada
+página em cada viewport e reprova quando ela engorda mais de 5%. Catraca, não
+teto — teto único reprovaria a home e liberaria a 404 no mesmo número. Linha de
+base com o tema ainda em 40 páginas: `index` 4,4 MB, `ebook` 1,1 MB, `404`
+100 KB, `design` 78 KB.
+
+Os heros em `background-image` inline continuam nas páginas do tema; eles viram
+`<Imagem>` quando cada página migrar (Etapas 5–10), que é quando o
+`aspect-ratio` substitui o `height: 360px`. O componente já suporta os dois.
+
+Detalhes, e os três erros de método corrigidos no caminho, em
+[docs/decisoes.md](docs/decisoes.md), "Etapa 2".
+
+<details><summary>Especificação original</summary>
 
 O maior ganho de performance disponível e um componente de design system: toda
 landing page futura nasce otimizada sem ninguém lembrar.
@@ -359,6 +398,8 @@ landing page futura nasce otimizada sem ninguém lembrar.
   contêiner com `aspect-ratio`, no lugar do `height: 360px` fixo — a caixa passa
   a acompanhar a largura em vez de recortar mais em tela estreita.
 - `sharp` já está instalado.
+
+</details>
 
 ### Etapa 3 — Padrões
 

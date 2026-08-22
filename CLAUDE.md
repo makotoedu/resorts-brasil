@@ -20,8 +20,9 @@ O plano completo, com etapas e critérios, está em
 | 0 — fundação (Tailwind, tokens, base, catálogo, invariantes) | concluída |
 | 0.5 — rede de segurança de geometria | concluída |
 | 1 — primitivos e catálogo | concluída |
-| 2 — pipeline de imagens | **próxima** |
-| 3–11 | não iniciadas |
+| 2 — pipeline de imagens | concluída |
+| 3 — padrões (CartaoMembro, Hero, Abas…) | **próxima** |
+| 4–11 | não iniciadas |
 
 **Páginas migradas: 1 de 41** (só o catálogo `/design`). Confira sempre com
 `node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
@@ -168,11 +169,38 @@ carrosséis quando ausente, `data-autoplay` vale 7000, e `data-items` desdobra
 numa cadeia de tetos por faixa. Reproduzir só o caso explícito passa no build e
 erra no pixel.
 
+## Antes de mexer em imagem
+
+**O acervo vive em [`src/assets/imagens/`](src/assets/imagens/).** Em
+`public/images/` ficaram só `favicon.png` e `og-image.png`, que são
+referenciados de fora do site. Imagem nova entra no acervo, nunca em `public/`.
+
+**O caminho continua sendo `/images/…` em todo lugar** — em `src/data/`, no
+markup do tema e no `<Imagem src="…">`. Quem traduz caminho em módulo otimizado é
+[`src/imagens.ts`](src/imagens.ts), e é isso que mantém os 183 caminhos de
+`src/data/` como dado em vez de `import`. Caminho inexistente **aborta o build**.
+
+[`scripts/imagens.mjs`](scripts/imagens.mjs) faz duas coisas depois do build, e
+as duas dependem da mesma varredura: copia para `dist/images/` o que as páginas
+do tema ainda pedem, e apaga do `dist/_astro/` o que o `import.meta.glob` emitiu
+sem ninguém usar. Ele roda **depois** do `purge-css.mjs` — antes, ele lê no
+`style.css` oito referências a imagens que nunca existiram neste projeto e aborta
+por causa de regras que a purga apaga em seguida.
+
+Ao usar o [`<Imagem>`](src/components/primitivos/Imagem.astro):
+
+- **diga o `tamanhos` quando a imagem não ocupar a largura da janela.** Sem ele,
+  `escala="largura-total"` assume `100vw` e baixa o dobro do necessário;
+- **não mexa em `qualidade` sem medir.** O 50 padrão saiu de
+  `node scripts/medir-imagens.mjs`, que compara fidelidade contra o original.
+  `quality` não é escala comum entre codecs: no 80 que parecia óbvio, o AVIF
+  saía **50% maior** que o WebP.
+
 ## Antes de declarar qualquer coisa pronta
 
 ```bash
 npm run build      # tipos, purga, glifos, invariantes do design system
-npm run verify     # comportamento + geometria + ícones (precisa do preview no ar)
+npm run verify     # comportamento, geometria, ícones e orçamento (precisa do preview no ar)
 ```
 
 A suíte comportamental sozinha **não vê layout colapsar** — passou 14/14 durante
@@ -186,6 +214,12 @@ aparece ali primeiro, e já apareceu.
 **Ela lê o código de saída, e zero bloqueios é o critério.** A lista "PENDENTE"
 é dívida herdada do tema e não reprova; ela vira bloqueante sozinha conforme
 cada página migra.
+
+O quarto portão é o **orçamento de performance**, `tests/verify-orcamento.mjs`:
+uma catraca, não um teto. Cada página tem a própria linha de base em
+`tests/orcamento.json`, e o que reprova é ela engordar mais de 5%. Página que
+emagrece pede `ATUALIZAR=1 node tests/verify-orcamento.mjs` para regravar a base
+mais apertada — é assim que o peso não volta.
 
 O `node tests/visual-diff.mjs` continua existindo, mas **não é mais portão** — o
 pixel agora muda de propósito. Ele é changelog: cada divergência entra em

@@ -25,6 +25,14 @@ import Secao from '../components/layout/Secao.astro';
 import Container from '../components/layout/Container.astro';
 import Grade from '../components/layout/Grade.astro';
 import { glifos, nomesDeIcone } from '../icones/glifos';
+import { regioesAssociados } from '../data/associados';
+
+/**
+ * Quatro logos reais, tirados de `src/data/associados.ts` sem tocar no arquivo.
+ * A demonstração de <Imagem> vale mais com o dado que o site já tem: se o
+ * pipeline exigisse `import` de cada arquivo, esta linha seria impossível.
+ */
+const logosDemo = regioesAssociados[0].estados[0].resorts.slice(0, 4);
 
 const primitivas = [
   '--cor-navy-900',
@@ -379,18 +387,27 @@ const faixas = [
       <section>
         <h3>Imagem</h3>
         <p class="legenda">
-          <code>alt</code>, <code>largura</code> e <code>altura</code> são obrigatórios no tipo — o
-          <code>astro check</code> passa a cobrar os três. Hoje 1 dos 193 <code>&lt;img&gt;</code>
-          do site tem <code>loading</code>; aqui o padrão é <code>lazy</code> e
-          <code>prioridade</code> é a exceção declarada. A Etapa 2 troca o miolo por
-          <code>astro:assets</code> sem mexer na API.
+          AVIF e WebP com <em>fallback</em> no formato original, <code>srcset</code> e
+          <code>sizes</code> derivados da escala, <code>width</code>/<code>height</code> sempre
+          presentes e <code>loading="lazy"</code> por padrão — nada disso é decisão de quem usa.
+          Hoje 1 dos 193 <code>&lt;img&gt;</code> do site tem <code>loading</code>, e os heros
+          são de 2250×1500 exibidos a 360px.
+        </p>
+        <p class="legenda">
+          <code>src</code> aceita o caminho público antigo (<code>/images/…</code>), resolvido por
+          <code>src/imagens.ts</code>. É o que deixa os 183 caminhos de <code>src/data/</code>
+          intactos — dado não vira <code>import</code>. Caminho inexistente aborta o build em vez
+          de virar 404.
         </p>
         <div class="demo">
+          <p class="rotulo-demo">
+            <code>escala="largura-total"</code> <small>hero: ocupa a largura do pai</small>
+          </p>
           <Imagem
             src="/images/hero/pexels-1134176.jpg"
             alt=""
-            largura={2248}
-            altura={1500}
+            escala="largura-total"
+            tamanhos="(min-width: 63.75rem) 57rem, 100vw"
             proporcao="larga"
             ajuste="cobrir"
             arredondada
@@ -399,6 +416,29 @@ const faixas = [
             <code>proporcao="larga"</code> (3/2) com <code>ajuste="cobrir"</code>. No tema a altura
             do hero era <code>height: 360px</code> em <code>style=</code> inline, que recorta mais
             justamente onde há menos tela.
+          </p>
+          <p class="legenda">
+            <strong>O <code>tamanhos</code> não é opcional de fato.</strong> Sem ele,
+            <code>largura-total</code> assume <code>100vw</code> — e esta imagem vive dentro de um
+            catálogo de 60rem, então o navegador baixava a variante de 1440px para uma caixa de
+            862px. A regra: se a imagem não ocupa a largura da janela, diga a largura que ela ocupa.
+          </p>
+        </div>
+
+        <div class="demo">
+          <p class="rotulo-demo">
+            <code>escala="fixa"</code> <small>logo: sempre 180px, com a variante 2×</small>
+          </p>
+          <Grade colunas={4} espaco="sm">
+            {
+              logosDemo.map((logo) => (
+                <Imagem src={logo.logo} alt={logo.nome} escala="fixa" largura={180} ajuste="conter" />
+              ))
+            }
+          </Grade>
+          <p class="legenda">
+            Os quatro caminhos vêm de <code>src/data/associados.ts</code>, sem alteração nenhuma —
+            é a prova de que o pipeline não invade o dado.
           </p>
         </div>
       </section>

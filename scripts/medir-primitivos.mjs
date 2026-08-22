@@ -92,7 +92,7 @@ for (const vp of VIEWPORTS) {
     }
 
     const props = PROPS[alvo.grupo];
-    const medir = (estado) =>
+    const medir = () =>
       page.evaluate(
         ({ seletor, props, pseudo }) => {
           const el = document.querySelector(seletor);
@@ -107,7 +107,7 @@ for (const vp of VIEWPORTS) {
         { seletor: alvo.seletor, props, pseudo: alvo.pseudo }
       );
 
-    const repouso = await medir('repouso');
+    const repouso = await medir();
     if (!repouso) {
       console.error(`AUSENTE  ${vp.nome}  ${alvo.nome}  (${alvo.seletor} em ${alvo.pagina})`);
       continue;
@@ -118,7 +118,7 @@ for (const vp of VIEWPORTS) {
       await page.hover(alvo.seletor);
       // O tema anima; sem esperar, mede-se o meio da transicao.
       await page.waitForTimeout(400);
-      hover = await medir('hover');
+      hover = await medir();
     }
 
     registros.push({ viewport: vp.nome, grupo: alvo.grupo, nome: alvo.nome, pagina: alvo.pagina, repouso, hover });
