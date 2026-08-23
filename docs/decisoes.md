@@ -1514,3 +1514,234 @@ os viewports no relato — ela é só do mobile.
 reexporta em `astro/zod`. Continua funcionando, mas enche o `astro check` de
 avisos — e `z.string().url()` também saiu, em favor de `z.url()`. Os dois estão
 atualizados no schema.
+
+---
+
+# Design system — Etapa 5
+
+## A prop `legado` não podia funcionar, e nenhuma página tinha usado
+
+O plano previa um mecanismo simples para conviver com o tema: uma prop `legado`
+no `BaseLayout`, `true` por padrão, decidindo se a página recebe os `<link>` de
+`plugins.css` / `style.css` / `ajustes.css`. Estava lá desde a Etapa 0.
+
+**Nenhuma das 40 páginas passou essa prop, nunca — e não podia.** O mesmo
+`BaseLayout` renderiza `Header` e `Footer`, que são markup do tema estilizado
+pelo `style.css`. Passar `legado={false}` entregaria uma página sem cabeçalho,
+sem rodapé, sem faixa de cookies e sem botão de voltar ao topo. O catálogo
+`/design` contorna isso não usando o `BaseLayout`, e o comentário no topo dele
+sempre disse por quê — mas a consequência não tinha sido tirada: **não existia
+Etapa 5 antes de existir cromo**.
+
+Trocar a prop por um `if` no layout também não serve, e o motivo é o mesmo que
+derrubou a primeira tentativa da Etapa 0: **o Astro empacota CSS pelo grafo de
+módulos, não pelo que a página renderiza.** Bastaria o `BaseLayout` *importar*
+`Cabecalho.astro` — mesmo dentro de um ramo que nunca executa — para o `<style>`
+dele entrar no bundle das 40 páginas do tema, e a invariante de isolamento
+reprovaria o build. Com razão.
+
+Então a escolha subiu um nível: **dois layouts em vez de uma prop.**
+
+| arquivo | quem usa |
+|---|---|
+| [`Cabeca.astro`](../src/layouts/Cabeca.astro) | os dois — meta, canonical, hreflang, Open Graph, JSON-LD, fonte, consentimento |
+| [`BaseLayout.astro`](../src/layouts/BaseLayout.astro) | as 30 páginas que ainda não migraram |
+| [`LayoutSistema.astro`](../src/layouts/LayoutSistema.astro) | as 10 migradas |
+
+É mais forte do que a prop era: uma prop dá para esquecer, um layout errado
+entrega uma página sem cabeçalho na primeira vez que você olha. O `Cabeca.astro`
+**não tem `<style>`**, e isso é requisito e não acaso — um bloco de estilo ali
+voltaria a atravessar as duas camadas.
+
+## `cromo/` — a quarta camada, e por que ela não é nenhuma das três
+
+`Cabecalho`, `Rodape`, `FaixaCookies`, `IconesSociais` e `VoltarAoTopo` não
+couberam em `primitivos/` (não compõem nada), em `layout/` (não são ortogonais
+entre si) nem em `padroes/` (aparecem uma vez por página, sempre no mesmo lugar).
+São o que embrulha toda página, e ganharam diretório próprio.
+
+`verifica-sistema.mjs` passou a cobrir `cromo/` no mesmo portão que já cobria as
+outras três: componente que não aparece no `/design` reprova o build.
+
+**Os nomes de estado continuam sendo os do tema, e isso é decisão, não inércia.**
+`#mainMenu`, `#mainMenu-trigger`, `.p-dropdown`, `.dropdown-active`,
+`.toggle-active`, `.mainMenu-open`, `.modal-active`, `#scrollTop`,
+`.cookie-manage` — um [`site.js`](../src/scripts/site.js) só serve as duas
+camadas durante a migração. Dois scripts divergiriam na primeira correção, e a
+divergência apareceria em produção, num lado só.
+
+A exceção é o seletor de idioma: o gatilho virou `<button>` (ele abre um menu,
+não navega), e o `languageDropdown()` do `site.js` procura `.p-dropdown > a`. O
+comportamento novo entrou num `<script>` dentro do `Cabecalho.astro` — que o
+Astro empacota junto da página que usa o componente, então ele não chega nas 30
+páginas do tema.
+
+## O checador de headings lia o fonte, e parou de funcionar nos dois sentidos
+
+A checagem de hierarquia do `verifica-sistema.mjs` procurava `<h[1-6]` nos
+arquivos `.astro`. Na primeira página migrada ela quebrou duas vezes:
+
+- **falso positivo**: as duas primeiras páginas reprovaram por causa dos
+  **comentários**. O texto que documenta a correção cita `<h1 class="text-md h2">`
+  e `<h3>`, e um regex não distingue documentação de markup;
+- **falso negativo**, e este é o grave: página migrada não tem `<h1>` no fonte,
+  tem `<Titulo nivel={1}>`. A checagem não via heading nenhum e dava a página por
+  boa. Pior ainda: o cromo também emite headings — os títulos das listas do
+  rodapé —, então **o sumário real da página nunca esteve no arquivo dela**.
+
+A resposta é a mesma que este projeto já deu para o CSS, para as cores e para as
+imagens: **medir no artefato em vez de ler a intenção.** A checagem passou a ler
+o `dist/`, com comentários, `<script>` e `<style>` removidos antes. Sem `dist/`
+ela não roda — não há aproximação possível a partir do fonte, e uma aproximação
+que erra nos dois sentidos é pior do que a ausência.
+
+De quebra, `migrada` também passou a sair do artefato (carrega bundle do Astro e
+não carrega o CSS do tema) em vez da lista `MIGRADAS`. Uma página que alguém
+esqueça de acrescentar à lista deixa de escapar das checagens por isso.
+
+## O defeito que passou pelos quatro portões, e foi achado olhando
+
+Na página de contato em 390px, o `contato@resortsbrasil.com.br` saía da própria
+coluna e passava por cima do texto da coluna vizinha. **Nenhum portão viu.**
+
+Não há caixa zerada, não há grade colapsada, não há transbordo horizontal da
+página, e a checagem de irmãos sobrepostos compara **caixas** — as caixas
+estavam exatamente onde deviam; quem vazava era o conteúdo dentro delas. E-mail,
+URL e telefone são tokens sem ponto de quebra natural, e este site é feito deles.
+
+Duas coisas mudaram por causa disso:
+
+1. **`overflow-wrap: break-word` no `body`** ([base.css](../src/styles/base.css)).
+   `break-word` e não `anywhere`: o primeiro só quebra quando a palavra não
+   caberia de jeito nenhum.
+2. **A varredura de geometria aprendeu a ver isso** — checagem 6,
+   `scrollWidth > clientWidth` em elementos de texto. Confirmada por teste
+   negativo: replantando o estado anterior, ela acusa
+   `p — 208px de conteudo em 125px: "contato@resortsbrasil.com.br"`.
+
+A checagem nova reprovou o catálogo na primeira execução, e o falso positivo é
+instrutivo: um `<li>` de menu com submenu `position: absolute` "vaza" pelos 230px
+do submenu enquanto o item mede 118. O popup existe justamente para sair da
+caixa. Elemento fora do fluxo passou a ser exclusão explícita.
+
+## Dois valores medidos que só faziam sentido um por causa do outro
+
+A `<CaixaIcone>` carregava `margin-bottom: 3.125rem`, e os 50px são reais — no
+tema a caixa vivia dentro de uma `.row` de colunas coladas, e aquela margem era a
+única coisa separando uma linha de caixas da seguinte. **O valor estava certo e o
+lugar, errado.** Dentro de uma `<Grade>`, quem separa é o `gap`, e a margem passa
+a sobrar embaixo da última linha, por dentro do container.
+
+A página de contato ficou com 55px de respiro em cima e 95 embaixo. Nenhum portão
+viu — assimetria não é caixa zerada, nem transbordo, nem sobreposição.
+
+O `p-t-100` do tema naquela mesma caixa existia **para compensar essa margem**.
+Removida a margem, o recuo próprio da `<ChamadaAcao>` já fecha a caixa simétrica,
+46/34, os dois medidos. Dois valores medidos que se anulavam.
+
+A regra que fica: **espaço entre irmãos é do container, não do filho** — a mesma
+que a `<Secao>` e a `<Grade>` já seguiam.
+
+### E uma nota de cascata que vale guardar
+
+A tentativa de manter os 100px com `class="pt-secao-lg"` **não funciona**. O
+`<style>` de um componente Astro não está em `@layer`, e utilitária em
+`@layer utilities` perde para regra sem camada. A prop `class` de um padrão serve
+para acrescentar, não para sobrepor o desenho dele.
+
+## O piso de colunas depende do que há dentro da célula
+
+A `<Grade>` faz 4 e 6 colunas começarem em **duas** na menor largura, e a razão
+está escrita no componente: cartão de associado e logo de parceiro ficam pequenos
+demais empilhados um por linha. Vale para cartão e logo. Não vale para texto — na
+página de contato, aquele piso pôs e-mails de 28 caracteres em células de 150px.
+
+Entrou a prop `piso`, e ela mora numa consulta de **largura máxima** de propósito:
+`.colunas-4.piso-1` pesaria `0-2-0` e venceria as consultas de 30rem e 48rem, que
+pesam `0-1-0` — a grade ficaria presa numa coluna em qualquer largura. Escrita
+como `@container (max-width: 29.9375rem)`, as duas escadas não se encontram.
+
+## A suíte comportamental testava a camada nova achando que testava a antiga
+
+`verify-behaviors.mjs` usava `/historia.html` como página de referência para
+tudo: menu, seletor de idioma, cookies, glifos. Aquela página migrou nesta etapa.
+
+Enquanto as duas camadas convivem, **o que é cromo roda nas duas** — e não é
+zelo: os dois cabeçalhos são dirigidos pelo mesmo `site.js`, e essa é a aposta
+que sustenta a migração inteira. A suíte foi de 14 para **51 checagens**, com
+`PAGINA_TEMA` e `PAGINA_SISTEMA` no topo. `PAGINA_TEMA` some na Etapa 11.
+
+O teste de glifos mudou de página pelo motivo oposto: as três webfontes servem só
+as páginas não migradas, e rodá-lo numa migrada mediria tofu contra tofu e
+passaria sempre.
+
+## O contraste do ouro, e o que não tem solução bonita
+
+O item destacado do menu era `#d39e00` sobre branco (**2,42:1**) e
+`rgb(211,180,4)` sobre o azul da topbar (**2,84:1**) — dois `style=` inline, a 11
+pontos um do outro, e os dois reprovando o critério 1.4.3 da WCAG, que pede 4,5:1.
+
+**Nenhum ouro que ainda pareça ouro passa sobre branco.** A decisão foi por faixa:
+no menu, o âmbar escurecido até `#8f6a00` (**4,96:1** medido); na topbar, o item
+deixa de ser dourado e fica branco como o irmão ao lado (**5,80:1**),
+distinguido por peso.
+
+Escurecer um ouro o aproxima do marrom, e isso é uma perda real. A alternativa —
+transformar "Fale conosco" num botão de fundo âmbar com texto navy, usando o par
+`--color-acento-ambar` que já existe e mede 9,1:1 — preserva melhor a intenção de
+marca e muda mais o desenho do menu. Ficou registrada em
+[deltas-visuais.md](deltas-visuais.md) em vez de tomada sozinha.
+
+## Onze cores e duas sombras que só existiam medidas
+
+`scripts/medir-cromo.mjs` é o quarto da família, e o primeiro que precisou medir
+**estado aberto**: menu mobile, submenu de desktop e seletor de idioma não têm
+geometria em repouso, e a faixa de cookies nasce `hidden`. Sem `preparo` no
+navegador, os três medem zero.
+
+O que ele achou, e que nenhuma leitura de CSS daria:
+
+- as **quatro cores de rede social** do rodapé são cores de marca de terceiros
+  (`#5d82d1`, `#e53d00`, `#238cc8`, `#ef4e41`), e são as únicas do sistema que não
+  respondem a uma decisão nossa — viraram primitivas próprias, sem consolidar;
+- o fundo do rodapé é `rgb(249,249,250)` e o `.background-grey` é
+  `rgb(247,249,252)`: **dois pontos de distância, ruído**, consolidados. A faixa
+  de copyright é `rgb(241,241,243)` — **oito pontos**, e existe justamente para se
+  distinguir do rodapé acima. Ganhou token próprio;
+- as duas sombras dos menus suspensos. São tokens também por um motivo mecânico:
+  cor de sombra se escreve em `rgb()`, e cor literal dentro de componente reprova
+  o build;
+- o cabeçalho **não tem fundo, borda nem sombra** — é transparente sobre o que
+  vier abaixo. Contraria a expectativa, e as páginas com hero contam com isso.
+
+E uma variante do `<Botao>` que faltava: os três botões da faixa de cookies são o
+`.btn-light` **cheio**. A Etapa 1 leu `.btn-light` no markup, achou os 17 usos com
+`.btn-outline` junto e concluiu que a clara era sempre vazada. São 40 páginas de
+`clara-solida`, e o repouso dela é exatamente o hover da `clara` — no tema, as
+duas são a mesma regra vista de dois lados.
+
+## O título em espanhol que duas páginas escrevem diferente
+
+A faixa dos 20 anos em `/historia` destaca a mesma publicação que a página de
+publicações lista. A capa e o PDF passaram a vir da coleção — são fatos que não
+podem divergir, e estavam escritos em seis lugares.
+
+**O título não veio junto**, e de propósito: a coleção traz, em espanhol,
+`Memorias, sustentabilidad Y una marida hacia el futuro` — "marida" no lugar de
+"mirada", com um `Y` maiúsculo no meio da frase. Está preservado lá por decisão
+da Etapa 4 (corrigir texto publicado é de quem edita o site). A página de
+história sempre exibiu a forma correta, e passar a usar o campo da coleção
+**introduziria** o erro numa página que não o tem.
+
+As duas só podem ser conciliadas na Etapa 7, que é quando `/publicacoes` migra.
+Até lá o título daquela faixa é copy da página de história e vive no `ui.ts`.
+
+## O `bienio` já existia
+
+Ao separar "Biênio" (traduz, vai para o `ui.ts`) de "2026-2027" (não traduz, fica
+em `src/data/diretoria.ts`), a constante foi acrescentada ao fim do arquivo — onde
+ela **já estava**, desde antes. O `astro check` pegou na hora.
+
+Nota de método: o arquivo tem 130 linhas e a leitura tinha parado na 60ª, o
+suficiente para ver o `cargoEm` e não o resto. Ler o trecho que interessa é
+barato; assumir que o resto não existe, não.

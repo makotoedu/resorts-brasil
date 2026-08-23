@@ -22,18 +22,26 @@ src/
     diretoria.ts          diretoria e conselho consultivo
     contato.ts            endereço, e-mails e telefones
     cookies.ts            os cookies que o site grava, levantados por medição
-  layouts/BaseLayout.astro  <head>, consentimento, header, <main>, rodapé, scripts
+  layouts/
+    Cabeca.astro          o <head> das duas camadas: meta, hreflang, og, JSON-LD,
+                          fonte e consentimento. Sem <style>, e isso é requisito
+    BaseLayout.astro      o layout do TEMA — <body>, header, <main>, rodapé
+    LayoutSistema.astro   o layout do DESIGN SYSTEM; é quem importa global.css
   components/
-    Header.astro          topbar, logo, seletor de idioma, navegação
-    Footer.astro          widgets do rodapé, copyright e revogar cookies
-    SocialIcons.astro     os 4 links de rede social, com nome acessível
+    Header.astro          (tema) topbar, logo, seletor de idioma, navegação
+    Footer.astro          (tema) widgets do rodapé, copyright e revogar cookies
+    SocialIcons.astro     (tema) os 4 links de rede social, com nome acessível
     AssociadosTabs.astro  as abas por região da página de associados
     CarrosselAssociados.astro  o carrossel de logos da home
     GradeLogos.astro      uma faixa de logos (mantenedores/parceiros/descontos)
-    GradeMembros.astro    a grade de fotos da diretoria e do conselho
     SecaoCookies.astro    a seção de cookies da política de privacidade
     YouTube.astro         vídeo com fachada de clique-para-carregar
-  pages/                  40 páginas — PT na raiz, en-us/ e es-es/
+    primitivos/           Titulo, Texto, Botao, Icone, Imagem
+    layout/               Secao, Container, Grade
+    padroes/              CartaoMembro, ChamadaAcao, CaixaIcone, Hero, Abas…
+    cromo/                Cabecalho, Rodape, FaixaCookies, IconesSociais,
+                          VoltarAoTopo — o que embrulha toda página migrada
+  pages/                  40 páginas + o catálogo /design
   scripts/site.js         os comportamentos de interface
 
 public/                   servido como está, na raiz do site
@@ -96,7 +104,7 @@ concentra:
 - **`meta`** — `title` e `description` de cada página nos 3 idiomas. Antes eram
   props escritas em cada arquivo, e as 40 páginas acabaram compartilhando **três**
   descriptions genéricas, uma por idioma. Lado a lado aqui, a repetição fica
-  visível. O `BaseLayout` lê daqui quando a página passa `route`; a prop
+  visível. O `Cabeca.astro` lê daqui quando a página passa `route`; a prop
   continua existindo para a 404, que não tem rota.
 - **`ui`** — as strings de topbar, navegação, rodapé, aviso de cookies, rótulos
   de região e os nomes acessíveis (menu, seletor de idioma, voltar ao topo).
@@ -118,9 +126,14 @@ com os três slugs e os rótulos em `ui`. Só depois crie os arquivos `.astro`.
 
 ## As props do layout, e por que existem
 
-Um layout único cobre as 40 páginas, mas o site original não era uniforme. Em vez
-de "corrigir" essas diferenças — o que mudaria a aparência de páginas que estão
-no ar —, o [`BaseLayout`](../src/layouts/BaseLayout.astro) as reproduz por prop:
+As 30 páginas que ainda não migraram compartilham um layout, mas o site original
+não era uniforme. Em vez de "corrigir" essas diferenças — o que mudaria a
+aparência de páginas que estão no ar —, o
+[`BaseLayout`](../src/layouts/BaseLayout.astro) as reproduz por prop.
+
+O [`LayoutSistema`](../src/layouts/LayoutSistema.astro) reproduz **menos**: o que
+era acidente do conteúdo original some na migração (o `bodyClass`, que existia em
+33 páginas e faltava em 7), e o que é decisão continua (o rodapé mínimo da 404):
 
 | prop | páginas | o que reproduz |
 |---|---|---|
@@ -156,7 +169,8 @@ No desenvolvimento, o `astro preview` aceita as duas formas — `/historia` e
 
 ## CSS
 
-Três folhas, carregadas nesta ordem pelo [`BaseLayout`](../src/layouts/BaseLayout.astro):
+Três folhas, carregadas nesta ordem pelo [`BaseLayout`](../src/layouts/BaseLayout.astro)
+— e **só por ele**, ou seja, só nas páginas que ainda não migraram:
 
 1. `plugins.css` — Bootstrap, FontAwesome e animate.css do tema
 2. `style.css` — o tema Inspiro
@@ -205,7 +219,7 @@ cookies, fachada dos vídeos e voltar ao topo.
 
 A faixa de cookies aqui é **só a interface**. Quem grava o cookie, fala Consent
 Mode e decide carregar (ou não) o GTM é o bloco inline do `<head>` do
-`BaseLayout`, que expõe `window.rbConsent` — aquilo precisa rodar antes de
+`Cabeca.astro`, que expõe `window.rbConsent` — aquilo precisa rodar antes de
 qualquer rede, e este arquivo só roda no `DOMContentLoaded`.
 
 O módulo aplica **as mesmas classes de estado que o tema aplicava**
@@ -226,7 +240,7 @@ build.
 - **en-us** em `/en-us/`: `/en-us/history`
 - **es-es** em `/es-es/`: `/es-es/historia`
 
-O `BaseLayout` recebe `lang` e `route` e monta sozinho o `canonical`, as três
+O `Cabeca.astro` recebe `lang` e `route` e monta sozinho o `canonical`, as três
 tags `hreflang` mais `x-default`, e as tags `og:`/`twitter:`. Uma página sem
 tradução (a 404) omite `route` e não gera `hreflang`.
 

@@ -63,6 +63,26 @@ export async function publicacoesEm(lang: Locale): Promise<PublicacaoResolvida[]
   }));
 }
 
+/**
+ * Uma publicacao pelo id.
+ *
+ * Existe por causa da pagina de historia, que destaca UMA publicacao — a dos 20
+ * anos — fora da lista. Ate a Etapa 5 aquele bloco repetia a capa e a URL do
+ * PDF no markup dos tres idiomas, ao lado da mesma capa e da mesma URL na
+ * pagina de publicacoes: seis lugares para o mesmo link do Drive.
+ *
+ * O `throw` nao e zelo: `find` devolveria `undefined` e a pagina sairia com um
+ * `<a href="undefined">` e uma capa vazia. Renomear o id no YAML passa a
+ * derrubar o build, que e onde esse erro custa menos.
+ */
+export async function publicacaoEm(id: string, lang: Locale): Promise<PublicacaoResolvida> {
+  const encontrada = (await publicacoesEm(lang)).find((p) => p.id === id);
+  if (!encontrada) {
+    throw new Error(`publicacaoEm: nao existe publicacao com id "${id}" em src/content/publicacoes.yaml.`);
+  }
+  return encontrada;
+}
+
 export async function estudosEm(lang: Locale): Promise<EstudoResolvido[]> {
   const entradas = await getCollection('estudos');
   return entradas.sort(porOrdem).map((e: CollectionEntry<'estudos'>) => ({

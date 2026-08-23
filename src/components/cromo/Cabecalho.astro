@@ -1,0 +1,753 @@
+---
+import Container from '../layout/Container.astro';
+import Imagem from '../primitivos/Imagem.astro';
+import Icone from '../primitivos/Icone.astro';
+import IconesSociais from './IconesSociais.astro';
+import { ui, url, localeBadge, locales, htmlLang, type Locale, type RouteKey } from '../../i18n/ui';
+
+/**
+ * Cabecalho — topbar, logotipo, navegacao e seletor de idioma.
+ *
+ * POR QUE ELE EXISTE, e por que so agora: o catalogo /design nao usa o
+ * BaseLayout justamente porque Header e Footer ainda eram do tema. Qualquer
+ * pagina de conteudo usa. A primeira delas a receber `legado={false}` ficaria
+ * sem estilo nenhum de cabecalho e rodape — nao havia etapa de pagina possivel
+ * antes desta. Ver docs/decisoes.md, "Etapa 5".
+ *
+ * OS NOMES DE ESTADO SAO OS DO TEMA, DE PROPOSITO. `#mainMenu`,
+ * `#mainMenu-trigger`, `.p-dropdown`, `.dropdown-active`, `.toggle-active`,
+ * `.mainMenu-open` — o src/scripts/site.js e um so e serve as duas camadas
+ * durante a migracao. Trocar um nome aqui quebraria o menu das 40 paginas do
+ * tema, ou obrigaria a manter dois scripts. E a convencao que o CLAUDE.md ja
+ * registrava; aqui ela passa a valer nos dois sentidos.
+ *
+ * MEDIDO (scripts/medir-cromo.mjs):
+ *
+ *   topbar     41px de altura (40 + 1px de borda), fundo azul-500, link 12px/500
+ *   cabecalho  80px, FUNDO TRANSPARENTE, sem borda e sem sombra
+ *   logotipo   240x80 no desktop, 222x74 no mobile — 3:1, e o arquivo e 300x100
+ *   menu       13px/600, 0.6px de espacamento, caixa alta, recuo 10px/12px
+ *   submenu    branco, 230px, sombra 0 33px 32px rgba(0,0,0,.1), link 12px/500
+ *   mobile     link de 14px/600 com 45px de altura, menu de altura de janela
+ *
+ * TRES DESVIOS DELIBERADOS, todos em docs/deltas-visuais.md:
+ *
+ *   1. Os floats viram flexbox. O tema empilhava `float: left` no logotipo e
+ *      dois `float: right` cuja ordem visual depende da ordem do DOM ao
+ *      contrario — nada disso sobrevive a uma leitura.
+ *   2. O item destacado deixa de ser dourado sobre azul. `rgb(211,180,4)` sobre
+ *      o azul-500 da 2,84:1; branco da 5,80:1. No menu, sobre branco, o ouro
+ *      escurece de #d39e00 (2,42:1) para o ambar-800 (4,96:1). Ver a nota de
+ *      `--color-navegacao-destaque` no tokens.css.
+ *   3. O distintivo de idioma (BR/EN/ES) era um `<span>` de 9px posicionado a
+ *      `top: -10px` — um expoente. Aqui ele fica na linha do simbolo.
+ */
+interface Props {
+  lang: Locale;
+  /**
+   * Rota da pagina atual, para o seletor de idioma levar a traducao DESTA
+   * pagina. Ausente so na 404, que nao tem traducao — nesse caso cai na home.
+   */
+  route?: RouteKey;
+  /** As tres paginas do ebook nunca tiveram topbar. */
+  semTopbar?: boolean;
+}
+
+const { lang, route, semTopbar = false } = Astro.props;
+const t = ui[lang];
+
+// Resolvido aqui e nao no template: uma anotacao de tipo com generics dentro do
+// markup seria lida como tag JSX pelo parser do Astro.
+const outrosIdiomas = locales
+  .filter((l) => l !== lang)
+  .map((l) => ({
+    label: (t.langOther as Record<string, string>)[l],
+    href: url(route ?? 'home', l),
+    hreflang: htmlLang[l],
+  }));
+
+/**
+ * O menu, como dado. No tema eram 14 linhas de markup com tres `<li class=
+ * "dropdown">` escritos a mao — e cada submenu repetia a mesma estrutura de
+ * `<ul class="dropdown-menu">`. Aqui a forma sai do dado.
+ */
+const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotulo: string; href: string }[] }[] = [
+  { rotulo: t.navHome, href: url('home', lang) },
+  {
+    rotulo: t.navAbout,
+    filhos: [
+      { rotulo: t.navResortsBrasil, href: url('resortsBrasil', lang) },
+      { rotulo: t.navBoard, href: url('board', lang) },
+      { rotulo: t.navHistory, href: url('history', lang) },
+    ],
+  },
+  {
+    rotulo: t.navAssociates,
+    filhos: [
+      { rotulo: t.navAssociatesList, href: url('associates', lang) },
+      { rotulo: t.navJoinUs, href: url('joinUs', lang) },
+    ],
+  },
+  {
+    rotulo: t.navInformation,
+    filhos: [
+      { rotulo: t.navPublications, href: url('publications', lang) },
+      { rotulo: t.navStatistics, href: url('statistics', lang) },
+    ],
+  },
+  { rotulo: t.navSupport, href: url('support', lang) },
+  { rotulo: t.navContact, href: url('contact', lang), destaque: true },
+];
+---
+
+{
+  !semTopbar && (
+    <div id="topbar" class="topbar">
+      <Container>
+        <div class="topbar-barra">
+          <ul class="topbar-menu">
+            <li>
+              <a href={url('ebook', lang)}>{t.topbarEbook}</a>
+            </li>
+            <li>
+              {/* Branco e semibold no lugar do dourado — ver o desvio 2 acima. */}
+              <a class="destaque" href={url('joinUs', lang)}>
+                {t.topbarJoin}
+              </a>
+            </li>
+          </ul>
+          <IconesSociais lang={lang} superficie="topbar" />
+        </div>
+      </Container>
+    </div>
+  )
+}
+
+<header id="header" class="cabecalho">
+  <Container>
+    <div class="barra">
+      <div id="logo" class="logo">
+        <a href={url('home', lang)}>
+          <Imagem
+            src="/images/logo-25anos.png"
+            alt="Resorts Brasil"
+            largura={240}
+            altura={80}
+            prioridade
+            ajuste="conter"
+          />
+        </a>
+      </div>
+
+      <!--
+        `#mainMenu` e o gancho que o site.js anima abrindo o menu mobile: ele
+        escreve `min-height` inline aqui. Por isso o elemento existe nas duas
+        faixas e e o CSS que decide se ele e uma barra ou um painel.
+      -->
+      <div id="mainMenu" class="menu">
+        <nav aria-label={t.navLabel}>
+          <ul class="menu-nivel1">
+            {
+              menu.map((item) =>
+                item.filhos ? (
+                  <li class="dropdown">
+                    {/*
+                      `<button>` e nao `<a href="#">`: o item so abre um submenu,
+                      nao navega. O `href="#"` do tema sujava o historico e
+                      punha um destino falso na barra de status.
+                    */}
+                    <button type="button" aria-haspopup="true" aria-expanded="false">
+                      {item.rotulo}
+                      <Icone nome="chevron-right" tamanho="sm" class="seta" />
+                    </button>
+                    <ul class="dropdown-menu">
+                      {item.filhos.map((filho) => (
+                        <li>
+                          <a href={filho.href}>{filho.rotulo}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ) : (
+                  <li>
+                    <a href={item.href} class:list={[item.destaque && 'destaque']}>
+                      {item.rotulo}
+                    </a>
+                  </li>
+                )
+              )
+            }
+          </ul>
+        </nav>
+      </div>
+
+      <div class="extras">
+        <div class="p-dropdown">
+          <!--
+            `<button>` pelo mesmo motivo do submenu. O site.js procura
+            `:scope > a`, entao ele nao alcanca este gatilho — o comportamento
+            de clique vem do <script> no fim deste arquivo, que so existe onde
+            este componente existe.
+          -->
+          <button type="button" aria-label={t.chooseLanguage} aria-haspopup="true" aria-expanded="false">
+            <Icone nome="globe" tamanho="sm" />
+            <span class="distintivo">{localeBadge[lang]}</span>
+          </button>
+          <ul class="p-dropdown-content">
+            {
+              outrosIdiomas.map((outro) => (
+                <li>
+                  <a href={outro.href} hreflang={outro.hreflang}>
+                    {outro.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <!--
+        O gatilho do menu mobile. Continua sendo `<a role="button" tabindex="0">`
+        porque e assim que o site.js o encontra e trata Enter/Espaco — a mesma
+        decisao registrada no Header do tema. Trocar por <button> aqui exigiria
+        um segundo caminho no script durante a migracao.
+      -->
+      <div id="mainMenu-trigger" class="gatilho">
+        <a
+          class="lines-button x"
+          role="button"
+          tabindex="0"
+          aria-label={t.openMenu}
+          aria-controls="mainMenu"
+          aria-expanded="false"><span class="lines"></span></a>
+      </div>
+    </div>
+  </Container>
+</header>
+
+<script>
+  /*
+   * O seletor de idioma, so onde este componente existe.
+   *
+   * O `languageDropdown()` do site.js procura `.p-dropdown > a`, e aqui o
+   * gatilho e um `<button>` — a troca de tag foi deliberada (o item nao navega).
+   * Este bloco cobre o botao sem tocar no script compartilhado, que continua
+   * servindo as paginas do tema exatamente como antes.
+   *
+   * Astro empacota este <script> junto da pagina que usa o componente, entao ele
+   * nao chega nas 40 paginas nao migradas.
+   */
+  const sincronizar = (drop: Element) => {
+    const gatilho = drop.querySelector(':scope > button');
+    gatilho?.setAttribute('aria-expanded', String(drop.classList.contains('dropdown-active')));
+  };
+
+  document.querySelectorAll('.p-dropdown').forEach((drop) => {
+    const gatilho = drop.querySelector(':scope > button');
+    if (!gatilho) return;
+
+    gatilho.addEventListener('click', () => {
+      drop.classList.toggle('dropdown-active');
+      sincronizar(drop);
+    });
+
+    /* Esc fecha e devolve o foco ao gatilho, como qualquer menu. */
+    drop.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key !== 'Escape' || !drop.classList.contains('dropdown-active')) return;
+      drop.classList.remove('dropdown-active');
+      sincronizar(drop);
+      (gatilho as HTMLElement).focus();
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.p-dropdown.dropdown-active').forEach((drop) => {
+      if (drop.contains(e.target as Node)) return;
+      drop.classList.remove('dropdown-active');
+      sincronizar(drop);
+    });
+  });
+
+  /*
+   * O submenu da navegacao no MOBILE.
+   *
+   * No desktop ele abre por :hover e :focus-within, em CSS. Abaixo de 992px nao
+   * ha hover, e o tema resolvia isso deixando todos os submenus abertos o tempo
+   * todo — o menu mobile nascia com os 11 itens visiveis de uma vez. Aqui cada
+   * um abre no toque, e o `aria-expanded` diz a verdade nas duas faixas.
+   */
+  document.querySelectorAll('#mainMenu li.dropdown > button').forEach((gatilho) => {
+    gatilho.addEventListener('click', () => {
+      const li = gatilho.parentElement!;
+      const aberto = li.classList.toggle('submenu-aberto');
+      gatilho.setAttribute('aria-expanded', String(aberto));
+    });
+  });
+</script>
+
+<style>
+  /*
+   * A FAIXA DO CROMO E 992px, e ela e escrita a mao aqui.
+   *
+   * Nao e nenhuma das cinco faixas do site (xs/sm/md/lg/xl): e a faixa do
+   * BOOTSTRAP que o tema usa para trocar o menu de barra por painel — o mesmo
+   * 992 que o `site.js` compara em `window.innerWidth >= 992` ao fechar o menu
+   * no redimensionamento. Medido: a topbar desaparece e o gatilho aparece ali.
+   *
+   * Ela nao pode virar token porque media query nao aceita `var()`. Esta escrita
+   * como `62rem` nos tres arquivos do cromo, sempre com esta nota. Trocar por uma
+   * das faixas do site descasaria o CSS do script — que e exatamente o erro que
+   * este projeto ja pagou com 22 comparacoes de tablet reprovadas.
+   */
+
+  /* ---------------- topbar ---------------- */
+
+  .topbar {
+    display: none;
+    background-color: var(--color-acao-primaria);
+    border-bottom: 1px solid var(--color-borda-inversa);
+    color: var(--color-texto-inverso);
+  }
+
+  @media (min-width: 62rem) {
+    .topbar {
+      display: block;
+    }
+  }
+
+  .topbar-barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* MEDIDO: 40px de altura util, mais o 1px da borda = os 41 do tema. */
+    min-height: 2.5rem;
+  }
+
+  .topbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .topbar-menu a {
+    /* MEDIDO: 12px / 500, branco. */
+    color: var(--color-texto-inverso);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    line-height: 2.5rem;
+    text-decoration: none;
+    transition: opacity 0.3s;
+  }
+
+  /* O destaque que era dourado. Ver o desvio 2 no comentario do topo. */
+  .topbar-menu .destaque {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .topbar-menu a:hover {
+    opacity: 0.75;
+  }
+
+  /* ---------------- cabecalho ---------------- */
+
+  /*
+   * MEDIDO, e vale a pena registrar porque contraria a expectativa: o cabecalho
+   * NAO tem fundo, borda nem sombra. Ele e transparente sobre o que vier abaixo,
+   * e as paginas com hero contam com isso.
+   */
+  .cabecalho {
+    position: relative;
+    background-color: transparent;
+    z-index: 199;
+  }
+
+  .barra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    /* MEDIDO: 80px. `min-height` e nao `height` porque abaixo de 992px o menu
+       aberto entra como segunda linha desta mesma caixa e ela precisa crescer. */
+    min-height: 5rem;
+  }
+
+  .logo {
+    order: 1;
+    flex: none;
+    line-height: 0; /* sem isto o `inline` da imagem deixa um vao sob o logotipo */
+  }
+
+  .logo :global(img) {
+    /* MEDIDO: 240x80 no desktop. O arquivo e 300x100 — a mesma proporcao 3:1. */
+    width: auto;
+    height: 3.5rem;
+  }
+
+  @media (min-width: 62rem) {
+    .logo :global(img) {
+      height: 5rem;
+    }
+  }
+
+  .extras {
+    order: 2;
+    margin-left: auto;
+  }
+
+  @media (min-width: 62rem) {
+    .extras {
+      order: 3;
+      margin-left: 0;
+    }
+  }
+
+  /* ---------------- navegacao ---------------- */
+
+  .menu {
+    /*
+     * Abaixo de 992px o menu e um painel que ocupa a segunda linha da barra, e
+     * quem o abre e o site.js escrevendo `min-height` inline.
+     *
+     * `height: 0` E `overflow: hidden` juntos, e o par nao e redundante: o
+     * script escreve `min-height`, nunca `height`. Com altura zero declarada
+     * aqui, a altura usada e o maior dos dois — 0 fechado, a janela inteira
+     * aberto —, e a transicao de `min-height` que ele configura tem o que
+     * animar. So `overflow: hidden` deixaria o menu aberto o tempo todo, porque
+     * altura automatica cresce com o conteudo.
+     */
+    order: 4;
+    flex-basis: 100%;
+    height: 0;
+    overflow: hidden;
+  }
+
+  @media (min-width: 62rem) {
+    .menu {
+      order: 2;
+      flex: 1;
+      flex-basis: auto;
+      height: auto;
+      overflow: visible;
+    }
+  }
+
+  .menu-nivel1 {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 62rem) {
+    .menu-nivel1 {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+  }
+
+  /*
+   * O item de primeiro nivel. `<a>` e `<button>` compartilham tudo: o botao so
+   * existe onde o item abre submenu em vez de navegar, e visualmente eles tem de
+   * ser indistinguiveis.
+   */
+  .menu-nivel1 > li > a,
+  .menu-nivel1 > li > button {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    width: 100%;
+    background: none;
+    border: 0;
+    /* MEDIDO no mobile: 12px em cima e embaixo, 45px de altura de linha. */
+    padding: 0.75rem 0;
+    color: var(--color-texto);
+    font-family: inherit;
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.6px;
+    line-height: 1.5;
+    text-align: left;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+
+  @media (min-width: 62rem) {
+    .menu-nivel1 > li > a,
+    .menu-nivel1 > li > button {
+      /* MEDIDO no desktop: 13px, recuo 10px/12px. */
+      width: auto;
+      padding: 0.625rem 0.75rem;
+      font-size: var(--text-sm);
+    }
+  }
+
+  .menu-nivel1 > li > a:hover,
+  .menu-nivel1 > li > button:hover {
+    color: var(--color-acao-primaria);
+  }
+
+  /* O ouro escurecido. Ver a nota de --color-navegacao-destaque no tokens.css. */
+  .menu-nivel1 > li > a.destaque {
+    color: var(--color-navegacao-destaque);
+  }
+
+  /*
+   * A seta do submenu aponta para baixo — o glifo do sistema e o chevron para a
+   * direita, girado, que e como o proprio tema desenhava o dele.
+   *
+   * `:global` porque o `<svg>` nasce dentro do <Icone>, e estilo com escopo so
+   * alcanca elemento do proprio template. Mesmo motivo do `.foto` no
+   * CartaoMembro.
+   */
+  .menu-nivel1 :global(.seta) {
+    width: 0.625rem;
+    height: 0.625rem;
+    transform: rotate(90deg);
+    transition: transform 0.3s;
+  }
+
+  /* ---------------- submenu ---------------- */
+
+  /* Abaixo de 992px o submenu abre no toque, e fechado ele nao existe: o tema
+     deixava os 11 itens visiveis de uma vez. */
+  .dropdown-menu {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 0.75rem;
+  }
+
+  .dropdown.submenu-aberto > .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown.submenu-aberto > button :global(.seta) {
+    transform: rotate(-90deg);
+  }
+
+  @media (min-width: 62rem) {
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      /* MEDIDO: 230px de largura, recuo de 10px, raio e sombra do tema. */
+      min-width: 14.375rem;
+      padding: 0.625rem;
+      background-color: var(--color-superficie);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-menu);
+      /*
+       * `visibility` junto de `opacity`, e nao `display`: so assim a abertura
+       * pode ser animada, e so assim o submenu fechado sai da ordem de
+       * tabulacao. `display: none` faria as duas coisas de uma vez e sem
+       * transicao.
+       */
+      display: block;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-0.375rem);
+      transition:
+        opacity 0.25s,
+        transform 0.25s,
+        visibility 0.25s;
+    }
+
+    /*
+     * `:focus-within` ao lado de `:hover` desde a primeira linha. No tema o
+     * submenu abria so no hover, e quem navega por teclado ficava sem os seis
+     * destinos que so existem la dentro — a correcao que o ajustes.css teve de
+     * fazer depois, aqui ja nasce feita.
+     */
+    .dropdown:hover > .dropdown-menu,
+    .dropdown:focus-within > .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+  }
+
+  .dropdown-menu a {
+    display: block;
+    /* MEDIDO: 12px / 500, recuo 12px/18px, cor #444 — consolidada no cinza de
+       paragrafo do sistema, a mesma consolidacao que o <Botao> fez com o
+       #4c5667 na Etapa 1. */
+    padding: 0.75rem 1.125rem;
+    color: var(--color-texto-paragrafo);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    text-transform: none;
+    transition: color 0.3s;
+  }
+
+  .dropdown-menu a:hover {
+    color: var(--color-acao-primaria);
+  }
+
+  /* ---------------- seletor de idioma ---------------- */
+
+  .p-dropdown {
+    position: relative;
+  }
+
+  .p-dropdown > button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    background: none;
+    border: 0;
+    color: var(--color-texto);
+    font-family: inherit;
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+
+  .p-dropdown > button:hover {
+    color: var(--color-acao-primaria);
+  }
+
+  .distintivo {
+    letter-spacing: 0.5px;
+  }
+
+  .p-dropdown-content {
+    position: absolute;
+    top: 100%;
+    /* Ancorado a direita: no tema ele era centralizado por um `left` negativo
+       calculado, e transbordava a janela no mobile. */
+    right: 0;
+    z-index: 5;
+    /* MEDIDO: 147px, recuo 14px/20px, sombra 0 14px 20px rgba(0,0,0,.1). */
+    min-width: 9.1875rem;
+    padding: 0.875rem 1.25rem;
+    background-color: var(--color-superficie);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-suspenso);
+    list-style: none;
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition:
+      opacity 0.25s,
+      transform 0.25s,
+      visibility 0.25s;
+  }
+
+  .p-dropdown.dropdown-active > .p-dropdown-content,
+  .p-dropdown:focus-within > .p-dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .p-dropdown-content a {
+    display: block;
+    /* MEDIDO: 13px, recuo 2px/8px, entrelinha 26px. */
+    padding: 0.125rem 0.5rem;
+    color: var(--color-texto);
+    font-size: var(--text-sm);
+    line-height: 2;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .p-dropdown-content a:hover {
+    color: var(--color-acao-primaria);
+  }
+
+  /* ---------------- gatilho do menu mobile ---------------- */
+
+  .gatilho {
+    order: 3;
+    display: flex;
+    align-items: center;
+  }
+
+  @media (min-width: 62rem) {
+    .gatilho {
+      display: none;
+    }
+  }
+
+  /* MEDIDO: area de 20x80 com tres barras de 20x2. A area de toque util fica
+     abaixo dos 44px recomendados no tema; o recuo lateral daqui a completa sem
+     mover a barra. */
+  .lines-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    cursor: pointer;
+  }
+
+  .lines,
+  .lines::before,
+  .lines::after {
+    display: block;
+    width: 1.25rem;
+    height: 2px;
+    background-color: var(--color-texto);
+    border-radius: var(--radius-sm);
+    transition:
+      transform 0.3s,
+      opacity 0.3s;
+  }
+
+  .lines {
+    position: relative;
+  }
+
+  .lines::before,
+  .lines::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .lines::before {
+    top: -0.375rem;
+  }
+
+  .lines::after {
+    top: 0.375rem;
+  }
+
+  /*
+   * `.toggle-active` e escrita pelo site.js — e o mesmo nome de estado do tema,
+   * e e por isso que um script serve as duas camadas. As tres barras viram X.
+   */
+  .lines-button.toggle-active .lines {
+    background-color: transparent;
+  }
+
+  .lines-button.toggle-active .lines::before {
+    top: 0;
+    transform: rotate(45deg);
+  }
+
+  .lines-button.toggle-active .lines::after {
+    top: 0;
+    transform: rotate(-45deg);
+  }
+
+  /* O fundo nao rola atras do painel aberto. `:global` porque o <body> nao e
+     deste componente. */
+  :global(body.mainMenu-open) {
+    overflow: hidden;
+  }
+</style>

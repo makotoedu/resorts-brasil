@@ -18,11 +18,12 @@
 interface Props {
   como?: 'div' | 'section' | 'header' | 'footer' | 'nav' | 'article';
   /**
-   * `conteudo` e a largura do site (1500px). `estreita` limita a linha para
-   * leitura corrida — politica de privacidade e termos, onde 1500px de largura
-   * dariam linhas de 200 caracteres.
+   * `conteudo` e a largura do site (1500px). `media` e a coluna centrada de
+   * 960px, MEDIDA no `.col-lg-8` que o tema usa para bloco de texto dentro do
+   * container largo. `estreita` limita a linha para leitura corrida — politica
+   * de privacidade e termos, onde 1500px dariam linhas de 200 caracteres.
    */
-  largura?: 'conteudo' | 'estreita' | 'total';
+  largura?: 'conteudo' | 'media' | 'estreita' | 'total';
   class?: string;
 }
 
@@ -33,6 +34,7 @@ const Tag = como;
 /* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
 const LARGURAS = {
   conteudo: 'max-w-conteudo',
+  media: 'max-w-media',
   estreita: 'max-w-3xl',
   total: 'max-w-none',
 } as const;

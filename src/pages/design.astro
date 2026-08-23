@@ -34,6 +34,11 @@ import Hero from '../components/padroes/Hero.astro';
 import FaixaDestaque from '../components/padroes/FaixaDestaque.astro';
 import Contador from '../components/padroes/Contador.astro';
 import Abas from '../components/padroes/Abas.astro';
+import Cabecalho from '../components/cromo/Cabecalho.astro';
+import Rodape from '../components/cromo/Rodape.astro';
+import FaixaCookies from '../components/cromo/FaixaCookies.astro';
+import IconesSociais from '../components/cromo/IconesSociais.astro';
+import VoltarAoTopo from '../components/cromo/VoltarAoTopo.astro';
 import { glifos, nomesDeIcone } from '../icones/glifos';
 import { regioesAssociados } from '../data/associados';
 import { diretoria, cargoEm } from '../data/diretoria';
@@ -562,6 +567,21 @@ const faixas = [
             O <code>gap</code> de 28px reproduz o vão medido do <code>.row</code>, e sem a margem
             negativa que faz as 40 páginas transbordarem 30px na horizontal no mobile.
           </p>
+
+          <p class="rotulo-demo">
+            <code>&lt;Grade colunas={4} piso={1}&gt;</code>
+            <small>1 → 2 → 4, para células de texto</small>
+          </p>
+          <Grade colunas={4} piso={1} espaco="sm">
+            {[1, 2, 3, 4].map((n) => <div class="celula">{n}</div>)}
+          </Grade>
+          <p class="legenda">
+            <strong>Quatro colunas de cartão e quatro colunas de texto não querem o mesmo mínimo.</strong>
+            O piso padrão de duas existe porque cartão de associado e logo de parceiro ficam pequenos
+            demais empilhados um por linha — mas na página de contato ele pôs e-mails de 28
+            caracteres em células de 150px, e eles vazaram por cima da coluna vizinha. A
+            <code>&lt;Grade&gt;</code> não tem como saber o que há dentro da célula; quem usa, sim.
+          </p>
         </div>
       </section>
 
@@ -984,6 +1004,137 @@ const faixas = [
           </p>
         </div>
       </section>
+
+      <section>
+        <h2>Cromo</h2>
+        <p class="legenda">
+          Cabeçalho, rodapé, faixa de cookies e o botão de voltar ao topo — o que embrulha toda
+          página. É a quarta camada do sistema, e ela nasceu na Etapa 5 por uma razão prática:
+          <strong>não havia como migrar uma página sem ela</strong>. Este catálogo não usa o
+          <code>BaseLayout</code> justamente porque o cabeçalho e o rodapé eram do tema; a primeira
+          página de conteúdo a trocar de camada ficaria sem os dois.
+        </p>
+        <p class="legenda pendente">
+          <strong>Os nomes de estado são os do tema, de propósito.</strong>
+          <code>#mainMenu</code>, <code>#mainMenu-trigger</code>, <code>.p-dropdown</code>,
+          <code>.toggle-active</code>, <code>.modal-active</code>, <code>#scrollTop</code> — um
+          <code>src/scripts/site.js</code> só serve as duas camadas durante a migração. Trocar um
+          nome aqui quebraria o menu das 40 páginas do tema, ou obrigaria a manter dois scripts que
+          divergiriam na primeira correção.
+        </p>
+        <p class="legenda">
+          As demonstrações abaixo são estáticas: o catálogo não carrega o <code>site.js</code>, então
+          o menu mobile e a faixa de cookies aparecem no estado de repouso. Os menus suspensos, que
+          abrem por <code>:hover</code> e <code>:focus-within</code> em CSS, respondem normalmente.
+        </p>
+      </section>
+
+      <section>
+        <h3>Cabeçalho</h3>
+        <p class="legenda">
+          Topbar, logotipo, navegação com submenus e seletor de idioma. Os itens do menu saem do mapa
+          <code>routes</code> de <code>src/i18n/ui.ts</code> — no tema eram 14 linhas de markup com
+          três <code>&lt;ul class="dropdown-menu"&gt;</code> escritos à mão.
+        </p>
+        <div class="demo demo-sangrada">
+          <Cabecalho lang="pt-br" route="board" />
+        </div>
+        <p class="legenda">
+          <strong>O item que abre submenu é <code>&lt;button&gt;</code>, não
+          <code>&lt;a href="#"&gt;</code>.</strong> Ele não navega — o <code>href="#"</code> do tema
+          sujava o histórico e punha um destino falso na barra de status. Passe o mouse por "Sobre
+          nós", ou chegue nele com Tab: o submenu abre nos dois casos, e no tema o teclado não
+          alcançava os seis destinos que só existem lá dentro.
+        </p>
+        <p class="legenda">
+          <strong>O item destacado deixou de reprovar o contraste.</strong> "Fale conosco" era
+          <code>#d39e00</code> sobre branco (2,42:1) e "Seja um associado" era
+          <code>rgb(211,180,4)</code> sobre o azul da topbar (2,84:1) — os dois abaixo dos 4,5:1 que
+          o critério 1.4.3 da WCAG pede. Agora são o âmbar-800 (4,96:1) e o branco (5,80:1).
+        </p>
+      </section>
+
+      <section>
+        <h3>Rodapé</h3>
+        <p class="legenda">
+          Logotipo, três listas de navegação, redes sociais e a faixa de copyright. As listas saem do
+          mesmo mapa de rotas que o cabeçalho usa, então um slug traduzido não pode divergir entre os
+          dois.
+        </p>
+        <div class="demo demo-sangrada">
+          <Rodape lang="pt-br" />
+        </div>
+        <p class="legenda">
+          <strong>O logotipo deixou de ser ampliado.</strong> O tema o exibia a 390×130 a partir de um
+          arquivo de 300×100 — e um logotipo borrado é a única imagem do site que ninguém conserta
+          depois.
+        </p>
+        <p class="legenda">
+          O botão «Preferências de cookies» da faixa de copyright nasce <code>hidden</code>: sem
+          JavaScript ele não faria nada, e quem o revela é o <code>site.js</code>. Por isso ele não
+          aparece aqui.
+        </p>
+        <p class="legenda">
+          <code>minimo</code> deixa só a faixa de copyright — é o rodapé que a 404 sempre teve:
+        </p>
+        <div class="demo demo-sangrada">
+          <Rodape lang="pt-br" minimo />
+        </div>
+      </section>
+
+      <section>
+        <h3>IconesSociais</h3>
+        <p class="legenda">
+          Os quatro perfis, em duas superfícies. Na topbar o símbolo é branco e o círculo aparece no
+          hover; no rodapé o círculo é permanente, na cor de marca de cada rede. São as únicas cores
+          do sistema que não respondem a uma decisão nossa — por isso viraram primitivas próprias e
+          não consolidaram com nada.
+        </p>
+        <div class="demo">
+          <p class="rotulo-demo"><code>superficie="rodape"</code></p>
+          <IconesSociais lang="pt-br" superficie="rodape" />
+        </div>
+        <div class="demo demo-escura superficie-inversa">
+          <p class="rotulo-demo"><code>superficie="topbar"</code> <small>passe o mouse</small></p>
+          <IconesSociais lang="pt-br" superficie="topbar" />
+        </div>
+      </section>
+
+      <section>
+        <h3>FaixaCookies</h3>
+        <p class="legenda">
+          A pergunta, as três respostas e o painel de categorias. <strong>O comportamento não está no
+          componente</strong>, e não pode estar: quem grava o cookie e fala Consent Mode é o bloco
+          inline do <code>&lt;head&gt;</code>, que precisa rodar antes de qualquer rede.
+        </p>
+        <p class="legenda">
+          Ela é <code>position: fixed</code> e nasce <code>hidden</code>, então aqui aparece presa
+          dentro do quadro só para ser vista. Os três botões usam a mesma variante e o mesmo tamanho:
+          recusar precisa ser tão fácil e tão visível quanto aceitar.
+        </p>
+        <div class="demo demo-cookies">
+          <FaixaCookies lang="pt-br" />
+        </div>
+      </section>
+
+      <section>
+        <h3>VoltarAoTopo</h3>
+        <p class="legenda">
+          40×40 em círculo, preto a 25%. Quem o mostra é o <code>site.js</code>, escrevendo
+          <code>bottom</code>, <code>opacity</code> e <code>z-index</code> inline depois de 400px de
+          rolagem — mesmo mecanismo do tema. Os valores do componente são o estado
+          <em>escondido</em>, que é o que vale sem JavaScript: o botão não aparece, em vez de ficar
+          parado num canto sem função.
+        </p>
+        <div class="demo demo-topo">
+          <VoltarAoTopo lang="pt-br" />
+        </div>
+        <p class="legenda">
+          <code>href="#top"</code> não é descuido: sem <code>href</code> o elemento não entra na ordem
+          de tabulação. <code>#top</code> é tratado pelo navegador como o topo do documento mesmo sem
+          elemento correspondente, então ele funciona sem JavaScript.
+        </p>
+      </section>
     </main>
   </body>
 </html>
@@ -1168,6 +1319,48 @@ const faixas = [
     border: 1px solid var(--color-borda);
     border-radius: var(--radius-md);
     overflow: hidden;
+  }
+
+  /*
+   * As duas demonstracoes de elemento `position: fixed`. Sem o contexto de
+   * posicionamento a faixa de cookies iria para o rodape da JANELA e o botao de
+   * topo para o canto dela, os dois cobrindo o catalogo em vez de aparecer nele.
+   */
+  .demo-cookies,
+  .demo-topo {
+    position: relative;
+    /* `clip` e nao `hidden`: `overflow: hidden` sozinho nao segura um filho
+       `fixed`, e `contain` daria efeitos colaterais de layout. */
+    overflow: clip;
+    transform: translate(0);
+  }
+
+  .demo-topo {
+    min-height: 6rem;
+  }
+
+  .demo-cookies {
+    min-height: 12rem;
+  }
+
+  /*
+   * Os dois componentes nascem escondidos — a faixa com `hidden`, o botao com
+   * `opacity: 0` — e quem os revela e o site.js, que o catalogo nao carrega. As
+   * quatro linhas abaixo os mostram no estado ABERTO, e existem so aqui: e a
+   * mesma ideia da prop `estado` do <Botao>, que serve para o catalogo conseguir
+   * mostrar hover e foco parados.
+   */
+  .demo-cookies :global(#cookieNotify[hidden]) {
+    display: block;
+    position: absolute;
+    transform: none;
+  }
+
+  .demo-topo :global(#scrollTop) {
+    position: absolute;
+    bottom: 1.625rem;
+    opacity: 1;
+    z-index: 1;
   }
 
   .celula {

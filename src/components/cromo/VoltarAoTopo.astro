@@ -1,0 +1,59 @@
+---
+import Icone from '../primitivos/Icone.astro';
+import { ui, type Locale } from '../../i18n/ui';
+
+/**
+ * VoltarAoTopo — o botao flutuante.
+ *
+ * MEDIDO (scripts/medir-cromo.mjs): 40x40 em circulo, fundo preto a 25%, glifo
+ * branco de 16px, a 26px da borda inferior e da direita.
+ *
+ * `href="#top"` e proposital, e a nota vale a pena porque parece um descuido:
+ * sem href o elemento nao entra na ordem de tabulacao e nao responde ao teclado.
+ * `#top` e tratado pelo navegador como o topo do documento mesmo sem elemento
+ * correspondente, entao o botao funciona sem JavaScript; com JavaScript o
+ * site.js chama preventDefault e a URL nao muda.
+ *
+ * QUEM O MOSTRA E O site.js, escrevendo `bottom`, `opacity` e `z-index` inline
+ * depois de 400px de rolagem — mesmo mecanismo do tema, mesmo `#scrollTop`. Os
+ * valores abaixo sao o estado escondido, e sao eles que valem quando nao ha
+ * JavaScript: o botao simplesmente nao aparece, em vez de ficar parado num
+ * canto sem funcao.
+ */
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+
+<a id="scrollTop" class="topo" href="#top" aria-label={t.backToTop}>
+  <Icone nome="chevron-up" tamanho="sm" />
+</a>
+
+<style>
+  .topo {
+    position: fixed;
+    right: 1.625rem; /* os 26px medidos */
+    bottom: 0;
+    z-index: -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--color-superficie-flutuante);
+    border-radius: var(--radius-full);
+    color: var(--color-texto-inverso);
+    opacity: 0;
+    transition:
+      bottom 0.3s,
+      opacity 0.3s,
+      background-color 0.3s;
+  }
+
+  .topo:hover {
+    background-color: var(--color-texto);
+  }
+</style>

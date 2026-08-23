@@ -10,10 +10,51 @@ const check = (name, pass, detail = '') => {
 
 const browser = await chromium.launch();
 
+/*
+ * DUAS CAMADAS, DUAS PAGINAS DE REFERENCIA.
+ *
+ * Ate a Etapa 5 esta suite usava `/historia.html` para tudo — menu, seletor de
+ * idioma, cookies, glifos. Aquela pagina migrou, e com ela o cromo inteiro: o
+ * gatilho do submenu virou `<button>`, o submenu deixou de nascer aberto no
+ * mobile e as webfontes de icone sumiram. Metade das checagens passou a testar a
+ * camada nova achando que testava a antiga.
+ *
+ * Enquanto as duas convivem, o que e cromo roda NAS DUAS. Nao e zelo: os dois
+ * cabecalhos sao dirigidos pelo MESMO src/scripts/site.js, atraves dos mesmos
+ * nomes de estado, e essa e a aposta que sustenta a migracao inteira. Se ela
+ * quebrar de um lado so, e aqui que tem de aparecer.
+ *
+ * Quando a ultima pagina migrar, `PAGINA_TEMA` some junto com o tema.
+ */
+const PAGINA_TEMA = '/resorts-brasil.html';
+const PAGINA_SISTEMA = '/historia.html';
+
+const CAMADAS = [
+  {
+    nome: 'tema',
+    pagina: PAGINA_TEMA,
+    gatilhoIdioma: '.p-dropdown > a',
+    /* O tema deixa os 11 itens do menu mobile visiveis de uma vez: os submenus
+       nascem abertos e nao ha o que acionar. */
+    submenuNasceAberto: true,
+    traducoes: ['/en-us/resorts-brasil', '/es-es/resorts-brasil'],
+  },
+  {
+    nome: 'sistema',
+    pagina: PAGINA_SISTEMA,
+    /* O gatilho virou `<button>`: ele abre um submenu, nao navega. O
+       `href="#"` do tema sujava o historico e punha um destino falso na barra
+       de status. */
+    gatilhoIdioma: '.p-dropdown > button',
+    submenuNasceAberto: false,
+    traducoes: ['/en-us/history', '/es-es/historia'],
+  },
+];
+
 /* 1. Menu mobile ------------------------------------------------------- */
-{
+for (const camada of CAMADAS) {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
-  await page.goto(`${BASE}/historia.html`);
+  await page.goto(BASE + camada.pagina);
   await page.click('#mainMenu-trigger a');
   await page.waitForTimeout(700);
   const open = await page.evaluate(() => ({
@@ -23,25 +64,46 @@ const browser = await chromium.launch();
     minHeight: parseInt(getComputedStyle(document.querySelector('#mainMenu')).minHeight),
     navVisible: document.querySelector('#mainMenu nav a').getBoundingClientRect().height > 0,
   }));
-  check('menu mobile abre', open.body && open.trigger && open.animate && open.minHeight > 100 && open.navVisible,
+  check(`[${camada.nome}] menu mobile abre`,
+    open.body && open.trigger && open.animate && open.minHeight > 100 && open.navVisible,
     `minHeight=${open.minHeight}px, nav visivel=${open.navVisible}`);
+
+  if (camada.submenuNasceAberto) {
+    const submenu = await page.evaluate(() =>
+      getComputedStyle(document.querySelector('#mainMenu .dropdown-menu')).display);
+    check(`[${camada.nome}] submenu expandido no mobile`, submenu === 'block', `display=${submenu}`);
+  } else {
+    /*
+     * No sistema o submenu abre no toque, e o `aria-expanded` acompanha. Vale a
+     * pena testar os dois juntos: um menu que abre com o atributo mentindo e
+     * pior do que um que nao abre, porque so quem usa leitor de tela descobre.
+     */
+    const antes = await page.evaluate(() =>
+      getComputedStyle(document.querySelector('#mainMenu .dropdown-menu')).display);
+    await page.click('#mainMenu li.dropdown > button');
+    await page.waitForTimeout(200);
+    const depois = await page.evaluate(() => ({
+      display: getComputedStyle(document.querySelector('#mainMenu .dropdown-menu')).display,
+      expanded: document.querySelector('#mainMenu li.dropdown > button').getAttribute('aria-expanded'),
+      alcancavel: document.querySelector('#mainMenu .dropdown-menu a').getBoundingClientRect().height > 0,
+    }));
+    check(`[${camada.nome}] submenu abre no toque e anuncia o estado`,
+      antes === 'none' && depois.display === 'block' && depois.expanded === 'true' && depois.alcancavel,
+      `${antes} -> ${depois.display}, aria-expanded=${depois.expanded}`);
+  }
 
   await page.click('#mainMenu-trigger a');
   await page.waitForTimeout(700);
   const closed = await page.evaluate(() => !document.body.classList.contains('mainMenu-open'));
-  check('menu mobile fecha', closed);
-
-  const submenu = await page.evaluate(() =>
-    getComputedStyle(document.querySelector('#mainMenu .dropdown-menu')).display);
-  check('submenu expandido no mobile', submenu === 'block', `display=${submenu}`);
+  check(`[${camada.nome}] menu mobile fecha`, closed);
   await page.close();
 }
 
 /* 2. Seletor de idioma -------------------------------------------------- */
-{
+for (const camada of CAMADAS) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  await page.goto(`${BASE}/historia.html`);
-  await page.click('.p-dropdown > a');
+  await page.goto(BASE + camada.pagina);
+  await page.click(camada.gatilhoIdioma);
   // O CSS do tema usa transition: all 0.2s; medir antes disso pega o valor
   // interpolado no meio da animacao, nao o estado final.
   await page.waitForTimeout(400);
@@ -54,7 +116,8 @@ const browser = await chromium.launch();
       clickable: rect.width > 0 && rect.height > 0,
     };
   });
-  check('seletor de idioma abre', state.active && state.opacity === '1' && state.clickable,
+  check(`[${camada.nome}] seletor de idioma abre`,
+    state.active && state.opacity === '1' && state.clickable,
     `opacity=${state.opacity}, link clicavel=${state.clickable}`);
 
   // Abrir nao e ir para o lugar certo. O destino era `url('home', ...)` fixo,
@@ -62,10 +125,9 @@ const browser = await chromium.launch();
   // quem estava em /historia na home inglesa. Aqui o teste e do destino.
   const destinos = await page.$$eval('.p-dropdown-content a', (as) =>
     as.map((a) => new URL(a.href).pathname));
-  const esperado = ['/en-us/history', '/es-es/historia'];
-  check('seletor de idioma leva a traducao DESTA pagina',
-    JSON.stringify(destinos) === JSON.stringify(esperado),
-    `de /historia -> ${destinos.join(', ')}`);
+  check(`[${camada.nome}] seletor de idioma leva a traducao DESTA pagina`,
+    JSON.stringify(destinos) === JSON.stringify(camada.traducoes),
+    `de ${camada.pagina} -> ${destinos.join(', ')}`);
   await page.close();
 }
 
@@ -214,15 +276,22 @@ const browser = await chromium.launch();
  * e "Recusar" nao recusava nada. O que importa aqui e a REDE: o que sai do
  * navegador antes e depois de cada decisao.
  */
-{
+/*
+ * A faixa roda nas duas camadas pelo mesmo site.js, atraves dos mesmos
+ * `[data-cookie]`. O markup e que e outro — no sistema os botoes sao
+ * `<Botao variante="clara-solida">` em vez de `.btn.btn-light`. E exatamente o
+ * tipo de coisa que se testa num lado so e se descobre no outro em producao.
+ */
+for (const camada of CAMADAS) {
   const RASTREIO = /googletagmanager\.com|google-analytics\.com|analytics\.google\.com|doubleclick\.net/i;
+  const marca = `[${camada.nome}]`;
 
   /** Abre uma pagina limpa registrando todo request a dominio de rastreamento. */
   const abrir = async () => {
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     const rastreio = [];
     page.on('request', (r) => RASTREIO.test(r.url()) && rastreio.push(new URL(r.url()).host));
-    await page.goto(`${BASE}/historia.html`);
+    await page.goto(BASE + camada.pagina);
     await page.waitForTimeout(800);
     return { page, rastreio };
   };
@@ -246,10 +315,10 @@ const browser = await chromium.launch();
         document.querySelector('.cookie-notify').classList.contains('modal-active')
     );
     const padroes = (await consentimentos(page)).find(([tipo]) => tipo === 'default')?.[1] ?? {};
-    check('nada e carregado antes da escolha', rastreio.length === 0,
+    check(`${marca} nada e carregado antes da escolha`, rastreio.length === 0,
       rastreio.length ? `vazou para ${[...new Set(rastreio)].join(', ')}` : 'zero requisicoes');
-    check('faixa de cookies aparece sem atraso', visivel);
-    check('Consent Mode v2 nasce negado',
+    check(`${marca} faixa de cookies aparece sem atraso`, visivel);
+    check(`${marca} Consent Mode v2 nasce negado`,
       padroes.ad_storage === 'denied' && padroes.ad_user_data === 'denied' &&
       padroes.ad_personalization === 'denied' && padroes.analytics_storage === 'denied',
       JSON.stringify(padroes));
@@ -263,14 +332,14 @@ const browser = await chromium.launch();
     await page.waitForTimeout(1200);
     const cookie = await lerCookie(page);
     const escondida = await page.evaluate(() => document.querySelector('.cookie-notify').hidden);
-    check('rejeitar nao carrega nada', rastreio.length === 0 && cookie.startsWith('v1|a:0|p:0'),
+    check(`${marca} rejeitar nao carrega nada`, rastreio.length === 0 && cookie.startsWith('v1|a:0|p:0'),
       `rede=${rastreio.length} requisicoes, cookie=${cookie.replace(/\|t:\d+/, '')}`);
-    check('rejeitar esconde a faixa', escondida);
+    check(`${marca} rejeitar esconde a faixa`, escondida);
 
     await page.reload();
     await page.waitForTimeout(1200);
     const voltou = await page.evaluate(() => !document.querySelector('.cookie-notify').hidden);
-    check('faixa nao reaparece apos recusa', !voltou && rastreio.length === 0,
+    check(`${marca} faixa nao reaparece apos recusa`, !voltou && rastreio.length === 0,
       `rede acumulada=${rastreio.length}`);
     await page.close();
   }
@@ -282,11 +351,11 @@ const browser = await chromium.launch();
     await page.waitForTimeout(2500);
     const cookie = await lerCookie(page);
     const update = (await consentimentos(page)).find(([tipo]) => tipo === 'update')?.[1] ?? {};
-    check('aceitar carrega o GTM', rastreio.some((h) => h.includes('googletagmanager')),
+    check(`${marca} aceitar carrega o GTM`, rastreio.some((h) => h.includes('googletagmanager')),
       [...new Set(rastreio)].join(', ') || 'nenhuma requisicao');
-    check('aceitar grava as duas categorias', cookie.startsWith('v1|a:1|p:1'),
+    check(`${marca} aceitar grava as duas categorias`, cookie.startsWith('v1|a:1|p:1'),
       cookie.replace(/\|t:\d+/, ''));
-    check('aceitar libera o Consent Mode',
+    check(`${marca} aceitar libera o Consent Mode`,
       update.analytics_storage === 'granted' && update.ad_storage === 'granted',
       JSON.stringify(update));
     await page.close();
@@ -303,8 +372,8 @@ const browser = await chromium.launch();
     await page.waitForTimeout(2500);
     const cookie = await lerCookie(page);
     const update = (await consentimentos(page)).find(([tipo]) => tipo === 'update')?.[1] ?? {};
-    check('painel abre e anuncia estado', expandido === 'true', `aria-expanded=${expandido}`);
-    check('escolha parcial e respeitada',
+    check(`${marca} painel abre e anuncia estado`, expandido === 'true', `aria-expanded=${expandido}`);
+    check(`${marca} escolha parcial e respeitada`,
       cookie.startsWith('v1|a:1|p:0') &&
         update.analytics_storage === 'granted' && update.ad_storage === 'denied' &&
         rastreio.some((h) => h.includes('googletagmanager')),
@@ -328,7 +397,7 @@ const browser = await chromium.launch();
       analise: document.querySelector('[data-cookie-cat="analise"]').checked,
       publicidade: document.querySelector('[data-cookie-cat="publicidade"]').checked,
     }));
-    check('rodape reabre o painel com a escolha salva',
+    check(`${marca} rodape reabre o painel com a escolha salva`,
       reaberto.faixa && reaberto.painel && !reaberto.analise && reaberto.publicidade,
       JSON.stringify(reaberto));
 
@@ -340,7 +409,7 @@ const browser = await chromium.launch();
       foco: document.activeElement?.dataset?.cookie,
     }));
     // Esc fecha so o painel: fechar a faixa equivaleria a decidir por quem nao decidiu.
-    check('Esc fecha o painel e devolve o foco',
+    check(`${marca} Esc fecha o painel e devolve o foco`,
       aposEsc.painel && aposEsc.faixa && aposEsc.foco === 'personalizar',
       JSON.stringify(aposEsc));
     await page.close();
@@ -383,9 +452,19 @@ const browser = await chromium.launch();
 }
 
 /* 8. Voltar ao topo ------------------------------------------------------ */
-{
+/*
+ * Nas duas camadas: o site.js escreve `bottom`, `opacity` e `z-index` inline no
+ * mesmo `#scrollTop`, mas o estado de REPOUSO vem do CSS, e sao dois CSS
+ * diferentes. O do sistema precisa nascer invisivel por conta propria — se
+ * nascesse visivel, o botao ficaria parado num canto sem funcao para quem esta
+ * sem JavaScript, e nenhum teste de clique veria isso.
+ */
+for (const { nome, pagina } of [
+  { nome: 'tema', pagina: '/politica-de-privacidade.html' },
+  { nome: 'sistema', pagina: '/diretoria.html' },
+]) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  await page.goto(`${BASE}/politica-de-privacidade.html`);
+  await page.goto(BASE + pagina);
   // Decide antes: a faixa e `position: fixed` com z-index 999 e cobre o canto do
   // #scrollTop (z-index 199) enquanto esta na tela. Vale no original tambem — la
   // o atraso de 2s so escondia o encontro. Aqui o teste e do voltar ao topo.
@@ -398,7 +477,7 @@ const browser = await chromium.launch();
   await page.click('#scrollTop');
   await page.waitForTimeout(900);
   const scrolled = await page.evaluate(() => window.scrollY);
-  check('voltar ao topo', before === '0' && after === '1' && scrolled < 50,
+  check(`[${nome}] voltar ao topo`, before === '0' && after === '1' && scrolled < 50,
     `opacity ${before}->${after}, scrollY final=${scrolled}`);
   await page.close();
 }
@@ -430,8 +509,16 @@ const browser = await chromium.launch();
     'inspiro-icons': { peso: 400, controle: 0xe919 },
   };
 
+  /*
+   * PAGINA_TEMA, e nao mais /historia.html. As tres webfontes servem so as
+   * paginas nao migradas — o cromo novo desenha SVG inline pelo <Icone>, e a
+   * pagina de historia deixou de baixar fonte de icone na Etapa 5. Rodar isto
+   * la mediria tofu contra tofu e passaria sempre.
+   *
+   * A checagem morre junto com as webfontes, na Etapa 11.
+   */
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  await page.goto(`${BASE}/historia.html`);
+  await page.goto(BASE + PAGINA_TEMA);
 
   const alvos = spec.familias.map((f) => {
     const p = perfil[f.familia_css];
@@ -475,7 +562,11 @@ const browser = await chromium.launch();
 
 /* 10. Erros de console em todas as paginas ------------------------------- */
 {
-  const pages = ['/', '/historia.html', '/associados.html', '/en-us/home.html', '/es-es/inicio.html', '/ebook.html'];
+  // Uma de cada camada, de proposito: o cromo novo traz um <script> proprio
+  // (o seletor de idioma), e erro nele so apareceria nas paginas migradas.
+  const pages = ['/', PAGINA_TEMA, PAGINA_SISTEMA, '/diretoria.html', '/404.html',
+    '/associados.html', '/en-us/home.html', '/en-us/contact-us.html',
+    '/es-es/inicio.html', '/es-es/directorio.html', '/ebook.html'];
   const errors = [];
   for (const path of pages) {
     const page = await browser.newPage();

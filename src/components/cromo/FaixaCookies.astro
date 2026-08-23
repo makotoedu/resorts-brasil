@@ -1,0 +1,225 @@
+---
+import Container from '../layout/Container.astro';
+import Botao from '../primitivos/Botao.astro';
+import Icone from '../primitivos/Icone.astro';
+import { ui, url, type Locale } from '../../i18n/ui';
+
+/**
+ * FaixaCookies — a pergunta, as tres respostas e o painel de categorias.
+ *
+ * O COMPORTAMENTO NAO ESTA AQUI, e nao pode estar. Quem grava o cookie, fala
+ * Consent Mode e decide carregar o GTM e o bloco inline do `<head>` do
+ * BaseLayout: aquilo precisa rodar antes de qualquer rede. A interface vive no
+ * src/scripts/site.js e so conversa com `window.rbConsent`.
+ *
+ * POR ISSO OS NOMES DE ESTADO SAO OS DO TEMA: `.cookie-notify`, `.modal-strip`,
+ * `.modal-active`, `#cookiePrefs`, `[data-cookie]`. Um script serve as duas
+ * camadas durante a migracao — a mesma disciplina do <Cabecalho>.
+ *
+ * MEDIDO (scripts/medir-cromo.mjs): fixa embaixo, fundo navy, 20px de recuo,
+ * texto branco de 14px centralizado, botoes de 11px em pilula com fundo branco.
+ * A altura desce de 204px no mobile para 91px no desktop — o texto e os botoes
+ * cabem na mesma linha a partir de certa largura, e e so isso que muda.
+ *
+ * DOIS DESVIOS DELIBERADOS:
+ *
+ *   1. Os botoes sao `<Botao variante="clara-solida" tamanho="sm">`. A variante
+ *      nasceu aqui: a Etapa 1 leu `.btn-light` no markup, achou os 17 usos com
+ *      `.btn-outline` junto e concluiu que a clara era sempre vazada. Estes tres
+ *      sao o `.btn-light` cheio, e sao 40 paginas deles.
+ *   2. A faixa nasce `hidden` e recebe `role="region"` com nome. No tema ela era
+ *      decorativa e ficava no fim do <body>; aqui vem logo depois do link de
+ *      pular conteudo, para o teclado alcancar a escolha cedo. Nao muda pixel —
+ *      a faixa e `position: fixed`.
+ */
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+
+<div
+  id="cookieNotify"
+  class="cookie-notify modal-strip modal-bottom faixa"
+  role="region"
+  aria-label={t.cookieRegion}
+  hidden
+>
+  <Container>
+    <div class="linha">
+      <p class="texto">
+        {t.cookieText}{' '}
+        <a href={url('privacy', lang)}>
+          {t.cookieMore} <Icone nome="info-circle" tamanho="sm" />
+        </a>
+      </p>
+
+      <!-- Os tres botoes usam a MESMA variante e o MESMO tamanho: recusar
+           precisa ser tao facil e tao visivel quanto aceitar. -->
+      <div class="acoes">
+        <Botao variante="clara-solida" tamanho="sm" class="rounded-full" data-cookie="rejeitar">
+          {t.cookieRejectAll}
+        </Botao>
+        <Botao
+          variante="clara-solida"
+          tamanho="sm"
+          class="rounded-full"
+          data-cookie="personalizar"
+          aria-expanded="false"
+          aria-controls="cookiePrefs"
+        >
+          {t.cookieCustomize}
+        </Botao>
+        <Botao variante="clara-solida" tamanho="sm" class="rounded-full" data-cookie="aceitar">
+          {t.cookieAcceptAll}
+        </Botao>
+      </div>
+    </div>
+
+    <div id="cookiePrefs" class="prefs" role="group" aria-labelledby="cookiePrefsTitle" hidden>
+      <!-- <p> e nao <h2>: um cabecalho aqui entraria no sumario de toda pagina. -->
+      <p id="cookiePrefsTitle" class="prefs-titulo">{t.cookiePrefsTitle}</p>
+      <ul class="categorias">
+        <li>
+          <label>
+            <input type="checkbox" checked disabled />
+            <strong>{t.cookieCatNecessary}</strong> <span>({t.cookieAlwaysOn})</span>
+          </label>
+          <p>{t.cookieCatNecessaryDesc}</p>
+        </li>
+        <li>
+          <label>
+            <input type="checkbox" data-cookie-cat="analise" />
+            <strong>{t.cookieCatAnalytics}</strong>
+          </label>
+          <p>{t.cookieCatAnalyticsDesc}</p>
+        </li>
+        <li>
+          <label>
+            <input type="checkbox" data-cookie-cat="publicidade" />
+            <strong>{t.cookieCatAds}</strong>
+          </label>
+          <p>{t.cookieCatAdsDesc}</p>
+        </li>
+      </ul>
+      <Botao variante="clara-solida" tamanho="sm" class="rounded-full" data-cookie="salvar">
+        {t.cookieSave}
+      </Botao>
+    </div>
+  </Container>
+</div>
+
+<style>
+  /*
+   * `superficie-inversa` nao entra aqui como classe porque a faixa nao e uma
+   * <Secao>: as regras de contraste que o base.css aplica sob aquela marca
+   * (paragrafo e link herdando a cor) estao repetidas abaixo, para este bloco.
+   */
+  .faixa {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    /* MEDIDO: navy, 20px de recuo. */
+    background-color: var(--color-superficie-marca);
+    color: var(--color-texto-inverso);
+    padding-block: 1.25rem;
+    /*
+     * A faixa desce em vez de aparecer. Quem troca a classe e o site.js, um
+     * quadro depois de tirar o `hidden` — sem esse intervalo o navegador calcula
+     * o estado inicial ja com a classe aplicada e nao ha transicao.
+     */
+    transform: translateY(100%);
+    transition: transform 0.7s ease;
+  }
+
+  .faixa.modal-active {
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faixa {
+      transition: none;
+    }
+  }
+
+  .linha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem 1.25rem;
+  }
+
+  .texto {
+    /* Herda a cor da faixa: o cinza de paragrafo do base.css daria 1,5:1 sobre
+       o navy. Mesmo cuidado que a regra de `.superficie-inversa` toma. */
+    color: inherit;
+    margin: 0;
+    text-align: center;
+    /* Deixa o texto ceder espaco aos botoes antes de quebrar a linha inteira. */
+    flex: 1 1 20rem;
+    max-width: 42rem;
+  }
+
+  .texto a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .acoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.625rem;
+  }
+
+  /* ---------------- painel de categorias ---------------- */
+
+  .prefs {
+    /* MEDIDO: 15px de recuo e de margem, acima de uma divisoria. */
+    margin-top: 0.9375rem;
+    padding-top: 0.9375rem;
+    border-top: 1px solid var(--color-borda-inversa);
+    text-align: left;
+  }
+
+  .prefs-titulo {
+    color: inherit;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: 0.625rem;
+  }
+
+  .categorias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 0.75rem 1.5rem;
+    list-style: none;
+    margin: 0 0 0.9375rem;
+    padding: 0;
+  }
+
+  .categorias p {
+    color: inherit;
+    font-size: var(--text-sm);
+    margin: 0.25rem 0 0;
+    opacity: 0.85;
+  }
+
+  .categorias label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .categorias input:disabled + strong {
+    /* A categoria que nao se desliga continua legivel — apagar o rotulo junto
+       com a caixa esconderia a informacao, nao o controle. */
+    opacity: 1;
+  }
+</style>

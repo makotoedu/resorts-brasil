@@ -1,0 +1,238 @@
+---
+import Container from '../layout/Container.astro';
+import Grade from '../layout/Grade.astro';
+import Imagem from '../primitivos/Imagem.astro';
+import Titulo from '../primitivos/Titulo.astro';
+import IconesSociais from './IconesSociais.astro';
+import { ui, url, type Locale } from '../../i18n/ui';
+
+/**
+ * Rodape — logotipo, tres listas de navegacao, redes e a faixa de copyright.
+ *
+ * MEDIDO (scripts/medir-cromo.mjs):
+ *
+ *   fundo        rgb(249,249,250) — consolidado na nevoa-50 do sistema, que e
+ *                rgb(247,249,252): dois pontos de distancia e portanto ruido
+ *   conteudo     60px de recuo em cima, 40px embaixo
+ *   titulo       14px / 600 / 1px de espacamento / caixa alta / 20px ate a lista
+ *   item         entrelinha de 32px, link 14px no cinza de paragrafo
+ *   hover        cor de acao — medido com o mouse em cima
+ *   copyright    faixa propria em rgb(241,241,243), 30px de recuo, texto de 13px
+ *
+ * DOIS DESVIOS DELIBERADOS, em docs/deltas-visuais.md:
+ *
+ *   1. O logotipo deixa de ser ampliado. O tema o exibia a 390x130 a partir de
+ *      um arquivo de 300x100 — 1,3x de ampliacao, e um logotipo borrado e a
+ *      unica imagem do site que ninguem pode consertar depois.
+ *   2. Os titulos das listas viram `<h2>`. Eram `<h4>` sem nenhum `<h3>` acima,
+ *      em todas as paginas — parte dos 39 sumarios quebrados que a migracao
+ *      existe para consertar.
+ */
+interface Props {
+  lang: Locale;
+  /** Só a faixa de copyright, sem as listas. É o rodapé que a 404 sempre teve. */
+  minimo?: boolean;
+}
+
+const { lang, minimo = false } = Astro.props;
+const t = ui[lang];
+
+// Resolvido no build. Antes o ano vinha de document.write() nas home e estava
+// fixo em "2022" nas 12 paginas internas em PT.
+const ano = new Date().getFullYear();
+
+/** As tres listas, como dado — no tema eram tres blocos de markup iguais. */
+const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] = [
+  {
+    titulo: t.footerNavigation,
+    itens: [
+      { rotulo: t.navHome, href: url('home', lang) },
+      { rotulo: t.footerAbout, href: url('resortsBrasil', lang) },
+      { rotulo: t.navAssociates, href: url('associates', lang) },
+      { rotulo: t.navSupport, href: url('support', lang) },
+      { rotulo: t.navContact, href: url('contact', lang) },
+      { rotulo: t.footerPrivacy, href: url('privacy', lang) },
+      { rotulo: t.footerTerms, href: url('terms', lang) },
+    ],
+  },
+  {
+    titulo: t.footerInstitutional,
+    itens: [
+      { rotulo: t.navResortsBrasil, href: url('resortsBrasil', lang) },
+      { rotulo: t.navBoard, href: url('board', lang) },
+      { rotulo: t.navHistory, href: url('history', lang) },
+    ],
+  },
+  {
+    titulo: t.footerInformation,
+    itens: [
+      { rotulo: t.navPublications, href: url('publications', lang) },
+      { rotulo: t.footerStatistics, href: url('statistics', lang) },
+    ],
+  },
+];
+---
+
+<footer id="footer" class="rodape">
+  {
+    !minimo && (
+      <div class="conteudo">
+        <Container>
+          <!--
+            Seis colunas, e a do logotipo ocupa duas. E a proporcao do tema
+            (4+2+2+2+2 de doze) escrita em sextos, e a <Grade> ja desce sozinha
+            para tres e para duas conforme a largura do pai.
+          -->
+          <Grade colunas={6} espaco="md" alinhamento="inicio">
+            <div class="celula-marca">
+              <a href={url('home', lang)} class="marca">
+                <Imagem src="/images/logo-25anos.png" alt="Resorts Brasil" largura={240} altura={80} ajuste="conter" />
+              </a>
+            </div>
+
+            {colunas.map((coluna) => (
+              <div>
+                <Titulo nivel={2} class="titulo-lista">
+                  {coluna.titulo}
+                </Titulo>
+                <ul class="lista">
+                  {coluna.itens.map((item) => (
+                    <li>
+                      <a href={item.href}>{item.rotulo}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+
+            <div>
+              <Titulo nivel={2} class="titulo-lista">
+                {t.footerSocial}
+              </Titulo>
+              <IconesSociais lang={lang} superficie="rodape" />
+            </div>
+          </Grade>
+        </Container>
+      </div>
+    )
+  }
+
+  <div class="copyright">
+    <Container>
+      <p class="copyright-texto">
+        &copy; {ano} {t.copyright}{' '}
+        <a href="https://www.cloudbe.com.br" target="_blank" rel="noopener">Cloudbe</a>
+        <!--
+          Revogar tem de ser tao facil quanto consentir, e estar em toda pagina
+          — inclusive na 404, que usa `minimo`. Fica na faixa de copyright, e
+          nao na lista "Navegacao", onde um <li> a mais mudaria a altura do
+          rodape. Nasce `hidden`: sem JavaScript o botao nao faria nada, e quem
+          o revela e o site.js.
+        -->
+        <span class="cookie-manage" hidden>
+          &middot; <button type="button" class="cookie-manage-btn">{t.cookieManage}</button>
+        </span>
+      </p>
+    </Container>
+  </div>
+</footer>
+
+<style>
+  .rodape {
+    background-color: var(--color-superficie-clara);
+  }
+
+  /* MEDIDO: 60px em cima, 40px embaixo. */
+  .conteudo {
+    padding-block: 3.75rem 2.5rem;
+  }
+
+  .celula-marca {
+    grid-column: span 2;
+  }
+
+  .marca {
+    display: inline-block;
+    line-height: 0;
+  }
+
+  /*
+   * O logotipo no seu tamanho, sem ampliar. Ver o desvio 1 no comentario do
+   * topo: o tema pedia 130px de altura a um arquivo de 100px.
+   */
+  .marca :global(img) {
+    width: auto;
+    height: 5rem;
+  }
+
+  /* MEDIDO: 14px / 600 / 1px de espacamento / caixa alta / 20px ate a lista.
+     O <Titulo> traz a tag e a cor; o resto e o desenho deste bloco. */
+  .rodape :global(.titulo-lista) {
+    font-size: var(--text-base);
+    letter-spacing: 1px;
+    line-height: 1.7;
+    text-transform: uppercase;
+    margin-block: 0 1.25rem;
+  }
+
+  .lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* MEDIDO: entrelinha de 32px por item. */
+  .lista li {
+    line-height: 2.2857;
+  }
+
+  .lista a {
+    color: var(--color-texto-paragrafo);
+    font-size: var(--text-base);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .lista a:hover {
+    color: var(--color-acao-primaria);
+  }
+
+  /* ---------------- faixa de copyright ---------------- */
+
+  .copyright {
+    /* MEDIDO: fundo proprio, um degrau adiante do rodape, e 30px de recuo. */
+    background-color: var(--color-superficie-clara-alt);
+    padding-block: 1.875rem;
+  }
+
+  .copyright-texto {
+    color: var(--color-texto);
+    font-size: var(--text-sm);
+    line-height: 2.4615; /* os 32px medidos sobre 13px */
+    margin: 0;
+    text-align: center;
+  }
+
+  .copyright-texto a,
+  .cookie-manage-btn {
+    color: var(--color-texto-paragrafo);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .copyright-texto a:hover,
+  .cookie-manage-btn:hover {
+    color: var(--color-acao-primaria);
+  }
+
+  /* O botao tem de parecer o link ao lado dele: e a mesma acao para quem le. */
+  .cookie-manage-btn {
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

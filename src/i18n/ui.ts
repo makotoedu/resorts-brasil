@@ -331,6 +331,8 @@ export const ui = {
     skipToContent: 'Pular para o conteúdo',
     backToTop: 'Voltar ao topo',
     openMenu: 'Abrir menu',
+    /* Nome do <nav> para leitor de tela. O cabecalho do tema nao tinha nenhum. */
+    navLabel: 'Menu principal',
     chooseLanguage: 'Escolher idioma',
     socialOn: 'Resorts Brasil no',
     topbarEbook: 'Conheça nosso e-book',
@@ -389,6 +391,38 @@ export const ui = {
      * diziam "Read now" e "Lea ahora". Aqui e um so.
      */
     leiaAgora: 'Leia agora',
+
+    /*
+     * Copy das paginas migradas na Etapa 5.
+     *
+     * Estava no markup dos tres arquivos de cada pagina, e e a mesma razao de
+     * sempre: texto triplicado diverge. A pagina de contato ja tinha divergido —
+     * o telefone do WhatsApp aparecia como "+55 11 95058-0313" em PT/ES e
+     * "+55 (11) 95058-0313" em EN, e a frase do canal era outra em ingles. Agora
+     * o numero vem de src/data/contato.ts e a frase vem daqui.
+     */
+    historyTitle: 'História',
+    historyLead:
+      'A ideia da criação de uma entidade que representasse os interesses do setor começou no ano de 2000 e tomou forma durante o Festival de Turismo de Gramado.',
+    historyIntro:
+      'Em dezembro de 2001, oficialmente, a Resorts Brasil foi fundada, fruto da iniciativa de 12 empresas do setor.',
+    historyBookBadge: '20 ANOS',
+    historyBookTitle: 'Memórias, sustentabilidade e um olhar para o futuro',
+
+    contactTitle: 'Como você prefere falar com a gente?',
+    contactEmailTitle: 'E-mail',
+    contactEmailText: 'Tem alguma dúvida? Podemos te ajudar pelo nosso canal de e-mail.',
+    contactAddressTitle: 'Endereço',
+    contactAddressText: 'Nosso endereço para correspondências é:',
+    contactPressTitle: 'Imprensa',
+    contactWhatsappTitle: 'WhatsApp',
+    contactWhatsappText: 'Converse com nossa equipe via WhatsApp.',
+
+    boardTitle: 'Diretoria da Resorts Brasil',
+    boardCouncilTitle: 'Conselho Consultivo',
+    /* Só o rótulo traduz; o intervalo de anos vive em src/data/diretoria.ts. */
+    boardTermLabel: 'Biênio',
+
     videoPlay: 'Assistir ao vídeo',
     videoInstitucional: 'Vídeo institucional da Resorts Brasil',
     videoEbook: 'Vídeo de apresentação do e-book',
@@ -417,6 +451,7 @@ export const ui = {
     skipToContent: 'Skip to content',
     backToTop: 'Back to top',
     openMenu: 'Open menu',
+    navLabel: 'Main menu',
     chooseLanguage: 'Choose language',
     socialOn: 'Resorts Brasil on',
     topbarEbook: 'Meet our e-book',
@@ -467,6 +502,28 @@ export const ui = {
     cookieManage: 'Cookie preferences',
     cookieClose: 'Close',
     leiaAgora: 'Read now',
+
+    historyTitle: 'History',
+    historyLead:
+      'The idea of creating an entity to represent the interests of the industry in 2000 was shaped during the Gramado Tourism Festival.',
+    historyIntro:
+      'In December 2001, Resorts Brasil was officially founded as a result of the initiative of 12 companies in the sector.',
+    historyBookBadge: '20 YEARS',
+    historyBookTitle: 'Memories, sustainability and a look to the future',
+
+    contactTitle: 'How would you like to contact us?',
+    contactEmailTitle: 'Email',
+    contactEmailText: 'Questions? We can help you via email.',
+    contactAddressTitle: 'Address',
+    contactAddressText: 'Our mailing address:',
+    contactPressTitle: 'Press',
+    contactWhatsappTitle: 'WhatsApp',
+    contactWhatsappText: 'Needing help? Contact our virtual assistant.',
+
+    boardTitle: 'Management of Resorts Brasil',
+    boardCouncilTitle: 'Consulting Board',
+    boardTermLabel: 'Biennium',
+
     videoPlay: 'Watch the video',
     videoInstitucional: 'Resorts Brasil institutional video',
     videoEbook: 'E-book presentation video',
@@ -494,6 +551,7 @@ export const ui = {
     skipToContent: 'Saltar al contenido',
     backToTop: 'Volver arriba',
     openMenu: 'Abrir menú',
+    navLabel: 'Menú principal',
     chooseLanguage: 'Elegir idioma',
     socialOn: 'Resorts Brasil en',
     topbarEbook: 'Conozca nuestro e-book',
@@ -544,6 +602,39 @@ export const ui = {
     cookieManage: 'Preferencias de cookies',
     cookieClose: 'Cerrar',
     leiaAgora: 'Lea ahora',
+
+    historyTitle: 'Historia',
+    historyLead:
+      'La idea de la creación de una entidad que representase los intereses del sector empezó en el año 2000 y fue tomando forma durante el Festival de Turismo de Gramado.',
+    historyIntro:
+      'En diciembre de 2001, oficialmente, Resorts Brasil fue fundada, fruto de la iniciativa de 12 empresas del sector.',
+    historyBookBadge: '20 AÑOS',
+    /*
+     * A pagina de publicacoes traz este mesmo titulo em espanhol com dois erros
+     * — "marida" no lugar de "mirada" e um "Y" maiusculo no meio da frase — e
+     * ele esta preservado la de proposito (ver docs/decisoes.md, "Etapa 4").
+     * Aqui vale o que a pagina de historia sempre exibiu, que e a forma
+     * correta. As duas so vao poder ser conciliadas na Etapa 7, que e quando a
+     * pagina de publicacoes migra; ate la, o titulo desta faixa e copy DESTA
+     * pagina e nao o campo da colecao — o que vem da colecao aqui e o PDF e a
+     * capa, que nao tem como divergir.
+     */
+    historyBookTitle: 'Memorias, sustentabilidad y una mirada hacia el futuro',
+
+    contactTitle: '¿Cómo prefieres hablar con nosotros?',
+    contactEmailTitle: 'E-mail',
+    contactEmailText:
+      '¿Tienes alguna duda? Podemos ayudarte a través de nuestro canal de correo electrónico.',
+    contactAddressTitle: 'Dirección',
+    contactAddressText: 'Nuestra dirección de correo es:',
+    contactPressTitle: 'Prensa',
+    contactWhatsappTitle: 'WhatsApp',
+    contactWhatsappText: 'Contacta con nuestro equipo por WhatsApp.',
+
+    boardTitle: 'Directorio de Resorts Brasil',
+    boardCouncilTitle: 'Consejo Consultivo',
+    boardTermLabel: 'Bienio',
+
     videoPlay: 'Ver el vídeo',
     videoInstitucional: 'Vídeo institucional de Resorts Brasil',
     videoEbook: 'Vídeo de presentación del e-book',

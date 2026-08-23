@@ -39,8 +39,34 @@
   --cor-coral-500: #fc575e; /* destaque/alerta (18) */
   --cor-ambar-500: #fac213; /* faixa de destaque; absorve o #efb72c da mesma faixa em outra pagina */
   --cor-ambar-400: #ffc107; /* medido: fundo do .btn-warning (o CTA da home) */
-  --cor-ambar-600: #d39e00; /* medido: hover do mesmo botao */
+  --cor-ambar-600: #d39e00; /* medido: hover do mesmo botao; e a cor do "Fale conosco" no menu */
+  /*
+   * O ouro escuro que o menu passou a usar. Nao e medido no tema — e o menor
+   * escurecimento do ambar-600 que alcanca 4,5:1 sobre branco (medido 4,96:1
+   * contra os 2,42:1 do original). Ver a nota de --color-navegacao-destaque.
+   */
+  --cor-ambar-800: #8f6a00;
   --cor-indigo-700: #242f9b;
+
+  /*
+   * A segunda superficie clara, MEDIDA na faixa de copyright: rgb(241,241,243).
+   *
+   * Ela nao entra na nevoa-50 como o fundo do rodape entrou (rgb(249,249,250),
+   * a dois pontos de distancia e portanto ruido). Sao 8 pontos, e a faixa
+   * existe justamente para se distinguir do rodape logo acima — achatar as duas
+   * apagaria a divisao que o rodape desenha.
+   */
+  --cor-nevoa-75: #f1f1f3;
+
+  /*
+   * As quatro cores de rede social, MEDIDAS nos circulos do rodape. Sao cores de
+   * marca de terceiros: nao consolidam com nada do site, e mudar uma delas seria
+   * desenhar o logotipo de outra empresa errado.
+   */
+  --cor-rede-facebook: #5d82d1;
+  --cor-rede-instagram: #e53d00;
+  --cor-rede-linkedin: #238cc8;
+  --cor-rede-youtube: #ef4e41;
 
   /*
    * As quatro faixas de destaque que faltavam. Sao fundos editoriais de secao
@@ -100,8 +126,60 @@
    */
   --color-superficie-marca: var(--cor-navy-900);
 
+  /*
+   * A faixa de copyright. O nome segue `--color-superficie-inversa-alt`: quando
+   * uma superficie precisa de uma vizinha um degrau adiante, ela ganha `-alt`.
+   */
+  --color-superficie-clara-alt: var(--cor-nevoa-75);
+
+  /*
+   * O botao flutuante de voltar ao topo, MEDIDO: rgba(0,0,0,0.25). Nao e o
+   * `--color-veu` (0,30): aquele escurece uma foto para o texto caber por cima,
+   * este e a propria superficie de um controle sobre conteudo qualquer. Dois
+   * papeis, e a diferenca de opacidade e medida, nao arredondada.
+   */
+  --color-superficie-flutuante: rgb(0 0 0 / 0.25);
+
   --color-borda: var(--cor-nevoa-100);
+  /* MEDIDA na base da topbar: rgba(231,231,231,0.25) sobre o azul. Borda sobre
+     superficie escura precisa vir da luz, nao do cinza das bordas claras. */
+  --color-borda-inversa: rgb(231 231 231 / 0.25);
   --color-destaque: var(--cor-coral-500);
+
+  /*
+   * O algarismo gigante da pagina 404, MEDIDO em #eee — o unico cinza do site
+   * cujo papel e nao ser lido. Consolidado na nevoa-100 das bordas (11 pontos
+   * de distancia, sobre branco e a 1,1:1 em ambos os casos): a diferenca entre
+   * os dois nao e perceptivel e uma primitiva a menos e uma decisao a menos.
+   */
+  --color-texto-decorativo: var(--cor-nevoa-100);
+
+  /*
+   * O item destacado da navegacao — "Fale conosco" no menu, "Seja um associado"
+   * na topbar. No tema eram duas cores literais em `style=` inline
+   * (`#d39e00` e `rgb(211,180,4)`), a 11 pontos uma da outra: ruido, nao
+   * decisao. Consolidadas.
+   *
+   * E ESCURECIDAS. O #d39e00 sobre branco da 2,42:1 e o #d3b404 sobre o azul da
+   * topbar da 2,84:1 — os dois reprovam o criterio 1.4.3 da WCAG, que pede 4,5:1
+   * para texto. Nenhum ouro que ainda pareca ouro passa sobre branco, entao a
+   * decisao foi por faixa:
+   *
+   *   menu (sobre branco)   ambar-800, 4,96:1 medido
+   *   topbar (sobre azul)   o item deixa de ser dourado e fica BRANCO, como o
+   *                         irmao ao lado, distinguido por peso — branco sobre
+   *                         o azul-500 da 5,80:1.
+   *
+   * Mesma classe de correcao que a FaixaDestaque fez na Etapa 3, e pelo mesmo
+   * motivo. Registrada em docs/deltas-visuais.md.
+   */
+  --color-navegacao-destaque: var(--cor-ambar-800);
+
+  /* Cor de marca de cada rede. Ver a nota das primitivas. */
+  --color-rede-facebook: var(--cor-rede-facebook);
+  --color-rede-instagram: var(--cor-rede-instagram);
+  --color-rede-linkedin: var(--cor-rede-linkedin);
+  --color-rede-youtube: var(--cor-rede-youtube);
 
   /*
    * ACENTOS — fundos de faixa editorial.
@@ -254,6 +332,17 @@
   --container-conteudo: 93.75rem; /* 1500px */
 
   /*
+   * A coluna centrada, MEDIDA no `.col-lg-8` que o tema usa para bloco de texto
+   * corrido dentro do container largo — 960px na pagina de historia. Ela existia
+   * como um `col-lg-8` solto em varias paginas e nao tinha nome; agora tem.
+   *
+   * Entre os 1500px do container e os 768px da largura estreita: larga o
+   * bastante para tres colunas de lista, estreita o bastante para o paragrafo
+   * nao virar uma linha de 200 caracteres.
+   */
+  --container-media: 60rem; /* 960px */
+
+  /*
    * PROPORCAO
    *
    * O tema fixava `height: 360px` em `style=` inline nos heros, o que recorta
@@ -275,4 +364,15 @@
   --radius-sm: 0.3675rem; /* 5.88px — .btn, .dropdown-menu, .card */
   --radius-md: 0.7175rem; /* 11.48px — .rounded (105 usos) */
   --radius-full: 9999px;
+
+  /* ==========================================================
+   * SOMBRA
+   * ==========================================================
+   * As duas sombras do site, MEDIDAS nos dois menus suspensos do cabecalho
+   * (scripts/medir-cromo.mjs). Sao tokens e nao valores no componente pelo
+   * motivo de sempre — mas tambem por um motivo mecanico: a cor de uma sombra e
+   * escrita em `rgb()`, e cor literal dentro de componente reprova o build.
+   */
+  --shadow-menu: 0 2rem 2rem rgb(0 0 0 / 0.1); /* 0 33px 32px, o submenu */
+  --shadow-suspenso: 0 0.875rem 1.25rem rgb(0 0 0 / 0.1); /* 0 14px 20px, o seletor de idioma */
 }

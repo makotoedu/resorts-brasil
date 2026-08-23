@@ -112,9 +112,11 @@ src/components/
   primitivos/      Titulo, Texto, Botao, Imagem, Icone
   layout/          Secao, Container, Grade
   padroes/         CartaoMembro, CaixaIcone, CartaoPublicacao, ChamadaAcao,
-                   Hero, FaixaDestaque, ListaIcones, Contador, Abas
+                   Hero, FaixaDestaque, ListaIcones, Contador, Abas, LinkAcao
+  cromo/           Cabecalho, Rodape, FaixaCookies, IconesSociais,
+                   VoltarAoTopo — acrescentado na Etapa 5, ver abaixo
   (existentes)     Header, Footer, SocialIcons, YouTube, GradeLogos,
-                   GradeMembros, CarrosselAssociados, AssociadosTabs,
+                   CarrosselAssociados, AssociadosTabs,
                    SecaoCookies
 src/content/       publicacoes/, estudos/ — Content Collections com Zod
 src/pages/design/  catálogo vivo, noindex, fora do sitemap
@@ -152,13 +154,30 @@ o estilo, o erro volta na próxima página.
 **Strangler por página, sempre nos três idiomas juntos.** Migrar um idioma
 sozinho é exatamente como as divergências atuais nasceram.
 
-O mecanismo que torna isso seguro: [BaseLayout.astro](src/layouts/BaseLayout.astro)
-ganha uma prop `legado`. Página não migrada continua recebendo os `<link>` de
-`plugins.css` / `style.css` / `ajustes.css`; página migrada não recebe nenhum
-deles e usa só o bundle novo. Sem isso, o `style.css` global envenena a página
-migrada — ele é global e tem 110 `!important`.
+O mecanismo que torna isso seguro **mudou de forma na Etapa 5, e a nota fica
+aqui porque o resto do plano ainda cita a versão antiga.**
 
-Quando a última página migrar, a prop e os três arquivos morrem juntos.
+*O plano dizia:* uma prop `legado` no `BaseLayout` decidiria se a página recebe
+os `<link>` de `plugins.css` / `style.css` / `ajustes.css`.
+
+*O que se descobriu:* aquela prop nunca foi usada por página nenhuma, e não podia
+ser — o mesmo layout renderiza `Header` e `Footer` do tema, então `legado={false}`
+entregaria uma página sem cabeçalho e sem rodapé. E um `if` no layout também não
+serviria: o Astro empacota CSS pelo **grafo de módulos**, não pelo que a página
+renderiza, então bastaria *importar* um componente novo — mesmo num ramo morto —
+para o `<style>` dele contaminar as 40 páginas do tema.
+
+*O que vale:* **dois layouts** sobre um `<head>` compartilhado.
+
+| arquivo | quem usa |
+|---|---|
+| [`Cabeca.astro`](src/layouts/Cabeca.astro) | os dois. Sem `<style>`, e isso é requisito |
+| [`BaseLayout.astro`](src/layouts/BaseLayout.astro) | as páginas do tema |
+| [`LayoutSistema.astro`](src/layouts/LayoutSistema.astro) | as migradas; é quem importa `global.css` |
+
+Uma prop dá para esquecer; um layout errado entrega uma página sem cabeçalho na
+primeira vez que você olha. Quando a última página migrar, o `BaseLayout` e os
+três arquivos de CSS morrem juntos.
 
 ---
 
@@ -506,11 +525,64 @@ erro de build.
 
 </details>
 
-### Etapas 5–9 — Páginas, do mais simples ao mais arriscado
+### Etapa 5 — Páginas pequenas ✅ CONCLUÍDA
+
+As dez entregues: `404`, mais `historia`, `fale-conosco` e `diretoria` nos três
+idiomas. **11 de 41 páginas migradas, medido no `dist/`.**
+
+**A etapa começou descobrindo que ela não podia começar.** A prop `legado` do
+BaseLayout — o mecanismo de convivência previsto desde a Etapa 0 — nunca tinha
+sido usada por página nenhuma, e não podia ser: o mesmo layout renderiza `Header`
+e `Footer`, que são markup do tema. `legado={false}` entregaria uma página sem
+cabeçalho, sem rodapé, sem faixa de cookies e sem voltar-ao-topo. O catálogo
+`/design` já contornava isso não usando o BaseLayout; a consequência é que **não
+existia Etapa 5 antes de existir cromo**.
+
+Um `if` no layout também não resolveria: o Astro empacota CSS pelo grafo de
+módulos, então bastaria *importar* o componente novo — mesmo num ramo que nunca
+executa — para o `<style>` dele entrar no bundle das 40 páginas do tema. A
+escolha subiu um nível: **dois layouts** ([`BaseLayout`](src/layouts/BaseLayout.astro)
+e [`LayoutSistema`](src/layouts/LayoutSistema.astro)) sobre um `<head>`
+compartilhado ([`Cabeca`](src/layouts/Cabeca.astro)). Um layout errado entrega uma
+página sem cabeçalho na primeira vez que você olha; uma prop dá para esquecer.
+
+Daí nasceu **`cromo/`, a quarta camada de componentes**: `Cabecalho`, `Rodape`,
+`FaixaCookies`, `IconesSociais` e `VoltarAoTopo`, com valores de
+[`medir-cromo.mjs`](scripts/medir-cromo.mjs) — o quarto da família, e o primeiro
+que precisou medir **estado aberto**, porque menu, submenu e seletor de idioma
+não têm geometria em repouso.
+
+**Um `site.js` só continua servindo as duas camadas**, pelos mesmos nomes de
+estado. A suíte comportamental passou a exigir isso: de 14 para **51 checagens**,
+com o cromo testado nas duas camadas — ela usava `/historia.html` para tudo, e
+aquela página migrou.
+
+**Três portões estavam cegos, e os três enxergam agora:**
+
+- o **checador de headings lia o fonte**, e página migrada não tem `<h1>` no
+  fonte — tem `<Titulo nivel={1}>`. Ele não via heading nenhum e dava a página por
+  boa; de quebra, reprovava por causa dos *comentários* que citam markup. Passou a
+  ler o `dist/`, que é onde o sumário real existe — cromo incluído;
+- a **varredura de geometria não via texto vazar da própria caixa**. Um e-mail de
+  28 caracteres saía da coluna e passava por cima da vizinha na página de contato,
+  em 390px: não há caixa zerada, nem grade colapsada, e a checagem de sobreposição
+  compara *caixas*. Entrou a checagem 6, confirmada por teste negativo;
+- o **orçamento** confirmou o ganho: `diretoria` caiu de 478 para 279 KB.
+
+E a dívida de transbordo horizontal caiu de **72 para 53** — a margem negativa do
+`.row` some com a `<Grade>`, como a Etapa 1 previa.
+
+Duas coisas voltaram para os componentes: a `<CaixaIcone>` perdeu uma margem que
+estava no lugar errado (o `gap` da `<Grade>` já fazia aquele vão), e a `<Grade>`
+ganhou `piso` — quatro colunas de cartão e quatro de texto não querem o mesmo
+mínimo. Detalhes, e as correções de contraste do menu, em
+[docs/decisoes.md](docs/decisoes.md), "Etapa 5", e em
+[docs/deltas-visuais.md](docs/deltas-visuais.md).
+
+### Etapas 6–9 — Páginas, do mais simples ao mais arriscado
 
 | etapa | páginas (× 3 idiomas) | por que aqui |
 |---|---|---|
-| 5 | `404`, `historia`, `fale-conosco`, `diretoria` | pequenas e isoladas; corrige o `<p></h4>` |
 | 6 | `termos-de-uso`, `politica-de-privacidade` | muito texto, pouca estrutura — valida `base.css` |
 | 7 | `publicacoes`, `estatisticas-e-estudos` | estreia as Content Collections |
 | 8 | `associados`, `associe-se`, `apoie`, `resorts-brasil` | componentes de dado já existem |
@@ -534,7 +606,9 @@ cores literais — é o teste real de que a camada semântica funciona.
 
 Remover `public/css/`, `public/webfonts/`, [purge-css.mjs](scripts/purge-css.mjs),
 [check-glifos.mjs](scripts/check-glifos.mjs), [subset-fonts.py](scripts/subset-fonts.py),
-a prop `legado`, e as dependências `purgecss` e `lightningcss`. Some junto a
+o [`BaseLayout`](src/layouts/BaseLayout.astro) inteiro (com `Header`, `Footer` e
+`SocialIcons`), o `PAGINA_TEMA` da suíte comportamental, e as dependências
+`purgecss` e `lightningcss`. Some junto a
 dependência de Python do projeto — o `README` deixa de pedir `fonttools` e
 `brotli`.
 

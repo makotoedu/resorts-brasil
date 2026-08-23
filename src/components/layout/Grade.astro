@@ -27,6 +27,17 @@
 interface Props {
   /** Colunas na largura cheia. Lista de itens iguais: 2, 3, 4 ou 6. */
   colunas?: 1 | 2 | 3 | 4 | 6;
+  /**
+   * Colunas na MENOR largura. Sem ele vale a tabela do <style> abaixo, em que 4
+   * e 6 comecam em duas.
+   *
+   * Ele existe porque aquele piso de duas depende do que ha dentro da celula, e
+   * a <Grade> nao tem como saber: cartao de associado e logo de parceiro ficam
+   * pequenos demais empilhados um por linha, e por isso comecam em duas — mas
+   * uma coluna de TEXTO com 150px de largura e outra coisa. Na pagina de contato
+   * isso pos e-mails de 28 caracteres em celulas de 150px.
+   */
+  piso?: 1 | 2;
   /** 16px, 28px (o vao medido no tema) ou 40px. */
   espaco?: 'sm' | 'md' | 'lg';
   /** `ul` quando os filhos forem `<li>` — uma lista de cartoes continua lista. */
@@ -38,6 +49,7 @@ interface Props {
 
 const {
   colunas = 3,
+  piso,
   espaco = 'md',
   como = 'div',
   alinhamento = 'esticar',
@@ -58,6 +70,8 @@ const ALINHAMENTOS = {
   centro: 'items-center',
   esticar: 'items-stretch',
 } as const;
+
+const PISOS = { 1: 'piso-1', 2: 'piso-2' } as const;
 ---
 
 <!--
@@ -65,7 +79,16 @@ const ALINHAMENTOS = {
   proprio tamanho — seria circular — entao a grade precisa de um pai declarado.
 -->
 <div class="caixa">
-  <Tag class:list={['grade', `colunas-${colunas}`, ESPACOS[espaco], ALINHAMENTOS[alinhamento], classe]}>
+  <Tag
+    class:list={[
+      'grade',
+      `colunas-${colunas}`,
+      piso && PISOS[piso],
+      ESPACOS[espaco],
+      ALINHAMENTOS[alinhamento],
+      classe,
+    ]}
+  >
     <slot />
   </Tag>
 </div>
@@ -107,6 +130,24 @@ const ALINHAMENTOS = {
   .colunas-4,
   .colunas-6 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /*
+   * O piso explicito, e ele mora numa consulta de LARGURA MAXIMA de proposito.
+   *
+   * A tentacao seria escrever `.colunas-4.piso-1 { repeat(1) }` junto das regras
+   * acima — mas aquilo pesa 0-2-0 e venceria as consultas de 30rem e 48rem, que
+   * pesam 0-1-0. A grade ficaria presa numa coluna em qualquer largura. Aqui a
+   * regra so existe abaixo de 30rem, entao as duas escadas nao se encontram.
+   */
+  @container (max-width: 29.9375rem) {
+    .piso-1 {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .piso-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   @container (min-width: 30rem) {

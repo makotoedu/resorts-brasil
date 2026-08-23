@@ -1,36 +1,97 @@
 ---
-import GradeMembros from '../components/GradeMembros.astro';
-import { diretoria, conselhoConsultivo } from '../data/diretoria';
-import BaseLayout from '../layouts/BaseLayout.astro';
+import LayoutSistema from '../layouts/LayoutSistema.astro';
+import Secao from '../components/layout/Secao.astro';
+import Container from '../components/layout/Container.astro';
+import Grade from '../components/layout/Grade.astro';
+import Titulo from '../components/primitivos/Titulo.astro';
+import Texto from '../components/primitivos/Texto.astro';
+import CartaoMembro from '../components/padroes/CartaoMembro.astro';
+import { diretoria, conselhoConsultivo, cargoEm, bienio } from '../data/diretoria';
+import { ui, type Locale } from '../i18n/ui';
+
+/*
+ * A pagina que o <CartaoMembro> existia para servir. Sao 124 usos do
+ * `.team-member` no site, e estes sao os primeiros a virar componente de
+ * verdade — o `GradeMembros.astro` que estava aqui era markup do tema embrulhado
+ * em `.map()`, e saiu junto com esta migracao.
+ *
+ * DUAS CORRECOES DELIBERADAS:
+ *
+ *   1. Hierarquia. Os dois titulos eram `h1` e `h2` com um `h4.text-muted` logo
+ *      abaixo de cada um — e o "Biênio 2026-2027" nao e cabecalho de coisa
+ *      nenhuma, e a legenda do titulo acima. Virou <Texto>. Os nomes dos membros
+ *      eram `h3` em ambos os blocos; agora acompanham o nivel do bloco (h2 sob o
+ *      h1 da diretoria, h3 sob o h2 do conselho), que e o que faz o sumario da
+ *      pagina descrever a pagina.
+ *   2. "Biênio" e o intervalo de anos estavam colados numa string so, escrita
+ *      seis vezes. O rotulo traduz e mora no ui.ts; o intervalo nao traduz e
+ *      mora no diretoria.ts. Trocar de mandato passa a ser um numero.
+ */
+const lang: Locale = 'pt-br';
+const t = ui[lang];
+
+const mandato = `${t.boardTermLabel} ${bienio}`;
+
+/*
+ * O `sizes` da foto. Sem ele o navegador baixa a maior variante para uma celula
+ * de 240px — o padrao do <CartaoMembro> serve a esta grade, e esta declarado
+ * aqui porque a largura da celula e decisao DESTA pagina, nao do cartao.
+ */
+const tamanhosFoto = '(min-width: 64rem) 15rem, (min-width: 30rem) 33vw, 50vw';
 ---
 
-<BaseLayout
-  lang="pt-br"
-  route="board"
->
-    <!-- Diretoria -->
-    <section id="diretoria" class="p-b-0">
-        <div class="container">
-            <div class="row text-center">
-                <h1 class="m-b-10 h2">Diretoria da Resorts Brasil</h1>
-                <h4 class="text-muted">Biênio 2026-2027</h4>
-            </div>
-            <div class="space"></div>
-            <GradeMembros membros={diretoria} lang="pt-br" />
-        </div>
-    </section>
-    <!-- end: Diretoria -->
+<LayoutSistema lang={lang} route="board">
+  <Secao id="diretoria" espacoBase="nenhum">
+    <Container>
+      <div class="cabeca">
+        <Titulo nivel={1} tamanho="xl" peso="medio" alinhamento="centro">{t.boardTitle}</Titulo>
+        <Texto tamanho="lg" cor="sutil" alinhamento="centro" semMargem>{mandato}</Texto>
+      </div>
+      <Grade colunas={6} espaco="md">
+        {
+          diretoria.map((membro) => (
+            <CartaoMembro
+              nome={membro.nome}
+              cargo={cargoEm(membro.cargo, lang)}
+              foto={membro.foto}
+              linkedin={membro.linkedin}
+              nivel={2}
+              tamanhos={tamanhosFoto}
+            />
+          ))
+        }
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- Conselho Consultivo -->
-    <section id="conselho-consultivo">
-        <div class="container">
-            <div class="row text-center">
-                <h2 class="m-b-10">Conselho Consultivo</h2>
-                <h4 class="text-muted">Biênio 2026-2027</h4>
-            </div>
-            <div class="space"></div>
-            <GradeMembros membros={conselhoConsultivo} lang="pt-br" />
-        </div>
-    </section>
-    <!-- end: Conselho Consultivo -->
-</BaseLayout>
+  <Secao id="conselho-consultivo">
+    <Container>
+      <div class="cabeca">
+        <Titulo nivel={2} tamanho="xl" peso="medio" alinhamento="centro">{t.boardCouncilTitle}</Titulo>
+        <Texto tamanho="lg" cor="sutil" alinhamento="centro" semMargem>{mandato}</Texto>
+      </div>
+      <Grade colunas={6} espaco="md">
+        {
+          conselhoConsultivo.map((membro) => (
+            <CartaoMembro
+              nome={membro.nome}
+              cargo={cargoEm(membro.cargo, lang)}
+              foto={membro.foto}
+              linkedin={membro.linkedin}
+              nivel={3}
+              tamanhos={tamanhosFoto}
+            />
+          ))
+        }
+      </Grade>
+    </Container>
+  </Secao>
+</LayoutSistema>
+
+<style>
+  /* Os 60px que o tema reservava com um `<div class="space">` vazio — um
+     elemento sem conteudo cujo unico papel era ocupar altura. */
+  .cabeca {
+    margin-bottom: 3.75rem;
+  }
+</style>

@@ -1,0 +1,131 @@
+---
+import Icone from '../primitivos/Icone.astro';
+import { ui, social, type Locale } from '../../i18n/ui';
+import type { NomeIcone } from '../../icones/glifos';
+
+/**
+ * IconesSociais — os quatro perfis, em duas superficies.
+ *
+ * Substitui o SocialIcons.astro do tema, que emitia `<i class="fab fa-...">` e
+ * dependia da webfont. Aparece duas vezes por pagina — topbar e rodape —, e as
+ * duas nao sao a mesma coisa:
+ *
+ *   topbar   simbolo branco sem fundo, sobre o azul; o circulo aparece no hover
+ *   rodape   circulo permanente na COR DE MARCA de cada rede
+ *
+ * MEDIDO (scripts/medir-cromo.mjs):
+ *
+ *   topbar   caixa 35x40, glifo 15px branco; hover: fundo #5d82d1
+ *   rodape   circulo 32px, glifo 16px branco, 4px de vao
+ *            facebook #5d82d1  instagram #e53d00  linkedin #238cc8  youtube #ef4e41
+ *
+ * As quatro cores sao de marca de terceiros e por isso viraram primitivas
+ * proprias no tokens.css, sem consolidar com nada do site — sao as unicas cores
+ * do sistema que nao respondem a uma decisao nossa.
+ *
+ * O `aria-label` de cada link vem do tema ja corrigido: antes o conteudo do `<a>`
+ * era so um `<i>`, e o leitor de tela anunciava "link" quatro vezes seguidas.
+ */
+interface Props {
+  lang: Locale;
+  superficie?: 'topbar' | 'rodape';
+  class?: string;
+}
+
+const { lang, superficie = 'rodape', class: classe } = Astro.props;
+const t = ui[lang];
+
+const redes: { key: string; rede: string; href: string; icone: NomeIcone }[] = [
+  { key: 'facebook', rede: 'Facebook', href: social.facebook, icone: 'facebook-f' },
+  { key: 'instagram', rede: 'Instagram', href: social.instagram, icone: 'instagram' },
+  { key: 'linkedin', rede: 'LinkedIn', href: social.linkedin, icone: 'linkedin' },
+  { key: 'youtube', rede: 'YouTube', href: social.youtube, icone: 'youtube' },
+];
+---
+
+<ul class:list={['redes', `s-${superficie}`, classe]}>
+  {
+    redes.map((r) => (
+      <li class={`r-${r.key}`}>
+        <a href={r.href} target="_blank" rel="noopener noreferrer" aria-label={`${t.socialOn} ${r.rede}`}>
+          {/* Sem `rotulo` no <Icone>: o nome acessivel ja esta no <a>, e
+              anunciar os dois faria o leitor de tela repetir cada rede. */}
+          <Icone nome={r.icone} tamanho="sm" />
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .redes {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .redes a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-texto-inverso);
+    transition:
+      background-color 0.3s,
+      opacity 0.3s;
+  }
+
+  /* ---------------- topbar ---------------- */
+
+  /* MEDIDO: 35x40 por item, sem fundo em repouso. */
+  .s-topbar a {
+    width: 2.1875rem;
+    height: 2.5rem;
+  }
+
+  /* MEDIDO com o mouse em cima: o circulo aparece no azul do Facebook, que o
+     tema usa como cor unica de hover na topbar — nao por rede. */
+  .s-topbar a:hover {
+    background-color: var(--color-rede-facebook);
+  }
+
+  /* ---------------- rodape ---------------- */
+
+  .s-rodape {
+    flex-wrap: wrap;
+    gap: 0.25rem; /* os 4px medidos entre os circulos */
+  }
+
+  /* MEDIDO: circulo de 32px com glifo de 16px. */
+  .s-rodape a {
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-full);
+  }
+
+  .s-rodape .r-facebook a {
+    background-color: var(--color-rede-facebook);
+  }
+
+  .s-rodape .r-instagram a {
+    background-color: var(--color-rede-instagram);
+  }
+
+  .s-rodape .r-linkedin a {
+    background-color: var(--color-rede-linkedin);
+  }
+
+  .s-rodape .r-youtube a {
+    background-color: var(--color-rede-youtube);
+  }
+
+  /*
+   * O tema nao tinha hover aqui — medido, o circulo do rodape nao muda nada com
+   * o mouse em cima. Um alvo clicavel que nao responde e o unico desvio
+   * deliberado deste componente, e ele custa uma linha.
+   */
+  .s-rodape a:hover {
+    opacity: 0.8;
+  }
+</style>

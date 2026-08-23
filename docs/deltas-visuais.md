@@ -142,6 +142,73 @@ JavaScript. Corrigir agora é trabalho que a etapa seguinte joga fora.
 Fica aqui como **pendência com prazo**: se a Etapa 7 não zerar essa divergência,
 ela vira regressão.
 
+## Etapa 5 — as primeiras páginas em que o pixel muda de propósito
+
+Dez páginas migraram: `404`, `historia`, `fale-conosco` e `diretoria`, as três
+últimas nos três idiomas. **É a primeira etapa em que comparar com o original não
+faz mais sentido**, porque estas páginas deixaram de ser servidas pelo tema —
+elas não carregam `style.css`, não têm `.row`, não têm webfont de ícone e não têm
+`<body class="modern">`.
+
+O diff visual continua rodável, mas o número dele aqui é ruído: uma página que
+trocou de camada de apresentação inteira diverge em tudo. Quem sustenta a etapa
+são os quatro portões duros — build, comportamento (51/51), geometria (zero
+bloqueios em 123 páginas × viewport) e orçamento.
+
+### O que ficou mais leve
+
+O orçamento mediu o efeito de sair do tema, e ele é grande:
+
+| página | antes | depois |
+|---|---|---|
+| `diretoria` (× 3 idiomas) | 478 KB | **279 KB** |
+| `historia` (× 3) | 159 KB | **109 KB** |
+| `fale-conosco` (× 3) | 103 KB | **90 KB** |
+| `404` | 99 KB | **76 KB** |
+
+E a dívida de transbordo horizontal caiu de **72 para 53** ocorrências: a margem
+negativa do `.row` some com a `<Grade>`, exatamente como a Etapa 1 previa.
+
+### Correções
+
+| onde | tipo | motivo |
+|---|---|---|
+| `historia` × 3 | correção | `<p>` fechado com `</h4>` na linha 17 dos três arquivos, desde sempre. O navegador remendava e ninguém via |
+| `historia` × 3 | correção | `h1` seguido de `h3`. A frase do `h3` não é cabeçalho, é abertura — virou `<Texto tamanho="lg">`, e o salto some por deixar de existir |
+| `historia` × 3 | correção | os 12 fundadores eram **três** `<ul>` de quatro, um por coluna do Bootstrap: três listas para o leitor de tela, e reequilíbrio manual a cada mudança. Agora é uma lista em três colunas de CSS |
+| `fale-conosco` × 3 | correção | o telefone do WhatsApp era `+55 (11) 95058-0313` só em inglês, e a frase do canal era outra. Vem de `src/data/contato.ts`, que já alimentava o JSON-LD |
+| `fale-conosco` × 3 | correção | o símbolo era o link e o e-mail ao lado era um `<b>` sem link: o alvo útil não era clicável e o clicável não dizia para onde ia. Agora o link é o valor |
+| `diretoria` × 3 | correção | `h4.text-muted` com "Biênio 2026-2027" sob cada título — não é cabeçalho de nada, é legenda. Virou `<Texto>` |
+| todas | correção | `<body class="modern">` some. A inconsistência (33 páginas com, 7 sem) resolve-se por remoção, não por padronização |
+| cabeçalho | correção | **contraste.** "Fale conosco" era `#d39e00` sobre branco — **2,42:1**; agora é o âmbar-800, **4,96:1**. "Seja um associado" era `rgb(211,180,4)` sobre o azul da topbar — **2,84:1**; agora é branco semibold, **5,80:1**. Os dois reprovavam o critério 1.4.3 da WCAG |
+| cabeçalho | correção | o submenu abria só no `:hover`. Com `:focus-within` desde a primeira linha, quem navega por teclado passa a alcançar os seis destinos que só existem lá dentro |
+| cabeçalho | correção | o item que abre submenu era `<a href="#">` — sujava o histórico e mostrava um destino falso na barra de status. Virou `<button>` |
+| rodapé | correção | o logotipo era exibido a 390×130 a partir de um arquivo de 300×100. Volta ao tamanho nativo |
+| rodapé | correção | os títulos das listas eram `<h4>` sem nenhum `<h3>` acima, em todas as páginas |
+| `404` | correção | o algarismo gigante era lido em voz alta logo antes do título que diz a mesma coisa em palavras. `aria-hidden` |
+
+### Refinos
+
+| onde | tipo | motivo |
+|---|---|---|
+| `historia`, `fale-conosco`, `404` | refino | o título da página passa a `3xl` (40 → 62px). O desktop é o valor medido; no mobile sobe de 32 para 40px, porque 32 não está na escala e criar um degrau para um título inverteria a relação entre sistema e exceção |
+| `fale-conosco` | refino | o `<br>` do título sai. A quebra manual só acertava numa largura; o `text-wrap: balance` acerta em todas |
+| `fale-conosco` | refino | a caixa cinza perde o `p-t-100`. Aqueles 100px existiam para equilibrar os 50px de margem que cada `<CaixaIcone>` carregava embaixo — dois valores medidos que só faziam sentido um por causa do outro |
+| `historia` | refino | a faixa dos 20 anos passa de 8/4 para duas colunas iguais, e o título dela de 90px para o degrau `2xl`. 90px ocupava quatro linhas |
+| `diretoria` | refino | a grade vai a 3 colunas no tablet, onde o tema ficava em 2 (`col-6` valia abaixo de 992px) |
+| `historia` | refino | o bloco de abertura passa a viver numa coluna de 960px (`Container largura="media"`, o valor medido do `.col-lg-8`) |
+| cabeçalho | refino | os `float` viram flexbox; o distintivo de idioma sai de expoente a 9px e entra na linha do símbolo |
+| menu mobile | refino | os submenus deixam de nascer abertos. O tema mostrava os 11 itens de uma vez |
+
+### Uma decisão de contraste que vale revisar
+
+O ouro do menu foi **escurecido** para passar em AA, e escurecer um ouro o
+aproxima do marrom. A alternativa considerada era transformar "Fale conosco" num
+botão de fundo âmbar com texto navy — o par `--color-acento-ambar` /
+`--color-acento-ambar-texto` já existe e mede **9,1:1**. Ela preserva melhor a
+intenção de marca e muda mais o desenho do menu; ficou registrada aqui em vez de
+tomada sozinha.
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

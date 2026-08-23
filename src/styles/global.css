@@ -36,10 +36,27 @@
 @import 'tailwindcss' source(none);
 
 @source '../styles';
-@source '../pages/design.astro';
 @source '../components/primitivos';
 @source '../components/layout';
 @source '../components/padroes';
+@source '../components/cromo';
+@source '../layouts/LayoutSistema.astro';
+
+/* O catalogo. */
+@source '../pages/design.astro';
+
+/* As paginas migradas, uma linha por arquivo. Etapa 5: 404, historia, contato e
+   diretoria, nos tres idiomas. */
+@source '../pages/404.astro';
+@source '../pages/historia.astro';
+@source '../pages/fale-conosco.astro';
+@source '../pages/diretoria.astro';
+@source '../pages/en-us/history.astro';
+@source '../pages/en-us/contact-us.astro';
+@source '../pages/en-us/board.astro';
+@source '../pages/es-es/historia.astro';
+@source '../pages/es-es/contactenos.astro';
+@source '../pages/es-es/directorio.astro';
 
 @import './tokens.css';
 @import './base.css';

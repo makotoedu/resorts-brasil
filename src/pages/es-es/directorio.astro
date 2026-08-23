@@ -1,36 +1,84 @@
 ---
-import GradeMembros from '../../components/GradeMembros.astro';
-import { diretoria, conselhoConsultivo } from '../../data/diretoria';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Grade from '../../components/layout/Grade.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Texto from '../../components/primitivos/Texto.astro';
+import CartaoMembro from '../../components/padroes/CartaoMembro.astro';
+import { diretoria, conselhoConsultivo, cargoEm, bienio } from '../../data/diretoria';
+import { ui, type Locale } from '../../i18n/ui';
+
+/*
+ * Estrutura identica a de src/pages/diretoria.astro — este arquivo so troca o
+ * `lang`. As duas correcoes (hierarquia de heading e a separacao entre o rotulo
+ * "Bienio" e o intervalo de anos) estao documentadas la.
+ */
+const lang: Locale = 'es-es';
+const t = ui[lang];
+
+const mandato = `${t.boardTermLabel} ${bienio}`;
+
+/*
+ * O `sizes` da foto. Sem ele o navegador baixa a maior variante para uma celula
+ * de 240px — o padrao do <CartaoMembro> serve a esta grade, e esta declarado
+ * aqui porque a largura da celula e decisao DESTA pagina, nao do cartao.
+ */
+const tamanhosFoto = '(min-width: 64rem) 15rem, (min-width: 30rem) 33vw, 50vw';
 ---
 
-<BaseLayout
-  lang="es-es"
-  route="board"
->
-    <!-- Directorio -->
-    <section id="directorio" class="p-b-0">
-        <div class="container">
-            <div class="row text-center">
-                <h1 class="m-b-10 h2">Directorio de Resorts Brasil</h1>
-                <h4 class="text-muted">Bienio 2026-2027</h4>
-            </div>
-            <div class="space"></div>
-            <GradeMembros membros={diretoria} lang="es-es" />
-        </div>
-    </section>
-    <!-- end: Directorio -->
+<LayoutSistema lang={lang} route="board">
+  <Secao id="diretoria" espacoBase="nenhum">
+    <Container>
+      <div class="cabeca">
+        <Titulo nivel={1} tamanho="xl" peso="medio" alinhamento="centro">{t.boardTitle}</Titulo>
+        <Texto tamanho="lg" cor="sutil" alinhamento="centro" semMargem>{mandato}</Texto>
+      </div>
+      <Grade colunas={6} espaco="md">
+        {
+          diretoria.map((membro) => (
+            <CartaoMembro
+              nome={membro.nome}
+              cargo={cargoEm(membro.cargo, lang)}
+              foto={membro.foto}
+              linkedin={membro.linkedin}
+              nivel={2}
+              tamanhos={tamanhosFoto}
+            />
+          ))
+        }
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- Consejo Consultivo -->
-    <section id="consejo-consultivo">
-        <div class="container">
-            <div class="row text-center">
-                <h2 class="m-b-10">Consejo Consultivo</h2>
-                <h4 class="text-muted">Bienio 2026-2027</h4>
-            </div>
-            <div class="space"></div>
-            <GradeMembros membros={conselhoConsultivo} lang="es-es" />
-        </div>
-    </section>
-    <!-- end: Consejo Consultivo -->
-</BaseLayout>
+  <Secao id="conselho-consultivo">
+    <Container>
+      <div class="cabeca">
+        <Titulo nivel={2} tamanho="xl" peso="medio" alinhamento="centro">{t.boardCouncilTitle}</Titulo>
+        <Texto tamanho="lg" cor="sutil" alinhamento="centro" semMargem>{mandato}</Texto>
+      </div>
+      <Grade colunas={6} espaco="md">
+        {
+          conselhoConsultivo.map((membro) => (
+            <CartaoMembro
+              nome={membro.nome}
+              cargo={cargoEm(membro.cargo, lang)}
+              foto={membro.foto}
+              linkedin={membro.linkedin}
+              nivel={3}
+              tamanhos={tamanhosFoto}
+            />
+          ))
+        }
+      </Grade>
+    </Container>
+  </Secao>
+</LayoutSistema>
+
+<style>
+  /* Os 60px que o tema reservava com um `<div class="space">` vazio — um
+     elemento sem conteudo cujo unico papel era ocupar altura. */
+  .cabeca {
+    margin-bottom: 3.75rem;
+  }
+</style>

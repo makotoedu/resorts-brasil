@@ -1,60 +1,50 @@
 ---
+import Cabeca from './Cabeca.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import {
-  ui,
-  url,
-  alternates,
-  htmlLang,
-  ogLocale,
-  meta,
-  social,
-  defaultLocale,
-  type Locale,
-  type RouteKey,
-} from '../i18n/ui';
-import { contato } from '../data/contato';
+import { ui, url, htmlLang, type Locale, type RouteKey } from '../i18n/ui';
+
 /*
- * NAO importe a folha do design system aqui.
+ * O layout DO TEMA. Ele serve as paginas que ainda nao migraram, e some quando a
+ * ultima migrar (Etapa 11).
  *
- * A primeira tentativa fez isso, contando com as camadas para proteger as
- * paginas do tema. Nao protege. Medido: 22 das 40 paginas divergiram do site
- * original so por a folha estar presente. As camadas garantem que o tema vence
- * onde ele DECLARA a mesma propriedade; onde nao declara, o Preflight do
- * Tailwind vence o padrao do navegador. Vazaram, entre outros:
+ * NAO IMPORTE NADA DO DESIGN SYSTEM AQUI — nem a folha `global.css`, nem um
+ * componente de `primitivos/`, `layout/`, `padroes/` ou `cromo/`.
  *
- *   border-*-style  none -> solid   (~2200 elementos; revela borda que o tema
- *                                    escondia dando largura e deixando o estilo
- *                                    em `none`)
+ * O motivo e o mesmo que derrubou a primeira tentativa da Etapa 0, e vale tanto
+ * para a folha quanto para qualquer componente com `<style>`: o Astro empacota
+ * CSS pelo GRAFO DE MODULOS, nao pelo que a pagina renderiza. Um `import` aqui,
+ * mesmo dentro de um `if` que nunca executa, poe o CSS no bundle das 40 paginas
+ * do tema. Medido na epoca: 22 delas divergiram do site original so pela
+ * presenca da folha, porque `@layer` garante que o tema vence onde ele DECLARA a
+ * mesma propriedade — onde nao declara, o Preflight vence o padrao do navegador:
+ *
+ *   border-*-style  none -> solid   (~2200 elementos)
  *   display         inline -> block (124x, Preflight em img/svg)
  *   max-width       none -> 100%    (221x, idem)
  *   list-style-type circle -> none  (25x)
  *
- * Alem disso o Tailwind varre o `src/` e gera utilitarias para nomes de classe
- * que o TEMA ja usa (`.container`, `.border`, `.table`, `.card`, `.row`...),
- * colidindo com o CSS do tema — dai os `display: block -> grid` que apareceram.
+ * A separacao e por ARQUIVO, entao: pagina migrada usa `LayoutSistema`, pagina
+ * do tema usa este. `scripts/verifica-sistema.mjs` afirma isso no `dist/` —
+ * nenhuma pagina pode carregar as duas folhas.
  *
- * A folha entra por PAGINA, no frontmatter da pagina migrada:
- *
- *   import '../styles/global.css';
- *   <BaseLayout legado={false} ...>
- *
- * O Astro empacota CSS pelo grafo de modulos de cada pagina, entao a folha so
- * vai para o bundle de quem a importa. Pagina nao migrada fica sem ela — inerte
- * por ausencia, que e mais forte do que inerte por cascata.
+ * A prop `legado` que existia aqui foi removida. Ela prometia essa escolha
+ * dentro de um layout so, e nao podia cumprir: quem passasse `legado={false}`
+ * receberia uma pagina sem cabecalho e sem rodape, porque o Header e o Footer
+ * deste arquivo sao do tema. Nenhuma pagina chegou a usa-la.
  */
 
 interface Props {
   lang: Locale;
-  /** Sobrepoe o title de `meta`. So a 404 precisa, por nao ter `route`. */
+  /** Sobrepoe o title de `meta`. */
   title?: string;
-  /** Sobrepoe a description de `meta`. Idem. */
+  /** Sobrepoe a description de `meta`. */
   description?: string;
-  /** Chave da pagina no mapa de rotas. Omitida em paginas sem traducao (404). */
+  /** Chave da pagina no mapa de rotas. */
   route?: RouteKey;
   /** Caminho absoluto da imagem de compartilhamento. */
   ogImage?: string;
-  /** Rodapé só com a faixa de copyright, como a 404 sempre teve. */
+  /** Rodapé só com a faixa de copyright. */
   rodapeMinimo?: boolean;
   /**
    * Classe do <body>. O site original usava "modern" em 33 páginas e deixava o
@@ -77,283 +67,30 @@ interface Props {
    * public/css/ajustes.css.
    */
   variacaoEbook?: boolean;
-  /**
-   * Carrega o CSS do tema Inspiro (plugins/style/ajustes).
-   *
-   * `true` enquanto a pagina nao foi migrada para o design system. Migrar uma
-   * pagina e, entre outras coisas, passar `legado={false}` aqui: sem isso o
-   * `style.css` — que e global e tem 110 `!important` — envenena a pagina nova.
-   *
-   * O padrao e `true` de proposito: pagina nova nasce no sistema novo so quando
-   * alguem afirma isso explicitamente, e nunca por esquecimento.
-   */
-  legado?: boolean;
 }
 
 const {
   lang,
-  title: titleProp,
-  description: descricaoProp,
+  title,
+  description,
   route,
-  ogImage = '/images/og-image.png',
+  ogImage,
   rodapeMinimo = false,
   bodyClass = 'modern',
   mainClass,
   variacaoEbook = false,
-  legado = true,
 } = Astro.props;
 const t = ui[lang];
-
-// Title e description saem de `meta` em src/i18n/ui.ts, onde os 3 idiomas
-// ficam lado a lado. A prop so existe para a 404, que nao tem `route`.
-const paginaMeta = route ? meta[route][lang] : undefined;
-const title = titleProp ?? paginaMeta?.title;
-const description = descricaoProp ?? paginaMeta?.description;
-if (!title || !description) {
-  throw new Error(
-    `BaseLayout: pagina sem title/description. Acrescente a rota "${route}" em meta (src/i18n/ui.ts) ou passe as props.`
-  );
-}
-
-const site = Astro.site!;
-// Sem `route` (so a 404), o caminho vem da URL do build e traz `.html`, que
-// contradiz o cleanUrls usado no resto do site.
-const fallbackPath = Astro.url.pathname.replace(/\.html$/, '');
-const canonical = new URL(route ? url(route, lang) : fallbackPath, site);
-const ogImageUrl = new URL(ogImage, site);
-const alts = route ? alternates(route) : [];
-
-/** Paginas sem traducao e sem valor de busca (a 404) saem do indice. */
-const noindex = !route;
-
-/**
- * Dado estruturado da associacao. Uma vez por pagina, com os mesmos valores que
- * a pagina de contato exibe — ver src/data/contato.ts.
- */
-const orgJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Resorts Brasil',
-  alternateName: 'Associação Brasileira de Resorts',
-  url: site.href,
-  logo: new URL('/images/logo-25anos.png', site).href,
-  email: contato.email,
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: contato.endereco.logradouro,
-    addressLocality: contato.endereco.cidade,
-    addressRegion: contato.endereco.uf,
-    addressCountry: contato.endereco.pais,
-  },
-  contactPoint: [
-    {
-      '@type': 'ContactPoint',
-      contactType: 'customer support',
-      email: contato.email,
-      telephone: contato.whatsapp.telefoneE164,
-      availableLanguage: ['pt-BR', 'en', 'es'],
-    },
-    {
-      '@type': 'ContactPoint',
-      contactType: 'public relations',
-      email: contato.imprensa.email,
-      telephone: contato.imprensa.telefoneE164,
-    },
-  ],
-  sameAs: Object.values(social),
-};
 ---
 
 <html lang={htmlLang[lang]}>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="author" content="Cloudbe" />
-    <meta name="description" content={description} />
-    <link rel="icon" type="image/png" href="/images/favicon.png" />
-    <title>{title}</title>
-    {noindex && <meta name="robots" content="noindex, follow" />}
+    <Cabeca lang={lang} title={title} description={description} route={route} ogImage={ogImage} />
 
-    <link rel="canonical" href={canonical} />
-    {
-      alts.map((a) => (
-        <link rel="alternate" hreflang={htmlLang[a.lang]} href={new URL(a.href, site)} />
-      ))
-    }
-    {
-      alts.length > 0 && (
-        <link rel="alternate" hreflang="x-default" href={new URL(url(route!, defaultLocale), site)} />
-      )
-    }
-
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Resorts Brasil" />
-    <meta property="og:locale" content={ogLocale[lang]} />
-    {
-      alts
-        .filter((a) => a.lang !== lang)
-        .map((a) => <meta property="og:locale:alternate" content={ogLocale[a.lang]} />)
-    }
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Resorts Brasil" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content="Resorts Brasil" />
-
-    <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
-
-    <!--
-      Poppins, que era um @import na linha 9 do style.css. Os pesos sao os
-      medidos (400-800), a Nunito saiu por nao ter uso, e o endpoint css2 traz
-      o display=swap. Preload das faces nao da: a URL do gstatic e opaca.
-      Motivos e medicoes em docs/decisoes.md, "Google Fonts".
-    -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-    />
-
-    <!--
-      Consentimento e Google Tag Manager.
-
-      Inline e sincrono de proposito, e nao pode virar um modulo do
-      src/scripts/: os defaults do Consent Mode precisam estar no dataLayer
-      antes de qualquer rede, e a decisao de injetar o gtm.js depende de ler o
-      cookie sem esperar o DOMContentLoaded. Antes deste bloco, o GTM disparava
-      incondicionalmente e a faixa era decorativa.
-
-      A UI vive no src/scripts/site.js e so conversa com window.rbConsent.
-      Ver docs/decisoes.md, "O consentimento que nao consentia".
-    -->
-    <script is:inline>
-      (function (w, d) {
-        var GTM = 'GTM-PK7DG6MD';
-        var NOME = 'rb_consent';
-        var VERSAO = 'v1';
-        var DIAS = 180;
-
-        w.dataLayer = w.dataLayer || [];
-        function gtag() {
-          w.dataLayer.push(arguments);
-        }
-
-        /* Consent Mode v2: tudo negado antes de qualquer rede. */
-        gtag('consent', 'default', {
-          ad_storage: 'denied',
-          ad_user_data: 'denied',
-          ad_personalization: 'denied',
-          analytics_storage: 'denied',
-          functionality_storage: 'denied',
-          personalization_storage: 'denied',
-          security_storage: 'granted',
-        });
-
-        function ler() {
-          var m = d.cookie.match(/(?:^|;\s*)rb_consent=([^;]*)/);
-          if (!m) return null;
-          var v = decodeURIComponent(m[1]);
-          /* Versao diferente: a escolha nao vale mais e a faixa volta. */
-          if (v.indexOf(VERSAO + '|') !== 0) return null;
-          return { analise: v.indexOf('a:1') > -1, publicidade: v.indexOf('p:1') > -1 };
-        }
-
-        var carregado = false;
-        function carregarGtm() {
-          if (carregado) return;
-          carregado = true;
-          w.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-          var s = d.createElement('script');
-          s.async = true;
-          s.src = 'https://www.googletagmanager.com/gtm.js?id=' + GTM;
-          d.head.appendChild(s);
-        }
-
-        function aplicar(escolha) {
-          var pub = escolha.publicidade ? 'granted' : 'denied';
-          gtag('consent', 'update', {
-            ad_storage: pub,
-            ad_user_data: pub,
-            ad_personalization: pub,
-            analytics_storage: escolha.analise ? 'granted' : 'denied',
-          });
-          w.dataLayer.push({
-            event: 'consent_update',
-            rb_analise: !!escolha.analise,
-            rb_publicidade: !!escolha.publicidade,
-          });
-          /* Recusa total nao carrega o container: nao ha o que medir. */
-          if (escolha.analise || escolha.publicidade) carregarGtm();
-        }
-
-        function gravar(escolha) {
-          var valor =
-            VERSAO +
-            '|a:' + (escolha.analise ? 1 : 0) +
-            '|p:' + (escolha.publicidade ? 1 : 0) +
-            '|t:' + Math.floor(Date.now() / 1000);
-          d.cookie =
-            NOME + '=' + encodeURIComponent(valor) +
-            '; expires=' + new Date(Date.now() + DIAS * 864e5).toUTCString() +
-            '; path=/; SameSite=Lax' +
-            (w.location.protocol === 'https:' ? '; Secure' : '');
-        }
-
-        w.rbConsent = {
-          get: ler,
-          set: function (escolha) {
-            gravar(escolha);
-            aplicar(escolha);
-          },
-          /* A UI registra aqui como reabrir o painel. */
-          aoAbrir: null,
-          abrir: function () {
-            if (typeof w.rbConsent.aoAbrir === 'function') w.rbConsent.aoAbrir();
-          },
-        };
-
-        var escolha = ler();
-        if (escolha) aplicar(escolha);
-
-        /* O cookiebar21_cbe guardava uma escolha que nao controlava nada: nao e
-           herdado, e sai do navegador de quem ja visitou. */
-        if (d.cookie.indexOf('cookiebar21_cbe=') > -1) {
-          d.cookie = 'cookiebar21_cbe=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-        }
-      })(window, document);
-    </script>
-    <!-- end: Consentimento e Google Tag Manager -->
-
-    {
-      /*
-       * O CSS do tema, só nas páginas que ainda não migraram.
-       *
-       * A folha do design system (global.css) já foi importada acima e vale em
-       * toda página. Aqui, quando `legado` é true, vêm as três folhas do tema
-       * DEPOIS dela — e por ordem de origem o tema vence, então a página não
-       * migrada continua exatamente como está, inclusive o
-       * `:root { font-size: 14px }` do plugins.css.
-       *
-       * Página migrada passa `legado={false}` e fica só com o bundle novo.
-       * Quando a última migrar, esta prop e os três arquivos morrem juntos.
-       */
-      legado && (
-        <>
-          <link href="/css/plugins.css" rel="stylesheet" />
-          <link href="/css/style.css" rel="stylesheet" />
-          {/* Correções ao tema (ver public/css/ajustes.css); precisa vir depois do style.css */}
-          <link href="/css/ajustes.css" rel="stylesheet" />
-        </>
-      )
-    }
+    <link href="/css/plugins.css" rel="stylesheet" />
+    <link href="/css/style.css" rel="stylesheet" />
+    <!-- Correções ao tema (ver public/css/ajustes.css); precisa vir depois do style.css -->
+    <link href="/css/ajustes.css" rel="stylesheet" />
   </head>
 
   <body class={bodyClass || undefined}>

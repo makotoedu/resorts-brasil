@@ -10,7 +10,9 @@
  *
  * O QUE ELA MEDE, E O QUE NAO MEDE. Mede geometria: caixa com tamanho zero,
  * irmaos sobrepostos, grade que perdeu as colunas, imagem que nao carregou,
- * conteudo transbordando na horizontal. NAO mede altura de pagina — decisao do
+ * conteudo transbordando na horizontal e texto vazando da propria caixa (esta
+ * ultima entrou na Etapa 5, depois de um defeito que passou pelas outras cinco).
+ * NAO mede altura de pagina — decisao do
  * projeto e que altura nao e criterio (ver docs/deltas-visuais.md). Uma pagina
  * pode encurtar 800px por ter menos conteudo; nao pode encurtar porque uma
  * secao virou zero.
@@ -194,6 +196,55 @@ for (const vp of VIEWPORTS) {
             if (colunas < 2) r.push(['grade colapsou para 1 coluna', `${sel} — ${filhos.length} filhos`]);
           }
         }
+      }
+
+      /* 6. Texto vazando da propria caixa ----------------------------- */
+      /*
+       * A checagem que faltava, e ela nasceu de um defeito real que passou por
+       * todos os portoes: na pagina de contato em 390px, os e-mails saiam da
+       * coluna e passavam por cima do texto da coluna vizinha.
+       *
+       * Nenhuma das cinco checagens acima podia ver aquilo. Nao ha caixa zerada,
+       * nao ha grade colapsada, e a sobreposicao de irmaos compara CAIXAS — as
+       * caixas estavam certas; quem vazava era o conteudo. O transbordo
+       * horizontal tambem nao pega, porque o texto vazou dentro do container,
+       * sem empurrar a pagina.
+       *
+       * O criterio e o proprio elemento: `scrollWidth` maior que `clientWidth`
+       * quer dizer que ha conteudo fora da caixa na horizontal. A folga de 2px
+       * absorve arredondamento de sub-pixel.
+       *
+       * TRES EXCLUSOES, e a terceira so apareceu quando a checagem rodou:
+       *
+       *   rolagem propria   um `<pre>`, uma tabela larga ou um carrossel
+       *                     transbordam de proposito, e `overflow-x: auto` e a
+       *                     declaracao de que aquilo e intencional;
+       *   `white-space`     `pre` e `nowrap` pedem para nao quebrar;
+       *   FILHO FORA DO FLUXO  um `<li>` de menu com submenu `position:
+       *                     absolute` "vaza" pelos 230px do submenu enquanto o
+       *                     item mede 118 — e o popup existe justamente para
+       *                     sair da caixa. Reprovou o catalogo na primeira
+       *                     execucao. Elemento posicionado e uma afirmacao
+       *                     explicita de que ele nao mora ali dentro.
+       */
+      const temFilhoForaDoFluxo = (el) =>
+        [...el.querySelectorAll('*')].some((f) => {
+          const p = getComputedStyle(f).position;
+          return p === 'absolute' || p === 'fixed';
+        });
+
+      for (const el of document.querySelectorAll('main p, main li, main h1, main h2, main h3, main h4, main h5, main h6, main span, main td, main th')) {
+        if (!visivel(el)) continue;
+        if (el.scrollWidth <= el.clientWidth + 2) continue;
+        const estilo = getComputedStyle(el);
+        if (estilo.overflowX !== 'visible' || estilo.whiteSpace === 'pre' || estilo.whiteSpace === 'nowrap') continue;
+        if (temFilhoForaDoFluxo(el)) continue;
+        const texto = (el.textContent || '').trim().slice(0, 40);
+        r.push([
+          'texto vazando da caixa',
+          `${el.tagName.toLowerCase()} — ${el.scrollWidth}px de conteudo em ${el.clientWidth}px: "${texto}"`,
+        ]);
+        break; // um por pagina basta para acionar; o resto e ruido
       }
 
       return { migrada, achados: r };

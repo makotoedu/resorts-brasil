@@ -1,77 +1,88 @@
 ---
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Grade from '../../components/layout/Grade.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Texto from '../../components/primitivos/Texto.astro';
+import CaixaIcone from '../../components/padroes/CaixaIcone.astro';
+import ChamadaAcao from '../../components/padroes/ChamadaAcao.astro';
 import { contato } from '../../data/contato';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ui, type Locale } from '../../i18n/ui';
+
+/*
+ * Estrutura identica a de src/pages/fale-conosco.astro — este arquivo so troca
+ * o `lang`. As quatro correcoes estao documentadas la; uma delas nasceu
+ * justamente da divergencia entre estes arquivos: o telefone do WhatsApp era
+ * "+55 (11) 95058-0313" so em ingles.
+ */
+const lang: Locale = 'en-us';
+const t = ui[lang];
 ---
 
-<BaseLayout
-  lang="en-us"
-  route="contact"
->
-    <!-- Title -->
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="text-center">
-                    <h1 class="text-md h2">How would you like to <br> contact us?</h1>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Title -->
+<LayoutSistema lang={lang} route="contact">
+  <Secao id="fale-conosco">
+    <Container>
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.contactTitle}</Titulo>
+    </Container>
+  </Secao>
 
-    <!-- Contact us -->
-    <section id="contact-us" class="p-t-0">
-        <div class="container">
-            <div class="call-to-action p-t-100 background-grey rounded">
-                <div class="row">
-                    <div class="col-lg-3">
-                        <div class="icon-box small clean">
-                            <div class="icon">
-                                <a href={`mailto:${contato.email}`}><i class="icon-mail"></i></a>
-                            </div>
-                            <h3>Email</h3>
-                            <p>Questions? We can help you via email.<br>
-                                <b>{contato.email}</b>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="icon-box small clean">
-                            <div class="icon">
-                                <a href={contato.endereco.mapa}><i class="icon-map-pin"></i></a>
-                            </div>
-                            <h3>Address</h3>
-                            <p>Our mailing address:<br>
-                                <b>{contato.endereco.linha}</b>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="icon-box small clean">
-                            <div class="icon">
-                                <a href={`mailto:${contato.imprensa.email}`}><i class="icon-message-square"></i></a>
-                            </div>
-                            <h3>Press</h3>
-                            <p>Anagrama Comunicação e Eventos.<br><b>{contato.imprensa.email}</b><br><b>+55 11
-                                    95038-7232</b>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3">
-                        <div class="icon-box small clean">
-                            <div class="icon">
-                                <a href={contato.whatsapp.link} target="_blank" rel="noopener noreferrer"><i
-                                        class="fab fa-whatsapp"></i></a>
-                            </div>
-                            <h3>WhatsApp</h3>
-                            <p>Needing help? Contact our virtual assistant.<br>
-                                <b>+55 (11) 95058-0313</b>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Contact us -->
-</BaseLayout>
+  <Secao id="contato" espacoTopo="nenhum">
+    <Container>
+      {/*
+        Sem o `p-t-100` do tema.
+
+        Aqueles 100px de recuo superior existiam para equilibrar os 50px de
+        margem que cada <CaixaIcone> carregava embaixo — dois valores medidos que
+        so faziam sentido um por causa do outro. Com a margem no lugar certo (o
+        `gap` da <Grade>), o recuo proprio da <ChamadaAcao> ja fecha a caixa
+        simetrica, 46px em cima e 34 embaixo, os dois medidos.
+
+        Tentar manter os 100px com `class="pt-secao-lg"` tambem NAO funcionaria, e
+        vale registrar: o `<style>` de um componente Astro nao esta em `@layer`, e
+        utilitaria em `@layer utilities` perde para regra sem camada. A prop
+        `class` serve para acrescentar, nao para sobrepor o desenho do padrao.
+      */}
+      <ChamadaAcao fundo="clara">
+        {/* `piso={1}` porque estas quatro celulas sao TEXTO. O piso padrao de
+            duas colunas serve a cartao e a logo; num celular de 390px ele daria
+            150px de largura a um e-mail de 28 caracteres. */}
+        <Grade colunas={4} piso={1} espaco="md" alinhamento="inicio">
+          <CaixaIcone icone="mail" titulo={t.contactEmailTitle} nivel={2}>
+            <Texto>{t.contactEmailText}</Texto>
+            <Texto semMargem>
+              <a href={`mailto:${contato.email}`}>{contato.email}</a>
+            </Texto>
+          </CaixaIcone>
+
+          <CaixaIcone icone="map-pin" titulo={t.contactAddressTitle} nivel={2}>
+            <Texto>{t.contactAddressText}</Texto>
+            <Texto semMargem>
+              <a href={contato.endereco.mapa} target="_blank" rel="noopener noreferrer">
+                {contato.endereco.linha}
+              </a>
+            </Texto>
+          </CaixaIcone>
+
+          <CaixaIcone icone="message-square" titulo={t.contactPressTitle} nivel={2}>
+            <Texto>{contato.imprensa.agencia}</Texto>
+            <Texto semMargem>
+              <a href={`mailto:${contato.imprensa.email}`}>{contato.imprensa.email}</a>
+              <br />
+              <a href={`tel:${contato.imprensa.telefoneE164}`}>{contato.imprensa.telefone}</a>
+            </Texto>
+          </CaixaIcone>
+
+          <CaixaIcone icone="whatsapp" titulo={t.contactWhatsappTitle} nivel={2}>
+            <Texto>{t.contactWhatsappText}</Texto>
+            <Texto semMargem>
+              <a href={contato.whatsapp.link} target="_blank" rel="noopener noreferrer">
+                {contato.whatsapp.telefone}
+              </a>
+            </Texto>
+          </CaixaIcone>
+        </Grade>
+      </ChamadaAcao>
+    </Container>
+  </Secao>
+</LayoutSistema>

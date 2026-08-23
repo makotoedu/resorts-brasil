@@ -1,81 +1,94 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import LayoutSistema from '../layouts/LayoutSistema.astro';
+import Secao from '../components/layout/Secao.astro';
+import Container from '../components/layout/Container.astro';
+import Titulo from '../components/primitivos/Titulo.astro';
+import Texto from '../components/primitivos/Texto.astro';
+import Botao from '../components/primitivos/Botao.astro';
+import Imagem from '../components/primitivos/Imagem.astro';
+import ListaIcones from '../components/padroes/ListaIcones.astro';
+import FaixaDestaque from '../components/padroes/FaixaDestaque.astro';
+import { fundadores } from '../data/fundadores';
+import { publicacaoEm } from '../conteudo';
+import { ui, type Locale } from '../i18n/ui';
+
+/*
+ * TRES CORRECOES DELIBERADAS NESTA PAGINA, e a primeira e a razao de ela abrir
+ * a Etapa 5:
+ *
+ *   1. `<p>` fechado com `</h4>`. Estava na linha 17 dos TRES arquivos de
+ *      idioma, desde sempre. O parser do navegador fechava o paragrafo sozinho e
+ *      descartava a etiqueta orfa, entao nada quebrava visivelmente — e ninguem
+ *      via.
+ *   2. Hierarquia. Era `<h1 class="text-md h2">` seguido de `<h3>`: um h1 que
+ *      queria parecer h2, e um salto de nivel. A frase que estava no h3 nao e um
+ *      cabecalho, e uma abertura — virou <Texto tamanho="lg">, e com isso o
+ *      salto some por deixar de existir, nao por remendo.
+ *   3. Os 12 fundadores eram TRES listas de quatro, uma por coluna do Bootstrap.
+ *      Uma lista so, em tres colunas de CSS. Ver src/data/fundadores.ts.
+ */
+const lang: Locale = 'pt-br';
+const t = ui[lang];
+
+/*
+ * A capa e o PDF vem da colecao, e nao do markup: sao os mesmos da pagina de
+ * publicacoes, e ate aqui o link do Drive estava escrito em seis lugares.
+ * O TITULO nao vem — ver a nota de `historyBookTitle` no src/i18n/ui.ts.
+ */
+const livro = await publicacaoEm('memorias-sustentabilidade-e-um-olhar-para-o-futuro', lang);
 ---
 
-<BaseLayout
-  lang="pt-br"
-  route="history"
->
-    <!-- Título -->
-    <section id="title">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 center text-center">
-                    <h1 class="text-md h2">História</h1>
-                    <h3>A ideia da criação de uma entidade que representasse os interesses do setor começou no ano
-                        de 2000 e tomou forma durante o Festival de Turismo de Gramado.</h3>
-                    <p>Em dezembro de 2001, oficialmente, a Resorts Brasil foi fundada, fruto da
-                        iniciativa de 12 empresas do setor.</h4>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Título -->
+<LayoutSistema lang={lang} route="history">
+  <Secao id="historia">
+    <Container largura="media">
+      <div class="abertura">
+        <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.historyTitle}</Titulo>
+        <Texto tamanho="lg" cor="padrao" alinhamento="centro">{t.historyLead}</Texto>
+        <Texto alinhamento="centro">{t.historyIntro}</Texto>
+      </div>
+      <ListaIcones marcador="circulo" colunas={3} itens={fundadores} />
+    </Container>
+  </Secao>
 
-    <!-- Fundadores -->
-    <section id="fundadores" class="p-t-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 center">
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <ul class="list-icon list-icon-circle list-icon-colored">
-                                <li>Accor Sofitel</li>
-                                <li>Blue Tree Park Angra dos Reis</li>
-                                <li>Blue Tree Cabo de Santo Agostinho</li>
-                                <li>Costão do Santinho Resort</li>
-                            </ul>
-                        </div>
-                        <div class="col-lg-4">
-                            <ul class="list-icon list-icon-circle list-icon-colored">
-                                <li>Hotel do Frade</li>
-                                <li>Mabu Hotéis & Resorts</li>
-                                <li>Porto Bello</li>
-                                <li>Pousada do Rio Quente</li>
-                            </ul>
-                        </div>
-                        <div class="col-lg-4">
-                            <ul class="list-icon list-icon-circle list-icon-colored">
-                                <li>Club Hotel Salinas do Maragogi</li>
-                                <li>Summerville Hotel</li>
-                                <li>Superclubs</li>
-                                <li>Tropical Manaus</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Fundadores -->
+  <!--
+    Sem <Container>: a faixa vai de borda a borda ocupando a largura da secao.
+    E a composicao que substitui o `.section-fullwidth` do tema, que somava
+    `width: 100vw` a uma margem negativa e transbordava a barra de rolagem.
+  -->
+  <Secao espaco="nenhum">
+    <FaixaDestaque tons={['indigo', 'ambar']}>
+      <Fragment slot="1">
+        <Texto peso="bold">{t.historyBookBadge}</Texto>
+        <Titulo nivel={2} tamanho="2xl">{t.historyBookTitle}</Titulo>
+        <Botao href={livro.url} variante="clara" tamanho="lg" target="_blank" rel="noopener noreferrer">
+          {t.leiaAgora}
+        </Botao>
+      </Fragment>
+      <Fragment slot="2">
+        <a href={livro.url} target="_blank" rel="noopener noreferrer">
+          <Imagem
+            src={livro.capa}
+            alt={t.historyBookTitle}
+            largura={343}
+            altura={488}
+            arredondada
+            tamanhos="21.5rem"
+          />
+        </a>
+      </Fragment>
+    </FaixaDestaque>
+  </Secao>
+</LayoutSistema>
 
-    <!-- Publicacoes -->
-    <section id="publicacoes" class="box-fancy section-fullwidth text-light no-padding">
-        <div class="row">
-            <div class="col-lg-8 text-center" style="background-color: #242F9B;">
-                <p class="text-bold">20 ANOS</p>
-                <h2 class="text-lg">Memórias, sustentabilidade e um olhar para o futuro</h2>
-                <a class="btn btn-light btn-outline"
-                    href="https://drive.google.com/file/d/1wbxXZPjaewuA0fq6Fsh79_Ztv8dbjhWe/view"
-                    target="_blank" rel="noopener noreferrer">Leia agora</a>
-            </div>
-            <div class="col-lg-4 text-center" style="background-color: #FAC213;">
-                <a href="https://drive.google.com/file/d/1wbxXZPjaewuA0fq6Fsh79_Ztv8dbjhWe/view" target="_blank" rel="noopener noreferrer">
-                    <img class="img-fluid rounded"
-                        src="/images/publicacoes/memorias-sustentabilidade-e-um-olhar-para-o-futuro.jpg" alt="capa">
-                </a>
-            </div>
-        </div>
-    </section>
-    <!-- end: Publicacoes -->
-</BaseLayout>
+<style>
+  /*
+   * O vao ate a lista de fundadoras.
+   *
+   * No tema isso eram DUAS secoes, a segunda com `p-t-0` para cancelar os 80px
+   * que ela mesma traria — um bloco visual escrito como dois porque a grade do
+   * Bootstrap pedia. Aqui e uma secao so, e o vao e uma margem.
+   */
+  .abertura {
+    margin-bottom: 2.5rem;
+  }
+</style>

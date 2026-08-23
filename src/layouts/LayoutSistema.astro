@@ -1,0 +1,89 @@
+---
+/*
+ * A FOLHA DO DESIGN SYSTEM ENTRA AQUI, e este e o unico layout que pode
+ * importa-la.
+ *
+ * A regra do CLAUDE.md — "a folha entra pelo frontmatter da pagina, nunca pelo
+ * BaseLayout" — continua valendo e continua tendo o mesmo motivo: o Astro
+ * empacota CSS pelo grafo de modulos, entao a folha vai para o bundle de quem a
+ * importa, e o `BaseLayout` e importado pelas 40 paginas do tema.
+ *
+ * Este arquivo nao e importado por nenhuma delas. Ele e o layout das paginas
+ * MIGRADAS, e so delas — o isolamento por ausencia continua intacto, so que
+ * agora a fronteira e um arquivo em vez de uma prop booleana. Que e mais forte:
+ * uma prop da para esquecer, um layout errado entrega uma pagina sem cabecalho.
+ *
+ * `scripts/verifica-sistema.mjs` afirma isso no `dist/`: nenhuma pagina pode
+ * carregar as duas folhas, e nenhuma pode ficar sem folha nenhuma.
+ */
+import '../styles/global.css';
+
+import Cabeca from './Cabeca.astro';
+import Cabecalho from '../components/cromo/Cabecalho.astro';
+import Rodape from '../components/cromo/Rodape.astro';
+import FaixaCookies from '../components/cromo/FaixaCookies.astro';
+import VoltarAoTopo from '../components/cromo/VoltarAoTopo.astro';
+import { ui, htmlLang, type Locale, type RouteKey } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+  /** Sobrepoe o title de `meta`. So a 404 precisa, por nao ter `route`. */
+  title?: string;
+  /** Sobrepoe a description de `meta`. Idem. */
+  description?: string;
+  /** Chave da pagina no mapa de rotas. Omitida em paginas sem traducao (404). */
+  route?: RouteKey;
+  /** Caminho absoluto da imagem de compartilhamento. */
+  ogImage?: string;
+  /** Rodape so com a faixa de copyright, como a 404 sempre teve. */
+  rodapeMinimo?: boolean;
+}
+
+const { lang, title, description, route, ogImage, rodapeMinimo = false } = Astro.props;
+const t = ui[lang];
+---
+
+<html lang={htmlLang[lang]}>
+  <head>
+    <Cabeca lang={lang} title={title} description={description} route={route} ogImage={ogImage} />
+  </head>
+
+  <!--
+    O <body> nasce SEM CLASSE. O tema usava "modern" em 33 paginas e nada em 7 —
+    uma inconsistencia do conteudo original que mudava o layout. Aqui a classe
+    simplesmente nao existe, e com ela some a divergencia: e a "uniformizacao do
+    bodyClass" que o plano previa, resolvida por remocao em vez de padronizacao.
+  -->
+  <body>
+    <a class="skip-link" href="#conteudo">{t.skipToContent}</a>
+
+    <!--
+      Logo depois do link de pular, e nao no fim do <body> como no original,
+      para o teclado alcancar a escolha cedo. Nao muda pixel: a faixa e
+      `position: fixed`.
+    -->
+    <FaixaCookies lang={lang} />
+
+    <Cabecalho lang={lang} route={route} />
+
+    <main id="conteudo">
+      <slot />
+    </main>
+
+    <Rodape lang={lang} minimo={rodapeMinimo} />
+
+    <VoltarAoTopo lang={lang} />
+
+    <!--
+      O MESMO script das paginas do tema, e nao um segundo.
+
+      Ele so age sobre ganchos que existem: `#mainMenu`, `#mainMenu-trigger`,
+      `.cookie-notify`, `#scrollTop` e `.cookie-manage` estao nos dois cromos com
+      os mesmos nomes, e os blocos de carrossel, masonry, abas, hero e video
+      simplesmente nao encontram nada nestas paginas e saem sem fazer nada.
+      Manter um script so e o que impede as duas camadas de divergirem em
+      comportamento enquanto divergem em aparencia.
+    -->
+    <script src="../scripts/site.js"></script>
+  </body>
+</html>

@@ -29,7 +29,7 @@ import type { HTMLAttributes } from 'astro/types';
 interface Props extends Omit<HTMLAttributes<'a'>, 'class' | 'href' | 'type'> {
   /** Presente: vira `<a>`. Ausente: vira `<button>`. */
   href?: string;
-  variante?: 'primaria' | 'contorno' | 'clara' | 'destaque';
+  variante?: 'primaria' | 'contorno' | 'clara' | 'clara-solida' | 'destaque';
   tamanho?: 'sm' | 'md' | 'lg';
   /** So no `<button>`. */
   tipo?: 'button' | 'submit' | 'reset';
@@ -176,6 +176,32 @@ const Tag = href ? 'a' : 'button';
   .v-clara:hover,
   .v-clara[data-estado='hover'] {
     background-color: var(--color-texto-inverso);
+    color: var(--color-texto-paragrafo);
+  }
+
+  /*
+   * A mesma cor, PREENCHIDA. E o `.btn-light` sem `.btn-outline`, e ele existe
+   * de verdade: sao os tres botoes da faixa de cookies, em todas as paginas.
+   *
+   * A variante faltava e o buraco so apareceu quando o cromo migrou — a Etapa 1
+   * leu `.btn-light` no markup, achou os 17 usos com `.btn-outline` junto e
+   * concluiu que a clara era sempre vazada. Repouso e hover MEDIDOS na propria
+   * faixa (scripts/medir-cromo.mjs): branco com o navy do texto, indo para o
+   * cinza claro do sistema com o cinza de paragrafo.
+   *
+   * Repare que o repouso desta variante e exatamente o HOVER da `clara`. Nao e
+   * coincidencia: no tema as duas sao a mesma regra vista de dois lados.
+   */
+  .v-clara-solida {
+    background-color: var(--color-texto-inverso);
+    border-color: var(--color-texto-inverso);
+    color: var(--color-texto);
+  }
+
+  .v-clara-solida:hover,
+  .v-clara-solida[data-estado='hover'] {
+    background-color: var(--color-superficie-clara);
+    border-color: var(--color-superficie-clara);
     color: var(--color-texto-paragrafo);
   }
 

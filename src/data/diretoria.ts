@@ -120,5 +120,13 @@ export const conselhoConsultivo: Membro[] = [
   { nome: 'Sérgio Gomes Pinto de Souza', cargo: 'Casa Grande Hotel Resort & SPA', foto: '/images/conselho/sergio-gomes-pinto-de-souza.png', linkedin: 'https://www.linkedin.com/in/s%C3%A9rgio-souza-63808a47/' },
 ];
 
-/** Bienio exibido sob os dois titulos. */
+/**
+ * O bienio exibido sob os dois titulos.
+ *
+ * O intervalo de anos NAO traduz e por isso mora aqui; o rotulo ("Biênio",
+ * "Biennium", "Bienio") traduz e mora em src/i18n/ui.ts como `boardTermLabel`.
+ * Ate a Etapa 5 os dois estavam colados numa string so, escrita seis vezes no
+ * markup — e bastava uma eleicao para a pagina em ingles ficar dois anos
+ * atrasada em relacao as outras duas.
+ */
 export const bienio = '2026-2027';

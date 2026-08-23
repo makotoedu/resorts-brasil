@@ -1,30 +1,92 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import LayoutSistema from '../layouts/LayoutSistema.astro';
+import Secao from '../components/layout/Secao.astro';
+import Container from '../components/layout/Container.astro';
+import Titulo from '../components/primitivos/Titulo.astro';
+import Texto from '../components/primitivos/Texto.astro';
+import Botao from '../components/primitivos/Botao.astro';
+import { ui, url, type Locale } from '../i18n/ui';
+
+/*
+ * A UNICA PAGINA DO SITE QUE JA TINHA HIERARQUIA CORRETA — 1 das 40, segundo a
+ * auditoria. Ela nao ganha correcao de heading; ganha o resto.
+ *
+ * O texto fica no proprio arquivo, e nao no src/i18n/ui.ts, porque ele nao
+ * traduz: a Vercel serve uma 404 so para os tres idiomas, e a pagina nao tem
+ * `route` nem alternates. A regra do projeto e "o que traduz vai no ui.ts"; isto
+ * nao traduz. O que vem do ui.ts e o rotulo do botao, que ja existia no menu.
+ *
+ * DOIS DESVIOS DELIBERADOS:
+ *
+ *   1. O `hero-fullscreen` sai. O tema puxava o <main> 120px para cima para
+ *      passar sob o cabecalho transparente e depois esticava a secao ate a
+ *      altura da janela — um arranjo que existe para heros com foto. Aqui nao ha
+ *      foto: a secao tem altura propria e o cabecalho fica onde esta.
+ *   2. O algarismo gigante deixa de ser lido. Ele era um `<div>` com "404"
+ *      dentro, anunciado como texto por leitor de tela logo antes do titulo que
+ *      diz a mesma coisa em palavras. `aria-hidden` resolve, e o `<h1>` continua
+ *      sendo a primeira coisa anunciada.
+ */
+const lang: Locale = 'pt-br';
+const t = ui[lang];
 ---
 
-<BaseLayout
-  lang="pt-br"
-  title={'Página não encontrada (404) - Resorts Brasil'}
-  description={'A página que você procura não foi encontrada. Volte para a home da Resorts Brasil ou use o menu para chegar ao que precisa.'}
+<LayoutSistema
+  lang={lang}
+  title="Página não encontrada (404) - Resorts Brasil"
+  description="A página que você procura não foi encontrada. Volte para a home da Resorts Brasil ou use o menu para chegar ao que precisa."
   rodapeMinimo
-  mainClass="hero-fullscreen"
 >
-    <!-- 404 -->
-    <section id="404" class="fullscreen">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="page-error-404">404</div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="text-left">
-                        <h1 class="text-medium">Ops, não foi possível encontrar esta página!</h1>
-                        <p class="lead">A página que você está procurando pode ter sido removida, teve seu nome
-                            alterado ou está temporariamente indisponível.</p>
-                    </div>
-                </div>
-            </div>
+  <Secao id="pagina-404" espaco="lg">
+    <Container>
+      <div class="tela">
+        <p class="algarismo" aria-hidden="true">404</p>
+        <div>
+          <Titulo nivel={1} tamanho="2xl" peso="extrabold">
+            Ops, não foi possível encontrar esta página!
+          </Titulo>
+          <Texto tamanho="md">
+            A página que você está procurando pode ter sido removida, teve seu nome alterado ou está
+            temporariamente indisponível.
+          </Texto>
+          <Botao href={url('home', lang)} tamanho="lg">{t.navHome}</Botao>
         </div>
-    </section>
-    <!-- end:  404 -->
-</BaseLayout>
+      </div>
+    </Container>
+  </Secao>
+</LayoutSistema>
+
+<style>
+  .tela {
+    display: grid;
+    gap: 1rem 2.5rem;
+    align-items: center;
+    /* Sem isto a 404 e uma faixa fina no alto de uma pagina vazia; e a unica
+       coisa que o `fullscreen` do tema fazia e que vale a pena manter. */
+    min-height: 50vh;
+  }
+
+  @media (min-width: 62rem) {
+    .tela {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /*
+   * O algarismo esta FORA da escala tipografica de propósito, e a excecao e
+   * declarada aqui em vez de virar um degrau do tokens.css: 140px no mobile e
+   * 300px no desktop nao sao um tamanho de texto, sao uma ilustracao feita de
+   * numeros. Criar `--text-5xl` para isto inverteria a relacao entre sistema e
+   * excecao — o mesmo raciocinio do marcador de 12px no <ListaIcones>.
+   *
+   * Os dois valores sao MEDIDOS; o que muda e que antes eles saltavam na media
+   * query e agora interpolam.
+   */
+  .algarismo {
+    color: var(--color-texto-decorativo);
+    font-size: clamp(8.75rem, 4.1667rem + 18.8333vw, 18.75rem);
+    font-weight: var(--font-weight-extrabold);
+    line-height: 0.8;
+    margin: 0;
+  }
+</style>

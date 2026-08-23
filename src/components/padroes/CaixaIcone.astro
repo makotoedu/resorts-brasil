@@ -50,11 +50,22 @@ const { icone, titulo, nivel = 3, alinhamento = 'inicio', tom = 'padrao', class:
 </div>
 
 <style>
-  .caixa {
-    /* 50px medidos abaixo de cada caixa. Quando a caixa esta numa <Grade>, o
-       `gap` ja cuida do vao — dai a margem ficar so embaixo. */
-    margin-bottom: 3.125rem;
-  }
+  /*
+   * A CAIXA NAO TEM MARGEM PROPRIA, e a linha que tinha foi removida na Etapa 5.
+   *
+   * Ela media 50px, e os 50px sao reais — no tema, a caixa vivia dentro de uma
+   * `.row` de colunas coladas, e aquela margem era a UNICA coisa separando uma
+   * linha de caixas da seguinte. O valor estava certo e o lugar, errado: numa
+   * <Grade>, quem separa e o `gap`, e a margem passa a sobrar embaixo da ultima
+   * linha, por dentro do container.
+   *
+   * Apareceu na pagina de contato: a caixa cinza ficou com 55px de respiro em
+   * cima e 95 embaixo. Nenhum portao viu — nao ha caixa zerada, nem transbordo,
+   * nem sobreposicao; e assimetria, e assimetria so aparece olhando.
+   *
+   * A regra que fica: espaco ENTRE irmaos e do container, nao do filho. E a
+   * mesma que a <Secao> e a <Grade> ja seguem.
+   */
 
   .centro {
     text-align: center;

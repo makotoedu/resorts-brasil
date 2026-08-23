@@ -23,27 +23,38 @@ O plano completo, com etapas e critérios, está em
 | 2 — pipeline de imagens | concluída |
 | 3 — padrões (CartaoMembro, Hero, Abas…) | concluída |
 | 4 — conteúdo (Content Collections) | concluída |
-| 5 — páginas pequenas (404, história, contato, diretoria) | **próxima** |
-| 6–11 | não iniciadas |
+| 5 — cromo + páginas pequenas (404, história, contato, diretoria) | concluída |
+| 6 — termos de uso e política de privacidade | **próxima** |
+| 7–11 | não iniciadas |
 
-**Páginas migradas: 1 de 41** (só o catálogo `/design`). Confira sempre com
+**Páginas migradas: 11 de 41.** Confira sempre com
 `node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
 nesta tabela.
 
 ### As quatro regras que não podem ser quebradas
 
-1. **A folha do design system entra pelo frontmatter da página**, nunca pelo
-   `BaseLayout`. Importá-la no layout já fez 22 das 40 páginas divergirem — o
-   Preflight do Tailwind vaza para onde o tema não declara a mesma propriedade,
-   e `@layer` não protege disso. Ver [docs/decisoes.md](docs/decisoes.md),
-   "A folha nova não pode entrar pelo layout".
+1. **Página migrada usa o [`LayoutSistema`](src/layouts/LayoutSistema.astro);
+   página do tema usa o [`BaseLayout`](src/layouts/BaseLayout.astro).** São dois
+   arquivos, e a folha do design system entra só no primeiro.
 
    ```astro
    ---
-   import '../styles/global.css';
+   import LayoutSistema from '../layouts/LayoutSistema.astro';
    ---
-   <BaseLayout legado={false} ...>
+   <LayoutSistema lang="pt-br" route="history">
    ```
+
+   **Não importe nada do design system dentro do `BaseLayout`** — nem a folha,
+   nem um componente com `<style>`, nem dentro de um `if` que nunca executa. O
+   Astro empacota CSS pelo **grafo de módulos**, não pelo que a página renderiza,
+   então o `import` sozinho já põe o CSS nas 30 páginas do tema. Importar a folha
+   no layout já fez 22 delas divergirem: o Preflight do Tailwind vaza para onde o
+   tema não declara a mesma propriedade, e `@layer` não protege disso.
+
+   Isto substitui a prop `legado`, que **nunca funcionou** — o `BaseLayout`
+   renderiza `Header` e `Footer` do tema, então `legado={false}` entregava uma
+   página sem cabeçalho. Ver [docs/decisoes.md](docs/decisoes.md), "A prop
+   `legado` não podia funcionar".
 
 2. **Todo componente ou página migrada precisa de um `@source`** em
    [`src/styles/global.css`](src/styles/global.css). Esquecer não quebra o
@@ -52,8 +63,11 @@ nesta tabela.
 3. **Valor que vai para o `base.css` ou para um componente tem de ser medido** —
    `node scripts/medir-base.mjs` para o elemento nu, `node
    scripts/medir-primitivos.mjs` para o que tem classe (botão, seção, container,
-   grade, ícone), e `node scripts/medir-padroes.mjs` para as composições (cartão,
-   chamada, hero, abas…), sempre com o **hover** junto. Nunca lido do
+   grade, ícone), `node scripts/medir-padroes.mjs` para as composições (cartão,
+   chamada, hero, abas…) e `node scripts/medir-cromo.mjs` para o cabeçalho, o
+   rodapé, a faixa de cookies e o voltar-ao-topo, sempre com o **hover** junto —
+   e, no cromo, com o **estado aberto**, porque menu, submenu e seletor de idioma
+   medem zero em repouso. Nunca lido do
    `style.css`, nunca contado no markup. O `padding` das listas já entrou errado
    por leitura (28px onde o real é 14px), a largura do container por suposição
    (1140px onde o real é 1500px), e **duas cores por contagem de ocorrências**:
@@ -61,9 +75,17 @@ nesta tabela.
    e as 141 do `#0c101b` são todas do ebook também — a superfície escura da
    chamada de ação é o navy, medido.
 
-4. **Componente novo em `primitivos/`, `layout/` ou `padroes/` entra no catálogo
-   `/design` no mesmo commit.** Não é convenção: `verifica-sistema.mjs` reprova o
-   build se o `/design` não importar o componente.
+4. **Componente novo em `primitivos/`, `layout/`, `padroes/` ou `cromo/` entra no
+   catálogo `/design` no mesmo commit.** Não é convenção: `verifica-sistema.mjs`
+   reprova o build se o `/design` não importar o componente.
+
+   As quatro camadas: `primitivos/` é vocabulário, `layout/` é eixo (largura,
+   ritmo, colunas), `padroes/` é uma decisão de desenho já tomada, e `cromo/` é o
+   que embrulha toda página — cabeçalho, rodapé, faixa de cookies, voltar ao
+   topo. O cromo usa **os mesmos nomes de estado do tema** (`#mainMenu`,
+   `.p-dropdown`, `.toggle-active`, `.modal-active`, `#scrollTop`) porque um
+   [`site.js`](src/scripts/site.js) só serve as duas camadas enquanto elas
+   convivem.
 
 ### Onde ficam as decisões
 
@@ -148,8 +170,9 @@ purgado pedir um codepoint fora dela. Não desative essa guarda.
 `python scripts/glifos-para-svg.py` depois de mexer no `glifos.json`, nunca edite
 o arquivo à mão. [`tests/verify-icones.mjs`](tests/verify-icones.mjs) compara
 cada desenho com a webfont de origem e reprova codepoint trocado, contorno vazio
-ou eixo espelhado. As três webfonts continuam servindo as 40 páginas do tema até
-a Etapa 11.
+ou eixo espelhado. As três webfonts continuam servindo as 30 páginas do tema até
+a Etapa 11 — e por isso o teste de glifos da suíte comportamental roda numa
+página do TEMA: numa migrada ele mediria tofu contra tofu e passaria sempre.
 
 `public/webfonts/` é **gerado** a partir de `vendor/webfonts/`; nunca edite o
 primeiro à mão. E os `src:` dos `@font-face` carregam `?v=` porque `/webfonts/`
@@ -210,11 +233,20 @@ npm run verify     # comportamento, geometria, ícones e orçamento (precisa do 
 
 A suíte comportamental sozinha **não vê layout colapsar** — passou 14/14 durante
 todo o período em que a grade de logos estava quebrada. Quem cobre isso é a
-varredura de geometria, `tests/verify-geometria.mjs`: as 40 páginas mais o
-catálogo `/design` × 3 viewports, procurando caixa zerada, grade sem colunas,
-irmãos sobrepostos, imagem quebrada e transbordo horizontal. O catálogo entra
-porque é a única página que roda só sobre o sistema novo — primitivo quebrado
-aparece ali primeiro, e já apareceu.
+varredura de geometria, `tests/verify-geometria.mjs`: as 41 páginas × 3
+viewports, procurando caixa zerada, grade sem colunas, irmãos sobrepostos,
+imagem quebrada, transbordo horizontal e **texto vazando da própria caixa**. Essa
+última entrou na Etapa 5, depois de um e-mail passar por cima da coluna vizinha
+sem que nenhum dos quatro portões visse: as caixas estavam certas, quem vazava
+era o conteúdo dentro delas.
+
+Enquanto as duas camadas convivem, **o que é cromo é testado nas duas**. A suíte
+comportamental tem `PAGINA_TEMA` e `PAGINA_SISTEMA` no topo e roda menu, seletor
+de idioma, cookies e voltar-ao-topo em cada uma — os dois cabeçalhos são
+dirigidos pelo mesmo `site.js`, e é essa aposta que a suíte protege. Ao migrar
+uma página, **confira se ela não era a página de referência de algum teste**:
+`/historia.html` era a de quase todos, e metade das checagens passou a testar a
+camada nova achando que testava a antiga.
 
 **Ela lê o código de saída, e zero bloqueios é o critério.** A lista "PENDENTE"
 é dívida herdada do tema e não reprova; ela vira bloqueante sozinha conforme
@@ -244,7 +276,9 @@ O procedimento completo está em [docs/verificacao.md](docs/verificacao.md).
   exige redirect 301 no [`vercel.json`](vercel.json).
 - [`src/scripts/site.js`](src/scripts/site.js) usa as mesmas classes de estado
   do tema original (`.toggle-active`, `.mainMenu-open`, `.modal-active`, …) para
-  que o CSS existente continue valendo. Preserve esses nomes.
+  que o CSS existente continue valendo. **O cromo novo repete esses nomes de
+  propósito**, e é isso que deixa um script só servir as duas camadas durante a
+  migração. Preserve-os nos dois lados.
 - Classe aplicada via JavaScript precisa entrar em `runtimeClasses` no script de
   purga, senão o estilo dela é removido do build.
 - Comentários e documentação em português, acompanhando o resto do projeto.
@@ -253,7 +287,7 @@ O procedimento completo está em [docs/verificacao.md](docs/verificacao.md).
 
 Para poupar buscas: não há lightbox, formulário, carrossel com múltiplos slides
 nem cabeçalho fixo no scroll. O `functions.js` original
-inicializava tudo isso, mas nenhuma das 40 páginas usa — foi por isso que a
+inicializava tudo isso, mas nenhuma das 41 páginas usa — foi por isso que a
 remoção do jQuery coube em 8 KB.
 
 Também não há `<iframe>` no HTML gerado (os vídeos são fachada), nenhum ícone

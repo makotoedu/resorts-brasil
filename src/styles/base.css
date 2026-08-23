@@ -37,6 +37,27 @@
     line-height: 1.657;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    /*
+     * Palavra que nao cabe QUEBRA, em vez de vazar da caixa.
+     *
+     * Entrou na Etapa 5, achada olhando: na pagina de contato em 390px, o
+     * "contato@resortsbrasil.com.br" e o "reila@anagrama.com.br" saiam da
+     * propria coluna e passavam por cima do texto da coluna ao lado. E-mail,
+     * URL e telefone sao tokens sem ponto de quebra natural, e este site e feito
+     * deles.
+     *
+     * NENHUM PORTAO VIA. Nao ha caixa zerada, nao ha grade colapsada, nao ha
+     * sobreposicao de CAIXAS — as caixas estao onde deveriam; quem vaza e o
+     * texto dentro delas. O `minmax(0, 1fr)` da <Grade> impede a coluna de
+     * esticar, que e o outro lado do mesmo problema, mas nada segurava o
+     * conteudo. A varredura de geometria aprendeu a ver isto depois, e por causa
+     * disto (`tests/verify-geometria.mjs`, checagem 6).
+     *
+     * `break-word` e nao `anywhere`: o primeiro so quebra quando a palavra nao
+     * caberia de jeito nenhum, entao o texto normal continua quebrando entre
+     * palavras.
+     */
+    overflow-wrap: break-word;
   }
 
   /*
@@ -232,6 +253,35 @@
     color: inherit;
     text-decoration: underline;
     text-underline-offset: 0.2em;
+  }
+
+  /*
+   * O link de pular para o conteudo.
+   *
+   * Fica aqui, e nao num componente do cromo, pelo mesmo motivo que o
+   * `:focus-visible` acima: e uma garantia transversal, nao uma peca de desenho.
+   * Ele existe em toda pagina e nao pode depender de alguem lembrar de importar
+   * um componente.
+   *
+   * MEDIDO no tema (`ajustes.css`): fundo branco, cor de link, recuo 10px/18px,
+   * `z-index` 300 — acima do cabecalho, que fica em 199.
+   *
+   * `left: -9999px` e nao `display: none` nem `visibility: hidden`: as duas
+   * ultimas tiram o elemento da ordem de tabulacao, e ai o link deixa de ser
+   * alcancavel exatamente por quem ele existe para servir.
+   */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 300;
+    padding: 0.625rem 1.125rem;
+    background-color: var(--color-superficie);
+    color: var(--color-link);
+  }
+
+  .skip-link:focus {
+    left: 0;
   }
 
   /*

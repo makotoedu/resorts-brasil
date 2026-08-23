@@ -64,20 +64,22 @@ node tests/visual-diff.mjs        # compara o build com o site original
 A migração para o design system próprio (Tailwind v4 + tokens) está em curso, e
 as duas camadas convivem: cada página carrega **uma** delas, nunca as duas.
 
-Página do tema não muda de nada. Página migrada importa a folha no próprio
-frontmatter e desliga o tema:
+A separação é por **layout**: página do tema usa o `BaseLayout`, página migrada
+usa o `LayoutSistema`, e os dois compartilham o `<head>` (`Cabeca.astro`).
 
 ```astro
 ---
-import '../styles/global.css';
+import LayoutSistema from '../layouts/LayoutSistema.astro';
 ---
-<BaseLayout legado={false} ...>
+<LayoutSistema lang="pt-br" route="history">
 ```
 
-A folha **não** pode ser importada pelo layout — o Preflight do Tailwind vaza
-para as páginas do tema e alterou 22 das 40 na primeira tentativa. O motivo e a
-medição estão em [docs/decisoes.md](docs/decisoes.md), "A folha nova não pode
-entrar pelo layout".
+**Nada do design system pode ser importado dentro do `BaseLayout`** — nem a
+folha, nem um componente com `<style>`, nem num ramo que nunca executa. O Astro
+empacota CSS pelo grafo de módulos, então o `import` sozinho já leva o CSS às
+páginas do tema; a folha no layout alterou 22 das 40 na primeira tentativa. O
+motivo e a medição estão em [docs/decisoes.md](docs/decisoes.md), "A folha nova
+não pode entrar pelo layout" e "A prop `legado` não podia funcionar".
 
 Ao migrar um componente ou página, acrescente o `@source` correspondente em
 [`src/styles/global.css`](src/styles/global.css) — sem ele as utilitárias não são
@@ -171,7 +173,7 @@ senão ele renderiza como tofu. O build avisa: `check-glifos.mjs` aborta se o CS
 pedir um codepoint que não esteja no subset.
 
 **Mexer em cookies, GTM ou qualquer script de terceiro** — o consentimento fica
-no bloco inline do `<head>` de [`src/layouts/BaseLayout.astro`](src/layouts/BaseLayout.astro),
+no bloco inline do `<head>` de [`src/layouts/Cabeca.astro`](src/layouts/Cabeca.astro),
 que expõe `window.rbConsent`. Nada de terceiro pode ser carregado fora dele. Se a
 lista de cookies mudar, atualize [`src/data/cookies.ts`](src/data/cookies.ts) —
 a tabela da política sai de lá, nos três idiomas — e suba a versão do cookie

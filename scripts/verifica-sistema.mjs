@@ -35,6 +35,20 @@ const ARQUIVO_DE_TOKENS = 'src/styles/tokens.css';
  */
 const MIGRADAS = [
   'src/pages/design.astro',
+  /* Etapa 5 — as quatro paginas pequenas, nos tres idiomas. */
+  'src/pages/404.astro',
+  'src/pages/historia.astro',
+  'src/pages/fale-conosco.astro',
+  'src/pages/diretoria.astro',
+  'src/pages/en-us/history.astro',
+  'src/pages/en-us/contact-us.astro',
+  'src/pages/en-us/board.astro',
+  'src/pages/es-es/historia.astro',
+  'src/pages/es-es/contactenos.astro',
+  'src/pages/es-es/directorio.astro',
+  /* O layout do sistema e o <head> compartilhado. */
+  'src/layouts/LayoutSistema.astro',
+  'src/layouts/Cabeca.astro',
   'src/components/primitivos/Titulo.astro',
   'src/components/primitivos/Texto.astro',
   'src/components/primitivos/Botao.astro',
@@ -53,6 +67,11 @@ const MIGRADAS = [
   'src/components/padroes/FaixaDestaque.astro',
   'src/components/padroes/Contador.astro',
   'src/components/padroes/Abas.astro',
+  'src/components/cromo/Cabecalho.astro',
+  'src/components/cromo/Rodape.astro',
+  'src/components/cromo/FaixaCookies.astro',
+  'src/components/cromo/IconesSociais.astro',
+  'src/components/cromo/VoltarAoTopo.astro',
 ];
 
 /** Onde vivem os componentes do sistema novo, e o catalogo que os documenta. */
@@ -60,6 +79,14 @@ const DIRETORIOS_DE_COMPONENTE = [
   'src/components/primitivos',
   'src/components/layout',
   'src/components/padroes',
+  /*
+   * `cromo/` e a quarta camada, e ela nasceu na Etapa 5 porque ate ali nao havia
+   * onde por cabecalho e rodape. Nao sao primitivos (nao compoem nada), nao sao
+   * layout (nao sao ortogonais) e nao sao padroes (aparecem uma vez por pagina,
+   * sempre nos mesmos lugares) — sao o que embrulha toda pagina. O portao do
+   * catalogo vale para eles como vale para os outros tres.
+   */
+  'src/components/cromo',
 ];
 const CATALOGO = 'src/pages/design.astro';
 
@@ -167,18 +194,49 @@ async function semEstiloInline(fontes) {
 }
 
 /* ------------------------------------------------------------------ *
- * 4. Hierarquia de headings
+ * 4. Hierarquia de headings — MEDIDA NO dist/
  * ------------------------------------------------------------------ *
  * Um h1, primeiro, sem salto de nivel. Hoje 39 das 40 paginas reprovam — e por
  * isso a checagem ainda nao bloqueia fora das migradas. O componente <Titulo>
  * separa nivel semantico de tamanho visual, que e a causa raiz.
+ *
+ * ELA LIA O FONTE, E ISSO PAROU DE FUNCIONAR NA ETAPA 5 — nos dois sentidos, e
+ * os dois sao instrutivos:
+ *
+ *   FALSO NEGATIVO  pagina migrada nao tem `<h1>` no fonte, tem
+ *                   `<Titulo nivel={1}>`. A checagem simplesmente nao via
+ *                   heading nenhum e dava a pagina por boa. Pior: como o cromo
+ *                   tambem emite headings (os titulos das listas do rodape), o
+ *                   sumario real da pagina nunca esteve no arquivo dela.
+ *   FALSO POSITIVO  as duas primeiras paginas migradas REPROVARAM por causa dos
+ *                   COMENTARIOS: o texto que documenta a correcao cita
+ *                   `<h1 class="text-md h2">` e `<h3>`, e o regex nao distingue
+ *                   documentacao de markup.
+ *
+ * A resposta e a mesma que o projeto ja deu para o CSS e para as cores: medir no
+ * artefato em vez de ler a intencao. O sumario de uma pagina e o que esta no
+ * HTML gerado, incluindo cabecalho e rodape — que e o que um leitor de tela
+ * percorre.
+ *
+ * Sem `dist/` a checagem nao roda. Nao ha aproximacao possivel a partir do
+ * fonte, e uma aproximacao que erra nos dois sentidos e pior do que a ausencia.
  */
-async function hierarquiaHeadings(fontes) {
+function headingsDoHtml(html) {
+  /* Comentario nao e markup, e `<script>`/`<style>` podem conter qualquer
+     coisa. Fora os tres, o que sobra e o documento. */
+  const limpo = html
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '');
+  return [...limpo.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]));
+}
+
+async function hierarquiaHeadings(paginasDoDist) {
+  if (!paginasDoDist) return null;
+
   const reprovadas = [];
-  for (const f of fontes) {
-    if (!f.startsWith('src/pages/') || !f.endsWith('.astro')) continue;
-    const texto = await readFile(join(RAIZ, f), 'utf8');
-    const niveis = [...texto.matchAll(/<h([1-6])\b/g)].map((m) => Number(m[1]));
+  for (const { caminho, html, migrada } of paginasDoDist) {
+    const niveis = headingsDoHtml(html);
     if (!niveis.length) continue;
 
     const problemas = [];
@@ -194,8 +252,8 @@ async function hierarquiaHeadings(fontes) {
     }
 
     if (problemas.length) {
-      const msg = `${f}  ${problemas.join('; ')}`;
-      if (MIGRADAS.includes(f)) falhas.push(msg);
+      const msg = `dist/${caminho}  ${problemas.join('; ')}`;
+      if (migrada) falhas.push(msg);
       else reprovadas.push(msg);
     }
   }
@@ -248,30 +306,47 @@ async function catalogoCobrePrimitivos(fontes) {
  *
  * Roda so quando existe dist/. Nao vale a pena buildar para conferir.
  */
-async function isolamentoNoBuild() {
-  let paginas;
+/**
+ * Le o dist/ uma vez e marca cada pagina como do tema ou migrada.
+ *
+ * `migrada` sai do ARTEFATO — carrega bundle do Astro e nao carrega o CSS do
+ * tema —, e nao da lista MIGRADAS acima. E a mesma disciplina do resto do
+ * arquivo: a lista diz a intencao, o `dist/` diz o que foi entregue. Uma pagina
+ * que alguem esqueceu de acrescentar a lista nao escapa das checagens por isso.
+ */
+async function lerDist() {
+  let caminhos;
   try {
-    paginas = (await readdir(join(RAIZ, 'dist'), { recursive: true, withFileTypes: true }))
+    caminhos = (await readdir(join(RAIZ, 'dist'), { recursive: true, withFileTypes: true }))
       .filter((e) => e.isFile() && e.name.endsWith('.html'))
       .map((e) => relative(join(RAIZ, 'dist'), join(e.parentPath ?? e.path, e.name)).replace(/\\/g, '/'));
   } catch {
     return null; // sem dist/, nada a conferir
   }
 
-  let migradas = 0;
-  for (const p of paginas) {
-    const html = await readFile(join(RAIZ, 'dist', p), 'utf8');
+  const paginas = [];
+  for (const caminho of caminhos) {
+    const html = await readFile(join(RAIZ, 'dist', caminho), 'utf8');
     const temTema = /\/css\/(plugins|style|ajustes)\.css/.test(html);
     const temSistema = /\/_astro\/[^"']+\.css/.test(html);
+    paginas.push({ caminho, html, temTema, temSistema, migrada: temSistema && !temTema });
+  }
+  return paginas;
+}
 
+function isolamentoNoBuild(paginas) {
+  if (!paginas) return null;
+
+  let migradas = 0;
+  for (const { caminho, temTema, temSistema } of paginas) {
     if (temTema && temSistema) {
       falhas.push(
-        `dist/${p}  carrega o CSS do tema E o bundle do design system — ` +
-          `o Preflight vaza para o tema. A folha vai no frontmatter da pagina, nao no layout.`
+        `dist/${caminho}  carrega o CSS do tema E o bundle do design system — ` +
+          `o Preflight vaza para o tema. Pagina migrada usa o LayoutSistema, pagina do tema usa o BaseLayout.`
       );
     }
     if (!temTema && !temSistema) {
-      falhas.push(`dist/${p}  sem nenhuma folha de estilo`);
+      falhas.push(`dist/${caminho}  sem nenhuma folha de estilo`);
     }
     if (temSistema) migradas += 1;
   }
@@ -285,9 +360,11 @@ const fontes = await arquivos(FONTES[0], ['.astro', '.css', '.ts', '.js']);
 await semApply(fontes);
 await semCorLiteral(fontes);
 const estilosInline = await semEstiloInline(fontes);
-const headingsReprovados = await hierarquiaHeadings(fontes);
 const componentes = await catalogoCobrePrimitivos(fontes);
-const isolamento = await isolamentoNoBuild();
+
+const paginasDoDist = await lerDist();
+const isolamento = isolamentoNoBuild(paginasDoDist);
+const headingsReprovados = await hierarquiaHeadings(paginasDoDist);
 
 console.log(`verifica-sistema: ${fontes.length} arquivos em src/\n`);
 
@@ -301,7 +378,11 @@ if (falhas.length === 0) {
 
 console.log('PENDENTE (vira bloqueante conforme a migracao avanca)');
 console.log(`  style= inline no projeto ......... ${estilosInline}`);
-console.log(`  paginas com heading irregular .... ${headingsReprovados.length}`);
+console.log(
+  `  paginas com heading irregular .... ${
+    headingsReprovados ? headingsReprovados.length : 'dist/ ausente — nao verificado'
+  }`
+);
 console.log(`  cor literal fora de tokens.css ... ${avisos.length}`);
 console.log(
   `  paginas migradas ................. ${
@@ -311,7 +392,7 @@ console.log(
 
 if (process.env.DETALHE) {
   console.log('\nDETALHE');
-  for (const a of [...headingsReprovados, ...avisos]) console.log(`  ${a}`);
+  for (const a of [...(headingsReprovados ?? []), ...avisos]) console.log(`  ${a}`);
 }
 
 if (falhas.length) {
