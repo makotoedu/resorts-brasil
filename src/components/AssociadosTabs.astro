@@ -1,13 +1,8 @@
 ---
+import Abas from './padroes/Abas.astro';
+import PainelRegiao from './PainelRegiao.astro';
 import { regioesAssociados } from '../data/associados';
 import { ui, type Locale } from '../i18n/ui';
-
-interface Props {
-  lang: Locale;
-}
-
-const { lang } = Astro.props;
-const t = ui[lang];
 
 /**
  * As abas por regiao da pagina de associados.
@@ -16,69 +11,67 @@ const t = ui[lang];
  * da aba traduz. Substitui ~500 linhas de markup identico em cada um dos tres
  * arquivos de pagina.
  *
- * A estrutura reproduz a do tema: painel .tab-pane por regiao, uma .row por
- * estado com o nome numa coluna e a grade de logos na outra. O primeiro painel
- * nasce com `active`, os demais so com `fade show` — e como o original vinha, e
- * e o que o tabs() do site.js espera encontrar.
+ * NA ETAPA 8 ELE PASSOU INTEIRO PARA O DESIGN SYSTEM. Podia, e a distincao
+ * importa: este componente e usado pelas TRES paginas de associados e por mais
+ * nenhuma, e as tres migram juntas. O <GradeLogos> ao lado nao pode fazer o
+ * mesmo — as tres paginas de home ainda o usam, e converte-lo poria o <style>
+ * dele no bundle das paginas do tema pelo grafo de modulos. Antes de converter
+ * um componente compartilhado, veja quem mais o importa.
+ *
+ * O que saiu do markup do tema, e cada item e uma correcao:
+ *
+ *   1. `data-bs-toggle="tab"` e o bloco `tabs()` do site.js, substituidos pelo
+ *      <Abas>, que traz o padrao ARIA completo — a aba virou <button>, o painel
+ *      inativo recebe `hidden` de verdade e as setas navegam;
+ *   2. os 11 <div class="line"> entre estados, que viraram uma borda entre
+ *      irmaos no <PainelRegiao> — e assim nao ha como sobrar uma no fim;
+ *   3. `ul.grid.grid-6-columns`, que virou uma <FaixaLogos>, com a mesma escada
+ *      de 2 para 3 e para 6 colunas, agora medida.
+ *
+ * OS CINCO NOMES DE SLOT SAO LITERAIS, E ISSO NAO E DESLEIXO. A versao obvia,
+ * um <Fragment slot={regiao.id}> dentro de um `.map()`, passa no `astro check`,
+ * compila, e quebra na GERACAO da pagina com "ReferenceError: regiao is not
+ * defined": o Astro extrai os slots nomeados em tempo de compilacao, fora do
+ * escopo do callback do map. Ver a nota do <PainelRegiao>.
+ *
+ * O preco disso e uma regiao nova exigir mais um <Fragment> aqui — e a guarda
+ * abaixo existe para que isso seja um build quebrado, e nao uma aba que some.
  */
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
 const rotulos = t.regioesAssociados as Record<string, string>;
+
+/*
+ * A GUARDA. Os cinco ids abaixo estao escritos como nome de slot no template, e
+ * nome de slot e literal por imposicao do compilador. Se
+ * `src/data/associados.ts` ganhar uma regiao, perder uma ou renomear um id, o
+ * painel correspondente sairia VAZIO — a aba apareceria e nao mostraria resort
+ * nenhum, sem erro em lugar nenhum. Aqui isso vira um build abortado dizendo
+ * quais ids existem de fato.
+ */
+const ESPERADAS = ['sudeste', 'sul', 'norte', 'nordeste', 'centro-oeste'] as const;
+const ids = regioesAssociados.map((r) => r.id);
+if (ids.length !== ESPERADAS.length || ESPERADAS.some((id, i) => ids[i] !== id)) {
+  throw new Error(
+    `AssociadosTabs: as regioes de src/data/associados.ts mudaram (${ids.join(', ')}). ` +
+      `O template tem um <Fragment slot> por regiao, com nome literal, porque o Astro ` +
+      `nao resolve slot dinamico dentro de um map. Acerte os dois lados juntos.`
+  );
+}
+
+const porId = Object.fromEntries(regioesAssociados.map((r) => [r.id, r]));
+const abas = regioesAssociados.map((regiao) => ({ id: regiao.id, rotulo: rotulos[regiao.id] }));
 ---
 
-<!-- Navegação -->
-<ul class="nav nav-tabs nav-justified" id="resorts" role="tablist">
-  {
-    regioesAssociados.map((regiao, i) => (
-      <li class="nav-item">
-        <a
-          class={`nav-link${i === 0 ? ' active' : ''}`}
-          id={`${regiao.id}-tab`}
-          data-bs-toggle="tab"
-          href={`#${regiao.id}`}
-          role="tab"
-          aria-controls={regiao.id}
-          aria-selected={i === 0 ? 'true' : 'false'}
-        >{rotulos[regiao.id]}</a>
-      </li>
-    ))
-  }
-</ul>
-<!-- end: Navegação -->
-<!-- Resorts -->
-<div class="tab-content" id="resortsContent">
-  {
-    regioesAssociados.map((regiao, i) => (
-      <div
-        class={`tab-pane fade show${i === 0 ? ' active' : ''}`}
-        id={regiao.id}
-        role="tabpanel"
-        aria-labelledby={`${regiao.id}-tab`}
-      >
-        {regiao.estados.map((estado, j) => (
-          <>
-            {/* Divisor entre estados: vai ENTRE eles, nunca antes do primeiro
-                nem depois do ultimo — sao 11 divisores para 16 estados em 5
-                paineis, exatamente como no markup original. */}
-            {j > 0 && <div class="line" />}
-            <div id={estado.uf} class="row">
-              <div class="col-lg-3 text-center text-bottom">
-                <h4>{estado.estado}</h4>
-              </div>
-              <div class="col-lg-9">
-                <ul class="grid grid-6-columns text-center">
-                  {estado.resorts.map((resort) => (
-                    <li>
-                      <a href={resort.url} target="_blank" rel="noopener noreferrer">
-                        <img src={resort.logo} alt={resort.nome} />
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </>
-        ))}
-      </div>
-    ))
-  }
-</div>
-<!-- end: Resorts -->
+<Abas abas={abas} rotuloLista={t.associatesRegionsLabel}>
+  <Fragment slot="sudeste"><PainelRegiao regiao={porId['sudeste']} /></Fragment>
+  <Fragment slot="sul"><PainelRegiao regiao={porId['sul']} /></Fragment>
+  <Fragment slot="norte"><PainelRegiao regiao={porId['norte']} /></Fragment>
+  <Fragment slot="nordeste"><PainelRegiao regiao={porId['nordeste']} /></Fragment>
+  <Fragment slot="centro-oeste"><PainelRegiao regiao={porId['centro-oeste']} /></Fragment>
+</Abas>

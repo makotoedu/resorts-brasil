@@ -237,3 +237,38 @@ export const totalAssociados = regioesAssociados.reduce(
   (n, r) => n + r.estados.reduce((m, e) => m + e.resorts.length, 0),
   0
 );
+
+/**
+ * Os cinco indicadores do topo da pagina de associados.
+ *
+ * OS TRES IDIOMAS DIZIAM NUMEROS DIFERENTES: 83 resorts em portugues, 80 em
+ * ingles e em espanhol, e a lista acima tem 78 logotipos. Tres numeros para o
+ * mesmo fato, cada um escrito a mao no markup do seu arquivo — a forma exata da
+ * divergencia que este projeto ja viu no rotulo "Leia agora" e na lista de
+ * parceiros. O cliente confirmou 83 como o valor correto; os 78 da lista sao os
+ * associados com logotipo publicado.
+ *
+ * Ficam aqui, e nao no `ui.ts`, porque numero nao traduz. E a mesma divisao do
+ * `cargo` da diretoria e da data de vigencia dos documentos juridicos: o dado
+ * fica em `src/data/`, o rotulo fica no `ui.ts`, e a pagina junta os dois pelo
+ * `id`. Acrescentar um indicador e acrescentar um item aqui MAIS um rotulo nos
+ * tres idiomas — e o Record<Locale, …> do ui.ts nao deixa esquecer nenhum.
+ *
+ * `sufixo: true` marca os que exibem a unidade "mil" — que traduz, e por isso
+ * nao esta escrita aqui.
+ */
+export interface IndicadorAssociados {
+  /** Casa com a chave em `ui[lang].associatesStats`. */
+  id: string;
+  ate: number;
+  /** O rotulo leva a unidade traduzida ("mil", "thousand"). */
+  sufixo?: boolean;
+}
+
+export const indicadoresAssociados: IndicadorAssociados[] = [
+  { id: 'resorts', ate: 83 },
+  { id: 'quartos', ate: 21, sufixo: true },
+  { id: 'empregos', ate: 20, sufixo: true },
+  { id: 'estados', ate: 16 },
+  { id: 'regioes', ate: 5 },
+];

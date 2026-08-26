@@ -1,0 +1,177 @@
+---
+import { ui, type Locale } from '../../i18n/ui';
+
+/**
+ * Video — a fachada de clique-para-carregar, no design system.
+ *
+ * ELE EXISTE POR UMA ARMADILHA QUE QUASE PASSOU. O <YouTube> ao lado emite o
+ * mesmo markup, mas o CSS dele mora em `public/css/ajustes.css` — a folha do
+ * TEMA. Pagina migrada nao carrega aquele arquivo, entao migrar
+ * /resorts-brasil com o componente antigo entregaria a fachada sem estilo
+ * nenhum: sem caixa, sem botao de play, e com o rotulo "Assistir ao video",
+ * que deve ficar fora da tela, impresso por cima da miniatura.
+ *
+ * E a mesma forma das tres armadilhas do CLAUDE.md — markup que depende de CSS
+ * que nao esta mais la — so que pelo outro lado da migracao. Nenhum dos quatro
+ * portoes veria com clareza: nao ha caixa zerada, nao ha imagem quebrada, e o
+ * texto vazando so apareceria se calhasse de cruzar a borda.
+ *
+ * O <YouTube> CONTINUA EXISTINDO ate a Etapa 10: as tres paginas de ebook ainda
+ * o usam, e converte-lo no lugar poria este `<style>` no bundle das paginas do
+ * tema pelo grafo de modulos. Mesma convivencia do <GradeLogos> com a
+ * <FaixaLogos>.
+ *
+ *   <Video lang={lang} id={videos.institucional} titulo={t.videoInstitucional} />
+ *
+ * O QUE MUDA em relacao ao <YouTube>: a caixa. Aquele fixava `height: 420px` num
+ * `style=` inline — o numero que o `<iframe>` original rendia —, e aqui e
+ * `aspect-ratio: 16/9`, que e a proporcao real do video. Some a tarja preta em
+ * cima e embaixo, e a caixa passa a acompanhar a largura em vez de recortar mais
+ * onde ha menos tela. Delta deliberado, em docs/deltas-visuais.md.
+ *
+ * O QUE NAO MUDA: os nomes de classe. `.yt-facade`, `.yt-facade-btn`,
+ * `.yt-facade-play` e `.yt-facade-label` sao os mesmos do tema de proposito,
+ * porque um `site.js` so serve as duas camadas — a mesma aposta que o cromo faz
+ * com `#mainMenu` e `.toggle-active`.
+ */
+interface Props {
+  lang: Locale;
+  /** ID do video no YouTube. Precisa existir public/images/video/<id>.jpg. */
+  id: string;
+  /** Titulo real do video, usado no nome acessivel e no title do iframe. */
+  titulo: string;
+  /** Parametros extras do player, como `controls=0`. */
+  params?: string;
+  class?: string;
+}
+
+const { lang, id, titulo, params = '', class: classe } = Astro.props;
+const t = ui[lang];
+---
+
+<div class:list={['yt-facade', classe]}>
+  <!--
+    <a> com href de verdade, e nao <button>, pelo mesmo motivo do href="#top" do
+    #scrollTop: sem JavaScript um <button> aqui nao faria nada, e o visitante
+    ficaria sem o video. Assim o link leva a pagina do video; com JavaScript o
+    site.js chama preventDefault e troca a fachada pelo embed ali mesmo.
+  -->
+  <a
+    class="yt-facade-btn"
+    href={`https://www.youtube.com/watch?v=${id}`}
+    target="_blank"
+    rel="noopener"
+    data-yt={id}
+    data-yt-params={params}
+    data-yt-titulo={titulo}
+  >
+    {/*
+      A miniatura e LOCAL (public/images/video/<id>.jpg). Puxa-la de i.ytimg.com
+      faria a fachada chamar a CDN do Google, que e o problema que ela existe
+      para resolver — e por isso ela NAO passa pelo <Imagem>: aquele resolve
+      caminhos de `src/assets/`, e esta imagem e servida crua de `public/`.
+    */}
+    <img src={`/images/video/${id}.jpg`} alt="" width="1280" height="720" loading="lazy" />
+    <span class="yt-facade-play" aria-hidden="true"></span>
+    <!-- Texto de verdade, so visualmente escondido: o nome acessivel do link. -->
+    <span class="yt-facade-label">{t.videoPlay}: {titulo}</span>
+  </a>
+</div>
+
+<style>
+  /*
+   * `aspect-ratio` no lugar do `height: 420px`. O 420 era a altura do `<iframe>`
+   * do tema, e com `width: 100%` isso dava proporcoes diferentes em cada coluna
+   * — tarja preta em cima e embaixo numa largura, corte na outra.
+   */
+  .yt-facade {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
+  /*
+   * `:global(iframe)`, E ESTA LINHA E O PONTO INTEIRO DA REGRA.
+   *
+   * O `<iframe>` nao esta neste arquivo: o site.js o CRIA no clique, com
+   * `document.createElement`, e um elemento criado em tempo de execucao nao
+   * recebe o atributo de escopo que o Astro carimba no markup compilado. Sem o
+   * `:global`, esta regra viraria `.yt-facade[cid] iframe[cid]`, nao casaria com
+   * nada, e o video entraria com a altura padrao de 150px do iframe — depois do
+   * clique, que e onde nenhum teste de carregamento olha.
+   *
+   * Mesma familia da nota de `runtimeClasses` no purge-css.mjs: o que o
+   * JavaScript cria em tempo de execucao precisa ser declarado para as
+   * ferramentas que so leem o codigo.
+   */
+  .yt-facade :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* E um <a>, entao o reset abaixo neutraliza sublinhado e cor. */
+  .yt-facade-btn {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: var(--color-superficie-video);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /*
+   * `cover` porque e o que o player do YouTube faz: comparadas lado a lado, as
+   * duas capturas mostram a imagem sangrando ate as bordas da caixa, sem tarja.
+   * Chegou a ser `contain` por suposicao — e a suposicao piorou o enquadramento
+   * sem melhorar o diff.
+   */
+  .yt-facade-btn img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* O triangulo e CSS puro para nao acrescentar um arquivo por um play. */
+  .yt-facade-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4.25rem;
+    height: 3rem;
+    border-radius: 0.875rem;
+    background: var(--color-superficie-controle);
+    transform: translate(-50%, -50%);
+    transition: background-color 0.2s;
+  }
+
+  .yt-facade-play::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-style: solid;
+    border-width: 0.6875rem 0 0.6875rem 1.1875rem;
+    border-color: transparent transparent transparent var(--color-texto-inverso);
+    transform: translate(-40%, -50%);
+  }
+
+  .yt-facade-btn:hover .yt-facade-play,
+  .yt-facade-btn:focus-visible .yt-facade-play {
+    background: var(--color-acao-video);
+  }
+
+  /* Texto de verdade para leitor de tela, so fora da tela para quem enxerga. */
+  .yt-facade-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

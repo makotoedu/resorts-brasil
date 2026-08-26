@@ -26,10 +26,11 @@ O plano completo, com etapas e critérios, está em
 | 5 — cromo + páginas pequenas (404, história, contato, diretoria) | concluída |
 | 6 — termos de uso e política de privacidade | concluída |
 | 7 — publicações e estatísticas e estudos | concluída |
-| 8 — associados, associe-se, apoie, resorts-brasil | **próxima** |
-| 9–11 | não iniciadas |
+| 8 — associados, associe-se, apoie, resorts-brasil | concluída |
+| 9 — home (`index` / `home` / `inicio`) | **próxima** |
+| 10–11 | não iniciadas |
 
-**Páginas migradas: 23 de 41.** Confira sempre com
+**Páginas migradas: 35 de 41.** Confira sempre com
 `node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
 nesta tabela.
 
@@ -93,6 +94,40 @@ nesta tabela.
    `.p-dropdown`, `.toggle-active`, `.modal-active`, `#scrollTop`) porque um
    [`site.js`](src/scripts/site.js) só serve as duas camadas enquanto elas
    convivem.
+
+### Três armadilhas do Astro que a Etapa 8 encontrou
+
+As três custam a mesma coisa: **nenhum erro**. O build passa, o tipo passa, e o
+defeito só aparece olhando.
+
+1. **Classe escopada passada a um componente não vale.**
+
+   ```astro
+   <Grade class="modalidades">…</Grade>
+   <style>.modalidades { margin-top: 30px }</style>   /* computa 0px */
+   ```
+
+   A classe chega ao HTML, mas sem o atributo de escopo — o seletor compilado é
+   `.modalidades[data-astro-cid-xxx]` e o elemento tem só a classe. Estilo
+   escopado alcança elemento que está no **seu** template. Para um componente,
+   use utilitária (que é global) ou um elemento próprio em volta. Quatro regras
+   da Etapa 8 estavam inertes assim.
+
+2. **Nome de slot não pode ser dinâmico.** `<Fragment slot={item.id}>` dentro de
+   um `.map()` passa no `astro check`, compila, e quebra na **geração** com
+   `ReferenceError: item is not defined` — o Astro extrai os slots nomeados em
+   tempo de compilação, fora do escopo do callback. Use nomes literais e ponha o
+   corpo num componente; se os nomes vierem de `src/data/`, ponha uma guarda que
+   aborte o build quando os dois lados divergirem.
+
+3. **Antes de migrar uma página, veja onde mora o CSS dos componentes que ela
+   usa.** O `<YouTube>` tem o dele em `public/css/ajustes.css` — a folha do
+   *tema* —, e página migrada não carrega aquele arquivo. Migrar
+   `/resorts-brasil` com ele entregaria a fachada de vídeo sem caixa e sem botão
+   de play, sem quebrar portão nenhum. E o inverso também vale: **antes de
+   converter um componente compartilhado, veja quem mais o importa** — o
+   `<GradeLogos>` não pôde ser convertido porque as três páginas de home ainda o
+   usam, e o `<style>` dele iria para o bundle delas pelo grafo de módulos.
 
 ### Onde ficam as decisões
 
@@ -185,7 +220,7 @@ purgado pedir um codepoint fora dela. Não desative essa guarda.
 `python scripts/glifos-para-svg.py` depois de mexer no `glifos.json`, nunca edite
 o arquivo à mão. [`tests/verify-icones.mjs`](tests/verify-icones.mjs) compara
 cada desenho com a webfont de origem e reprova codepoint trocado, contorno vazio
-ou eixo espelhado. As três webfonts continuam servindo as 30 páginas do tema até
+ou eixo espelhado. As três webfonts continuam servindo as 6 páginas do tema até
 a Etapa 11 — e por isso o teste de glifos da suíte comportamental roda numa
 página do TEMA: numa migrada ele mediria tofu contra tofu e passaria sempre.
 

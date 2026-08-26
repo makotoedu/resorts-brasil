@@ -1,128 +1,69 @@
 ---
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Grade from '../../components/layout/Grade.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Texto from '../../components/primitivos/Texto.astro';
+import Imagem from '../../components/primitivos/Imagem.astro';
+import Contador from '../../components/padroes/Contador.astro';
+import TituloSecao from '../../components/padroes/TituloSecao.astro';
 import AssociadosTabs from '../../components/AssociadosTabs.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ConviteAssociese from '../../components/ConviteAssociese.astro';
+import { indicadoresAssociados } from '../../data/associados';
+import { ui, type Locale } from '../../i18n/ui';
+
+/* As correcoes desta pagina estao anotadas em src/pages/associados.astro, que e
+   a versao de referencia. Duas delas nasceram aqui: os numeros diziam 80 onde o
+   portugues dizia 83, e os cinco rotulos estavam em portugues. */
+const lang: Locale = 'es-es';
+const t = ui[lang];
+
+const tamanhosMapa = '(min-width: 60rem) 60rem, 92vw';
 ---
 
-<BaseLayout
-  lang="es-es"
-  route="associates"
->
-    <!-- Título -->
-    <section id="title">
-        <div class="container">
-            <div class="row m-b-30">
-                <div class="col-lg-10 center text-center">
-                    <h1 class="text-md h2">Resorts Asociados</h1>
-                    <h3>Representamos los mayores resorts del país, que pasan por un criterioso proceso de
-                        afiliación y análisis conforme la matriz de clasificación en la asociación.</h3>
-                </div>
-            </div>
-            <!-- Stats -->
-            <div class="row justify-content-md-center">
-                <div class="col-md-2 m-b-20">
-                    <div class="text-center">
-                        <div class="counter display-4 d-block text-dark mb-0">
-                            <span data-speed="500" data-refresh-interval="50" data-to="80" data-from="1"></span>
-                        </div>
-                        <p>Resorts Associados</p>
-                    </div>
-                </div>
-                <div class="col-md-2 m-b-20">
-                    <div class="text-center">
-                        <div class="counter display-4 d-block text-dark mb-0">
-                            <span data-suffix=" mil" data-speed="500" data-refresh-interval="50" data-to="21"
-                                data-from="1"></span>
-                        </div>
-                        <p>Quartos</p>
-                    </div>
-                </div>
-                <div class="col-md-2 m-b-20">
-                    <div class="text-center">
-                        <div class="counter display-4 d-block text-dark mb-0">
-                            <span data-suffix=" mil" data-speed="500" data-refresh-interval="50" data-to="20"
-                                data-from="1"></span>
-                        </div>
-                        <p>Empregos Diretos</p>
-                    </div>
-                </div>
-                <div class="col-md-2 m-b-20">
-                    <div class="text-center">
-                        <div class="counter display-4 d-block text-dark mb-0">
-                            <span data-speed="500" data-refresh-interval="50" data-to="16" data-from="1"></span>
-                        </div>
-                        <p>Estados</p>
-                    </div>
-                </div>
-                <div class="col-md-2 m-b-20">
-                    <div class="text-center">
-                        <div class="counter display-4 d-block text-dark mb-0">
-                            <span data-speed="500" data-to="5" data-from="1"></span>
-                        </div>
-                        <p>Regiões do Brasil</p>
-                    </div>
-                </div>
-            </div>
-            <!-- end: Stats -->
-        </div>
-    </section>
-    <!-- end: Título -->
+<LayoutSistema lang={lang} route="associates">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="media">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.associatesTitle}</Titulo>
+      <Texto tamanho="lg" alinhamento="centro">{t.associatesLead}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Mapa -->
-    <section id="mapa" class="no-padding">
-        <div class="container">
-            <div class="row">
-                <div class="heading-text heading-line text-center m-b-40">
-                    <h4>Conozca nuestros asociados:</h4>
-                </div>
-                <div class="col-lg-10 center text-center">
-                    <img class="img-fluid" src="/images/ilustracao/mapa.png" alt="mapa">
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Mapa -->
+  <Secao id="indicadores">
+    <Container>
+      <Grade colunas={5} piso={2} espaco="md">
+        {
+          indicadoresAssociados.map((i) => (
+            <Contador
+              ate={i.ate}
+              de={1}
+              sufixo={i.sufixo ? t.associatesStatsSuffix : ''}
+              rotulo={t.associatesStats[i.id]}
+            />
+          ))
+        }
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- Associados -->
-    <section id="associados">
-        <div class="container">
-            <div class="row">
-                <div class="tabs">
-                    <AssociadosTabs lang="es-es" />
-                </div>
-            </div>
-    </section>
-    <!-- end: Associados -->
+  <Secao id="mapa" espacoTopo="nenhum">
+    <Container largura="media">
+      <TituloSecao nivel={2}>{t.associatesMapTitle}</TituloSecao>
+      <Imagem
+        src="/images/ilustracao/mapa.png"
+        alt={t.associatesMapAlt}
+        escala="largura-total"
+        tamanhos={tamanhosMapa}
+      />
+    </Container>
+  </Secao>
 
-    <!-- Folders -->
-    <!-- <section id="folders" class="box-fancy section-fullwidth text-light no-padding">
-        <div class="row">
-            <div class="col-lg-6 text-center" style="background-color: #242F9B;">
-                <h4 class="m-b-0">FOLDER 2022</h4>
-                <h2 class="text-lg m-b-0">MICE</h2>
-                <p>Los resorts son excelentes espacios <br>para realizar eventos.</p>
-            </div>
-            <div class="col-lg-6 text-center" style="background-color: #FAC213;">
-                <h3>¡Viva una experiencia de evento en un resort y aproveche lo mejor de la gastronomía,
-                    entretenimiento, confort y naturaleza!</h3>
-                <a class="btn btn-light btn-outline"
-                    href="https://www.resortsbrasil.com.br/wp-content/uploads/2022/02/FOLDER-DIGITAL-RESORTS-BRASIL-MICE.pdf"
-                    target="_blank" rel="noopener noreferrer">Descargar el folder</a>
-            </div>
-        </div>
-    </section> -->
-    <!-- end: Folders -->
+  <Secao id="asociados" espacoTopo="nenhum">
+    <Container>
+      <AssociadosTabs lang={lang} />
+    </Container>
+  </Secao>
 
-    <!-- CTA -->
-    <section id="cta" class="p-t-150 p-b-150">
-        <div class="container">
-            <div class="row text-center">
-                <h3 class="m-b-0">¿Quiere formar parte de un grupo selecto de resorts brasileños?</h3>
-                <p>Forme parte y ayude a formar el sector. 😍</p>
-                <div>
-                    <a href="/es-es/asociese" class="btn btn-lg">Asóciese</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: CTA -->
-</BaseLayout>
+  <ConviteAssociese lang={lang} secundario={false} />
+</LayoutSistema>

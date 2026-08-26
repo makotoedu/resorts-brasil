@@ -47,8 +47,17 @@ interface Props {
    * isso pos e-mails de 28 caracteres em celulas de 150px.
    */
   piso?: 1 | 2;
-  /** 16px, 28px (o vao medido no tema) ou 40px. */
-  espaco?: 'sm' | 'md' | 'lg';
+  /**
+   * 16px, 28px (o vao medido no tema) ou 40px.
+   *
+   * `nenhum` entrou na Etapa 8, para a faixa de logos, e e a UNICA excecao a
+   * regra "espaco entre irmaos e do container" que a <CaixaIcone> deixou
+   * registrada. A diferenca esta em ser simetrico: o `.grid` de logos do tema
+   * mede 40px de recuo nos QUATRO lados de cada `<li>`, e isso e o respiro do
+   * proprio logotipo dentro da celula dele, nao um vao entre vizinhos. Margem so
+   * embaixo sobra depois da ultima linha; recuo nos quatro lados, nao.
+   */
+  espaco?: 'nenhum' | 'sm' | 'md' | 'lg';
   /** `ul` quando os filhos forem `<li>` — uma lista de cartoes continua lista. */
   como?: 'div' | 'ul' | 'ol';
   /** Alinhamento vertical entre celulas de alturas diferentes. */
@@ -69,6 +78,7 @@ const Tag = como;
 
 /* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
 const ESPACOS = {
+  nenhum: 'gap-0', // a celula traz o proprio recuo — ver a nota da prop
   sm: 'gap-4', // 16px
   md: 'gap-7', // 28px — o vao do .row do tema, medido
   lg: 'gap-10', // 40px

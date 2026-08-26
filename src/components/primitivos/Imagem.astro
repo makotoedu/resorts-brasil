@@ -27,9 +27,25 @@ import { imagem } from '../../imagens';
  *
  * SVG passa direto, sem pipeline: rasterizar um vetor para AVIF e trocar um
  * arquivo pequeno e nitido em qualquer escala por um grande e fixo.
+ *
+ * URL ABSOLUTA TAMBEM PASSA DIRETO, e essa e a saida de emergencia — nao o
+ * caminho normal. Existe UMA imagem assim no site: a foto da Unsplash em
+ * /resorts-brasil, com hotlink nos tres idiomas, que a Etapa 8 recebeu ordem de
+ * preservar. Ela fica fora do pipeline por construcao — nao ha arquivo local
+ * para gerar AVIF, WebP nem `srcset` — e cada carregamento continua sendo uma
+ * requisicao a images.unsplash.com.
+ *
+ * O que se ganha passando por aqui em vez de repetir um `<img>` nas tres
+ * paginas: `loading="lazy"`, `decoding="async"` e uma caixa declarada por
+ * `proporcao` — que e o que substitui o `height: 400px` do `style=` inline, e o
+ * que impede o `style=` inline de reaparecer numa pagina migrada. Imagem nova
+ * entra no acervo (`src/assets/imagens/`); esta e a excecao herdada.
  */
 interface Props {
-  /** Caminho publico (`/images/...`) ou a imagem ja importada. */
+  /**
+   * Caminho publico (`/images/...`), a imagem ja importada, ou uma URL absoluta
+   * — esta ultima so para a excecao descrita acima.
+   */
   src: string | ImageMetadata;
   /** Vazio marca imagem decorativa. O que nao existe e omitir. */
   alt: string;
@@ -75,7 +91,14 @@ const {
   class: classe,
 } = Astro.props;
 
-const fonte = typeof src === 'string' ? imagem(src) : src;
+/*
+ * A URL absoluta e reconhecida ANTES do `imagem()`: aquele resolvedor procura o
+ * caminho no acervo e ABORTA O BUILD quando nao acha, que e exatamente o que se
+ * quer para `/images/...` escrito errado — e exatamente o que nao se pode fazer
+ * com um endereco de outro dominio.
+ */
+const remota = typeof src === 'string' && /^https?:\/\//.test(src);
+const fonte = remota ? null : typeof src === 'string' ? imagem(src as string) : src;
 
 /*
  * AVIF com reserva em WebP, e nao a escada de tres formatos que o <Picture>
@@ -132,16 +155,36 @@ const AJUSTES = { cobrir: 'cover', conter: 'contain' } as const;
  * O SVG do logotipo e o unico vetor do acervo. `<Picture>` com formatos raster
  * o rasterizaria; aqui ele sai como veio.
  */
-const vetor = fonte.format === 'svg';
+const vetor = fonte?.format === 'svg';
 ---
 
 {
-  vetor ? (
+  remota ? (
+    /*
+     * Sem `width`/`height`: nao ha como saber a dimensao de um arquivo que vive
+     * em outro dominio, e inventa-la e pior do que omiti-la — um numero errado
+     * reserva a caixa errada. Quem reserva a caixa aqui e `proporcao`, que e
+     * CSS e nao depende do arquivo. Diga-a sempre nesta variante.
+     */
     <img
-      src={fonte.src}
+      src={src as string}
       alt={alt}
-      width={largura ?? fonte.width}
-      height={altura ?? fonte.height}
+      loading={prioridade ? 'eager' : 'lazy'}
+      decoding={prioridade ? 'sync' : 'async'}
+      class:list={[
+        'w-full h-auto',
+        proporcao && PROPORCOES[proporcao],
+        proporcao && (ajuste === 'conter' ? 'object-contain' : 'object-cover'),
+        arredondada && 'rounded-md',
+        classe,
+      ]}
+    />
+  ) : vetor ? (
+    <img
+      src={fonte!.src}
+      alt={alt}
+      width={largura ?? fonte!.width}
+      height={altura ?? fonte!.height}
       loading={prioridade ? 'eager' : 'lazy'}
       decoding={prioridade ? 'sync' : 'async'}
       class:list={[
@@ -153,7 +196,7 @@ const vetor = fonte.format === 'svg';
     />
   ) : (
     <Picture
-      src={fonte}
+      src={fonte!}
       alt={alt}
       layout={layout}
       width={largura}

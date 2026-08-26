@@ -36,6 +36,10 @@ import Contador from '../components/padroes/Contador.astro';
 import Abas from '../components/padroes/Abas.astro';
 import Prosa from '../components/padroes/Prosa.astro';
 import Tabela from '../components/padroes/Tabela.astro';
+import TituloSecao from '../components/padroes/TituloSecao.astro';
+import FaixaLogos from '../components/padroes/FaixaLogos.astro';
+import CartaoModalidade from '../components/padroes/CartaoModalidade.astro';
+import Video from '../components/padroes/Video.astro';
 import Cabecalho from '../components/cromo/Cabecalho.astro';
 import Rodape from '../components/cromo/Rodape.astro';
 import FaixaCookies from '../components/cromo/FaixaCookies.astro';
@@ -1019,6 +1023,107 @@ const faixas = [
             painel inativo recebe <code>hidden</code>, e não uma classe — conteúdo escondido por
             classe continua achável pela busca da página, e a pessoa "encontra" um resort que não
             está na tela.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>TituloSecao</h3>
+        <p class="legenda">
+          O <code>.heading-text.heading-line</code> do tema: o título com um risco embaixo. Aparece
+          em associados, associe-se, apoie, resorts-brasil e na home — quatro páginas por idioma.
+        </p>
+        <div class="demo">
+          <TituloSecao nivel={4}>Benefícios de ser um associado</TituloSecao>
+          <TituloSecao nivel={4} alinhamento="inicio">Conheça nossos associados:</TituloSecao>
+          <p class="legenda">
+            <strong>O risco precisou do CSS, e não só da medição.</strong> Medido, o
+            <code>:before</code> devolveu <code>left: 0</code> num título centralizado — o que
+            sugeria uma barra encostada na margem esquerda. Não é: a regra do tema é
+            <code>left: 0; right: 0; width: 30px</code> mais <code>margin: 0 auto</code>, e o
+            conjunto centraliza. É o caso simétrico do que o CLAUDE.md avisa: ler o seletor sem
+            medir engana, e medir sem ler o seletor também.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>FaixaLogos</h3>
+        <p class="legenda">
+          A fileira de logotipos de mantenedores, parceiros e descontos. Aqui com quatro logos de
+          resort, tirados de <code>src/data/associados.ts</code>:
+        </p>
+        <div class="demo">
+          <FaixaLogos itens={logosDemo} colunas={5} />
+          <p class="legenda">
+            <strong>A escada de colunas não precisou ser inventada.</strong> Medida, a faixa do
+            tema põe 2 → 3 → 5 colunas (e 2 → 3 → 6 na variante de seis), que é item por item o que
+            a <code>&lt;Grade&gt;</code> já fazia desde a Etapa 1 — inclusive o degrau de cinco,
+            que entrou na Etapa 7 por causa das publicações. Duas grades diferentes do tema
+            chegaram na mesma escada por caminhos diferentes.
+          </p>
+          <p class="legenda">
+            <strong>O recuo fica na célula</strong>, e é a única vez neste projeto em que isso é o
+            certo: os 40px medidos estão nos quatro lados, então são o respiro do logotipo dentro
+            da própria célula, e não o vão até o vizinho. Daí o <code>espaco="nenhum"</code> — com
+            <code>gap</code> somado ao recuo, o corredor daria 96px onde o medido são 80.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>CartaoModalidade</h3>
+        <p class="legenda">
+          As duas caixas coloridas de <code>/apoie</code>. A Etapa 3 já as citava sem as construir:
+          o <code>&lt;LinkAcao&gt;</code> nasceu dizendo que vive dentro de três padrões, e este é
+          o terceiro.
+        </p>
+        <div class="demo">
+          <Grade colunas={2} piso={1} espaco="md">
+            <CartaoModalidade tom="roxo" titulo="Parceiro" nivel={4} href="#modalidade-parceiro">
+              Fale conosco
+            </CartaoModalidade>
+            <CartaoModalidade tom="magenta" titulo="Mantenedor" nivel={4} href="#modalidade-mantenedor">
+              Fale conosco
+            </CartaoModalidade>
+          </Grade>
+          <p class="legenda">
+            O tom vem do mesmo <code>type Tom</code> da <code>&lt;FaixaDestaque&gt;</code>, e não
+            de um enum paralelo: nesta página o mesmo par de cores pinta o cartão pequeno e a faixa
+            larga logo abaixo dele. São a mesma decisão vista duas vezes.
+          </p>
+          <p class="legenda">
+            <strong>O chevron é um desvio deliberado.</strong> Medido no tema com o mouse em cima,
+            aquele "Fale conosco" branco sobre o roxo não responde ao hover de forma nenhuma — nem
+            cor, nem sublinhado. A seta devolve o sinal deslizando, sem depender de cor, que é o
+            único eixo que uma superfície de cor cheia não tem sobrando.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>Video</h3>
+        <p class="legenda">
+          A fachada de clique-para-carregar: até o clique, nenhum domínio do Google é contatado.
+          Passe o mouse para ver o play ficar vermelho; clique para trocar a fachada pelo embed.
+        </p>
+        <div class="demo">
+          <Video lang="pt-br" id="LJ_9oUeE4e8" titulo="Vídeo institucional da Resorts Brasil" />
+          <p class="legenda">
+            <strong>Ele existe por uma armadilha que quase passou.</strong> O
+            <code>&lt;YouTube&gt;</code> que as páginas de ebook ainda usam emite o mesmo markup,
+            mas o CSS dele mora em <code>public/css/ajustes.css</code> — a folha do
+            <em>tema</em>. Página migrada não carrega aquele arquivo, então migrar
+            <code>/resorts-brasil</code> com o componente antigo entregaria a fachada sem caixa,
+            sem botão de play e com o rótulo "Assistir ao vídeo" impresso por cima da miniatura.
+          </p>
+          <p class="legenda">
+            <strong>A regra do <code>iframe</code> é <code>:global</code>, e essa linha é o ponto
+            inteiro.</strong> O <code>&lt;iframe&gt;</code> não está no arquivo: o
+            <code>site.js</code> o cria no clique, e elemento criado em tempo de execução não
+            recebe o atributo de escopo do Astro. Sem o <code>:global</code>, o vídeo entraria com
+            os 150px padrão do iframe — depois do clique, que é onde nenhum teste de carregamento
+            olha.
           </p>
         </div>
       </section>

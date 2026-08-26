@@ -1,147 +1,106 @@
 ---
-import GradeLogos from '../components/GradeLogos.astro';
-import { mantenedores, parceiros } from '../data/parceiros';
-import { ui } from '../i18n/ui';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import YouTube from '../components/YouTube.astro';
+import LayoutSistema from '../layouts/LayoutSistema.astro';
+import Secao from '../components/layout/Secao.astro';
+import Container from '../components/layout/Container.astro';
+import Grade from '../components/layout/Grade.astro';
+import Titulo from '../components/primitivos/Titulo.astro';
+import Texto from '../components/primitivos/Texto.astro';
+import Imagem from '../components/primitivos/Imagem.astro';
+import ChamadaAcao from '../components/padroes/ChamadaAcao.astro';
+import FaixaDestaque from '../components/padroes/FaixaDestaque.astro';
+import FaixaParceiros from '../components/FaixaParceiros.astro';
+import ConviteAssociese from '../components/ConviteAssociese.astro';
+import Video from '../components/padroes/Video.astro';
+import BlocoEixo from '../components/BlocoEixo.astro';
+import { fotoResortsBrasil, videos } from '../data/midia';
+import { ui, type Locale } from '../i18n/ui';
+
+/*
+ * QUATRO CORRECOES DELIBERADAS, nos tres idiomas:
+ *
+ *   1. AS TRES CORES DA FAIXA SAIRAM DO MARKUP. `#EFB72C`, `#15184B` e `#28B055`
+ *      em `style=` inline, nove ocorrencias somando os idiomas. Viram os tons
+ *      `ambar`, `indigo-escuro` e `verde` — e com eles vem a correcao de
+ *      contraste da Etapa 3: o tema escrevia BRANCO sobre o ambar (1,6:1) e
+ *      sobre o verde (2,9:1), os dois reprovando o criterio 1.4.3 da WCAG. Cada
+ *      tom traz agora o proprio par de texto.
+ *   2. Hierarquia. `<h1 class="text-md h2">` seguido de um `<h3>` que e a frase
+ *      de abertura, e depois `<h4 class="text-muted">` para a frase dos eixos —
+ *      nenhum dos dois e cabecalho de coisa nenhuma. Viram <Texto>.
+ *   3. Os dois `<br>` manuais, que existiam so em portugues. `text-wrap:
+ *      balance` acerta a quebra em qualquer largura, e nao numa so.
+ *   4. O CONVITE DO FIM ERA A COPIA DIVERGENTE. As outras tres paginas trazem o
+ *      mesmo bloco sobre fundo claro com dois botoes; esta trazia-o sobre uma
+ *      foto, com outra quebra de linha e um botao so. Passa a ser o
+ *      <ConviteAssociese>, como as outras — e com isso as doze copias daquele
+ *      paragrafo viram uma. A foto de fundo se perde; esta em
+ *      docs/deltas-visuais.md.
+ *
+ * A FOTO GRANDE CONTINUA HOSPEDADA NA UNSPLASH, por decisao registrada na
+ * Etapa 8. O que muda e a forma: era `background-image` num `style=` inline com
+ * `height: 400px`, sem lazy e sem caixa responsiva; agora e um `<img>` com
+ * `loading="lazy"` dentro de uma caixa com `aspect-ratio`. Continua fora do
+ * pipeline de imagens — nao ha arquivo local para otimizar — e continua sendo
+ * uma requisicao a images.unsplash.com. Ver a nota de URL ABSOLUTA no <Imagem> e
+ * a de `fotoResortsBrasil` em src/data/midia.ts.
+ */
+const lang: Locale = 'pt-br';
+const t = ui[lang];
+
+const tamanhosFoto = '(min-width: 60rem) 60rem, 92vw';
 ---
 
-<BaseLayout
-  lang="pt-br"
-  route="resortsBrasil"
->
-    <!-- Título -->
-    <section id="title" class="p-b-0">
-        <div class="container">
-            <div class="row m-b-30">
-                <div class="col-lg-8 center text-center">
-                    <h1 class="text-md h2">Resorts Brasil</h1>
-                    <h3>Trabalhamos em conjunto com os associados em prol do segmento de resorts e do setor de
-                        turismo.</h3>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Título -->
+<LayoutSistema lang={lang} route="resortsBrasil">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="media">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.resortsBrasilTitle}</Titulo>
+      <Texto tamanho="lg" alinhamento="centro">{t.resortsBrasilLead}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Resorts Brasil -->
-    <section id="resorts-brasil" class="p-t-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 center rounded m-b-30"
-                    style="background-image:url('https://images.unsplash.com/photo-1596436889106-be35e843f974?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'); height: 400px;">
-                </div>
-                <div class="col-lg-10 center text-center">
-                    <h4 class="text-muted">Para melhor organização de nossas estratégias,<br> atuamos em
-                        três eixos:</h4>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Resorts Brasil -->
+  <Secao id="resorts-brasil" espacoTopo="nenhum">
+    <Container largura="media">
+      <Imagem
+        src={fotoResortsBrasil}
+        alt={t.resortsBrasilPhotoAlt}
+        proporcao="larga"
+        tamanhos={tamanhosFoto}
+        arredondada
+        class="mb-7.5"
+      />
+      <Texto tamanho="lg" cor="sutil" alinhamento="centro" semMargem>{t.resortsBrasilAxesIntro}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Boxes -->
-    <section class="box-fancy section-fullwidth text-light p-t-0">
-        <div class="row">
-            <div class="col-lg-4 text-center" style="background-color: #EFB72C;">
-                <h2 class="text-lg">RE</h2>
-                <h4>REPRESENTAR E ENGAJAR</h4>
-                <p>Eixo voltado à representação do setor, em que fazemos a interlocução com o Governo, no
-                    sentido de trabalhar os principais pleitos do segmento.</p>
-                <p>Buscamos também representar os resorts nos principais eventos do mercado, engajando
-                    parceiros e associados no fortalecimento dos resorts.</p>
-            </div>
-            <div class="col-lg-4 text-center" style="background-color: #15184B;">
-                <h2 class="text-lg">SO</h2>
-                <h4>SENSIBILIZAR O OLHAR</h4>
-                <p>Eixo voltado para a informação, com o desenvolvimento de pesquisas e publicações relevantes que
-                    possam gerar valor para o associado e que possam fortalecer o segmento, revelando a importância
-                    dos resorts para o turismo nacional.</p>
-            </div>
-            <div class="col-lg-4 text-center" style="background-color: #28B055;">
-                <h2 class="text-lg">RT</h2>
-                <h4>REFLETIR PARA TRANSFORMAR</h4>
-                <p>Voltado às ações coletivas dos associados, este eixo busca identificar temas de interesse comum
-                    no segmento de resorts para atuação conjunta.</p>
-                <p>Trabalhamos fortemente com ações de promoção, além de reuniões em comitês e grupos de trabalho
-                    para compartilhar os desafios e pensar em soluções para o setor.</p>
-            </div>
-        </div>
-    </section>
-    <!-- end: Boxes -->
+  {/* Sem <Container>: a faixa vai de borda a borda. Ver a nota da <FaixaDestaque>. */}
+  <Secao id="eixos" espaco="nenhum">
+    <FaixaDestaque tons={['ambar', 'indigo-escuro', 'verde']}>
+      {/*
+        Os tres slots sao LITERAIS. Um `slot={String(i + 1)}` dentro de um
+        `.map()` compila e quebra na geracao — ver a nota do <BlocoEixo>. O
+        numero de blocos e o de `tons` andam juntos: sao tres em cada.
+      */}
+      <BlocoEixo slot="1" eixo={t.resortsBrasilAxes[0]} />
+      <BlocoEixo slot="2" eixo={t.resortsBrasilAxes[1]} />
+      <BlocoEixo slot="3" eixo={t.resortsBrasilAxes[2]} />
+    </FaixaDestaque>
+  </Secao>
 
-    <!-- Video -->
-    <section class="p-b-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 m-b-20">
-                    <div class="call-to-action background-grey rounded">
-                        <h2>A associação existe para contribuir para o fortalecimento e desenvolvimento do turismo,
-                            bem como das localidades em que os resorts estão.</h2>
-                        <p>Acreditamos que os resorts são indutores de desenvolvimento socioeconômico que
-                            transformam a vida de muitas pessoas. Por isso, buscamos conectar profissionais,
-                            inspirar as boas práticas e advogar pelos resorts brasileiros.</p>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <YouTube lang="pt-br" id="LJ_9oUeE4e8" titulo={ui["pt-br"].videoInstitucional} />
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Video -->
+  <Secao id="video" espacoBase="nenhum">
+    <Container>
+      <Grade colunas={2} piso={1} espaco="md" alinhamento="centro">
+        <ChamadaAcao fundo="clara">
+          <Titulo nivel={2} tamanho="xl">{t.resortsBrasilMissionTitle}</Titulo>
+          <Texto semMargem>{t.resortsBrasilMissionText}</Texto>
+        </ChamadaAcao>
 
-    <!-- Parceiros -->
-    <section id="parceiros">
-        <div class="container">
-            <div class="row m-b-30">
-                <div class="heading-text heading-line text-center">
-                    <h4>Conheça algumas empresas que apoiam o turismo<br>através da Resorts Brasil</h4>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Mantenedores:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={mantenedores} colunas={5} />
-                </div>
-            </div>
-            <div class="row p-t-30">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Parceiros:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={parceiros} colunas={5} />
-                </div>
-            </div>
-            <hr class="space">
-            <div class="text-center">
-                <h5 class="text-muted">#ApoieOTurismoBrasileiro❤️</h5>
-            </div>
-        </div>
-    </section>
-    <!-- end: Parceiros -->
+        <Video lang={lang} id={videos.institucional} titulo={t.videoInstitucional} />
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- CTA -->
-    <section id="cta">
-        <div class="container">
-            <div style="background-image:url('/images/hero/pexels-161212.jpg')"
-                class="call-to-action p-t-100 p-b-100 background-image rounded mb-0">
-                <div class="bg-overlay" data-style="2"></div>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-10">
-                            <h3 class="text-light">Quer fazer parte de um grupo seleto de resorts brasileiros?</h3>
-                            <p class="text-light">Faça parte e ajude a transformar o setor. 😍</p>
-                        </div>
-                        <div class="col-lg-2">
-                            <a href="/associe-se" class="btn btn-light btn-outline">Associe-se</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: CTA -->
-</BaseLayout>
+  <FaixaParceiros lang={lang} comHashtag colunas={5} />
+
+  <ConviteAssociese lang={lang} />
+</LayoutSistema>
+

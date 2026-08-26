@@ -1,0 +1,98 @@
+---
+import Grade from '../layout/Grade.astro';
+import Imagem from '../primitivos/Imagem.astro';
+
+/**
+ * FaixaLogos — a fileira de logotipos de mantenedores, parceiros e descontos.
+ *
+ * Substitui o `<GradeLogos>` de transicao, que emitia o `ul.grid.grid-N-columns`
+ * do tema. Aquele componente CONTINUA existindo ate a Etapa 9: as tres paginas
+ * de home ainda o usam, e converte-lo no lugar poria markup do design system —
+ * e, pelo grafo de modulos, o `<style>` dele — dentro das paginas do tema. E a
+ * mesma convivencia que o `ListaPublicacoes` teve entre as Etapas 4 e 7.
+ *
+ *   <FaixaLogos itens={mantenedores} colunas={5} />
+ *
+ * A ESCADA DE COLUNAS NAO PRECISOU SER INVENTADA. Medida
+ * (scripts/medir-padroes.mjs, grupo `gradeLogos`), a faixa do tema poe:
+ *
+ *   .grid-5-columns   2 -> 3 -> 5 colunas
+ *   .grid-6-columns   2 -> 3 -> 6 colunas
+ *
+ * que e, item por item, o que a <Grade> ja fazia com `colunas={5}` e
+ * `colunas={6}` desde a Etapa 1 — inclusive o degrau de cinco, que entrou na
+ * Etapa 7 por causa das publicacoes. Duas grades diferentes do tema chegaram na
+ * mesma escada por caminhos diferentes; aqui e uma so.
+ *
+ * O RECUO FICA NA CELULA, e e a unica vez neste projeto em que isso e o certo.
+ * Medidos, os 40px do `<li>` estao nos QUATRO lados: e o respiro do logotipo
+ * dentro da propria celula, nao o vao ate o vizinho. Por isso `espaco="nenhum"`
+ * na <Grade> — com `gap` somado ao recuo, o corredor entre dois logotipos daria
+ * 96px onde o medido sao 80, e o logotipo encolheria de 130 para 118px no
+ * desktop. Ver a nota da prop `espaco` na <Grade>.
+ */
+interface LogoItem {
+  nome: string;
+  /** Caminho publico (`/images/parceiros/...`). Resolvido por src/imagens.ts. */
+  logo: string;
+  /** Ausente para quem nao tem site: vira imagem sem link, nao link morto. */
+  url?: string;
+}
+
+interface Props {
+  itens: LogoItem[];
+  /** 5 nas paginas institucionais, 6 em associe-se e nas abas de associados. */
+  colunas?: 5 | 6;
+  class?: string;
+}
+
+const { itens, colunas = 5, class: classe } = Astro.props;
+
+/*
+ * O `sizes` da celula, para o pipeline nao baixar variante maior do que cabe.
+ * MEDIDA: a celula do desktop entrega 130px de logotipo, a do tablet 156 e a do
+ * mobile 85 — o tablet e a maior das tres, porque tres colunas em 708px sao mais
+ * largas que cinco em 1052. O `sizes` segue a mesma ordem das container queries
+ * da <Grade>, e o teto e o do tablet.
+ */
+const TAMANHOS = '(min-width: 64rem) 9rem, (min-width: 48rem) 10rem, 6rem';
+---
+
+<Grade colunas={colunas} espaco="nenhum" como="ul" alinhamento="centro" class={classe}>
+  {
+    itens.map((item) => (
+      <li class="celula">
+        {/*
+          Sem `url`, sai a imagem sozinha — e nao um `<a>` sem `href`, que era o
+          que o tema emitia. Ancora sem destino nao e link: nao recebe foco, nao
+          e anunciada como link e nao faz nada; so parecia simetrica no markup.
+        */}
+        {item.url ? (
+          <a href={item.url} target="_blank" rel="noopener noreferrer">
+            <Imagem src={item.logo} alt={item.nome} escala="largura-total" tamanhos={TAMANHOS} />
+          </a>
+        ) : (
+          <Imagem src={item.logo} alt={item.nome} escala="largura-total" tamanhos={TAMANHOS} />
+        )}
+      </li>
+    ))
+  }
+</Grade>
+
+<style>
+  /* MEDIDO: 40px nos quatro lados, e opacidade 0,9 no `<li>` inteiro. O tema
+     nao devolve a opacidade no hover — medido com o mouse em cima, nada muda —
+     entao ela e um tom, e nao um estado. */
+  .celula {
+    padding: 2.5rem;
+    opacity: 0.9;
+    text-align: center;
+  }
+
+  /* O logotipo ocupa a largura util da celula, que e como o tema o dimensiona:
+     `max-width` nao existe ali, quem manda e a coluna. */
+  .celula :global(img) {
+    width: 100%;
+    height: auto;
+  }
+</style>

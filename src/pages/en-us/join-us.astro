@@ -1,173 +1,115 @@
 ---
-import GradeLogos from '../../components/GradeLogos.astro';
-import { descontos, mantenedores, parceiros } from '../../data/parceiros';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Grade from '../../components/layout/Grade.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Texto from '../../components/primitivos/Texto.astro';
+import Botao from '../../components/primitivos/Botao.astro';
+import Imagem from '../../components/primitivos/Imagem.astro';
+import ChamadaAcao from '../../components/padroes/ChamadaAcao.astro';
+import CaixaIcone from '../../components/padroes/CaixaIcone.astro';
+import TituloSecao from '../../components/padroes/TituloSecao.astro';
+import FaixaParceiros from '../../components/FaixaParceiros.astro';
+import { ui, routes, type Locale } from '../../i18n/ui';
+
+/* As correcoes desta pagina estao anotadas em src/pages/associe-se.astro, que
+   e a versao de referencia. */
+const lang: Locale = 'en-us';
+const t = ui[lang];
+
+/* A foto ocupa 5 das 12 colunas no desktop e a largura inteira no mobile. */
+const tamanhosFoto = '(min-width: 48rem) 42vw, 92vw';
 ---
 
-<BaseLayout
-  lang="en-us"
-  route="joinUs"
->
-    <!-- Join Us -->
-    <section id="join-us">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 center text-center">
-                    <h1 class="text-md h2">Become a member</h1>
-                </div>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <div class="col-lg-5">
-                    <img src="/images/hero/pexels-1134176.jpg"
-                        class="img-fluid rounded" alt="resort">
-                </div>
-                <div class="col-lg-7">
-                    <div class="call-to-action background-grey rounded">
-                        <h2>We seek to help transform the tourism sector in Brazil, fighting on several fronts for a
-                            stronger productive sector.</h2>
-                        <p>Our plans and projects are designed by resorts for resorts. The growth of the association
-                            is one of the pillars for our development and strengthening as a segment.</p>
-                        <div class="m-b-20">
-                            <a href="/en-us/contact-us" target="_blank" rel="noopener noreferrer" class="btn">Join us</a>
-                            <a href="/en-us/associates" class="btn btn-outline">Meet the associates</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Join Us -->
+<LayoutSistema lang={lang} route="joinUs">
+  <Secao id="join-us">
+    <Container>
+      {/* `mb-15` = 60px, que e o `<div class="space">` vazio do tema — um
+          elemento sem conteudo cujo unico papel era abrir um vao. */}
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro" class="mb-15">
+        {t.joinTitle}
+      </Titulo>
 
-    <!-- Benefits -->
-    <section id="benefits" class="p-t-0">
-        <div class="container">
-            <div class="row">
-                <div class="heading-text heading-line text-center m-b-40">
-                    <h4>Benefits of becoming an associate </h4>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class="icon-box small clean">
-                        <div class="icon"> <a href="#"><i class="icon-check-circle"></i></a> </div>
-                        <h3>Fairs</h3>
-                        <p>Participation in the main fairs of the industry in a cooperative stand.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="icon-box small clean">
-                        <div class="icon"> <a href="#"><i class="icon-check-circle"></i></a> </div>
-                        <h3>B2B</h3>
-                        <p>Business roundtables in innovative formats with clients.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="icon-box small clean">
-                        <div class="icon"> <a href="#"><i class="icon-check-circle"></i></a> </div>
-                        <h3>B2C</h3>
-                        <p>Join the Resort Week campaign.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="icon-box small clean">
-                        <div class="icon"> <a href="#"><i class="icon-check-circle"></i></a> </div>
-                        <h3>Studies</h3>
-                        <p>Get access to exclusive studies and statistics for our associates.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="icon-box small clean">
-                        <div class="icon"> <a href="#"><i class="icon-check-circle"></i></a> </div>
-                        <h3>Advocacy</h3>
-                        <p>We work with government spheres, in partnership with G20+ to advocate for the interests
-                            of the category.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="icon-box small clean">
-                        <div class="icon"> <a href="#"><i class="icon-check-circle"></i></a> </div>
-                        <h3>Benchmarking</h3>
-                        <p>We encourage the exchange of ideas and knowledge through themed committees, holding
-                            periodic meetings.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="icon-box small clean">
-                        <div class="icon"> <a href="#"><i class="icon-check-circle"></i></a> </div>
-                        <h3>Discounts</h3>
-                        <p>We have a series of partnerships in the market that generate special benefits and
-                            discounts for members.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="icon-box small clean">
-                        <div class="icon"> <a href="#"><i class="icon-check-circle"></i></a> </div>
-                        <h3>Our brand</h3>
-                        <p>Associates have the right to use the Resorts Brasil association brand.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Benefits -->
+      <Grade colunas={2} piso={1} espaco="md" alinhamento="centro">
+        <Imagem
+          src="/images/hero/pexels-1134176.jpg"
+          alt={t.joinPhotoAlt}
+          escala="largura-total"
+          tamanhos={tamanhosFoto}
+          arredondada
+        />
 
-    <!-- Maintainers and Partners -->
-    <section id="parceiros">
-        <div class="container">
-            <div class="row m-b-30">
-                <div class="heading-text heading-line text-center">
-                    <h4>Meet a few of the companies that support tourism through Resorts Brasil</h4>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Maintainers:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={mantenedores} colunas={6} />
-                </div>
-            </div>
-            <div class="row p-t-30">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Partners:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={parceiros} colunas={6} />
-                </div>
-            </div>
-            <div class="row p-t-30">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center m-b-0" style="letter-spacing: 1px;">Discounts:</h4>
-                    <p class="text-center">Courses and Events</p>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={descontos} colunas={6} />
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Maintainers and Partners -->
+        <ChamadaAcao fundo="clara">
+          <Titulo nivel={2} tamanho="xl">{t.joinLead}</Titulo>
+          <Texto>{t.joinText}</Texto>
+          <div class="botoes">
+            {/*
+              Sem `target="_blank"`. O tema abria o proprio site numa aba nova —
+              o link ia para /fale-conosco, que e uma pagina daqui. Aba nova para
+              destino interno tira do visitante o controle da navegacao e quebra
+              a Voltar do navegador.
+            */}
+            <Botao href={routes.contact[lang]}>{t.joinInviteAction}</Botao>
+            <Botao href={routes.associates[lang]} variante="contorno">{t.joinInviteSecondary}</Botao>
+          </div>
+        </ChamadaAcao>
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- CTA -->
-    <section id="cta">
-        <div class="container">
-            <div style="background-image:url('/images/hero/pexels-161212.jpg')"
-                class="call-to-action p-t-100 p-b-100 background-image rounded mb-0">
-                <div class="bg-overlay" data-style="2"></div>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-10">
-                            <h3 class="text-light">Meet the resorts that already are Resorts Brasil</h3>
-                            <p class="text-light">Take part and help transform the sector. 😍</p>
-                        </div>
-                        <div class="col-lg-2">
-                            <a href="/en-us/associates" class="btn btn-light btn-outline">Learn more</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <Secao id="benefits" espacoTopo="nenhum">
+    <Container>
+      <TituloSecao nivel={2}>{t.benefitsTitle}</TituloSecao>
+      <Grade colunas={4} piso={1} espaco="md" alinhamento="inicio">
+        {
+          t.benefits.map((b) => (
+            <CaixaIcone icone="check-circle" titulo={b.titulo} nivel={3} tom="acao">
+              <Texto semMargem>{b.texto}</Texto>
+            </CaixaIcone>
+          ))
+        }
+      </Grade>
+    </Container>
+  </Secao>
+
+  <FaixaParceiros lang={lang} comDescontos colunas={6} />
+
+  <Secao id="cta" espacoTopo="nenhum">
+    <Container>
+      <ChamadaAcao
+        fundo="imagem"
+        imagem="/images/hero/pexels-161212.jpg"
+        alt=""
+        alinhamento="centro"
+        tamanhos="100vw"
+      >
+        <Titulo nivel={2} tamanho="lg" cor="inverso">{t.joinCtaTitle}</Titulo>
+        <Texto cor="inverso">{t.joinInviteText}</Texto>
+        <div class="botoes">
+          <Botao href={routes.associates[lang]} variante="clara">{t.joinCtaAction}</Botao>
         </div>
-    </section>
-    <!-- end: CTA -->
-</BaseLayout>
+      </ChamadaAcao>
+    </Container>
+  </Secao>
+</LayoutSistema>
+
+<style>
+  /*
+   * Os botoes lado a lado, e embaixo um do outro quando nao couberem — a mesma
+   * regra do <ConviteAssociese>, e pelo mesmo motivo: no tema eles eram dois
+   * `<a>` soltos separados pelo espaco em branco do HTML, o que punha o segundo
+   * a meio caminho da linha seguinte em 390px.
+   */
+  .botoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  /* Dentro da chamada centrada, os botoes acompanham. */
+  :global(.centro) .botoes {
+    justify-content: center;
+  }
+</style>

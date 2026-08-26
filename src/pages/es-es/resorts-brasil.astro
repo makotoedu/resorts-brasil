@@ -1,148 +1,80 @@
 ---
-import GradeLogos from '../../components/GradeLogos.astro';
-import { mantenedores, parceiros } from '../../data/parceiros';
-import { ui } from '../../i18n/ui';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import YouTube from '../../components/YouTube.astro';
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Grade from '../../components/layout/Grade.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Texto from '../../components/primitivos/Texto.astro';
+import Imagem from '../../components/primitivos/Imagem.astro';
+import ChamadaAcao from '../../components/padroes/ChamadaAcao.astro';
+import FaixaDestaque from '../../components/padroes/FaixaDestaque.astro';
+import FaixaParceiros from '../../components/FaixaParceiros.astro';
+import ConviteAssociese from '../../components/ConviteAssociese.astro';
+import Video from '../../components/padroes/Video.astro';
+import BlocoEixo from '../../components/BlocoEixo.astro';
+import { fotoResortsBrasil, videos } from '../../data/midia';
+import { ui, type Locale } from '../../i18n/ui';
+
+/* As correcoes desta pagina estao anotadas em src/pages/resorts-brasil.astro,
+   que e a versao de referencia. Uma delas nasceu aqui: o rotulo de parceiros
+   era "Socios / Partners:", e o titulo da faixa terminava com ponto final. */
+const lang: Locale = 'es-es';
+const t = ui[lang];
+
+const tamanhosFoto = '(min-width: 60rem) 60rem, 92vw';
 ---
 
-<BaseLayout
-  lang="es-es"
-  route="resortsBrasil"
->
-    <!-- Título -->
-    <section id="title" class="p-b-0">
-        <div class="container">
-            <div class="row m-b-30">
-                <div class="col-lg-8 center text-center">
-                    <h1 class="text-md h2">Resorts Brasil</h1>
-                    <h3>Trabajamos en conjunto con los asociados en pro del segmento de resorts y del sector de
-                        turismo.</h3>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Título -->
+<LayoutSistema lang={lang} route="resortsBrasil">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="media">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.resortsBrasilTitle}</Titulo>
+      <Texto tamanho="lg" alinhamento="centro">{t.resortsBrasilLead}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Resorts Brasil -->
-    <section id="resorts-brasil" class="p-t-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 center rounded m-b-30"
-                    style="background-image:url('https://images.unsplash.com/photo-1596436889106-be35e843f974?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'); height: 400px;">
-                </div>
-                <div class="col-lg-10 center text-center">
-                    <h4 class="text-muted">Para una mejor organización de nuestras estrategias, actuamos en tres
-                        ejes:</h4>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Resorts Brasil -->
+  <Secao id="resorts-brasil" espacoTopo="nenhum">
+    <Container largura="media">
+      <Imagem
+        src={fotoResortsBrasil}
+        alt={t.resortsBrasilPhotoAlt}
+        proporcao="larga"
+        tamanhos={tamanhosFoto}
+        arredondada
+        class="mb-7.5"
+      />
+      <Texto tamanho="lg" cor="sutil" alinhamento="centro" semMargem>{t.resortsBrasilAxesIntro}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Boxes -->
-    <section class="box-fancy section-fullwidth text-light p-t-0">
-        <div class="row">
-            <div class="col-lg-4 text-center" style="background-color: #EFB72C;">
-                <h2 class="text-lg">RE</h2>
-                <h4>REPRESENTAR Y COMPROMETER</h4>
-                <p>Eje centrado en la representación del sector, en el que hacemos la interlocución con el Gobierno,
-                    en el sentido de trabajar los principales pleitos del segmento.</p>
-                <p>Buscamos también representar los resorts en los principales eventos del mercado, comprometiendo
-                    colaboradores y asociados en el fortalecimiento de los resorts.</p>
-            </div>
-            <div class="col-lg-4 text-center" style="background-color: #15184B;">
-                <h2 class="text-lg">SO</h2>
-                <h4>SENSIBILIZAR LA MIRADA</h4>
-                <p>Eje orientado hacia la información, con desarrollo de investigaciones, encuestas y publicaciones
-                    relevantes que puedan generar valor para el asociado y que puedan fortalecer el segmento,
-                    revelando la importancia de los resorts para el turismo nacional.</p>
-            </div>
-            <div class="col-lg-4 text-center" style="background-color: #28B055;">
-                <h2 class="text-lg">RT</h2>
-                <h4>REFLEXIONAR PARA TRANSFORMAR</h4>
-                <p>Centrado en las acciones colectivas de los asociados, este eje busca identificar temas de interés
-                    común en el segmento de resorts para una actuación conjunta.</p>
-                <p>Trabajamos fuertemente con acciones de promoción. Además de reuniones en comités y grupos de
-                    trabajo para compartir los desafíos y pensar en soluciones para el sector.</p>
-            </div>
-        </div>
-    </section>
-    <!-- end: Boxes -->
+  {/* Sem <Container>: a faixa vai de borda a borda. Ver a nota da <FaixaDestaque>. */}
+  <Secao id="ejes" espaco="nenhum">
+    <FaixaDestaque tons={['ambar', 'indigo-escuro', 'verde']}>
+      {/*
+        Os tres slots sao LITERAIS. Um `slot={String(i + 1)}` dentro de um
+        `.map()` compila e quebra na geracao — ver a nota do <BlocoEixo>. O
+        numero de blocos e o de `tons` andam juntos: sao tres em cada.
+      */}
+      <BlocoEixo slot="1" eixo={t.resortsBrasilAxes[0]} />
+      <BlocoEixo slot="2" eixo={t.resortsBrasilAxes[1]} />
+      <BlocoEixo slot="3" eixo={t.resortsBrasilAxes[2]} />
+    </FaixaDestaque>
+  </Secao>
 
-    <!-- Video -->
-    <section class="p-b-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 m-b-20">
-                    <div class="call-to-action background-grey rounded">
-                        <h2>La asociación existe para contribuir con el fortalecimiento y desarrollo del turismo,
-                            así como de las localidades en las que se encuentran los resorts.</h2>
-                        <p>Creemos que los resorts son inductores de desarrollo socioeconómico, que transforman la
-                            vida de muchas personas. Por eso, buscamos conectar profesionales, inspirar las buenas
-                            prácticas y abogar por los resorts brasileños.</p>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <YouTube lang="es-es" id="LJ_9oUeE4e8" titulo={ui["es-es"].videoInstitucional} />
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Video -->
+  <Secao id="video" espacoBase="nenhum">
+    <Container>
+      <Grade colunas={2} piso={1} espaco="md" alinhamento="centro">
+        <ChamadaAcao fundo="clara">
+          <Titulo nivel={2} tamanho="xl">{t.resortsBrasilMissionTitle}</Titulo>
+          <Texto semMargem>{t.resortsBrasilMissionText}</Texto>
+        </ChamadaAcao>
 
-    <!-- Parceiros -->
-    <section id="parceiros">
-        <div class="container">
-            <div class="row m-b-30">
-                <div class="heading-text heading-line text-center">
-                    <h4>Conozca algunas empresas que apoyan el turismo a través de Resorts Brasil.</h4>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Mantenedores:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={mantenedores} colunas={5} />
-                </div>
-            </div>
-            <div class="row p-t-30">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Socios / Partners:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={parceiros} colunas={5} />
-                </div>
-            </div>
-            <hr class="space">
-            <div class="text-center">
-                <h5 class="text-muted">#ApoyarElTurismoBrasileño❤️</h5>
-            </div>
-        </div>
-    </section>
-    <!-- end: Parceiros -->
+        <Video lang={lang} id={videos.institucional} titulo={t.videoInstitucional} />
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- CTA -->
-    <section id="cta">
-        <div class="container">
-            <div style="background-image:url('/images/hero/pexels-161212.jpg')"
-                class="call-to-action p-t-100 p-b-100 background-image rounded mb-0">
-                <div class="bg-overlay" data-style="2"></div>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-10">
-                            <h3 class="text-light">¿Quiere formar parte de un grupo selecto de resorts brasileños?
-                            </h3>
-                            <p class="text-light">Forme parte y ayude a formar el sector. 😍</p>
-                        </div>
-                        <div class="col-lg-2">
-                            <a href="/es-es/asociese" class="btn btn-light btn-outline">Asóciese</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: CTA -->
-</BaseLayout>
+  <FaixaParceiros lang={lang} comHashtag colunas={5} />
+
+  <ConviteAssociese lang={lang} />
+</LayoutSistema>
+

@@ -1,163 +1,177 @@
 ---
-import GradeLogos from '../components/GradeLogos.astro';
-import { mantenedores, parceiros } from '../data/parceiros';
-import BaseLayout from '../layouts/BaseLayout.astro';
+import LayoutSistema from '../layouts/LayoutSistema.astro';
+import Secao from '../components/layout/Secao.astro';
+import Container from '../components/layout/Container.astro';
+import Grade from '../components/layout/Grade.astro';
+import Titulo from '../components/primitivos/Titulo.astro';
+import Texto from '../components/primitivos/Texto.astro';
+import Botao from '../components/primitivos/Botao.astro';
+import Imagem from '../components/primitivos/Imagem.astro';
+import ChamadaAcao from '../components/padroes/ChamadaAcao.astro';
+import CartaoModalidade from '../components/padroes/CartaoModalidade.astro';
+import FaixaDestaque from '../components/padroes/FaixaDestaque.astro';
+import FaixaParceiros from '../components/FaixaParceiros.astro';
+import { ui, routes, type Locale } from '../i18n/ui';
+
+/*
+ * QUATRO CORRECOES DELIBERADAS, nos tres idiomas:
+ *
+ *   1. OS TRES DESTAQUES USAVAM TAGS DIFERENTES POR IDIOMA. O texto dos dois
+ *      blocos cinzas era `<strong>` em portugues e `<h5>` em ingles e em
+ *      espanhol — o mesmo conteudo com dois papeis semanticos, e o `<h5>` ainda
+ *      vinha logo depois de um `<h3>`, saltando um nivel. Vira <Texto> nos tres:
+ *      e um paragrafo, nao um cabecalho.
+ *   2. AS SEIS CORES LITERAIS SAIRAM DO MARKUP. `style="background-color:
+ *      #570A57"` aparecia 24 vezes somando os tres idiomas, entre os dois
+ *      cartoes e a faixa de modalidades. Agora sao os tons `roxo` e `magenta`,
+ *      que ja estavam nomeados no tokens.css desde a Etapa 3.
+ *   3. Hierarquia, em tres lugares. O emoji vinha em `<h3>` — um cabecalho cujo
+ *      texto e "😍" e que entrava no sumario da pagina para um leitor de tela;
+ *      vira texto decorativo com `aria-hidden`. E as duas frases que descrevem
+ *      as modalidades, mais a frase de fecho dos destaques, eram `<h4>` e `<h3>`
+ *      escolhidos pelo tamanho: sao paragrafos, e agora sao <Texto>.
+ *   4. O `<br>` e o rotulo espanhol da faixa de parceiros, iguais aos das outras
+ *      tres paginas. Ver <FaixaParceiros>.
+ *
+ * O LINK DOS CARTOES GANHA UM CHEVRON, e e o unico desvio visual da pagina.
+ * Medido no tema com o mouse em cima, aquele "Fale conosco" branco sobre o roxo
+ * nao responde ao hover de forma nenhuma — nem cor, nem sublinhado. Ver a nota
+ * do <CartaoModalidade>.
+ */
+const lang: Locale = 'pt-br';
+const t = ui[lang];
+
+const tamanhosFoto = '(min-width: 48rem) 46vw, 92vw';
 ---
 
-<BaseLayout
-  lang="pt-br"
-  route="support"
->
-    <!-- Título -->
-    <section id="title" class="p-b-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 center text-center">
-                    <h1 class="text-md h2">Apoie o turismo</h1>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Título -->
+<LayoutSistema lang={lang} route="support">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="media">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.supportTitle}</Titulo>
+    </Container>
+  </Secao>
 
-    <!-- Apoie -->
-    <section id="apoie" class="p-b-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 m-b-20">
-                    <div class="call-to-action background-grey rounded">
-                        <h2>Buscamos ajudar a transformar o setor de turismo no Brasil, lutando em diversas
-                            frentes por um setor produtivo mais forte. 💪</h2>
-                        <h5>Para isso, contamos com parceiros que apoiam nossos projetos e se aproximam dos resorts
-                            associados. Existem duas principais modalidades de apoio a projetos:</h5>
-                        <div class="row m-t-30">
-                            <div class="col-lg-6">
-                                <div class="card text-light rounded"
-                                    style="background-color: #570A57; border: none;">
-                                    <div class="card-body">
-                                        <h4 class="m-b-0">Parceiro</h4>
-                                        <a href="/fale-conosco" class="item-link">Fale conosco</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="card text-light rounded"
-                                    style="background-color: #A91079; border: none;">
-                                    <div class="card-body">
-                                        <h4 class="m-b-0">Mantenedor</h4>
-                                        <a href="/fale-conosco" class="item-link">Fale conosco</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <img class="img-fluid rounded"
-                        src="/images/hero/pexels-2868242.jpg"
-                        alt="rio de janeiro">
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Apoie -->
+  <Secao id="apoie" espacoBase="nenhum">
+    <Container>
+      <Grade colunas={2} piso={1} espaco="md" alinhamento="centro">
+        <ChamadaAcao fundo="clara">
+          <Titulo nivel={2} tamanho="xl">{t.supportLead}</Titulo>
+          <Texto tamanho="lg">{t.supportIntro}</Texto>
+          <div class="modalidades">
+            <Grade colunas={2} piso={1} espaco="md">
+              <CartaoModalidade tom="roxo" titulo={t.modalityPartner} nivel={3} href={routes.contact[lang]}>
+              {t.navContact}
+              </CartaoModalidade>
+              <CartaoModalidade tom="magenta" titulo={t.modalityMaintainer} nivel={3} href={routes.contact[lang]}>
+              {t.navContact}
+              </CartaoModalidade>
+            </Grade>
+          </div>
+        </ChamadaAcao>
 
-    <!-- Destaques -->
-    <section id="destaques" class="p-t-30">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="call-to-action background-dark rounded">
-                        <div class="row text-center text-light">
-                            <h3 class="m-b-0">😍</h3>
-                            <h3>Quer ajudar a transformar o turismo brasileiro?</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="call-to-action background-grey rounded">
-                        <div class="row text-center">
-                            <h3 class="m-b-0">✌️</h3>
-                            <strong>Um de nossos papéis é fomentar o desempenho no segmento de resorts, por meio de
-                                sinergia e parcerias, bem como disseminar boas práticas e informações nos
-                                empreendimentos.
-                            </strong>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="call-to-action background-grey rounded">
-                        <div class="row text-center">
-                            <h3 class="m-b-0">🤝</h3>
-                            <strong>A parceria com a Resorts Brasil proporciona visibilidade junto aos
-                                resorts associados e oportunidade de novos negócios para sua empresa.
-                            </strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr class="space">
-            <div class="row">
-                <div class="col-lg-9 center text-center">
-                    <h3>Os mantenedores e parceiros são empresas apoiadoras do Setor de Turismo que buscam
-                        incentivar ações transformadoras no segmento de resorts.</h3>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Destaques -->
+        <Imagem
+          src="/images/hero/pexels-2868242.jpg"
+          alt={t.supportPhotoAlt}
+          escala="largura-total"
+          tamanhos={tamanhosFoto}
+          arredondada
+        />
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- Modalidades -->
-    <section id="modalidades" class="box-fancy section-fullwidth text-light">
-        <div class="row">
-            <div class="col-lg-6 text-center" style="background-color: #570A57;">
-                <h2 class="text-medium">Parceiro</h2>
-                <h4>Parceiros de Projetos são empresas que desejam apoiar iniciativas pontuais da associação.</h4>
-                <div class="p-t-20">
-                    <a class="btn btn-light btn-outline" href="/fale-conosco">Fale conosco</a>
-                </div>
-            </div>
-            <div class="col-lg-6 text-center" style="background-color: #A91079;">
-                <h2 class="text-medium">Mantenedor</h2>
-                <h4>Mantenedores são empresas que desejam estabelecer uma relação mínima de 12 meses, participando
-                    de diversas ações em conjunto com os associados.</h4>
-                <div class="m-t-20">
-                    <a class="btn btn-light btn-outline" href="/fale-conosco">Fale conosco</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Modalidades -->
+  <Secao id="destaques">
+    <Container>
+      <Grade colunas={3} piso={1} espaco="md">
+        <ChamadaAcao fundo="marca" alinhamento="centro">
+          <p class="emoji" aria-hidden="true">😍</p>
+          <Titulo nivel={2} tamanho="lg" cor="inverso">{t.supportHighlightQuestion}</Titulo>
+        </ChamadaAcao>
 
-    <!-- Parceiros -->
-    <section id="parceiros">
-        <div class="container">
-            <div class="row m-b-30">
-                <div class="heading-text heading-line text-center">
-                    <h4>Conheça algumas empresas que apoiam o turismo<br>através da Resorts Brasil</h4>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Mantenedores:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={mantenedores} colunas={5} />
-                </div>
-            </div>
-            <div class="row p-t-30">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Parceiros:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={parceiros} colunas={5} />
-                </div>
-            </div>
-            <hr class="space">
-            <div class="text-center">
-                <h5 class="text-muted">#ApoieOTurismoBrasileiro❤️</h5>
-            </div>
+        <ChamadaAcao fundo="clara" alinhamento="centro">
+          <p class="emoji" aria-hidden="true">✌️</p>
+          <Texto peso="semibold" semMargem>{t.supportHighlightRole}</Texto>
+        </ChamadaAcao>
+
+        <ChamadaAcao fundo="clara" alinhamento="centro">
+          <p class="emoji" aria-hidden="true">🤝</p>
+          <Texto peso="semibold" semMargem>{t.supportHighlightPartnership}</Texto>
+        </ChamadaAcao>
+      </Grade>
+
+      <div class="fecho">
+        <Texto tamanho="lg" alinhamento="centro" semMargem>{t.supportHighlightsLead}</Texto>
+      </div>
+    </Container>
+  </Secao>
+
+  {/*
+    Sem <Container>: a faixa vai de borda a borda porque a <Secao> ja e larga e
+    quem estreita e o container. E a composicao que substitui o `100vw` mais
+    margem negativa do `.section-fullwidth`, que fazia a pagina transbordar na
+    horizontal. Ver a nota da <FaixaDestaque>.
+  */}
+  <Secao id="modalidades" espaco="nenhum">
+    <FaixaDestaque tons={['roxo', 'magenta']}>
+      <div slot="1">
+        <Titulo nivel={2} tamanho="2xl">{t.modalityPartner}</Titulo>
+        <Texto tamanho="lg">{t.modalityPartnerText}</Texto>
+        <div class="acao">
+          <Botao href={routes.contact[lang]} variante="clara">{t.navContact}</Botao>
         </div>
-    </section>
-    <!-- end: Parceiros -->
-</BaseLayout>
+      </div>
+      <div slot="2">
+        <Titulo nivel={2} tamanho="2xl">{t.modalityMaintainer}</Titulo>
+        <Texto tamanho="lg">{t.modalityMaintainerText}</Texto>
+        <div class="acao">
+          <Botao href={routes.contact[lang]} variante="clara">{t.navContact}</Botao>
+        </div>
+      </div>
+    </FaixaDestaque>
+  </Secao>
+
+  <FaixaParceiros lang={lang} comHashtag colunas={5} />
+</LayoutSistema>
+
+<style>
+  /* MEDIDO: 30px entre a frase de abertura e os dois cartoes — o `m-t-30` do
+     markup. */
+  .modalidades {
+    margin-top: 1.875rem;
+  }
+
+  /*
+   * O emoji nao e cabecalho, e no tema ele era `<h3 class="m-b-0">`.
+   *
+   * Como `<h3>`, ele entrava no sumario da pagina: um leitor de tela anunciava
+   * "titulo nivel 3, cara sorridente com olhos de coracao" antes de cada bloco.
+   * Aqui e um `<p>` com `aria-hidden`, no tamanho que o h3 tinha.
+   */
+  .emoji {
+    font-size: var(--text-lg);
+    line-height: 1.2;
+    margin-block: 0 0.5rem;
+  }
+
+  /*
+   * O `hr.space` do tema — 60px entre os tres blocos e a frase de fecho — mais
+   * a coluna media, que antes vinha de um <Container> aninhado.
+   *
+   * ELE E UM <div> DESTA PAGINA, e nao uma `class` passada ao <Container>, por
+   * um motivo medido: classe escopada so casa em elemento que ESTA no template
+   * de quem escreveu o estilo. Passada pela prop `class` de um componente, ela
+   * chega ao HTML mas sem o atributo de escopo, e o seletor `.fecho[cid]` nao
+   * encontra nada — a regra fica inerte, sem erro nenhum. Ver docs/decisoes.md,
+   * "Etapa 8".
+   */
+  .fecho {
+    max-width: var(--container-media);
+    margin-inline: auto;
+    margin-top: 3.75rem;
+  }
+
+  /* MEDIDO: 20px entre o texto e o botao, dentro de cada bloco da faixa. */
+  .acao {
+    margin-top: 1.25rem;
+  }
+</style>

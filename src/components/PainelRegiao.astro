@@ -1,0 +1,77 @@
+---
+import Grade from './layout/Grade.astro';
+import Titulo from './primitivos/Titulo.astro';
+import FaixaLogos from './padroes/FaixaLogos.astro';
+import type { RegiaoAssociados } from '../data/associados';
+
+/**
+ * O conteudo de uma aba de regiao: os estados e os logotipos dos resorts.
+ *
+ * ELE EXISTE POR UM LIMITE DO ASTRO, e vale registrar qual. A versao anterior
+ * montava os cinco paineis com nome de slot dinamico:
+ *
+ *   um <Fragment slot={regiao.id}> para cada item, dentro de um `.map()`
+ *
+ * O `astro check` aprova, o build compila, e a pagina QUEBRA na geracao:
+ * "ReferenceError: regiao is not defined". O Astro extrai os slots nomeados em
+ * tempo de compilacao, e nessa extracao o `slot=` e avaliado fora do escopo do
+ * callback do `.map()` — a variavel simplesmente nao existe mais. Erro de
+ * execucao, nao de tipo: nenhum dos portoes estaticos veria.
+ *
+ * A saida e ter os cinco nomes LITERAIS no <AssociadosTabs> e o corpo aqui, uma
+ * vez so. O preco e que uma sexta regiao precisa de mais um `<Fragment>` la — e
+ * por isso o <AssociadosTabs> ABORTA O BUILD se os ids do `src/data/` deixarem
+ * de ser exatamente esses cinco, em vez de perder uma aba em silencio.
+ */
+interface Props {
+  regiao: RegiaoAssociados;
+}
+
+const { regiao } = Astro.props;
+---
+
+{
+  regiao.estados.map((estado) => (
+    <div id={estado.uf} class="estado">
+      <Grade colunas={4} piso={1} espaco="md" alinhamento="centro">
+        <div>
+          {/*
+            `nivel={3}`: o h1 da pagina e o titulo, o h2 e "Conheca nossos
+            associados" — o nome do estado e o terceiro nivel. No tema era `h4`,
+            escolhido pelo tamanho.
+          */}
+          <Titulo nivel={3} tamanho="md" alinhamento="centro">
+            {estado.estado}
+          </Titulo>
+        </div>
+        <div class="logos">
+          <FaixaLogos itens={estado.resorts} colunas={6} />
+        </div>
+      </Grade>
+    </div>
+  ))
+}
+
+<style>
+  /*
+   * O separador entre estados, que eram os 11 `<div class="line">` do markup.
+   *
+   * MEDIDO: 2px na cor de borda, com 50px de vao em cima e embaixo. Como borda
+   * de `+ .estado`, ele so existe ENTRE dois — nunca antes do primeiro nem
+   * depois do ultimo, que era a regra que o markup tinha de acertar a mao em
+   * cinco paineis com dezesseis estados. Foi a primeira coisa que o metodo de
+   * comparar HTML gerado pegou neste projeto.
+   */
+  .estado + .estado {
+    border-top: 2px solid var(--color-borda);
+    margin-top: 3.125rem;
+    padding-top: 3.125rem;
+  }
+
+  /* A faixa de logos ocupa TRES das quatro colunas — o `col-lg-9` do tema. */
+  @container (min-width: 48rem) {
+    .logos {
+      grid-column: span 3;
+    }
+  }
+</style>

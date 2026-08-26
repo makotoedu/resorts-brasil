@@ -69,6 +69,16 @@
   --cor-rede-youtube: #ef4e41;
 
   /*
+   * O vermelho do BOTAO DE PLAY, e ele nao consolida no `--cor-rede-youtube`
+   * acima. Aquele e o circulo do rodape, medido em #ef4e41; este e o vermelho
+   * puro que a fachada de video usa no hover, copiando o player do YouTube. Sao
+   * 239,78,65 contra 255,0,0 — nao e ruido de dois tons proximos como o
+   * #efb72c/#fac213 da faixa foi, e achatar os dois deixaria o play com cara de
+   * salmao.
+   */
+  --cor-vermelho-play: #f00;
+
+  /*
    * As quatro faixas de destaque que faltavam. Sao fundos editoriais de secao
    * inteira — os tres eixos da associacao e as duas modalidades de apoio — e no
    * markup do tema estavam como `style="background-color: #570A57"`, 24
@@ -139,6 +149,20 @@
    * papeis, e a diferenca de opacidade e medida, nao arredondada.
    */
   --color-superficie-flutuante: rgb(0 0 0 / 0.25);
+
+  /*
+   * A fachada de video, DOIS papeis e nenhum deles e o veu.
+   *
+   * `video` e a tarja preta atras da miniatura — a mesma que o player do YouTube
+   * mostra enquanto a imagem nao cobre a caixa inteira. `controle` e o fundo do
+   * botao de play, medido em rgba(0,0,0,0.65): ele precisa de um preto MAIS
+   * fechado que o veu (0,30) e que o flutuante (0,25), porque um triangulo
+   * branco de 22px tem de se ler sobre qualquer quadro de qualquer foto. Tres
+   * pretos translucidos com tres papeis; a opacidade de cada um e medida.
+   */
+  --color-superficie-video: var(--cor-preto);
+  --color-superficie-controle: rgb(0 0 0 / 0.65);
+  --color-acao-video: var(--cor-vermelho-play);
 
   --color-borda: var(--cor-nevoa-100);
   /* MEDIDA na base da topbar: rgba(231,231,231,0.25) sobre o azul. Borda sobre

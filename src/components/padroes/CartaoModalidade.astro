@@ -1,0 +1,120 @@
+---
+import Titulo from '../primitivos/Titulo.astro';
+import LinkAcao from './LinkAcao.astro';
+import type { Tom } from './FaixaDestaque.astro';
+
+/**
+ * CartaoModalidade — a caixa colorida com um titulo curto e um link.
+ *
+ * As duas modalidades de apoio em /apoie: Parceiro no roxo, Mantenedor no
+ * magenta, nos tres idiomas. A Etapa 3 ja o citava sem o construir — o
+ * <LinkAcao> nasceu dizendo que vive "dentro de tres dos outros: chamada, cartao
+ * de publicacao e cartao de modalidade", e este e o terceiro.
+ *
+ *   <CartaoModalidade tom="roxo" titulo="Parceiro" href="/fale-conosco">
+ *     Fale conosco
+ *   </CartaoModalidade>
+ *
+ * MEDIDO (scripts/medir-padroes.mjs, grupo `cartaoModalidade`): recuo de 21px,
+ * raio de 11,48px (`--radius-md`), titulo de 19px com peso 600. O fundo vinha de
+ * `style="background-color: #570A57"` — 6 das 24 cores literais que o markup
+ * carregava, e as mesmas que a <FaixaDestaque> ja nomeou.
+ *
+ * O TOM VEM DE LA, e o tipo tambem: `Tom` e importado da <FaixaDestaque> em vez
+ * de redeclarado. Nesta pagina o mesmo par de cores pinta o cartao pequeno e a
+ * faixa larga logo abaixo — sao a mesma decisao vista duas vezes, e dois enums
+ * paralelos garantiriam que um dia divergissem.
+ *
+ * A cor do texto tambem nao e escolha de quem usa: cada tom traz o proprio par
+ * no tokens.css. Ver a nota da <FaixaDestaque> sobre o branco que o tema
+ * escrevia sobre os cinco fundos.
+ *
+ * UM DESVIO DELIBERADO: O CHEVRON. Medido no tema com o mouse em cima, este link
+ * NAO responde ao hover — branco sobre o roxo em repouso, branco sobre o roxo em
+ * hover, sem sublinhado. O `.item-link:hover` existe e troca a cor para azul,
+ * mas aqui o `.text-light` do cartao vence, e o resultado e um link que nao da
+ * nenhum sinal de ser um. A seta do <LinkAcao> devolve o sinal deslizando, sem
+ * depender de cor — que e o unico eixo que uma superficie de cor cheia nao tem
+ * sobrando.
+ */
+const TONS = {
+  ambar: 't-ambar',
+  verde: 't-verde',
+  indigo: 't-indigo',
+  'indigo-escuro': 't-indigo-escuro',
+  roxo: 't-roxo',
+  magenta: 't-magenta',
+} as const;
+
+interface Props {
+  tom: Tom;
+  titulo: string;
+  /** Nivel do heading. Depende da pagina, nao do desenho — ver <Titulo>. */
+  nivel?: 1 | 2 | 3 | 4 | 5 | 6;
+  /** O destino do link. O texto dele vem pelo slot. */
+  href: string;
+  class?: string;
+}
+
+const { tom, titulo, nivel = 3, href, class: classe } = Astro.props;
+---
+
+<div class:list={['cartao', TONS[tom], 'superficie-inversa', classe]}>
+  <Titulo nivel={nivel} tamanho="md" class="titulo">{titulo}</Titulo>
+  {/*
+    `cor="inverso"`: os seis tons sao superficies de cor cheia, e o navy do
+    <LinkAcao> em repouso sumiria em tres deles. A marca `superficie-inversa`
+    acima faz o base.css trocar tambem a cor do contorno de foco.
+  */}
+  <LinkAcao href={href} cor="inverso"><slot /></LinkAcao>
+</div>
+
+<style>
+  /* MEDIDO: 21px de recuo, raio 11,48px. A borda do tema era `none` num `.card`
+     que o Bootstrap desenha com 1px — por isso ela e declarada aqui. */
+  .cartao {
+    padding: 1.3125rem;
+    border: 0;
+    border-radius: var(--radius-md);
+  }
+
+  /* MEDIDO: 19px, peso 600, sem margem embaixo — o `m-b-0` do markup. O 19px
+     nao esta na escala (o `--text-md` e 18px), e a diferenca de 1px nao paga um
+     degrau novo. Mesmo criterio do botao `sm`, que subiu de 11 para 12px. */
+  .cartao :global(.titulo) {
+    margin-block: 0;
+    color: inherit;
+  }
+
+  /* ---------------- tons ---------------- */
+
+  .t-ambar {
+    background-color: var(--color-acento-ambar);
+    color: var(--color-acento-ambar-texto);
+  }
+
+  .t-verde {
+    background-color: var(--color-acento-verde);
+    color: var(--color-acento-verde-texto);
+  }
+
+  .t-indigo {
+    background-color: var(--color-acento-indigo);
+    color: var(--color-acento-indigo-texto);
+  }
+
+  .t-indigo-escuro {
+    background-color: var(--color-acento-indigo-escuro);
+    color: var(--color-acento-indigo-escuro-texto);
+  }
+
+  .t-roxo {
+    background-color: var(--color-acento-roxo);
+    color: var(--color-acento-roxo-texto);
+  }
+
+  .t-magenta {
+    background-color: var(--color-acento-magenta);
+    color: var(--color-acento-magenta-texto);
+  }
+</style>

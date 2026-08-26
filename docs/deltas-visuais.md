@@ -330,6 +330,84 @@ empilhamento por cartão, do `gridLayout()` contra o Isotope — como
 **pendência com prazo: se a Etapa 7 não zerar, vira regressão.** Zerou, e por
 construção: a página não tem mais nem `gridLayout()` nem `.grid-layout`.
 
+## Etapa 8 — as quatro páginas de dado, e um vídeo sem estilo
+
+Medida em 26/08/2026. Doze páginas: `associados`, `associe-se`, `apoie` e
+`resorts-brasil`, nos três idiomas. **35 de 41 migradas.**
+
+Sustentam a etapa os quatro portões — build, comportamento (**59/59**, de 51),
+geometria (zero bloqueios em 123 páginas × viewport) e orçamento — mais a
+comparação de texto do `<main>` gerado contra o markup do tema. Ali o resultado
+é diferente do da Etapa 7: **cinco páginas perderam palavras de propósito**, e
+cada uma é uma correção listada abaixo.
+
+Desta vez o diff visual **foi** rodado nas quatro páginas em português, e o que
+ele diz é a etapa inteira em três linhas:
+
+| viewport | antes | depois |
+|---|---|---|
+| mobile | 420px de largura (transbordo) | **390px** |
+| desktop | 1452px de largura (transbordo) | **1440px** |
+| tablet | — | altura 6% a 24% menor |
+
+O transbordo horizontal é a dívida da margem negativa do `.row` que a Etapa 0.5
+mediu, idêntica no site original. Nas quatro páginas ela **acabou**.
+
+### O que ficou mais leve
+
+| página | antes | depois |
+|---|---|---|
+| `associados` (× 3 idiomas) | 1669 KB | **371 KB** |
+| `associe-se` (× 3) | 1396 KB | **250 KB** |
+| `apoie` (× 3) | 822 KB | **215 KB** |
+| `resorts-brasil` (× 3) | 746 KB | **298 KB** |
+
+O maior corte de todas as etapas, e a causa é uma só: as faixas de logotipos.
+São 78 logos de resort em `/associados` e 15 a 19 de parceiro nas outras três,
+todos servidos no tamanho original, sem `srcset` e sem `loading`. O total medido
+do conjunto de páginas caiu de 68 MB para 48 MB.
+
+### Correções
+
+| onde | tipo | motivo |
+|---|---|---|
+| `associados` × 3 | **correção, e a mais grave da etapa** | os três idiomas diziam números diferentes: **83** resorts em português, **80** em inglês e espanhol. Passam a vir de `src/data/associados.ts`; o valor confirmado é 83 |
+| `associados` EN e ES | correção | os cinco rótulos dos indicadores estavam **em português** nas páginas inglesa e espanhola — "Quartos", "Empregos Diretos", "Regiões do Brasil". Mesmo defeito do "Leia agora" da Etapa 4 |
+| `associados` × 3 | correção | o número não existia no HTML: `<span data-to="83"></span>` vinha vazio e quem o escrevia era o JavaScript. Sem script, a seção mostrava cinco rótulos sem número |
+| `asociese` e `resorts-brasil` ES | correção | o rótulo de parceiros era **"Socios / Partners:"** — o único dos nove com duas línguas na mesma linha |
+| `apoye` e `resorts-brasil` ES | correção | as duas páginas espanholas traziam hashtags **diferentes**: `#ApoyeEl…` numa e `#ApoyarEl…` na outra. Vale o imperativo, que é o que o português e o inglês usam |
+| `asociese` ES | correção | o fecho dizia "ayude a **formar** el sector" onde as outras três cópias espanholas dizem "transformar" |
+| `apoie` × 3 | correção | o texto dos dois blocos cinzas era `<strong>` em português e `<h5>` em inglês e espanhol — mesmo conteúdo, dois papéis semânticos, e o `<h5>` ainda saltava um nível depois de um `<h3>` |
+| `resorts-brasil` × 3 | correção | o convite do fim era a cópia divergente das quatro: sobre foto, com outra quebra de linha e um botão só. Passa a ser o mesmo `<ConviteAssociese>` — **a foto de fundo se perde**, e é o preço de as doze cópias virarem uma |
+| `associados` × 3 | correção | o convite vem **sem** o botão secundário: ele apontava para `/associados`, que é a própria página |
+| `associates` e `asociados` | correção | o bloco comentado de "Folders" some. Era markup morto desde 2022, presente em dois dos três idiomas |
+| todas × 3 | correção | as 24 cores literais em `style=` inline (`#570A57`, `#A91079`, `#EFB72C`, `#15184B`, `#28B055`) viram tons nomeados — e com elas vem a correção de contraste da Etapa 3: o tema escrevia branco sobre o âmbar (1,6:1) e sobre o verde (2,9:1) |
+| `apoie` e `resorts-brasil` × 3 | correção | os emojis e as siglas "RE/SO/RT" eram `<h3>` e `<h2>` — cabeçalhos cujo texto é "😍" e "RE", que entravam no sumário de um leitor de tela. Viram texto decorativo com `aria-hidden` |
+| `associe-se` × 3 | correção | o ícone de cada benefício vinha dentro de `<a href="#">`: um link visível, focável e sem destino, 24 vezes somando os idiomas |
+| `associe-se` × 3 | correção | o botão "Associe-se" abria `/fale-conosco` em **aba nova** — destino interno, o que tira do visitante o controle da navegação |
+| `associados` × 3 | correção | o `alt` do mapa era `"mapa"`. Um mapa do Brasil com as regiões marcadas não é decorativo |
+| todas × 3 | correção | `<body class="modern">` some |
+
+### Refinos
+
+| onde | tipo | motivo |
+|---|---|---|
+| `resorts-brasil` × 3 | refino | a foto grande da Unsplash era `background-image` num `style=` inline com `height: 400px` — sem lazy e sem caixa responsiva. Vira `<img loading="lazy">` numa caixa com `aspect-ratio`. **O hotlink foi preservado por decisão**; ver `src/data/midia.ts` |
+| `resorts-brasil` × 3 | refino | a fachada de vídeo passa de `height: 420px` fixo para `aspect-ratio: 16/9`, que é a proporção real do vídeo — some a tarja preta em cima e embaixo |
+| todas × 3 | refino | os `<br>` manuais saem. Havia dois em português em `resorts-brasil` e um em português e espanhol nas faixas de parceiros, nenhum em inglês |
+| `associados` × 3 | refino | os 11 `<div class="line">` entre estados viram uma borda entre irmãos. Não há mais como sobrar uma no fim |
+| `apoie` × 3 | refino | o link "Fale conosco" dos dois cartões coloridos ganha um chevron. Medido no tema com o mouse em cima, ele **não responde ao hover de forma nenhuma** — nem cor, nem sublinhado |
+| todas × 3 | refino | o título de página passa a `3xl`, como nas Etapas 5, 6 e 7 |
+
+### O que este delta não mostra, e vale dizer
+
+O diff visual não roda em `en-us` e `es-es`, e é justamente ali que estão as
+correções mais graves da etapa — os números divergentes e os rótulos em
+português. **Nenhum portão as veria**, pela mesma razão que a Etapa 6 registrou
+sobre a política de privacidade inglesa: a estrutura estava certa. Elas
+apareceram lendo os três idiomas lado a lado e comparando o texto gerado com o
+do tema.
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

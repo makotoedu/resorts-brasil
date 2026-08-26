@@ -1,0 +1,85 @@
+---
+import Titulo from '../primitivos/Titulo.astro';
+
+/**
+ * TituloSecao — o titulo com o risco embaixo.
+ *
+ * E o `.heading-text.heading-line.text-center` do tema: "Conheca nossos
+ * associados:", "Beneficios de ser um associado", "Conheca algumas empresas que
+ * apoiam o turismo". Aparece em associados, associe-se, apoie, resorts-brasil e
+ * na home — quatro paginas por idioma, doze no total.
+ *
+ *   <TituloSecao nivel={2}>Beneficios de ser um associado</TituloSecao>
+ *
+ * MEDIDO (scripts/medir-padroes.mjs, grupo `tituloSecao`): 24px no mobile e 34px
+ * no desktop com peso 600 e espacamento de -0,7px, entrelinha 26 -> 40px, e 10px
+ * (mobile) / 30px (desktop) ate o que vem depois. Os dois tamanhos sao
+ * exatamente as pontas do `--text-xl`, entao a escala ja existia; o que este
+ * componente acrescenta e o risco.
+ *
+ * O RISCO PRECISOU DO CSS, E ESSA E A NOTA QUE IMPORTA. Medido, o `:before` deu
+ * `left: 0` num titulo centralizado — o que sugeria uma barra encostada na
+ * margem esquerda. Nao e: a regra do tema e `left: 0; right: 0; width: 30px`
+ * mais `margin: 0 auto` na variante `.text-center`, e o conjunto centraliza. O
+ * valor computado estava certo e a leitura dele, errada. E o caso simetrico do
+ * que o CLAUDE.md avisa: ali, ler o seletor sem medir engana; aqui, medir sem
+ * ler o seletor tambem.
+ *
+ * A cor do risco era `#ddd`, consolidada em `--color-borda` (`#e4e6ef`). Mesmo
+ * criterio do algarismo da 404, que era `#eee`: sao 7 a 18 pontos de distancia
+ * num tracinho de 30 por 2 pixels cujo papel e nao ser lido.
+ */
+interface Props {
+  /** A tag. Depende do lugar na pagina, nao do desenho — ver <Titulo>. */
+  nivel: 1 | 2 | 3 | 4 | 5 | 6;
+  /** O tema so usa centralizado; `inicio` existe porque a regra dele tambem. */
+  alinhamento?: 'centro' | 'inicio';
+  class?: string;
+}
+
+const { nivel, alinhamento = 'centro', class: classe } = Astro.props;
+---
+
+<div class:list={['cabeca', alinhamento === 'centro' && 'centro', classe]}>
+  <Titulo nivel={nivel} tamanho="xl" class="titulo">
+    <slot />
+  </Titulo>
+</div>
+
+<style>
+  .centro {
+    text-align: center;
+  }
+
+  /*
+   * MEDIDO: 10px ate o proximo elemento no mobile e 30px no desktop. Sao os dois
+   * degraus que o tema saltava na media query e que aqui interpolam.
+   *
+   * `position: relative` nao e enfeite: o risco e um `:before` absoluto, e sem
+   * um pai posicionado ele se penduraria no container da secao inteira.
+   */
+  .cabeca :global(.titulo) {
+    position: relative;
+    line-height: 1.18;
+    letter-spacing: -0.7px;
+    margin-bottom: clamp(0.625rem, 0.2536rem + 1.5238vw, 1.875rem);
+  }
+
+  /* MEDIDO: 30 por 2px, 8px abaixo da linha de base do titulo. */
+  .cabeca :global(.titulo)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -8px;
+    width: 1.875rem;
+    height: 2px;
+    background-color: var(--color-borda);
+  }
+
+  /* `left: 0` + `right: 0` + largura fixa + `margin: auto` centraliza. E a
+     forma do tema, e ela e o motivo de o valor computado de `left` ser zero. */
+  .centro :global(.titulo)::before {
+    margin-inline: auto;
+  }
+</style>

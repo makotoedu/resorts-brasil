@@ -2082,3 +2082,183 @@ com `sharp` — que confirmou 640×910 e a capa certa — e porque o reflexo de
 "conferir no artefato antes de concluir pela aparência" vale nos dois sentidos:
 serviu para não acreditar na captura, do mesmo jeito que serve para não acreditar
 no `style.css`.
+
+# Design system — Etapa 8
+
+## O vídeo teria ficado sem estilo, e nenhum portão veria
+
+A armadilha desta etapa não estava no tema: estava na **fronteira** entre as duas
+camadas, e é a primeira vez que ela aparece nesse sentido.
+
+O `<YouTube>` emite a fachada de clique-para-carregar, e o CSS dela mora em
+[`public/css/ajustes.css`](../public/css/ajustes.css) — a folha do **tema**.
+Página migrada não carrega aquele arquivo. Migrar `/resorts-brasil` com o
+componente antigo entregaria a fachada sem caixa, sem botão de play e com o
+rótulo "Assistir ao vídeo" — que existe para o leitor de tela e deve ficar fora
+da tela — impresso por cima da miniatura.
+
+É a mesma forma das três armadilhas do [CLAUDE.md](../CLAUDE.md) — markup que
+depende de CSS que não está mais lá — só que pelo outro lado da migração. E
+nenhum dos quatro portões a veria com clareza: não há caixa zerada, não há imagem
+quebrada, e a checagem de texto vazando só acusaria se o rótulo calhasse de
+cruzar uma borda.
+
+A resposta foi um [`<Video>`](../src/components/padroes/Video.astro) próprio, com
+`<style>` escopado. O `<YouTube>` **continua existindo** até a Etapa 10, porque as
+três páginas de ebook ainda o usam e convertê-lo no lugar poria o `<style>` novo
+no bundle das páginas do tema pelo grafo de módulos. Mesma convivência que o
+`<GradeLogos>` tem com a `<FaixaLogos>`.
+
+### A regra do `iframe` é `:global`, e é o ponto inteiro
+
+```css
+.yt-facade :global(iframe) { width: 100%; height: 100%; }
+```
+
+O `<iframe>` não está no arquivo: o [`site.js`](../src/scripts/site.js) o **cria
+no clique**, com `document.createElement`, e elemento criado em tempo de execução
+não recebe o atributo de escopo que o Astro carimba no markup compilado. Sem o
+`:global`, a regra viraria `.yt-facade[cid] iframe[cid]`, não casaria com nada, e
+o vídeo entraria com a altura padrão de 150px do iframe — **depois do clique**,
+que é onde nenhum teste de carregamento olha.
+
+É a mesma família da nota de `runtimeClasses` no
+[`purge-css.mjs`](../scripts/purge-css.mjs): o que o JavaScript cria em tempo de
+execução precisa ser declarado para as ferramentas que só leem o código. A suíte
+comportamental passou a medir a caixa **depois** do clique, nas duas camadas.
+
+## Classe escopada passada a um componente não vale — quatro regras estavam inertes
+
+Quatro regras desta etapa não estavam valendo, e o sintoma foi zero: nenhum erro,
+nenhum aviso, só espaçamento errado que passa por escolha de desenho.
+
+```astro
+<!-- em apoie.astro -->
+<Grade class="modalidades">…</Grade>
+
+<style>
+  .modalidades { margin-top: 1.875rem; }   /* computou 0px */
+</style>
+```
+
+A classe chega ao HTML — a `<Grade>` a repassa —, mas **sem o atributo de
+escopo**. O seletor compilado é `.modalidades[data-astro-cid-xxx]`, e o elemento
+tem a classe e não tem o atributo. A regra fica inerte.
+
+As quatro: `.modalidades` numa `<Grade>`, `.fecho` num `<Container>`, `.foto` num
+`<Imagem>` e uma colisão de nome (`.faixa` existia na `<FaixaParceiros>` e na
+`<FaixaLogos>` ao mesmo tempo).
+
+**A regra que fica:** estilo escopado só alcança elemento que está no template de
+quem escreveu o estilo. Para um componente, use utilitária — que é global — ou um
+elemento próprio em volta dele. Foi assim que as quatro foram corrigidas, e as
+quatro voltaram a medir 30px, 60px, 30px e 30px.
+
+Nada disso apareceu por leitura: apareceu medindo `getComputedStyle` no navegador
+depois de olhar uma captura e achar o vão estranho.
+
+## Nome de slot não pode ser dinâmico, e o erro só aparece na geração
+
+A forma óbvia de montar cinco painéis a partir de uma lista de dados é um
+`<Fragment slot={regiao.id}>` dentro de um `.map()`.
+
+`astro check` aprova. O Vite compila. E a página **quebra na geração**:
+
+```
+ReferenceError: regiao is not defined
+```
+
+O Astro extrai os slots nomeados em tempo de compilação, e nessa extração o
+`slot=` é avaliado **fora do escopo do callback** do `.map()` — a variável já não
+existe. Aconteceu duas vezes na mesma etapa, em componentes diferentes: nas
+regiões de `<AssociadosTabs>` e nos três eixos de `/resorts-brasil`.
+
+A saída é ter os nomes **literais** no template e o corpo num componente, para
+não virar cinco (ou nove) cópias do mesmo markup: nasceram assim o
+[`<PainelRegiao>`](../src/components/PainelRegiao.astro) e o
+[`<BlocoEixo>`](../src/components/BlocoEixo.astro).
+
+O preço é que uma região nova exige mais um `<Fragment>`. Por isso o
+`<AssociadosTabs>` **aborta o build** se os ids de `src/data/associados.ts`
+deixarem de ser exatamente aqueles cinco — sem a guarda, a aba apareceria e o
+painel dela sairia vazio, sem erro em lugar nenhum.
+
+## A escada de colunas da faixa de logos já existia
+
+A faixa de mantenedores e parceiros nunca tinha sido medida: o `<GradeLogos>` de
+transição emitia o markup do tema, então até aqui ninguém precisou dos números.
+Medida ([`medir-padroes.mjs`](../scripts/medir-padroes.mjs), grupo `gradeLogos`),
+ela põe:
+
+| classe do tema | mobile | tablet | desktop |
+|---|---|---|---|
+| `.grid-5-columns` | 2 | 3 | 5 |
+| `.grid-6-columns` | 2 | 3 | 6 |
+
+que é, item por item, o que a [`<Grade>`](../src/components/layout/Grade.astro) já
+fazia com `colunas={5}` e `colunas={6}` desde a Etapa 1 — **inclusive o degrau de
+cinco**, que entrou na Etapa 7 por causa das publicações e que parecia o número
+estranho da escala. Duas grades diferentes do tema chegaram na mesma escada por
+caminhos diferentes.
+
+### O recuo fica na célula, e é a única vez em que isso é o certo
+
+A `<CaixaIcone>` deixou registrada a regra na Etapa 5: **espaço entre irmãos é do
+container, não do filho.** Aqui ela não se aplica, e a diferença é medível: os
+40px do `<li>` estão nos **quatro** lados. Isso é o respiro do logotipo dentro da
+própria célula, não o vão até o vizinho — margem só embaixo sobra depois da
+última linha; recuo simétrico, não.
+
+Daí o `espaco="nenhum"` que entrou na `<Grade>`. Com `gap` somado ao recuo, o
+corredor entre dois logotipos daria 96px onde o medido são 80, e o logotipo
+encolheria de 130 para 118px no desktop.
+
+## O risco do título precisou do CSS, e não só da medição
+
+O `.heading-text.heading-line` aparece em quatro páginas por idioma e nunca tinha
+sido medido. Medido, o `:before` devolveu `left: 0` num título **centralizado** —
+o que sugeria uma barra encostada na margem esquerda, e não é o que se vê.
+
+A regra do tema é `left: 0; right: 0; width: 30px` mais `margin: 0 auto` na
+variante `.text-center`: o conjunto centraliza, e é por isso que o valor computado
+de `left` é zero. O valor estava certo e a leitura dele, errada.
+
+É o caso **simétrico** do que o CLAUDE.md avisa. Lá: não conclua pelo seletor sem
+medir. Aqui: não conclua pela medida sem ler o seletor. As duas metades do mesmo
+cuidado.
+
+## Três números para o mesmo fato
+
+Os indicadores de `/associados` diziam **83** resorts em português e **80** em
+inglês e em espanhol, e a lista de logotipos tem **78**. Três números, cada um
+escrito à mão no markup do seu arquivo.
+
+É a forma exata da divergência que este projeto já viu no rótulo "Leia agora"
+(Etapa 4) e na lista de parceiros da página inglesa. O valor confirmado é 83; os
+78 são os associados com logotipo publicado.
+
+Ficam em [`src/data/associados.ts`](../src/data/associados.ts), e não no `ui.ts`,
+porque **número não traduz**. É a mesma divisão do `cargo` da diretoria e da data
+de vigência dos documentos jurídicos: o dado fica em `src/data/`, o rótulo fica no
+`ui.ts`, e a página junta os dois pelo `id`. A unidade "mil" traduz, e por isso
+está no `ui.ts` e não aqui.
+
+Os cinco rótulos, aliás, estavam **em português nas três páginas** — "Quartos",
+"Empregos Diretos", "Regiões do Brasil" apareciam assim também em inglês e em
+espanhol. A suíte comportamental passou a exigir que os cinco números batam nos
+três idiomas, para a divergência não voltar por outro caminho.
+
+## O portão confundiu documentação com markup pela terceira vez
+
+A checagem de isolamento das duas camadas reprovou o `/design` assim que o
+catálogo passou a **explicar** por que existe um `<Video>` próprio: aquele texto
+cita `public/css/ajustes.css` dentro de um `<code>`, e a checagem procurava a
+string solta no HTML.
+
+Terceira vez com a mesma forma — o checador de headings na Etapa 5, o de `style=`
+na Etapa 6, e agora este. E a terceira vez que a correção é a mesma: olhar o
+artefato pelo que ele **faz**, não pelo que ele contém. Uma folha é carregada por
+um `<link href=>`, e é isso que a checagem passou a procurar.
+
+Um projeto que documenta o defeito ao lado da correção vai citar markup o tempo
+todo. Quem precisa saber a diferença é a checagem.

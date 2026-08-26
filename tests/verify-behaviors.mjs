@@ -25,8 +25,15 @@ const browser = await chromium.launch();
  * quebrar de um lado so, e aqui que tem de aparecer.
  *
  * Quando a ultima pagina migrar, `PAGINA_TEMA` some junto com o tema.
+ *
+ * ELA JA MUDOU DUAS VEZES, E PELO MESMO MOTIVO: a pagina de referencia migrou.
+ * Era `/historia.html` ate a Etapa 5 e `/resorts-brasil.html` ate a Etapa 8.
+ * Agora e `/ebook.html`, escolhida de proposito por ser a ULTIMA a migrar no
+ * plano (Etapa 10) — a home sai na 9. Ao migrar uma pagina, confira se ela nao
+ * era a referencia de algum teste: a Etapa 5 descobriu isso depois, com metade
+ * das checagens testando a camada nova achando que testava a antiga.
  */
-const PAGINA_TEMA = '/resorts-brasil.html';
+const PAGINA_TEMA = '/ebook.html';
 const PAGINA_SISTEMA = '/historia.html';
 
 const CAMADAS = [
@@ -37,7 +44,7 @@ const CAMADAS = [
     /* O tema deixa os 11 itens do menu mobile visiveis de uma vez: os submenus
        nascem abertos e nao ha o que acionar. */
     submenuNasceAberto: true,
-    traducoes: ['/en-us/resorts-brasil', '/es-es/resorts-brasil'],
+    traducoes: ['/en-us/ebook', '/es-es/ebook'],
   },
   {
     nome: 'sistema',
@@ -235,37 +242,111 @@ for (const camada of CAMADAS) {
 }
 
 /* 5. Contadores ---------------------------------------------------------- */
+/*
+ * A pagina migrou na Etapa 8, e com ela o markup: o `<span data-to>` VAZIO do
+ * tema virou `<span data-contador data-ate>` com o valor final ja escrito
+ * dentro. A diferenca e o que este teste passa a cobrir em duas partes.
+ *
+ * A PRIMEIRA E MAIS IMPORTANTE QUE A SEGUNDA: o numero tem de estar no HTML
+ * SERVIDO, antes de qualquer JavaScript. No tema ele nao estava, e a secao
+ * inteira — que existe para dizer cinco numeros — mostrava cinco rotulos vazios
+ * para quem chegasse sem script.
+ */
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  await page.goto(`${BASE}/associados.html`);
-  await page.evaluate(() => document.querySelector('[data-to]').scrollIntoView());
-  await page.waitForTimeout(1200);
-  const values = await page.evaluate(() =>
-    [...document.querySelectorAll('[data-to]')].map((el) => ({
-      text: el.textContent.trim(),
-      to: el.getAttribute('data-to'),
-      suffix: el.getAttribute('data-suffix') || '',
+
+  /* Sem JavaScript: e a unica forma de afirmar que o valor esta no HTML e nao
+     foi escrito pela animacao logo depois do carregamento. */
+  const semJs = await browser.newContext({ javaScriptEnabled: false });
+  const pagina = await semJs.newPage();
+  await pagina.goto(`${BASE}/associados.html`);
+  const estaticos = await pagina.evaluate(() =>
+    [...document.querySelectorAll('[data-contador]')].map((el) => ({
+      texto: el.textContent.trim(),
+      ate: el.getAttribute('data-ate'),
     })));
-  const ok = values.every((v) => v.text === v.to + v.suffix);
-  check('contadores chegam ao alvo', ok, values.map((v) => `"${v.text}"`).join(' '));
+  await semJs.close();
+  check('numero do contador esta no HTML, sem JavaScript',
+    estaticos.length === 5 && estaticos.every((v) => v.texto === v.ate),
+    estaticos.map((v) => `"${v.texto}"`).join(' ') || 'nenhum contador encontrado');
+
+  await page.goto(`${BASE}/associados.html`);
+  await page.evaluate(() => document.querySelector('[data-contador]').scrollIntoView());
+  await page.waitForTimeout(1200);
+  const valores = await page.evaluate(() =>
+    [...document.querySelectorAll('[data-contador]')].map((el) => ({
+      texto: el.textContent.trim(),
+      ate: el.getAttribute('data-ate'),
+    })));
+  check('contadores chegam ao alvo', valores.every((v) => v.texto === v.ate),
+    valores.map((v) => `"${v.texto}"`).join(' '));
+
+  /*
+   * OS TRES IDIOMAS DIZEM O MESMO NUMERO. Era 83 em portugues e 80 em ingles e
+   * espanhol — tres arquivos de markup, dois valores para o mesmo fato. Agora
+   * vem todos de `src/data/associados.ts`, e este teste e o que impede a
+   * divergencia de voltar por outro caminho.
+   */
+  const porIdioma = {};
+  for (const [nome, caminho] of Object.entries({
+    'pt-br': '/associados.html',
+    'en-us': '/en-us/associates.html',
+    'es-es': '/es-es/asociados.html',
+  })) {
+    await page.goto(BASE + caminho);
+    porIdioma[nome] = await page.evaluate(() =>
+      [...document.querySelectorAll('[data-contador]')].map((el) => el.getAttribute('data-ate')).join(','));
+  }
+  const distintos = new Set(Object.values(porIdioma));
+  check('os cinco indicadores batem nos tres idiomas', distintos.size === 1,
+    distintos.size === 1 ? porIdioma['pt-br'] : JSON.stringify(porIdioma));
   await page.close();
 }
 
 /* 6. Abas ---------------------------------------------------------------- */
+/*
+ * Markup novo, e o teste mede o que o padrao ARIA pede em vez das classes do
+ * Bootstrap: a aba e `<button role="tab">`, o painel inativo recebe `hidden` de
+ * verdade, e as setas navegam pela tabulacao rotativa.
+ *
+ * `hidden` e nao uma classe importa alem do cosmetico: conteudo escondido por
+ * classe continua no sumario do leitor de tela e continua encontravel pela busca
+ * da pagina — a pessoa "acha" um resort que nao esta na tela.
+ */
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(`${BASE}/associados.html`);
-  const initial = await page.evaluate(() =>
-    document.querySelector('.tab-pane.active')?.id);
-  await page.click('a[href="#sul"]');
-  await page.waitForTimeout(200);
-  const after = await page.evaluate(() => ({
-    pane: document.querySelector('.tab-pane.active')?.id,
-    display: getComputedStyle(document.querySelector('#sul')).display,
-    link: document.querySelector('a[href="#sul"]').classList.contains('active'),
+
+  const inicial = await page.evaluate(() => ({
+    aba: document.querySelector('[role="tab"][aria-selected="true"]')?.id,
+    visiveis: [...document.querySelectorAll('[role="tabpanel"]')].filter((p) => !p.hidden).length,
   }));
-  check('abas trocam', initial === 'sudeste' && after.pane === 'sul' && after.display === 'block' && after.link,
-    `${initial} -> ${after.pane}, display=${after.display}`);
+
+  await page.click('#aba-sul');
+  await page.waitForTimeout(200);
+  const depois = await page.evaluate(() => ({
+    aba: document.querySelector('[role="tab"][aria-selected="true"]')?.id,
+    painel: document.querySelector('#painel-sul')?.hidden === false,
+    sudesteEscondido: document.querySelector('#painel-sudeste')?.hidden === true,
+    alcancavel: document.querySelector('#painel-sul a')?.getBoundingClientRect().height > 0,
+  }));
+  check('abas trocam e o painel inativo recebe hidden',
+    inicial.aba === 'aba-sudeste' && inicial.visiveis === 1 && depois.aba === 'aba-sul' &&
+      depois.painel && depois.sudesteEscondido && depois.alcancavel,
+    `${inicial.aba} -> ${depois.aba}, 1 painel visivel=${inicial.visiveis === 1}`);
+
+  /* Tabulacao rotativa: so a aba selecionada esta na ordem de tabulacao, e a
+     seta move o foco e a selecao juntos. E o que o `tabs()` do site.js fazia. */
+  await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(200);
+  const seta = await page.evaluate(() => ({
+    foco: document.activeElement?.id,
+    selecionada: document.querySelector('[role="tab"][aria-selected="true"]')?.id,
+    naOrdem: [...document.querySelectorAll('[role="tab"]')].filter((t) => t.tabIndex !== -1).length,
+  }));
+  check('seta navega entre abas com tabulacao rotativa',
+    seta.foco === 'aba-norte' && seta.selecionada === 'aba-norte' && seta.naOrdem === 1,
+    `foco=${seta.foco}, na ordem=${seta.naOrdem}`);
   await page.close();
 }
 
@@ -417,17 +498,59 @@ for (const camada of CAMADAS) {
 }
 
 /* 7f. Fachada dos videos ------------------------------------------------- */
-{
+/*
+ * NAS DUAS CAMADAS, e aqui a razao e mais forte que no cromo: sao dois
+ * COMPONENTES diferentes, e nao um markup so dirigido pelo mesmo script.
+ *
+ * O <YouTube> do tema tem o CSS em `public/css/ajustes.css`, folha que pagina
+ * migrada nao carrega — entao a Etapa 8 precisou de um <Video> proprio, com
+ * `<style>` escopado. Duas implementacoes da mesma promessa de privacidade e da
+ * mesma caixa; se uma quebrar, e aqui que tem de aparecer.
+ *
+ * A CAIXA E O UNICO EIXO EM QUE ELAS DIVERGEM DE PROPOSITO. O tema fixa
+ * `height: 420px`, a altura que o `<iframe>` original rendia; o sistema usa
+ * `aspect-ratio: 16/9`, que e a proporcao real do video e some com a tarja preta
+ * em cima e embaixo. Por isso o alvo de altura e uma funcao da largura, e nao um
+ * numero.
+ */
+for (const alvo of [
+  {
+    nome: 'tema',
+    pagina: PAGINA_TEMA,
+    video: 'C-_CoEDJu7o',
+    /* 420px fixos, o `style=` inline do <YouTube>. */
+    alturaEsperada: () => 420,
+  },
+  {
+    nome: 'sistema',
+    pagina: '/resorts-brasil.html',
+    video: 'LJ_9oUeE4e8',
+    /* 16/9 sobre a largura medida, com 1px de folga para o arredondamento. */
+    alturaEsperada: (w) => Math.round((w * 9) / 16),
+  },
+]) {
+  const marca = `[${alvo.nome}]`;
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const yt = [];
   page.on('request', (r) => /youtube|ytimg|googlevideo/i.test(r.url()) && yt.push(new URL(r.url()).host));
-  await page.goto(`${BASE}/resorts-brasil.html`);
+  await page.goto(BASE + alvo.pagina);
   await page.waitForTimeout(1500);
   const antes = yt.length;
 
   const caixa = await page.evaluate(() => {
     const r = document.querySelector('.yt-facade').getBoundingClientRect();
     return { h: Math.round(r.height), w: Math.round(r.width) };
+  });
+
+  /*
+   * O rotulo TEM de estar fora da tela. Ele e texto de verdade para o leitor de
+   * tela, e sem o CSS que o esconde ele fica impresso por cima da miniatura —
+   * que e exatamente o que aconteceria se a pagina migrada tivesse ficado com o
+   * componente do tema. Um teste que so olha requisicao de rede nao veria.
+   */
+  const rotulo = await page.evaluate(() => {
+    const r = document.querySelector('.yt-facade-label').getBoundingClientRect();
+    return { w: Math.round(r.width), h: Math.round(r.height) };
   });
 
   await page.click('.yt-facade-btn');
@@ -438,15 +561,24 @@ for (const camada of CAMADAS) {
     return { src: f?.src ?? '', h: Math.round(r?.height ?? 0), w: Math.round(r?.width ?? 0) };
   });
 
-  check('video nao contata o YouTube antes do clique', antes === 0,
+  check(`${marca} video nao contata o YouTube antes do clique`, antes === 0,
     antes ? [...new Set(yt)].join(', ') : 'zero requisicoes');
-  // 420px e a altura que o <iframe> original rendia: o tema tem iframe{width:100%}
-  // e o height do atributo. A fachada tem de ocupar a mesma caixa.
-  check('fachada ocupa a caixa do iframe original', caixa.h === 420 && caixa.w > 400,
-    `${caixa.w}x${caixa.h}`);
-  check('clique carrega o embed sem cookie, na mesma caixa',
-    depois.src.startsWith('https://www.youtube-nocookie.com/embed/LJ_9oUeE4e8?') &&
-      depois.src.includes('autoplay=1') && depois.h === 420 && depois.w === caixa.w,
+  const esperada = alvo.alturaEsperada(caixa.w);
+  check(`${marca} fachada ocupa a caixa esperada`,
+    Math.abs(caixa.h - esperada) <= 1 && caixa.w > 400, `${caixa.w}x${caixa.h}, esperado ~${esperada}`);
+  check(`${marca} rotulo do leitor de tela fica fora da tela`, rotulo.w <= 1 && rotulo.h <= 1,
+    `${rotulo.w}x${rotulo.h}`);
+  /*
+   * O embed entra NA MESMA CAIXA. E onde o `:global(iframe)` do <Video> se
+   * prova: o site.js cria o `<iframe>` com createElement, e elemento criado em
+   * tempo de execucao nao recebe o atributo de escopo do Astro — sem o
+   * `:global`, a regra de altura nao casaria e o video viria com os 150px
+   * padrao. So depois do clique, que e onde nada mais olha.
+   */
+  check(`${marca} clique carrega o embed sem cookie, na mesma caixa`,
+    depois.src.startsWith(`https://www.youtube-nocookie.com/embed/${alvo.video}?`) &&
+      depois.src.includes('autoplay=1') &&
+      Math.abs(depois.h - caixa.h) <= 1 && depois.w === caixa.w,
     `${depois.w}x${depois.h} — ${depois.src}`);
   await page.close();
 }

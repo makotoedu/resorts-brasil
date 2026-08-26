@@ -668,15 +668,70 @@ as outras seis saem na Etapa 8.
 Peso: `publicacoes` caiu de **402 para 189 KB**, `estatisticas-e-estudos` de 342
 para 192. O transbordo horizontal herdado caiu de **45 para 33**.
 
-### Etapas 8–9 — Páginas, do mais simples ao mais arriscado
+### Etapa 8 — associados, associe-se, apoie e resorts-brasil ✅ CONCLUÍDA
+
+As doze entregues, nos três idiomas. **35 de 41 páginas migradas, medido no
+`dist/`.**
+
+É a etapa do maior corte de peso do projeto — `associados` cai de 1669 para
+371 KB no mobile — e a razão é uma só: as faixas de logotipos. São 78 logos de
+resort e 15 a 19 de parceiro por página, todos servidos no tamanho original,
+sem `srcset` e sem `loading`. O total do conjunto medido caiu de 68 para 48 MB.
+
+**A armadilha desta etapa estava na FRONTEIRA entre as camadas, e é a primeira
+vez que ela aparece nesse sentido.** O `<YouTube>` tem o CSS em
+`public/css/ajustes.css` — a folha do tema —, e página migrada não carrega aquele
+arquivo. Migrar `/resorts-brasil` com ele entregaria a fachada de vídeo sem
+caixa, sem botão de play e com o rótulo do leitor de tela impresso por cima da
+miniatura. Nenhum dos quatro portões veria: não há caixa zerada, nem imagem
+quebrada. Nasceu daí o [`<Video>`](src/components/padroes/Video.astro), cuja
+regra do `iframe` precisa ser `:global` — o elemento é criado pelo `site.js` no
+clique, e o que o JavaScript cria em tempo de execução não recebe o atributo de
+escopo do Astro.
+
+**Quatro regras de CSS estavam inertes, e o sintoma foi zero.** Classe escopada
+passada pela prop `class` de um componente chega ao HTML sem o atributo de
+escopo, então `.modalidades[data-astro-cid]` não casa com nada. Só apareceu
+medindo `getComputedStyle` depois de estranhar um vão numa captura. A regra que
+fica: para um componente, use utilitária — que é global — ou um elemento próprio
+em volta dele.
+
+**Nome de slot não pode ser dinâmico.** `<Fragment slot={regiao.id}>` dentro de
+um `.map()` passa no `astro check`, compila, e quebra na geração da página com
+`ReferenceError`. Aconteceu duas vezes, e daí saíram o `<PainelRegiao>` e o
+`<BlocoEixo>` — mais uma guarda que aborta o build se os ids do `src/data/`
+deixarem de casar com os slots literais.
+
+**Três números para o mesmo fato:** os indicadores de `/associados` diziam 83 em
+português e 80 em inglês e espanhol, e a lista tem 78 logotipos. Os cinco rótulos
+estavam em português nos três idiomas. Nenhum portão via nenhuma das duas coisas
+— apareceram lendo os três idiomas lado a lado, como na Etapa 6.
+
+Quatro componentes novos, todos medidos: `TituloSecao`, `FaixaLogos`,
+`CartaoModalidade` e `Video`. A escada de colunas da faixa de logos (2→3→5 e
+2→3→6) é, item por item, a que a `<Grade>` já fazia desde a Etapa 1.
+
+A suíte comportamental foi de 51 para **59 checagens**, e `PAGINA_TEMA` mudou
+pela segunda vez — de `/resorts-brasil.html` para `/ebook.html`, escolhida por
+ser a última a migrar no plano.
+
+Detalhes em [docs/decisoes.md](docs/decisoes.md), "Etapa 8", e a lista completa
+em [docs/deltas-visuais.md](docs/deltas-visuais.md).
+
+### Etapa 9 — a home
 
 | etapa | páginas (× 3 idiomas) | por que aqui |
 |---|---|---|
-| 8 | `associados`, `associe-se`, `apoie`, `resorts-brasil` | componentes de dado já existem |
 | 9 | `index` / `home` / `inicio` | maior visibilidade; carrossel e kenburns |
 
 Em cada página, três correções deliberadas: hierarquia de headings, `bodyClass`
 uniformizado, e as divergências entre idiomas resolvidas por componentização.
+
+Duas coisas que a Etapa 8 deixou preparadas para ela: o `<GradeLogos>` e o
+`<YouTube>` do tema só existem por causa da home e do ebook, e a
+[`<FaixaParceiros>`](src/components/FaixaParceiros.astro) já cobre o bloco de
+logos que a home repete. E uma divergência já anotada: `index.astro` tem o
+`#ApoieOTurismoBrasileiro` que `home.astro` e `inicio.astro` não têm.
 
 ### Etapa 10 — Ebook
 

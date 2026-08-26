@@ -82,10 +82,34 @@
 @source '../pages/es-es/publicaciones.astro';
 @source '../pages/es-es/estadisticas-y-estudios.astro';
 
-/* O convite de associacao, que fecha as duas — e, a partir da Etapa 8, mais
-   duas. Mesma situacao da SecaoCookies: montagem de conteudo, fora dos quatro
-   diretorios varridos. */
+/* Etapa 8: associados, associe-se, apoie e resorts-brasil, nos tres idiomas. */
+@source '../pages/associados.astro';
+@source '../pages/associe-se.astro';
+@source '../pages/apoie.astro';
+@source '../pages/resorts-brasil.astro';
+@source '../pages/en-us/associates.astro';
+@source '../pages/en-us/join-us.astro';
+@source '../pages/en-us/support-tourism.astro';
+@source '../pages/en-us/resorts-brasil.astro';
+@source '../pages/es-es/asociados.astro';
+@source '../pages/es-es/asociese.astro';
+@source '../pages/es-es/apoye.astro';
+@source '../pages/es-es/resorts-brasil.astro';
+
+/*
+ * Os tres componentes de montagem de conteudo, fora dos quatro diretorios
+ * varridos — mesma situacao da <SecaoCookies>.
+ *
+ * O <ConviteAssociese> fecha as QUATRO paginas que o repetiam; a
+ * <FaixaParceiros> reune as faixas de logos que apareciam em quatro paginas por
+ * idioma; e o <AssociadosTabs> passou inteiro para o design system na Etapa 8,
+ * porque so as tres paginas de associados o usam e as tres migraram juntas.
+ */
 @source '../components/ConviteAssociese.astro';
+@source '../components/FaixaParceiros.astro';
+@source '../components/AssociadosTabs.astro';
+@source '../components/PainelRegiao.astro';
+@source '../components/BlocoEixo.astro';
 
 @import './tokens.css';
 @import './base.css';

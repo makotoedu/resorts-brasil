@@ -1,109 +1,101 @@
 ---
+import LayoutSistema from '../layouts/LayoutSistema.astro';
+import Secao from '../components/layout/Secao.astro';
+import Container from '../components/layout/Container.astro';
+import Grade from '../components/layout/Grade.astro';
+import Titulo from '../components/primitivos/Titulo.astro';
+import Texto from '../components/primitivos/Texto.astro';
+import Imagem from '../components/primitivos/Imagem.astro';
+import Contador from '../components/padroes/Contador.astro';
+import TituloSecao from '../components/padroes/TituloSecao.astro';
 import AssociadosTabs from '../components/AssociadosTabs.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
+import ConviteAssociese from '../components/ConviteAssociese.astro';
+import { indicadoresAssociados } from '../data/associados';
+import { ui, type Locale } from '../i18n/ui';
+
+/*
+ * CINCO CORRECOES DELIBERADAS, nos tres idiomas:
+ *
+ *   1. OS NUMEROS DIVERGIAM. "83 Resorts Associados" em portugues, "80" em
+ *      ingles e em espanhol — tres arquivos, dois numeros, para o mesmo fato.
+ *      Passam a vir de `indicadoresAssociados`, em src/data/associados.ts, e o
+ *      valor confirmado e 83.
+ *   2. OS ROTULOS ESTAVAM EM PORTUGUES NOS TRES. "Quartos", "Empregos Diretos" e
+ *      "Regioes do Brasil" apareciam assim tambem nas paginas inglesa e
+ *      espanhola. Mesmo defeito do "Leia agora" da Etapa 4.
+ *   3. Hierarquia. Era `<h1 class="text-md h2">` seguido de um `<h3>` que e a
+ *      frase de abertura, nao cabecalho de nada; e os cinco numeros vinham em
+ *      `<div class="counter display-4">`, que so parecia heading. Agora o
+ *      sumario da pagina e h1 > h2 > h3, sem salto.
+ *   4. O NUMERO ESTAVA VAZIO NO HTML. `<span data-to="83"></span>` — quem
+ *      escrevia o valor era o JavaScript, entao sem script a secao mostrava
+ *      cinco rotulos sem numero. O <Contador> poe o valor final no HTML e anima
+ *      ate ele. Ver a nota do componente.
+ *   5. O bloco comentado de "Folders" nas versoes inglesa e espanhola sai. Era
+ *      markup morto desde 2022, presente em dois dos tres idiomas.
+ *
+ * O convite do fim vem SEM o botao secundario: ele aponta para /associados, que
+ * e esta pagina. No tema aquele bloco ja vinha com um botao so aqui e com dois
+ * nas outras tres — mais uma divergencia entre as quatro copias, nao uma
+ * decisao. Agora e a prop `secundario`.
+ */
+const lang: Locale = 'pt-br';
+const t = ui[lang];
+
+/* O mapa ocupa a coluna media (960px). Sem `tamanhos`, `largura-total` assume
+   100vw e o pipeline baixaria o dobro do necessario — o erro que a Etapa 2 mediu. */
+const tamanhosMapa = '(min-width: 60rem) 60rem, 92vw';
 ---
 
-<BaseLayout
-  lang="pt-br"
-  route="associates"
->
-    <!-- Título -->
-    <section id="title">
-        <div class="container">
-            <div class="row m-b-30">
-                <div class="col-lg-10 center text-center">
-                    <h1 class="text-md h2">Resorts Associados</h1>
-                    <h3>Representamos os grandes resorts do país, que passam por um criterioso processo de afiliação
-                        e análise conforme a matriz de classificação da associação.</h3>
-                </div>
-            </div>
-            <!-- Stats -->
-            <div class="row justify-content-md-center">
-                <div class="col-md-2 m-b-20">
-                    <div class="text-center">
-                        <div class="counter display-4 d-block text-dark mb-0">
-                            <span data-speed="500" data-refresh-interval="50" data-to="83" data-from="1"></span>
-                        </div>
-                        <p>Resorts Associados</p>
-                    </div>
-                </div>
-                <div class="col-md-2 m-b-20">
-                    <div class="text-center">
-                        <div class="counter display-4 d-block text-dark mb-0">
-                            <span data-suffix=" mil" data-speed="500" data-refresh-interval="50" data-to="21"
-                                data-from="1"></span>
-                        </div>
-                        <p>Quartos</p>
-                    </div>
-                </div>
-                <div class="col-md-2 m-b-20">
-                    <div class="text-center">
-                        <div class="counter display-4 d-block text-dark mb-0">
-                            <span data-suffix=" mil" data-speed="500" data-refresh-interval="50" data-to="20"
-                                data-from="1"></span>
-                        </div>
-                        <p>Empregos Diretos</p>
-                    </div>
-                </div>
-                <div class="col-md-2 m-b-20">
-                    <div class="text-center">
-                        <div class="counter display-4 d-block text-dark mb-0">
-                            <span data-speed="500" data-refresh-interval="50" data-to="16" data-from="1"></span>
-                        </div>
-                        <p>Estados</p>
-                    </div>
-                </div>
-                <div class="col-md-2 m-b-20">
-                    <div class="text-center">
-                        <div class="counter display-4 d-block text-dark mb-0">
-                            <span data-speed="500" data-to="5" data-from="1"></span>
-                        </div>
-                        <p>Regiões do Brasil</p>
-                    </div>
-                </div>
-            </div>
-            <!-- end: Stats -->
-        </div>
-    </section>
-    <!-- end: Título -->
+<LayoutSistema lang={lang} route="associates">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="media">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.associatesTitle}</Titulo>
+      <Texto tamanho="lg" alinhamento="centro">{t.associatesLead}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Mapa -->
-    <section id="mapa" class="no-padding">
-        <div class="container">
-            <div class="row">
-                <div class="heading-text heading-line text-center m-b-40">
-                    <h4>Conheça nossos associados:</h4>
-                </div>
-                <div class="col-lg-10 center text-center">
-                    <img class="img-fluid" src="/images/ilustracao/mapa.png" alt="mapa">
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Mapa -->
+  <Secao id="indicadores">
+    <Container>
+      {/* `piso={2}` e nao 1: cinco numeros curtos empilhados um por linha dariam
+          uma coluna de 800px de altura num celular. Dois a dois cabem. */}
+      <Grade colunas={5} piso={2} espaco="md">
+        {
+          indicadoresAssociados.map((i) => (
+            <Contador
+              ate={i.ate}
+              de={1}
+              sufixo={i.sufixo ? t.associatesStatsSuffix : ''}
+              rotulo={t.associatesStats[i.id]}
+            />
+          ))
+        }
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- Associados -->
-    <section id="associados">
-        <div class="container">
-            <div class="row">
-                <div class="tabs">
-                    <AssociadosTabs lang="pt-br" />
-                </div>
-            </div>
-    </section>
-    <!-- end: Associados -->
+  <Secao id="mapa" espacoTopo="nenhum">
+    <Container largura="media">
+      <TituloSecao nivel={2}>{t.associatesMapTitle}</TituloSecao>
+      {/*
+        O `alt` deixa de ser "mapa". Um mapa do Brasil com as regioes marcadas
+        nao e decorativo — e a mesma informacao que as abas logo abaixo dao em
+        texto —, entao ele descreve o que mostra.
+      */}
+      <Imagem
+        src="/images/ilustracao/mapa.png"
+        alt={t.associatesMapAlt}
+        escala="largura-total"
+        tamanhos={tamanhosMapa}
+      />
+    </Container>
+  </Secao>
 
-    <!-- CTA -->
-    <section id="cta" class="p-t-150 p-b-150">
-        <div class="container">
-            <div class="row text-center">
-                <h3 class="m-b-0">Quer fazer parte de um grupo seleto de resorts brasileiros?</h3>
-                <p>Faça parte e ajude a transformar o setor. 😍</p>
-                <div>
-                    <a href="/associe-se" class="btn btn-lg">Associe-se</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: CTA -->
-</BaseLayout>
+  <Secao id="associados" espacoTopo="nenhum">
+    <Container>
+      <AssociadosTabs lang={lang} />
+    </Container>
+  </Secao>
+
+  <ConviteAssociese lang={lang} secundario={false} />
+</LayoutSistema>

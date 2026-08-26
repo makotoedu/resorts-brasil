@@ -460,6 +460,140 @@ export const ui = {
     joinInviteAction: 'Associe-se',
     joinInviteSecondary: 'Conheça os associados',
 
+    /*
+     * Etapa 8 — associados, associe-se, apoie e resorts-brasil.
+     *
+     * A FAIXA DE PARCEIROS ABAIXO SE REPETE EM QUATRO PÁGINAS POR IDIOMA, e as
+     * doze cópias já tinham divergido em três pontos: o rótulo espanhol era
+     * "Socios / Partners:", o único dos nove com duas línguas na mesma linha; o
+     * título trazia um `<br>` manual em PT e ES e nenhum em EN; e o espanhol
+     * terminava com ponto final e os outros dois não.
+     */
+    partnersTitle: 'Conheça algumas empresas que apoiam o turismo através da Resorts Brasil',
+    partnersMaintainers: 'Mantenedores:',
+    partnersPartners: 'Parceiros:',
+    partnersDiscounts: 'Descontos:',
+    partnersDiscountsNote: 'Cursos e Eventos',
+    partnersHashtag: '#ApoieOTurismoBrasileiro❤️',
+
+    /*
+     * Associados. Os cinco rótulos dos indicadores estavam EM PORTUGUÊS nas três
+     * páginas — "Quartos", "Empregos Diretos" e "Regiões do Brasil" apareciam
+     * assim também em inglês e em espanhol. Mesmo defeito do "Leia agora" da
+     * Etapa 4, e agora sem por onde voltar. Os números vivem em
+     * src/data/associados.ts, porque número não traduz; a unidade "mil" traduz e
+     * está aqui.
+     */
+    associatesTitle: 'Resorts Associados',
+    associatesLead:
+      'Representamos os grandes resorts do país, que passam por um criterioso processo de afiliação e análise conforme a matriz de classificação da associação.',
+    associatesStatsSuffix: ' mil',
+    associatesStats: {
+      resorts: 'Resorts Associados',
+      quartos: 'Quartos',
+      empregos: 'Empregos Diretos',
+      estados: 'Estados',
+      regioes: 'Regiões do Brasil',
+    } as Record<string, string>,
+    associatesMapTitle: 'Conheça nossos associados:',
+    associatesMapAlt: 'Mapa do Brasil com as regiões onde há resorts associados',
+    /* Nome da lista de abas para o leitor de tela. O tema não tinha nenhum. */
+    associatesRegionsLabel: 'Regiões',
+
+    /* Associe-se. Os dois botões do topo reaproveitam `joinInvite*`: é a mesma
+       ação, e um rótulo por ação é o que impede a próxima cópia de divergir. */
+    joinTitle: 'Seja um associado',
+    joinLead:
+      'Buscamos ajudar a transformar o setor de turismo no Brasil, lutando em diversas frentes por um setor produtivo mais forte.',
+    joinText:
+      'Nossos planos e projetos são feitos pelos resorts para os resorts. O crescimento da associação é um dos pilares para nosso desenvolvimento e fortalecimento como segmento.',
+    joinPhotoAlt: 'Piscina de um resort ao entardecer',
+    benefitsTitle: 'Benefícios de ser um associado',
+    benefits: [
+      { titulo: 'Feiras', texto: 'Participação nas principais feiras do setor em estande cooperado.' },
+      { titulo: 'B2B', texto: 'Rodadas de negócio em formatos inovadores com clientes.' },
+      { titulo: 'B2C', texto: 'Participe da campanha Resort Week.' },
+      { titulo: 'Estudos', texto: 'Tenha acesso a estudos e estatísticas exclusivos para nossos associados.' },
+      {
+        titulo: 'Advocacy',
+        texto:
+          'Atuamos junto às esferas governamentais, em parceria com o G20+, na defesa dos interesses da categoria.',
+      },
+      {
+        titulo: 'Benchmarking',
+        texto:
+          'Incentivamos a troca de ideias e conhecimento por meio de comitês temáticos, realizando reuniões periódicas.',
+      },
+      {
+        titulo: 'Descontos',
+        texto:
+          'Temos uma série de parcerias no mercado que geram benefícios especiais e descontos para os associados.',
+      },
+      {
+        titulo: 'Nossa marca',
+        texto: 'Os associados recebem o direito de utilizar a marca da associação Resorts Brasil.',
+      },
+    ],
+    joinCtaTitle: 'Conheça os resorts que já fazem parte da Resorts Brasil',
+    joinCtaAction: 'Saiba mais',
+
+    /* Apoie o turismo. */
+    supportTitle: 'Apoie o turismo',
+    supportLead:
+      'Buscamos ajudar a transformar o setor de turismo no Brasil, lutando em diversas frentes por um setor produtivo mais forte. 💪',
+    supportIntro:
+      'Para isso, contamos com parceiros que apoiam nossos projetos e se aproximam dos resorts associados. Existem duas principais modalidades de apoio a projetos:',
+    supportPhotoAlt: 'Vista aérea do Rio de Janeiro',
+    supportHighlightQuestion: 'Quer ajudar a transformar o turismo brasileiro?',
+    supportHighlightRole:
+      'Um de nossos papéis é fomentar o desempenho no segmento de resorts, por meio de sinergia e parcerias, bem como disseminar boas práticas e informações nos empreendimentos.',
+    supportHighlightPartnership:
+      'A parceria com a Resorts Brasil proporciona visibilidade junto aos resorts associados e oportunidade de novos negócios para sua empresa.',
+    supportHighlightsLead:
+      'Os mantenedores e parceiros são empresas apoiadoras do Setor de Turismo que buscam incentivar ações transformadoras no segmento de resorts.',
+    modalityPartner: 'Parceiro',
+    modalityPartnerText:
+      'Parceiros de Projetos são empresas que desejam apoiar iniciativas pontuais da associação.',
+    modalityMaintainer: 'Mantenedor',
+    modalityMaintainerText:
+      'Mantenedores são empresas que desejam estabelecer uma relação mínima de 12 meses, participando de diversas ações em conjunto com os associados.',
+
+    /* Resorts Brasil. Os três eixos vinham com o `<br>` manual só em português. */
+    resortsBrasilTitle: 'Resorts Brasil',
+    resortsBrasilLead:
+      'Trabalhamos em conjunto com os associados em prol do segmento de resorts e do setor de turismo.',
+    resortsBrasilPhotoAlt: 'Piscina de um resort à beira-mar',
+    resortsBrasilAxesIntro: 'Para melhor organização de nossas estratégias, atuamos em três eixos:',
+    resortsBrasilAxes: [
+      {
+        sigla: 'RE',
+        titulo: 'REPRESENTAR E ENGAJAR',
+        textos: [
+          'Eixo voltado à representação do setor, em que fazemos a interlocução com o Governo, no sentido de trabalhar os principais pleitos do segmento.',
+          'Buscamos também representar os resorts nos principais eventos do mercado, engajando parceiros e associados no fortalecimento dos resorts.',
+        ],
+      },
+      {
+        sigla: 'SO',
+        titulo: 'SENSIBILIZAR O OLHAR',
+        textos: [
+          'Eixo voltado para a informação, com o desenvolvimento de pesquisas e publicações relevantes que possam gerar valor para o associado e que possam fortalecer o segmento, revelando a importância dos resorts para o turismo nacional.',
+        ],
+      },
+      {
+        sigla: 'RT',
+        titulo: 'REFLETIR PARA TRANSFORMAR',
+        textos: [
+          'Voltado às ações coletivas dos associados, este eixo busca identificar temas de interesse comum no segmento de resorts para atuação conjunta.',
+          'Trabalhamos fortemente com ações de promoção, além de reuniões em comitês e grupos de trabalho para compartilhar os desafios e pensar em soluções para o setor.',
+        ],
+      },
+    ],
+    resortsBrasilMissionTitle:
+      'A associação existe para contribuir para o fortalecimento e desenvolvimento do turismo, bem como das localidades em que os resorts estão.',
+    resortsBrasilMissionText:
+      'Acreditamos que os resorts são indutores de desenvolvimento socioeconômico que transformam a vida de muitas pessoas. Por isso, buscamos conectar profissionais, inspirar as boas práticas e advogar pelos resorts brasileiros.',
+
     videoPlay: 'Assistir ao vídeo',
     videoInstitucional: 'Vídeo institucional da Resorts Brasil',
     videoEbook: 'Vídeo de apresentação do e-book',
@@ -575,6 +709,118 @@ export const ui = {
     joinInviteText: 'Take part and help transform the sector. 😍',
     joinInviteAction: 'Become a member',
     joinInviteSecondary: 'Meet the associates',
+
+    partnersTitle: 'Meet a few of the companies that support tourism through Resorts Brasil',
+    partnersMaintainers: 'Maintainers:',
+    partnersPartners: 'Partners:',
+    partnersDiscounts: 'Discounts:',
+    partnersDiscountsNote: 'Courses and Events',
+    partnersHashtag: '#SupportBrazilianTourism❤️',
+
+    associatesTitle: 'Associated Resorts',
+    associatesLead:
+      "We represent the country's major resorts, which undergo a careful affiliation and analysis process according to the association's classification matrix.",
+    associatesStatsSuffix: ' thousand',
+    associatesStats: {
+      resorts: 'Associated Resorts',
+      quartos: 'Rooms',
+      empregos: 'Direct Jobs',
+      estados: 'States',
+      regioes: 'Regions of Brazil',
+    } as Record<string, string>,
+    associatesMapTitle: 'Meet our associates:',
+    associatesMapAlt: 'Map of Brazil showing the regions with member resorts',
+    associatesRegionsLabel: 'Regions',
+
+    joinTitle: 'Become a member',
+    joinLead:
+      'We seek to help transform the tourism sector in Brazil, fighting on several fronts for a stronger productive sector.',
+    joinText:
+      'Our plans and projects are designed by resorts for resorts. The growth of the association is one of the pillars for our development and strengthening as a segment.',
+    joinPhotoAlt: 'A resort swimming pool at dusk',
+    benefitsTitle: 'Benefits of becoming an associate',
+    benefits: [
+      { titulo: 'Fairs', texto: 'Participation in the main fairs of the industry in a cooperative stand.' },
+      { titulo: 'B2B', texto: 'Business roundtables in innovative formats with clients.' },
+      { titulo: 'B2C', texto: 'Join the Resort Week campaign.' },
+      { titulo: 'Studies', texto: 'Get access to exclusive studies and statistics for our associates.' },
+      {
+        titulo: 'Advocacy',
+        texto:
+          'We work with government spheres, in partnership with G20+ to advocate for the interests of the category.',
+      },
+      {
+        titulo: 'Benchmarking',
+        texto:
+          'We encourage the exchange of ideas and knowledge through themed committees, holding periodic meetings.',
+      },
+      {
+        titulo: 'Discounts',
+        texto:
+          'We have a series of partnerships in the market that generate special benefits and discounts for members.',
+      },
+      {
+        titulo: 'Our brand',
+        texto: 'Associates have the right to use the Resorts Brasil association brand.',
+      },
+    ],
+    joinCtaTitle: 'Meet the resorts that already are Resorts Brasil',
+    joinCtaAction: 'Learn more',
+
+    supportTitle: 'Support Tourism',
+    supportLead:
+      'We seek to help transform the tourism sector in Brazil, fighting on several fronts for a stronger productive sector. 💪',
+    supportIntro:
+      'To do this, we have partners who support our projects and get closer to the associated resorts. There are two main types of project support:',
+    supportPhotoAlt: 'Aerial view of Rio de Janeiro',
+    supportHighlightQuestion: 'Want to help transform Brazilian tourism?',
+    supportHighlightRole:
+      'One of our roles is to promote performance in the resort segment, through synergy and partnerships, as well as disseminating good practices and information in the developments.',
+    supportHighlightPartnership:
+      'The partnership with Resorts Brasil provides visibility with associated resorts and new business opportunities for your company.',
+    supportHighlightsLead:
+      'The maintainers and partners are companies that support the Tourism Sector and seek to encourage transformative actions in the resort segment.',
+    modalityPartner: 'Partner',
+    modalityPartnerText:
+      'Project Partners are companies that wish to support specific initiatives of the association.',
+    modalityMaintainer: 'Maintainer',
+    modalityMaintainerText:
+      'Maintainers are companies that wish to establish a relationship of at least 12 months, participating in various campaigns along with members.',
+
+    resortsBrasilTitle: 'Resorts Brasil',
+    resortsBrasilLead:
+      'We work together with associates for the resort segment and the tourism sector.',
+    resortsBrasilPhotoAlt: 'A seaside resort swimming pool',
+    resortsBrasilAxesIntro: 'To better organize our strategies, we act in three fronts:',
+    resortsBrasilAxes: [
+      {
+        sigla: 'RE',
+        titulo: 'REPRESENT AND ENGAGE',
+        textos: [
+          'This front is focused on representing the sector and we dialogue with the Government, to work on the main demands of the segment.',
+          'We also seek to represent the resorts at the main market events, engaging partners and associates in strengthening the resorts.',
+        ],
+      },
+      {
+        sigla: 'SO',
+        titulo: 'SENSITIZE THE LOOK',
+        textos: [
+          'Front focused on information with the development of research and relevant publications that can generate value for the member and that can strengthen the segment, showing the importance of resorts for national tourism.',
+        ],
+      },
+      {
+        sigla: 'RT',
+        titulo: 'REFLECT TO TRANSFORM',
+        textos: [
+          'Focused on collective actions of associates, this front seeks to identify themes of common interest in the resort segment for joint action.',
+          'We work hard with promotions, in addition to meetings in committees and working groups to share challenges and think about solutions for the sector.',
+        ],
+      },
+    ],
+    resortsBrasilMissionTitle:
+      'The association exists to contribute to the strengthening and development of tourism, as well as the locations where the resorts are present.',
+    resortsBrasilMissionText:
+      'We believe resorts drive the socioeconomic development that transform the lives of many people. Therefore, we seek to connect professionals, inspire good practices and advocate for Brazilian resorts.',
 
     videoPlay: 'Watch the video',
     videoInstitucional: 'Resorts Brasil institutional video',
@@ -701,6 +947,130 @@ export const ui = {
     joinInviteText: 'Forme parte y ayude a transformar el sector. 😍',
     joinInviteAction: 'Asóciese',
     joinInviteSecondary: 'Conozca los asociados',
+
+    /*
+     * O rótulo de parceiros era "Socios / Partners:" — o único dos nove com duas
+     * línguas na mesma linha. E o fecho da página de asociese dizia "ayude a
+     * formar el sector" onde as outras três cópias espanholas dizem
+     * "transformar"; reaproveitar `joinInviteText` resolve as duas.
+     */
+    partnersTitle: 'Conozca algunas empresas que apoyan al turismo a través de Resorts Brasil',
+    partnersMaintainers: 'Mantenedores:',
+    partnersPartners: 'Socios:',
+    partnersDiscounts: 'Descuentos:',
+    partnersDiscountsNote: 'Cursos y Eventos',
+    /*
+     * As duas paginas espanholas traziam hashtags DIFERENTES: `#ApoyeEl…` em
+     * apoye e `#ApoyarEl…` em resorts-brasil. Vale o imperativo, que e a forma
+     * que o portugues ("Apoie") e o ingles ("Support") usam nas duas paginas
+     * deles. O infinitivo era o intruso.
+     */
+    partnersHashtag: '#ApoyeElTurismoBrasileño❤️',
+
+    associatesTitle: 'Resorts Asociados',
+    associatesLead:
+      'Representamos los mayores resorts del país, que pasan por un criterioso proceso de afiliación y análisis conforme la matriz de clasificación en la asociación.',
+    associatesStatsSuffix: ' mil',
+    associatesStats: {
+      resorts: 'Resorts Asociados',
+      quartos: 'Habitaciones',
+      empregos: 'Empleos Directos',
+      estados: 'Estados',
+      regioes: 'Regiones de Brasil',
+    } as Record<string, string>,
+    associatesMapTitle: 'Conozca nuestros asociados:',
+    associatesMapAlt: 'Mapa de Brasil con las regiones donde hay resorts asociados',
+    associatesRegionsLabel: 'Regiones',
+
+    joinTitle: 'Sea un asociado',
+    joinLead:
+      'Buscamos ayudar a transformar el sector de turismo en Brasil, luchando en diversos frentes por un sector productivo más fuerte.',
+    joinText:
+      'Nuestros planes y proyectos son hechos por los resorts para los resorts. El crecimiento de la asociación es uno de los pilares para nuestro desarrollo y fortalecimiento como segmento.',
+    joinPhotoAlt: 'Piscina de un resort al atardecer',
+    benefitsTitle: 'Beneficios de ser un asociado',
+    benefits: [
+      { titulo: 'Ferias', texto: 'Participación en las principales ferias del sector en stand cooperado.' },
+      { titulo: 'B2B', texto: 'Ruedas de negocio en formatos innovadores con clientes.' },
+      { titulo: 'B2C', texto: 'Participe de la campaña de Resort Week.' },
+      { titulo: 'Estudios', texto: 'Acceda a estudios y estadísticas exclusivos para nuestros asociados.' },
+      {
+        titulo: 'Advocacy',
+        texto:
+          'Actuamos junto a las esferas gubernamentales, en colaboración con el G20+, en la defensa de los intereses de la categoría.',
+      },
+      {
+        titulo: 'Benchmarking',
+        texto:
+          'Incentivamos el cambio de ideas y conocimiento a través de comités temáticos, realizando reuniones periódicas.',
+      },
+      {
+        titulo: 'Descuentos',
+        texto:
+          'Tenemos una serie de alianzas en el mercado que generan beneficios especiales y descuentos para los asociados.',
+      },
+      {
+        titulo: 'Nuestra marca',
+        texto: 'Los asociados reciben el derecho de utilizar la marca de la asociación Resorts Brasil.',
+      },
+    ],
+    joinCtaTitle: 'Conozca los resorts que ya forman parte de Resorts Brasil',
+    joinCtaAction: 'Infórmese más',
+
+    supportTitle: 'Apoye al turismo',
+    supportLead:
+      'Buscamos ayudar a transformar el sector de turismo en Brasil, luchando en diversos frentes por un sector productivo más fuerte. 💪',
+    supportIntro:
+      'Para eso, contamos con colaboradores que apoyan nuestros proyectos y se aproximan de los resorts asociados. Existen dos principales modalidades de apoyo a proyectos:',
+    supportPhotoAlt: 'Vista aérea de Río de Janeiro',
+    supportHighlightQuestion: '¿Quiere ayudar a transformar el turismo brasileño?',
+    supportHighlightRole:
+      'Uno de nuestros papeles es fomentar el desempeño en el segmento de resorts, por medio de sinergia y colaboradores, así como diseminar buenas prácticas e informaciones en los emprendimientos.',
+    supportHighlightPartnership:
+      'La colaboración con Resorts Brasil proporciona visibilidad junto a los resorts asociados y oportunidad de nuevos negocios para su empresa.',
+    supportHighlightsLead:
+      'Los mantenedores y colaboradores son empresas que apoyan al Sector de Turismo que buscan incentivar acciones transformadoras en el segmento de resorts.',
+    modalityPartner: 'Colaborador',
+    modalityPartnerText:
+      'Colaboradores de Proyectos son empresas que desean apoyar iniciativas puntuales de la asociación.',
+    modalityMaintainer: 'Mantenedor',
+    modalityMaintainerText:
+      'Mantenedores son empresas que desean establecer una relación mínima de 12 meses, participando de diversas acciones en conjunto con los asociados.',
+
+    resortsBrasilTitle: 'Resorts Brasil',
+    resortsBrasilLead:
+      'Trabajamos en conjunto con los asociados en pro del segmento de resorts y del sector de turismo.',
+    resortsBrasilPhotoAlt: 'Piscina de un resort a la orilla del mar',
+    resortsBrasilAxesIntro: 'Para una mejor organización de nuestras estrategias, actuamos en tres ejes:',
+    resortsBrasilAxes: [
+      {
+        sigla: 'RE',
+        titulo: 'REPRESENTAR Y COMPROMETER',
+        textos: [
+          'Eje centrado en la representación del sector, en el que hacemos la interlocución con el Gobierno, en el sentido de trabajar los principales pleitos del segmento.',
+          'Buscamos también representar los resorts en los principales eventos del mercado, comprometiendo colaboradores y asociados en el fortalecimiento de los resorts.',
+        ],
+      },
+      {
+        sigla: 'SO',
+        titulo: 'SENSIBILIZAR LA MIRADA',
+        textos: [
+          'Eje orientado hacia la información, con desarrollo de investigaciones, encuestas y publicaciones relevantes que puedan generar valor para el asociado y que puedan fortalecer el segmento, revelando la importancia de los resorts para el turismo nacional.',
+        ],
+      },
+      {
+        sigla: 'RT',
+        titulo: 'REFLEXIONAR PARA TRANSFORMAR',
+        textos: [
+          'Centrado en las acciones colectivas de los asociados, este eje busca identificar temas de interés común en el segmento de resorts para una actuación conjunta.',
+          'Trabajamos fuertemente con acciones de promoción, además de reuniones en comités y grupos de trabajo para compartir los desafíos y pensar en soluciones para el sector.',
+        ],
+      },
+    ],
+    resortsBrasilMissionTitle:
+      'La asociación existe para contribuir con el fortalecimiento y desarrollo del turismo, así como de las localidades en las que se encuentran los resorts.',
+    resortsBrasilMissionText:
+      'Creemos que los resorts son inductores de desarrollo socioeconómico, que transforman la vida de muchas personas. Por eso, buscamos conectar profesionales, inspirar las buenas prácticas y abogar por los resorts brasileños.',
 
     videoPlay: 'Ver el vídeo',
     videoInstitucional: 'Vídeo institucional de Resorts Brasil',

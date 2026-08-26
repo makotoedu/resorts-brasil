@@ -1,0 +1,59 @@
+---
+import Titulo from './primitivos/Titulo.astro';
+import Texto from './primitivos/Texto.astro';
+
+/**
+ * Um dos tres eixos de atuacao, dentro da <FaixaDestaque> de /resorts-brasil.
+ *
+ * ELE E UM COMPONENTE, E NAO TRES BLOCOS NA PAGINA, PELO MESMO LIMITE DO ASTRO
+ * QUE O <PainelRegiao> encontrou: nome de slot precisa ser LITERAL. A versao
+ * obvia, um `slot={String(i + 1)}` dentro do `.map()` sobre os eixos, compila e
+ * quebra na geracao com "ReferenceError: i is not defined" — o Astro extrai os
+ * slots nomeados em tempo de compilacao, fora do escopo do callback.
+ *
+ * Com os tres `slot="1"`, `slot="2"` e `slot="3"` escritos a mao na pagina, o
+ * corpo precisava morar em algum lugar para nao virar nove copias (tres blocos
+ * x tres idiomas). E aqui.
+ *
+ *   <BlocoEixo slot="1" eixo={t.resortsBrasilAxes[0]} />
+ */
+interface Eixo {
+  /** "RE", "SO", "RT" — a marca visual, nao um cabecalho. */
+  sigla: string;
+  titulo: string;
+  /** Um ou dois paragrafos, conforme o eixo. */
+  textos: readonly string[];
+}
+
+interface Props {
+  eixo: Eixo;
+}
+
+const { eixo } = Astro.props;
+---
+
+<div>
+  {/*
+    A sigla nao e cabecalho: "RE" e uma marca visual, e o titulo do eixo logo
+    abaixo e que nomeia a secao. No tema a sigla era `h2` e o nome era `h4` — o
+    maior dos dois era o que dizia menos, que e a causa raiz das 39 hierarquias
+    quebradas do site.
+  */}
+  <p class="sigla" aria-hidden="true">{eixo.sigla}</p>
+  <Titulo nivel={2} tamanho="lg">{eixo.titulo}</Titulo>
+  {eixo.textos.map((texto) => <Texto>{texto}</Texto>)}
+</div>
+
+<style>
+  /*
+   * A sigla, no tamanho que o `h2.text-lg` do tema tinha. Como paragrafo com
+   * `aria-hidden`, ela sai do sumario da pagina: um leitor de tela nao precisa
+   * anunciar "titulo nivel 2, RE" antes de "REPRESENTAR E ENGAJAR".
+   */
+  .sigla {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.1;
+    margin-block: 0 0.5rem;
+  }
+</style>

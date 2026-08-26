@@ -63,6 +63,26 @@ const MIGRADAS = [
   'src/pages/es-es/publicaciones.astro',
   'src/pages/es-es/estadisticas-y-estudios.astro',
   'src/components/ConviteAssociese.astro',
+  /* Etapa 8 — associados, associe-se, apoie e resorts-brasil, nos tres idiomas. */
+  'src/pages/associados.astro',
+  'src/pages/associe-se.astro',
+  'src/pages/apoie.astro',
+  'src/pages/resorts-brasil.astro',
+  'src/pages/en-us/associates.astro',
+  'src/pages/en-us/join-us.astro',
+  'src/pages/en-us/support-tourism.astro',
+  'src/pages/en-us/resorts-brasil.astro',
+  'src/pages/es-es/asociados.astro',
+  'src/pages/es-es/asociese.astro',
+  'src/pages/es-es/apoye.astro',
+  'src/pages/es-es/resorts-brasil.astro',
+  /* A faixa de parceiros e as abas de associados passaram a emitir markup do
+     sistema junto com elas. O <GradeLogos> NAO entra: as tres paginas de home
+     ainda o usam, e ele continua sendo markup do tema ate a Etapa 9. */
+  'src/components/FaixaParceiros.astro',
+  'src/components/AssociadosTabs.astro',
+  'src/components/PainelRegiao.astro',
+  'src/components/BlocoEixo.astro',
   /* O layout do sistema e o <head> compartilhado. */
   'src/layouts/LayoutSistema.astro',
   'src/layouts/Cabeca.astro',
@@ -86,6 +106,10 @@ const MIGRADAS = [
   'src/components/padroes/Abas.astro',
   'src/components/padroes/Prosa.astro',
   'src/components/padroes/Tabela.astro',
+  'src/components/padroes/TituloSecao.astro',
+  'src/components/padroes/FaixaLogos.astro',
+  'src/components/padroes/CartaoModalidade.astro',
+  'src/components/padroes/Video.astro',
   'src/components/cromo/Cabecalho.astro',
   'src/components/cromo/Rodape.astro',
   'src/components/cromo/FaixaCookies.astro',
@@ -394,8 +418,23 @@ async function lerDist() {
   const paginas = [];
   for (const caminho of caminhos) {
     const html = await readFile(join(RAIZ, 'dist', caminho), 'utf8');
-    const temTema = /\/css\/(plugins|style|ajustes)\.css/.test(html);
-    const temSistema = /\/_astro\/[^"']+\.css/.test(html);
+    /*
+     * SO DENTRO DE UM href=, e nao em qualquer lugar do documento.
+     *
+     * A versao anterior procurava a string solta, e reprovou o /design assim que
+     * o catalogo passou a EXPLICAR por que existe um <Video> proprio: aquele
+     * texto cita `public/css/ajustes.css` dentro de um `<code>`, e a checagem
+     * leu a mencao como se fosse uma folha carregada.
+     *
+     * E a terceira vez que um portao deste projeto confunde documentacao com
+     * markup — as duas primeiras foram o checador de headings na Etapa 5 e o de
+     * `style=` na Etapa 6, e as duas se resolveram do mesmo jeito: olhar o
+     * artefato pelo que ele FAZ, e nao pelo que ele contem. Aqui, o que faz uma
+     * folha ser carregada e o atributo.
+     */
+    const href = (padrao) => new RegExp(`<link[^>]+href="[^"]*${padrao}"`, 'i').test(html);
+    const temTema = href('/css/(?:plugins|style|ajustes)\\.css');
+    const temSistema = href('/_astro/[^"]+\\.css');
     paginas.push({ caminho, html, temTema, temSistema, migrada: temSistema && !temTema });
   }
   return paginas;

@@ -104,6 +104,74 @@ const ALVOS = [
   { grupo: 'abas', nome: '.nav-link (inativa)', pagina: '/associados.html', seletor: 'main .nav-tabs .nav-link:not(.active)', hover: true },
   { grupo: 'abas', nome: '.tab-content', pagina: '/associados.html', seletor: 'main .tab-content' },
   { grupo: 'abas', nome: '.line (divisor)', pagina: '/associados.html', seletor: 'main .tab-pane.active .line' },
+
+  /*
+   * ---- faixa de logos: mantenedores, parceiros e descontos ----
+   *
+   * ACRESCENTADA NA ETAPA 8, e a ausencia dela era um buraco antigo: a faixa
+   * aparece em QUATRO paginas por idioma (associe-se, apoie, resorts-brasil e a
+   * home) e nunca tinha sido medida — o <GradeLogos> de transicao emitia o
+   * markup do tema, entao ate aqui ninguem precisou saber os numeros.
+   *
+   * Como a grade masonry da Etapa 7, o numero de colunas NAO se le no CSS de
+   * forma confiavel: `.grid-5-columns` e `.grid-6-columns` sao floats com
+   * largura percentual, e a contagem efetiva por faixa sai de quantas posicoes
+   * horizontais distintas os `<li>` ocupam. E o que `itens` conta.
+   */
+  {
+    grupo: 'gradeLogos',
+    nome: '.grid-5-columns',
+    pagina: '/apoie.html',
+    seletor: 'main #parceiros ul.grid',
+    itens: 'main #parceiros ul.grid > li',
+  },
+  {
+    grupo: 'gradeLogos',
+    nome: '.grid-6-columns',
+    pagina: '/associe-se.html',
+    seletor: 'main #parceiros ul.grid',
+    itens: 'main #parceiros ul.grid > li',
+  },
+  { grupo: 'gradeLogos', nome: 'li (5 colunas)', pagina: '/apoie.html', seletor: 'main #parceiros ul.grid > li' },
+  { grupo: 'gradeLogos', nome: 'li img (5 colunas)', pagina: '/apoie.html', seletor: 'main #parceiros ul.grid > li img' },
+  {
+    grupo: 'gradeLogos',
+    nome: 'li a (hover)',
+    pagina: '/apoie.html',
+    seletor: 'main #parceiros ul.grid > li a[href]',
+    hover: true,
+  },
+  /* A grade de logos dentro das abas de associados: mesma classe, outro
+     contexto — dentro de um `.col-lg-9`, e nao do container inteiro. */
+  {
+    grupo: 'gradeLogos',
+    nome: '.grid-6-columns (abas)',
+    pagina: '/associados.html',
+    seletor: 'main .tab-pane.active ul.grid',
+    itens: 'main .tab-pane.active ul.grid > li',
+  },
+
+  /*
+   * ---- cartao de modalidade: as duas caixas coloridas de /apoie ----
+   *
+   * `.card` com fundo em `style=` inline e um `.item-link` dentro. Sao 6 usos
+   * (2 x 3 idiomas) e a Etapa 3 ja os citava como um dos tres lugares em que o
+   * <LinkAcao> vive — mas o cartao em volta nunca foi medido.
+   */
+  { grupo: 'cartaoModalidade', nome: '.card', pagina: '/apoie.html', seletor: 'main #apoie .card' },
+  { grupo: 'cartaoModalidade', nome: '.card-body', pagina: '/apoie.html', seletor: 'main #apoie .card .card-body' },
+  { grupo: 'cartaoModalidade', nome: '.card-body h4', pagina: '/apoie.html', seletor: 'main #apoie .card .card-body h4' },
+
+  /*
+   * ---- titulo de secao com linha ----
+   *
+   * `.heading-text.heading-line` — o titulo com um risco embaixo. Aparece em
+   * associados, associe-se, apoie, resorts-brasil e na home; a linha e um
+   * `:before`, entao so o pseudo diz onde ela esta e que tamanho tem.
+   */
+  { grupo: 'tituloSecao', nome: '.heading-text.heading-line', pagina: '/apoie.html', seletor: 'main .heading-text.heading-line' },
+  { grupo: 'tituloSecao', nome: '.heading-line h4', pagina: '/apoie.html', seletor: 'main .heading-text.heading-line h4' },
+  { grupo: 'tituloSecao', nome: '.heading-line h4::before', pagina: '/apoie.html', seletor: 'main .heading-text.heading-line h4', pseudo: '::before' },
 ];
 
 /**
@@ -127,6 +195,9 @@ const PROPS = {
   faixaDestaque: [...CAIXA, 'textAlign', 'flexBasis', 'maxWidth', 'fontSize', 'fontWeight', 'lineHeight'],
   contador: [...TEXTO, 'display', 'marginTop'],
   abas: [...CAIXA, 'borderTopWidth', 'borderBottomWidth', 'borderColor', 'borderStyle', 'fontSize', 'fontWeight', 'textTransform', 'textAlign', 'flexBasis', 'height'],
+  gradeLogos: [...CAIXA, 'listStyleType', 'float', 'width', 'maxWidth', 'height', 'objectFit', 'verticalAlign', 'opacity', 'filter', 'textAlign'],
+  cartaoModalidade: [...CAIXA, 'borderTopWidth', 'borderStyle', 'borderColor', 'textAlign', 'fontSize', 'fontWeight'],
+  tituloSecao: [...CAIXA, 'textAlign', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'content', 'position', 'width', 'height', 'left', 'bottom'],
 };
 
 const navegador = await chromium.launch();
@@ -145,7 +216,7 @@ for (const vp of VIEWPORTS) {
     const props = PROPS[alvo.grupo];
     const medir = () =>
       page.evaluate(
-        ({ seletor, props, pseudo }) => {
+        ({ seletor, props, pseudo, itens }) => {
           const el = document.querySelector(seletor);
           if (!el) return null;
           const cs = getComputedStyle(el, pseudo || undefined);
@@ -153,9 +224,22 @@ for (const vp of VIEWPORTS) {
           for (const p of props) saida[p] = cs[p];
           const r = el.getBoundingClientRect();
           saida['_caixa'] = `${Math.round(r.width)}x${Math.round(r.height)}`;
+          /*
+           * Quantas COLUNAS a grade tem de fato, pela mesma conta do
+           * medir-primitivos.mjs: posicoes horizontais distintas entre os itens.
+           * Na faixa de logos o numero esta no nome da classe, mas a classe
+           * mente nas faixas estreitas — `.grid-6-columns` nao poe seis colunas
+           * num celular, e e justamente a escada que a <Grade> precisa
+           * reproduzir.
+           */
+          if (itens) {
+            const caixas = [...document.querySelectorAll(itens)];
+            const xs = new Set(caixas.map((n) => Math.round(n.getBoundingClientRect().left)));
+            saida['_colunas'] = `${xs.size} colunas / ${caixas.length} itens`;
+          }
           return saida;
         },
-        { seletor: alvo.seletor, props, pseudo: alvo.pseudo }
+        { seletor: alvo.seletor, props, pseudo: alvo.pseudo, itens: alvo.itens }
       );
 
     const repouso = await medir();

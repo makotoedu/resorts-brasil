@@ -15,10 +15,11 @@ import { ui, routes, type Locale } from '../i18n/ui';
  * frase, e a de resorts-brasil ja divergiu: la ela vive sobre fundo escuro e com
  * outra quebra de linha.
  *
- * A Etapa 7 migra as duas primeiras; as outras duas vem na Etapa 8, e ate la o
- * texto delas continua no markup do tema. Nao ha como evitar isso sem migrar a
- * pagina junto — o componente emite markup do design system, e a folha nova so
- * entra por quem usa o LayoutSistema.
+ * A Etapa 7 migrou as duas primeiras e a Etapa 8 fechou as outras duas: as doze
+ * copias viraram uma. A de resorts-brasil era a divergente — vivia sobre uma
+ * foto, com outra quebra de linha e um botao so — e unificar significou
+ * desistir daquela foto. Esta registrado em docs/deltas-visuais.md; o custo de
+ * manter era uma quinta variante do mesmo paragrafo.
  *
  * Fica em `src/components/` e nao em `padroes/` pelo mesmo criterio da
  * <SecaoCookies>: e montagem de CONTEUDO a partir do `ui.ts`, nao uma decisao de
@@ -30,9 +31,18 @@ import { ui, routes, type Locale } from '../i18n/ui';
  */
 interface Props {
   lang: Locale;
+  /**
+   * O segundo botao, "Conheca os associados".
+   *
+   * `false` na propria pagina de associados, e o motivo e literal: ali ele
+   * aponta para a pagina que a pessoa ja esta lendo. O tema nao tinha o problema
+   * porque naquela pagina o bloco vinha com um botao so — e era mais uma das
+   * divergencias entre as quatro copias, nao uma decisao.
+   */
+  secundario?: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, secundario = true } = Astro.props;
 const t = ui[lang];
 ---
 
@@ -48,7 +58,9 @@ const t = ui[lang];
       <Texto alinhamento="centro">{t.joinInviteText}</Texto>
       <div class="botoes">
         <Botao href={routes.joinUs[lang]}>{t.joinInviteAction}</Botao>
-        <Botao href={routes.associates[lang]} variante="contorno">{t.joinInviteSecondary}</Botao>
+        {secundario && (
+          <Botao href={routes.associates[lang]} variante="contorno">{t.joinInviteSecondary}</Botao>
+        )}
       </div>
     </div>
   </Container>
