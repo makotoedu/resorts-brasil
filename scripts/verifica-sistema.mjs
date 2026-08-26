@@ -46,6 +46,15 @@ const MIGRADAS = [
   'src/pages/es-es/historia.astro',
   'src/pages/es-es/contactenos.astro',
   'src/pages/es-es/directorio.astro',
+  /* Etapa 6 — os dois documentos juridicos, nos tres idiomas. */
+  'src/pages/termos-de-uso.astro',
+  'src/pages/politica-de-privacidade.astro',
+  'src/pages/en-us/terms-of-use.astro',
+  'src/pages/en-us/privacy-policy.astro',
+  'src/pages/es-es/terminos-de-uso.astro',
+  'src/pages/es-es/politica-de-privacidad.astro',
+  /* A secao de cookies passou a emitir markup do sistema junto com elas. */
+  'src/components/SecaoCookies.astro',
   /* O layout do sistema e o <head> compartilhado. */
   'src/layouts/LayoutSistema.astro',
   'src/layouts/Cabeca.astro',
@@ -67,6 +76,8 @@ const MIGRADAS = [
   'src/components/padroes/FaixaDestaque.astro',
   'src/components/padroes/Contador.astro',
   'src/components/padroes/Abas.astro',
+  'src/components/padroes/Prosa.astro',
+  'src/components/padroes/Tabela.astro',
   'src/components/cromo/Cabecalho.astro',
   'src/components/cromo/Rodape.astro',
   'src/components/cromo/FaixaCookies.astro',
@@ -92,6 +103,65 @@ const CATALOGO = 'src/pages/design.astro';
 
 const falhas = [];
 const avisos = [];
+
+/**
+ * As linhas do arquivo com os COMENTARIOS apagados, preservando a numeracao.
+ *
+ * ESTA FUNCAO EXISTE POR UM ERRO QUE JA ACONTECEU DUAS VEZES, e nas duas o
+ * sintoma foi o mesmo: o portao reprovou o build por causa da DOCUMENTACAO.
+ *
+ *   Etapa 5  o checador de headings acusava as duas primeiras paginas migradas
+ *            porque os comentarios delas citam `<h1 class="text-md h2">` para
+ *            explicar o que foi corrigido;
+ *   Etapa 6  o checador de `style=` acusou as duas paginas juridicas porque o
+ *            comentario cita `<ul style="color: #525E75;">`, que e exatamente o
+ *            markup que aquele commit REMOVEU.
+ *
+ * Um projeto que documenta o defeito ao lado da correcao vai citar markup em
+ * comentario o tempo todo. Quem precisa saber a diferenca e a checagem, e nao
+ * quem escreve — a alternativa e pedir que ninguem descreva o que consertou.
+ *
+ * Trata as tres formas: bloco `/* *\/` (que atravessa linhas), linha `//` e
+ * comentario HTML `<!-- -->` (que tambem atravessa linhas).
+ */
+function linhasSemComentario(texto) {
+  let emBloco = false;
+  let emHtml = false;
+  return texto.split('\n').map((linha) => {
+    let saida = '';
+    let resto = linha;
+    while (resto.length) {
+      if (emBloco) {
+        const fim = resto.indexOf('*/');
+        if (fim === -1) return saida;
+        resto = resto.slice(fim + 2);
+        emBloco = false;
+        continue;
+      }
+      if (emHtml) {
+        const fim = resto.indexOf('-->');
+        if (fim === -1) return saida;
+        resto = resto.slice(fim + 3);
+        emHtml = false;
+        continue;
+      }
+      /* O que vier primeiro: bloco, HTML ou fim de linha. */
+      const candidatos = [
+        [resto.indexOf('/*'), 'bloco'],
+        [resto.indexOf('<!--'), 'html'],
+        [resto.indexOf('//'), 'linha'],
+      ].filter(([i]) => i !== -1);
+      if (!candidatos.length) return saida + resto;
+      const [posicao, tipo] = candidatos.reduce((a, b) => (a[0] <= b[0] ? a : b));
+      saida += resto.slice(0, posicao);
+      if (tipo === 'linha') return saida;
+      resto = resto.slice(posicao + (tipo === 'bloco' ? 2 : 4));
+      if (tipo === 'bloco') emBloco = true;
+      else emHtml = true;
+    }
+    return saida;
+  });
+}
 
 async function arquivos(dir, ext) {
   const saida = [];
@@ -132,31 +202,13 @@ async function semCorLiteral(fontes) {
   for (const f of fontes) {
     if (f === ARQUIVO_DE_TOKENS) continue;
     const texto = await readFile(join(RAIZ, f), 'utf8');
-    /*
-     * O estado do comentario de bloco atravessa linhas. Sem acompanhar isso, um
-     * comentario de tres linhas citando o valor medido — que e como este projeto
-     * documenta — reprovava o build a partir da segunda linha.
-     */
-    let emComentario = false;
-    texto.split('\n').forEach((linha, i) => {
-      let semComentario = linha;
-      if (emComentario) {
-        const fim = semComentario.indexOf('*/');
-        if (fim === -1) return;
-        semComentario = semComentario.slice(fim + 2);
-        emComentario = false;
-      }
-      semComentario = semComentario.replace(/\/\*.*?\*\//g, '');
-      const abertura = semComentario.indexOf('/*');
-      if (abertura !== -1) {
-        emComentario = true;
-        semComentario = semComentario.slice(0, abertura);
-      }
+    linhasSemComentario(texto).forEach((linha, i) => {
       /*
-       * Comentario nao pinta nada, e `<code>` tambem nao: o catalogo cita os
-       * valores medidos como TEXTO, que e metade do que ele existe para fazer.
+       * Comentario nao pinta nada — disso cuida o `linhasSemComentario` — e
+       * `<code>` tambem nao: o catalogo cita os valores medidos como TEXTO, que
+       * e metade do que ele existe para fazer.
        */
-      semComentario = semComentario.replace(/<code>.*?<\/code>/g, '').replace(/^\s*\*.*/, '').replace(/\/\/.*/, '');
+      const semComentario = linha.replace(/<code>.*?<\/code>/g, '');
       if (HEX.test(semComentario) || RGB.test(semComentario)) {
         /*
          * So bloqueia no que ja migrou. Header e Footer ainda sao componentes
@@ -184,10 +236,17 @@ async function semEstiloInline(fontes) {
   for (const f of fontes) {
     if (!f.endsWith('.astro')) continue;
     const texto = await readFile(join(RAIZ, f), 'utf8');
-    const achados = [...texto.matchAll(/\sstyle="/g)];
-    total += achados.length;
-    if (achados.length && MIGRADAS.includes(f)) {
-      falhas.push(`${f}  ${achados.length} style= inline em pagina migrada`);
+    /*
+     * Sem comentario: a nota que EXPLICA o `style=` removido nao pode reprovar o
+     * commit que o removeu. Ver a nota do linhasSemComentario.
+     */
+    const quantos = linhasSemComentario(texto).reduce(
+      (n, linha) => n + [...linha.matchAll(/\sstyle="/g)].length,
+      0
+    );
+    total += quantos;
+    if (quantos && MIGRADAS.includes(f)) {
+      falhas.push(`${f}  ${quantos} style= inline em pagina migrada`);
     }
   }
   return total;

@@ -1,142 +1,179 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Texto from '../../components/primitivos/Texto.astro';
+import Prosa from '../../components/padroes/Prosa.astro';
+import { juridico, dataEm } from '../../data/juridico';
+import { ui, type Locale } from '../../i18n/ui';
+
+/*
+ * As correcoes desta pagina estao anotadas em src/pages/termos-de-uso.astro,
+ * que e a versao de referencia. Duas sao SO desta:
+ *
+ *   o capitulo 2 nao tinha numero — "The content and data inserted on the
+ *   website and Intellectual Property Rights" no meio de uma sequencia de 1 a 8,
+ *   numerada em portugues e espanhol. Restaurado;
+ *   o `<body>` desta pagina era o unico dos tres sem `bodyClass=""`, entao ela
+ *   saia com `class="modern"` e as irmas nao. O LayoutSistema nao tem classe
+ *   nenhuma no body, e a divergencia some por remocao.
+ */
+const lang: Locale = 'en-us';
+const t = ui[lang];
+
+const atualizacao = `${t.legalUpdated} ${dataEm(juridico.termos.atualizadoEm, lang)}`;
 ---
 
-<BaseLayout
-  lang="en-us"
-  route="terms"
->
-    <!-- Title -->
-    <section id="title">
-        <div class="container">
-            <div class="row">
-                <div class="text-center">
-                    <h1 class="text-md h2">Terms and conditions of use of the website</h1>
-                    <p><small>Last update: 21/02/2022</small></p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Title -->
+<LayoutSistema lang={lang} route="terms">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="estreita">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.termsTitle}</Titulo>
+      <Texto tamanho="xs" alinhamento="centro">{atualizacao}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Terms of use -->
-    <section id="terms-of-use">
-        <div class="container">
-            <div class="row">
-                <h4>Welcome to the Resorts Brasil website!</h4>
-                <p>Below are the Terms and Conditions of Use, containing the main rules to be observed by You who
-                    access the Resorts Brasil digital platform and its functionalities. Resorts Brasil can be
-                    identified as follows:</p>
-                <div class="blockquote">
-                    <p class="text-bold">Resorts Brasil, with address on the street Rua Professor Carlos de
-                        Carvalho, nº 280, bairro Itaim Bibi, CEP 04531-080 - São Paulo/SP.</p>
-                </div>
-                <p>As a condition for using the website or the contents displayed therein, you declare that you have
-                    read the rules of these Terms completely and carefully, observing and respecting the rules
-                    presented herein. If you do not agree with the terms in question, we recommend that you do not
-                    use our website.</p>
-                <p>In some areas of our Website, additional information relating to You may be requested in order to
-                    better serve You. Don't worry, the use of your personal data is regulated in accordance with our
-                    Privacy Policy, which can be accessed by You at any time through the link.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>1. Functionality and Use of the Website by You</h4>
-                <p>The availability of content such as information, texts, data, images, photographs, videos,
-                    sounds, illustrations, name, logos, brands and various information about Resorts Brasil, is free
-                    of charge for its users and does not require prior registration, as a rule. The Resorts Brasil
-                    website aims to provide members and the general public with information and news about tourist
-                    services in the resorts category, information about events, fairs, workshops and the possibility
-                    of becoming a member and having access to the benefits provided.</p>
-                <p>The content of the Website is aimed at members, partners and those interested in Resort Brasil,
-                    over 18 years old. If you are under 18 (eighteen) years old, when “you” is mentioned in this
-                    Term, it will be understood that the declarations have been granted by you and your legal
-                    guardian.</p>
-                <p>Resorts Brasil undertakes to preserve the functionality of the Website with reasonable efforts,
-                    using a layout that respects usability and navigability, whenever possible, and displaying the
-                    functionalities in a clear, complete, precise and sufficient manner so that there is a correct
-                    perception of what is being practiced and protect, through the state of the art available, the
-                    data collected by the available functionalities.</p>
-                <p>However, Resorts Brasil makes no guarantees or assumes any responsibility as to the reliability,
-                    accuracy, validity, timeliness, usefulness, completeness, pertinence, timeliness or scope of
-                    such information.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>The content and data inserted on the website and Intellectual Property Rights</h4>
-                <p>Except as otherwise established by these Terms, copyrights, registered trademarks, names, logos,
-                    domain names and other distinctive signs, as well as the contents published on this website are
-                    the exclusive property of Resorts Brasil or licensed to it. Your use of the Website does not
-                    create any presumption of transfer of this ownership or license. For this reason, You must not
-                    sell, in whole or in part, the Content by any means, whether or not for a fee, knowing that
-                    doing so could result in civil and criminal penalties.</p>
-                <p>In addition, You undertake not to access the Website's programming areas, its database, source
-                    codes or any other set of data available in these environments, and not to carry out or allow
-                    reverse engineering, nor to translate, decompile, copy, modify, reproduce, rent, sublicense,
-                    publish, broadcast, transmit, lend, distribute or otherwise misappropriate functionality of the
-                    Website.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>3. Specific Terms and Conditions of Use - Third Party Links</h4>
-                <p>The content of the Resorts Brasil website may contain links to other websites, and, in the case
-                    of third-party websites, we cannot guarantee or are responsible for observing privacy or
-                    security.</p>
-                <p>You acknowledge and agree that Resorts Brasil will not be responsible, directly or indirectly,
-                    for any losses and damages that are actually or allegedly caused by, or in connection with, the
-                    reliance placed on such Information, goods and services available on or through such websites.
-                    from third parties.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>4. Disclaimer and Limitation of Liability</h4>
-                <p>Resorts Brasil is not responsible for any temporary unavailability resulting from necessary
-                    maintenance or even caused by force majeure, such as natural disasters, failures in
-                    communication systems and internet access, invasive cyber attacks or any third-party facts that
-                    are beyond our sphere of surveillance.</p>
-                <p>Without prejudice to other conditions of these Terms, Resorts Brasil will not be responsible for:
-                </p>
-                <ul style="color: #525E75;">
-                    <li>Any damages suffered by users as a result of using the application.</li>
-                    <li>Repairing damages of any nature caused by the breach of privacy or data security of users
-                        when connecting their mobile device to the internet through third parties.</li>
-                    <li>Any problems, bugs, glitches or malfunctions that occur on your devices and equipment.</li>
-                </ul>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>5. Update of this Term of Use</h4>
-                <p>These Terms of Use may undergo changes seeking improvements and enhancements. Therefore, we
-                    reserve the right to modify them at any time, according to its purpose or convenience, such as
-                    for adequacy and legal compliance with a provision of law or rule that has equivalent legal
-                    force, including regulatory bodies, that is, You you should check it every time you access the
-                    Site.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>6. Illegal, Invalid or Unenforceable Provisions</h4>
-                <p>If the Terms of Use or any content that forms part of this term are considered illegal, invalid
-                    or unenforceable under the laws of any state or country, the provisions are illegal, invalid or
-                    unenforceable, such provisions must be treated as separate and excluded and the others
-                    provisions of this Agreement shall be maintained, remain in full force and effect and continue
-                    to be binding and enforceable in that state or country.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>7. Applicable Law</h4>
-                <p>These Terms of Use are subject to Brazilian law and the jurisdiction of Brazilian courts.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>8. Glossary</h4>
-                <ul style="color: #525E75;">
-                    <li>Link: Terminology for internet address.</li>
-                    <li>Layout: Set comprised of appearance, design and website flows.</li>
-                    <li>User or You: Customer visitors, associates or third parties in general who use the Website
-                        to access the features available.</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-    <!-- end: Terms of use -->
-</BaseLayout>
+  <Secao id="terms-of-use">
+    <Container largura="estreita">
+      <Prosa>
+        <Titulo nivel={2} tamanho="lg">Welcome to the Resorts Brasil website!</Titulo>
+        <p>
+          Below are the Terms and Conditions of Use, containing the main rules to be observed by You
+          who access the Resorts Brasil digital platform and its functionalities. Resorts Brasil can
+          be identified as follows:
+        </p>
+        <blockquote>
+          <p>
+            <strong>
+              Resorts Brasil, with address on the street Rua Professor Carlos de Carvalho, nº 280,
+              bairro Itaim Bibi, CEP 04531-080 - São Paulo/SP.
+            </strong>
+          </p>
+        </blockquote>
+        <p>
+          As a condition for using the website or the contents displayed therein, you declare that
+          you have read the rules of these Terms completely and carefully, observing and respecting
+          the rules presented herein. If you do not agree with the terms in question, we recommend
+          that you do not use our website.
+        </p>
+        <p>
+          In some areas of our Website, additional information relating to You may be requested in
+          order to better serve You. Don't worry, the use of your personal data is regulated in
+          accordance with our Privacy Policy, which can be accessed by You at any time through the
+          link.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">1. Functionality and Use of the Website by You</Titulo>
+        <p>
+          The availability of content such as information, texts, data, images, photographs, videos,
+          sounds, illustrations, name, logos, brands and various information about Resorts Brasil, is
+          free of charge for its users and does not require prior registration, as a rule. The
+          Resorts Brasil website aims to provide members and the general public with information and
+          news about tourist services in the resorts category, information about events, fairs,
+          workshops and the possibility of becoming a member and having access to the benefits
+          provided.
+        </p>
+        <p>
+          The content of the Website is aimed at members, partners and those interested in Resort
+          Brasil, over 18 years old. If you are under 18 (eighteen) years old, when “you” is
+          mentioned in this Term, it will be understood that the declarations have been granted by
+          you and your legal guardian.
+        </p>
+        <p>
+          Resorts Brasil undertakes to preserve the functionality of the Website with reasonable
+          efforts, using a layout that respects usability and navigability, whenever possible, and
+          displaying the functionalities in a clear, complete, precise and sufficient manner so that
+          there is a correct perception of what is being practiced and protect, through the state of
+          the art available, the data collected by the available functionalities.
+        </p>
+        <p>
+          However, Resorts Brasil makes no guarantees or assumes any responsibility as to the
+          reliability, accuracy, validity, timeliness, usefulness, completeness, pertinence,
+          timeliness or scope of such information.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">
+          2. The content and data inserted on the website and Intellectual Property Rights
+        </Titulo>
+        <p>
+          Except as otherwise established by these Terms, copyrights, registered trademarks, names,
+          logos, domain names and other distinctive signs, as well as the contents published on this
+          website are the exclusive property of Resorts Brasil or licensed to it. Your use of the
+          Website does not create any presumption of transfer of this ownership or license. For this
+          reason, You must not sell, in whole or in part, the Content by any means, whether or not
+          for a fee, knowing that doing so could result in civil and criminal penalties.
+        </p>
+        <p>
+          In addition, You undertake not to access the Website's programming areas, its database,
+          source codes or any other set of data available in these environments, and not to carry out
+          or allow reverse engineering, nor to translate, decompile, copy, modify, reproduce, rent,
+          sublicense, publish, broadcast, transmit, lend, distribute or otherwise misappropriate
+          functionality of the Website.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">
+          3. Specific Terms and Conditions of Use - Third Party Links
+        </Titulo>
+        <p>
+          The content of the Resorts Brasil website may contain links to other websites, and, in the
+          case of third-party websites, we cannot guarantee or are responsible for observing privacy
+          or security.
+        </p>
+        <p>
+          You acknowledge and agree that Resorts Brasil will not be responsible, directly or
+          indirectly, for any losses and damages that are actually or allegedly caused by, or in
+          connection with, the reliance placed on such Information, goods and services available on
+          or through such websites. from third parties.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">4. Disclaimer and Limitation of Liability</Titulo>
+        <p>
+          Resorts Brasil is not responsible for any temporary unavailability resulting from necessary
+          maintenance or even caused by force majeure, such as natural disasters, failures in
+          communication systems and internet access, invasive cyber attacks or any third-party facts
+          that are beyond our sphere of surveillance.
+        </p>
+        <p>Without prejudice to other conditions of these Terms, Resorts Brasil will not be responsible for:</p>
+        <ul>
+          <li>Any damages suffered by users as a result of using the application.</li>
+          <li>
+            Repairing damages of any nature caused by the breach of privacy or data security of users
+            when connecting their mobile device to the internet through third parties.
+          </li>
+          <li>Any problems, bugs, glitches or malfunctions that occur on your devices and equipment.</li>
+        </ul>
+
+        <Titulo nivel={2} tamanho="lg">5. Update of this Term of Use</Titulo>
+        <p>
+          These Terms of Use may undergo changes seeking improvements and enhancements. Therefore, we
+          reserve the right to modify them at any time, according to its purpose or convenience, such
+          as for adequacy and legal compliance with a provision of law or rule that has equivalent
+          legal force, including regulatory bodies, that is, You you should check it every time you
+          access the Site.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">6. Illegal, Invalid or Unenforceable Provisions</Titulo>
+        <p>
+          If the Terms of Use or any content that forms part of this term are considered illegal,
+          invalid or unenforceable under the laws of any state or country, the provisions are
+          illegal, invalid or unenforceable, such provisions must be treated as separate and excluded
+          and the others provisions of this Agreement shall be maintained, remain in full force and
+          effect and continue to be binding and enforceable in that state or country.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">7. Applicable Law</Titulo>
+        <p>These Terms of Use are subject to Brazilian law and the jurisdiction of Brazilian courts.</p>
+
+        <Titulo nivel={2} tamanho="lg">8. Glossary</Titulo>
+        <ul>
+          <li>Link: Terminology for internet address.</li>
+          <li>Layout: Set comprised of appearance, design and website flows.</li>
+          <li>
+            User or You: Customer visitors, associates or third parties in general who use the
+            Website to access the features available.
+          </li>
+        </ul>
+      </Prosa>
+    </Container>
+  </Secao>
+</LayoutSistema>

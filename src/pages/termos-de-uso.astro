@@ -1,154 +1,207 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import LayoutSistema from '../layouts/LayoutSistema.astro';
+import Secao from '../components/layout/Secao.astro';
+import Container from '../components/layout/Container.astro';
+import Titulo from '../components/primitivos/Titulo.astro';
+import Texto from '../components/primitivos/Texto.astro';
+import Prosa from '../components/padroes/Prosa.astro';
+import { juridico, dataEm } from '../data/juridico';
+import { ui, type Locale } from '../i18n/ui';
+
+/*
+ * QUATRO CORRECOES DELIBERADAS NESTA PAGINA, e todas valem para os tres idiomas:
+ *
+ *   1. Hierarquia. Era `<h1 class="text-md h2">` seguido de OITO `<h4>` — um h1
+ *      disfarcado de h2 e um salto de tres niveis, oito vezes. Os capitulos sao
+ *      `<h2>` com `tamanho="lg"`, que e o tamanho medido no `<h4>` do tema: a
+ *      aparencia nao muda, o sumario passa a existir.
+ *   2. A linha tinha 127 CARACTERES no desktop, medidos. O `<p>` era filho
+ *      direto do `.row` e herdava os 1500px do container. Com
+ *      `largura="estreita"` sao 75, que e o topo da faixa em que se le sem
+ *      perder a linha — e e a mesma medida que esta pagina ja entrega no tablet.
+ *   3. As duas listas eram `<ul style="color: #525E75;">`. A cor e a de
+ *      paragrafo, e agora vem do <Prosa>.
+ *   4. A citacao do endereco era `<div class="blockquote">`. Virou
+ *      `<blockquote>`, que e o que ela e.
+ *
+ * E UMA DIVERGENCIA ENTRE IDIOMAS, do tipo que este projeto ja viu varias vezes:
+ * o capitulo 2 estava numerado em portugues e espanhol e SEM NUMERO em ingles
+ * ("The content and data inserted..."), no meio de uma sequencia de 1 a 8.
+ *
+ * O ENDERECO DA CITACAO NAO FOI TOCADO, e a decisao e deliberada. Ele diz
+ * "nº 280" e `src/data/contato.ts` diz "28, sl. 82" — os dois nao podem estar
+ * certos. Mas este e um documento juridico com data de vigencia, e corrigir a
+ * identificacao da parte num texto de 2022 nao e trabalho de migracao de
+ * layout. Fica registrado para quem responde pelo documento decidir.
+ */
+const lang: Locale = 'pt-br';
+const t = ui[lang];
+
+/*
+ * A data e montada aqui, e nao no markup, por causa de uma armadilha ja
+ * documentada no CLAUDE.md: o Astro apara o espaco em volta de uma expressao,
+ * entao `{t.legalUpdated} {data}` sairia com as duas coladas.
+ */
+const atualizacao = `${t.legalUpdated} ${dataEm(juridico.termos.atualizadoEm, lang)}`;
 ---
 
-<BaseLayout
-  lang="pt-br"
-  route="terms"
-  bodyClass=""
->
-    <!-- Titulo -->
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="text-center">
-                    <h1 class="text-md h2">Termos e condições de uso do site</h1>
-                    <p><small>Atualizada em 21/02/2022</small></p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Titulo -->
+<LayoutSistema lang={lang} route="terms">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="estreita">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.termsTitle}</Titulo>
+      <Texto tamanho="xs" alinhamento="centro">{atualizacao}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Termos de uso -->
-    <section>
-        <div class="container">
-            <div class="row">
-                <h4>Bem-vindo (a) ao site da Resorts Brasil!</h4>
-                <p>A seguir, apresentamos os Termos e Condições de Uso, contendo as principais regras a serem
-                    observadas por Você que acessa a plataforma digital da Resorts Brasil e suas funcionalidades. A
-                    Resorts Brasil pode ser identificado da seguinte maneira:</p>
-                <div class="blockquote">
-                    <p class="text-bold">Resorts Brasil, com endereço Rua Professor Carlos de Carvalho, nº 280,
-                        bairro Itaim Bibi, CEP 04531-080 - São Paulo/SP.</p>
-                </div>
-                <p>Como condição para utilizar o site ou de conteúdos nele expostos, Você declara que que fez a
-                    leitura completa e atenta das regras destes Termos, observando e respeitando às regras aqui
-                    apresentadas. Caso você não concorde com os termos em questão, recomendamos que não utilize
-                    nosso site.</p>
-                <p>Em algumas áreas do nosso Site, poderão ser solicitadas informações adicionais relacionadas a
-                    Você para melhor lhe atendermos. Não se preocupe, a utilização de seus dados pessoais está
-                    regulada de acordo com a nossa Política de Privacidade, que pode ser acessada por Você a
-                    qualquer momento, por meio do link.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>1. Funcionalidade e Uso do site por você</h4>
-                <p>A disponibilização do conteúdo como informações, textos, dados, imagens, fotografias, vídeos,
-                    sons, ilustrações, nome, logos, marcas e informações diversas sobre a Resorts Brasil, tem
-                    caráter gratuito para os seus usuários e não exige cadastro prévio, em regra. O site da Resorts
-                    Brasil tem por objetivo apresentar aos associados e para o público em geral as informações e
-                    notícias sobre serviço turístico na categoria resorts, informações sobre eventos, feiras,
-                    workshops a possibilidade de se tornar associado e ter acesso aos benefícios que são fornecidos.
-                </p>
-                <p>O conteúdo do Site é voltado para associados, parceiros e interessados na Resort Brasil, maiores
-                    de 18 anos. Caso Você seja menor de 18 (dezoito) anos, quando for mencionado “você”, neste
-                    Termo, será entendido que as declarações tenham sido outorgadas por você e seu responsável
-                    legal.
-                </p>
-                <p>A Resorts Brasil se compromete a preservar a funcionalidade do Site com esforços razoáveis,
-                    utilizando layout que respeita a usabilidade e navegabilidade, sempre que possível, e exibir as
-                    funcionalidades de maneira clara, completa, precisa e suficiente de modo que exista uma correta
-                    percepção do que está sendo praticado e proteger, por meio do estado da técnica disponível, os
-                    dados coletados pelas funcionalidades disponibilizadas.
-                </p>
-                <p>No entanto, a Resorts Brasil não dá qualquer garantia ou assume qualquer responsabilidade quanto
-                    à confiabilidade, exatidão, validade, atualidade, utilidade, integridade, pertinência,
-                    oportunidade ou abrangência de tais informações.
-                </p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>2. Conteúdo e dados inseridos no site e Direitos de Propriedade Intelectual</h4>
-                <p>Exceto se estabelecido em contrário por estes Termos, os direitos autorais, marcas registradas
-                    nomes, logotipos, nomes de domínio e demais sinais distintivos, bem como os conteúdos publicados
-                    neste site são de exclusiva propriedade da Resorts Brasil ou licenciado a ele. O uso do Site por
-                    Você não gera qualquer presunção de transferência dessa propriedade ou licença. Por esse motivo,
-                    Você não deverá comercializar, no todo ou em parte, o Conteúdo por quaisquer meios, onerosamente
-                    ou não, sabendo que se o fizer poderá ser penalizado civil e penalmente.
-                </p>
-                <p>Além disso, Você compromete-se a não acessar áreas de programação do Site, seu banco de dados,
-                    códigos fonte ou qualquer outro conjunto de dados disponíveis nestes ambientes, e não realizar
-                    ou permitir engenharia reversa, nem traduzir, decompilar, copiar, modificar, reproduzir, alugar,
-                    sublicenciar, publicar, divulgar, transmitir, emprestar, distribuir ou, de outra maneira, dispor
-                    inapropriadamente das funcionalidades do Site.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>3. Termos de Condições de Uso Específicos - Links de Terceiros</h4>
-                <p>O conteúdo do site da Resorts Brasil pode apresentar links para outros sites, e, se tratando de
-                    sites de terceiros, não podemos garantir ou nos responsabilizamos pela observação de privacidade
-                    ou segurança.
-                </p>
-                <p>Você reconhece e concorda que a Resorts Brasil não será responsável, direta ou indiretamente, por
-                    quaisquer perdas e danos que sejam efetiva ou alegadamente causados por, ou em conexão, pela
-                    confiança depositada em tais Informações, bens e serviços disponíveis no ou através de tais
-                    websites de terceiros.
-                </p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>4. Isenção e Limitação de Responsabilidade</h4>
-                <p>A Resorts Brasil não se responsabiliza por eventual indisponibilidade temporária decorrente de
-                    manutenção necessária ou mesmo gerada por motivo de força maior, como desastres naturais, falhas
-                    nos sistemas de comunicação e acesso à internet, ataques cibernéticos invasivos ou quaisquer
-                    fatos de terceiro que fogem da nossa esfera de vigilância.
-                </p>
-                <p>Sem prejuízo de outras condições destes Termos, a Resorts Brasil, não se responsabilizará:</p>
-                <ul style="color: #525E75;">
-                    <li>Por quaisquer danos sofridos pelos usuários em razão da utilização do aplicativo</li>
-                    <li>Pela reparação de danos de qualquer natureza causados pela quebra de privacidade ou
-                        segurança de dados dos usuários durante a conexão de seu dispositivo móvel à internet
-                        através de terceiros</li>
-                    <li>Por quaisquer problemas, bugs, glitches ou funcionamentos indevidos que ocorrerem nos seus
-                        dispositivos e equipamentos</li>
-                </ul>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>5. Atualização deste Termo de Uso</h4>
-                <p>Estes Termo de Uso podem sofres alterações buscando melhorias e aprimoramentos. Dessa forma,
-                    reservamo-nos o direito de modificá-los a qualquer momento, conforme sua finalidade ou
-                    conveniência, tal qual para adequação e conformidade legal de disposição de lei ou norma que
-                    tenha força jurídica equivalente, incluindo de órgãos reguladores, ou seja, Você deverá
-                    verificá-lo sempre que efetuar o acesso no Site.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>6. Disposições Ilegais, Inválidas ou Inexequíveis</h4>
-                <p>Caso os Termos de Uso ou quaisquer conteúdos que façam parte deste termo forem considerados
-                    ilegais, inválidos ou inexequíveis sob as leis de qualquer estado ou país, as disposições sejam
-                    ilegais, inválidas ou inexequíveis, tais disposições devem ser tratadas como apartadas e
-                    excluídas e as demais disposições deste Termo devem ser mantidas, permanecer em pleno vigor e
-                    efeito e continuar a ser vinculativa e exequível nesse estado ou país.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>7. Lei Aplicável</h4>
-                <p>Esses Termos de Uso estão sujeitos a legislação brasileira e jurisdição dos tribunais
-                    brasileiros.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>8. Glossário</h4>
-                <ul style="color: #525E75;">
-                    <li>Link: Terminologia para endereço de internet.</li>
-                    <li>Layout: Conjunto compreendido entre aparência, design e fluxos do site.</li>
-                    <li>Usuário ou Você: Visitantes clientes, associados ou terceiros em geral que utilizam o Site
-                        para acesso às funcionalidades disponibilizadas.</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-    <!-- end: Termos de uso -->
-</BaseLayout>
+  <Secao id="termos-de-uso">
+    <Container largura="estreita">
+      <Prosa>
+        <Titulo nivel={2} tamanho="lg">Bem-vindo (a) ao site da Resorts Brasil!</Titulo>
+        <p>
+          A seguir, apresentamos os Termos e Condições de Uso, contendo as principais regras a serem
+          observadas por Você que acessa a plataforma digital da Resorts Brasil e suas
+          funcionalidades. A Resorts Brasil pode ser identificado da seguinte maneira:
+        </p>
+        <blockquote>
+          <p>
+            <strong>
+              Resorts Brasil, com endereço Rua Professor Carlos de Carvalho, nº 280, bairro Itaim
+              Bibi, CEP 04531-080 - São Paulo/SP.
+            </strong>
+          </p>
+        </blockquote>
+        <p>
+          Como condição para utilizar o site ou de conteúdos nele expostos, Você declara que que fez
+          a leitura completa e atenta das regras destes Termos, observando e respeitando às regras
+          aqui apresentadas. Caso você não concorde com os termos em questão, recomendamos que não
+          utilize nosso site.
+        </p>
+        <p>
+          Em algumas áreas do nosso Site, poderão ser solicitadas informações adicionais relacionadas
+          a Você para melhor lhe atendermos. Não se preocupe, a utilização de seus dados pessoais
+          está regulada de acordo com a nossa Política de Privacidade, que pode ser acessada por Você
+          a qualquer momento, por meio do link.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">1. Funcionalidade e Uso do site por você</Titulo>
+        <p>
+          A disponibilização do conteúdo como informações, textos, dados, imagens, fotografias,
+          vídeos, sons, ilustrações, nome, logos, marcas e informações diversas sobre a Resorts
+          Brasil, tem caráter gratuito para os seus usuários e não exige cadastro prévio, em regra. O
+          site da Resorts Brasil tem por objetivo apresentar aos associados e para o público em geral
+          as informações e notícias sobre serviço turístico na categoria resorts, informações sobre
+          eventos, feiras, workshops a possibilidade de se tornar associado e ter acesso aos
+          benefícios que são fornecidos.
+        </p>
+        <p>
+          O conteúdo do Site é voltado para associados, parceiros e interessados na Resort Brasil,
+          maiores de 18 anos. Caso Você seja menor de 18 (dezoito) anos, quando for mencionado
+          “você”, neste Termo, será entendido que as declarações tenham sido outorgadas por você e
+          seu responsável legal.
+        </p>
+        <p>
+          A Resorts Brasil se compromete a preservar a funcionalidade do Site com esforços razoáveis,
+          utilizando layout que respeita a usabilidade e navegabilidade, sempre que possível, e
+          exibir as funcionalidades de maneira clara, completa, precisa e suficiente de modo que
+          exista uma correta percepção do que está sendo praticado e proteger, por meio do estado da
+          técnica disponível, os dados coletados pelas funcionalidades disponibilizadas.
+        </p>
+        <p>
+          No entanto, a Resorts Brasil não dá qualquer garantia ou assume qualquer responsabilidade
+          quanto à confiabilidade, exatidão, validade, atualidade, utilidade, integridade,
+          pertinência, oportunidade ou abrangência de tais informações.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">
+          2. Conteúdo e dados inseridos no site e Direitos de Propriedade Intelectual
+        </Titulo>
+        <p>
+          Exceto se estabelecido em contrário por estes Termos, os direitos autorais, marcas
+          registradas nomes, logotipos, nomes de domínio e demais sinais distintivos, bem como os
+          conteúdos publicados neste site são de exclusiva propriedade da Resorts Brasil ou
+          licenciado a ele. O uso do Site por Você não gera qualquer presunção de transferência dessa
+          propriedade ou licença. Por esse motivo, Você não deverá comercializar, no todo ou em
+          parte, o Conteúdo por quaisquer meios, onerosamente ou não, sabendo que se o fizer poderá
+          ser penalizado civil e penalmente.
+        </p>
+        <p>
+          Além disso, Você compromete-se a não acessar áreas de programação do Site, seu banco de
+          dados, códigos fonte ou qualquer outro conjunto de dados disponíveis nestes ambientes, e
+          não realizar ou permitir engenharia reversa, nem traduzir, decompilar, copiar, modificar,
+          reproduzir, alugar, sublicenciar, publicar, divulgar, transmitir, emprestar, distribuir ou,
+          de outra maneira, dispor inapropriadamente das funcionalidades do Site.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">
+          3. Termos de Condições de Uso Específicos - Links de Terceiros
+        </Titulo>
+        <p>
+          O conteúdo do site da Resorts Brasil pode apresentar links para outros sites, e, se
+          tratando de sites de terceiros, não podemos garantir ou nos responsabilizamos pela
+          observação de privacidade ou segurança.
+        </p>
+        <p>
+          Você reconhece e concorda que a Resorts Brasil não será responsável, direta ou
+          indiretamente, por quaisquer perdas e danos que sejam efetiva ou alegadamente causados por,
+          ou em conexão, pela confiança depositada em tais Informações, bens e serviços disponíveis
+          no ou através de tais websites de terceiros.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">4. Isenção e Limitação de Responsabilidade</Titulo>
+        <p>
+          A Resorts Brasil não se responsabiliza por eventual indisponibilidade temporária decorrente
+          de manutenção necessária ou mesmo gerada por motivo de força maior, como desastres
+          naturais, falhas nos sistemas de comunicação e acesso à internet, ataques cibernéticos
+          invasivos ou quaisquer fatos de terceiro que fogem da nossa esfera de vigilância.
+        </p>
+        <p>Sem prejuízo de outras condições destes Termos, a Resorts Brasil, não se responsabilizará:</p>
+        <ul>
+          <li>Por quaisquer danos sofridos pelos usuários em razão da utilização do aplicativo</li>
+          <li>
+            Pela reparação de danos de qualquer natureza causados pela quebra de privacidade ou
+            segurança de dados dos usuários durante a conexão de seu dispositivo móvel à internet
+            através de terceiros
+          </li>
+          <li>
+            Por quaisquer problemas, bugs, glitches ou funcionamentos indevidos que ocorrerem nos
+            seus dispositivos e equipamentos
+          </li>
+        </ul>
+
+        <Titulo nivel={2} tamanho="lg">5. Atualização deste Termo de Uso</Titulo>
+        <p>
+          Estes Termo de Uso podem sofres alterações buscando melhorias e aprimoramentos. Dessa
+          forma, reservamo-nos o direito de modificá-los a qualquer momento, conforme sua finalidade
+          ou conveniência, tal qual para adequação e conformidade legal de disposição de lei ou norma
+          que tenha força jurídica equivalente, incluindo de órgãos reguladores, ou seja, Você deverá
+          verificá-lo sempre que efetuar o acesso no Site.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">6. Disposições Ilegais, Inválidas ou Inexequíveis</Titulo>
+        <p>
+          Caso os Termos de Uso ou quaisquer conteúdos que façam parte deste termo forem considerados
+          ilegais, inválidos ou inexequíveis sob as leis de qualquer estado ou país, as disposições
+          sejam ilegais, inválidas ou inexequíveis, tais disposições devem ser tratadas como
+          apartadas e excluídas e as demais disposições deste Termo devem ser mantidas, permanecer em
+          pleno vigor e efeito e continuar a ser vinculativa e exequível nesse estado ou país.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">7. Lei Aplicável</Titulo>
+        <p>
+          Esses Termos de Uso estão sujeitos a legislação brasileira e jurisdição dos tribunais
+          brasileiros.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">8. Glossário</Titulo>
+        <ul>
+          <li>Link: Terminologia para endereço de internet.</li>
+          <li>Layout: Conjunto compreendido entre aparência, design e fluxos do site.</li>
+          <li>
+            Usuário ou Você: Visitantes clientes, associados ou terceiros em geral que utilizam o
+            Site para acesso às funcionalidades disponibilizadas.
+          </li>
+        </ul>
+      </Prosa>
+    </Container>
+  </Secao>
+</LayoutSistema>

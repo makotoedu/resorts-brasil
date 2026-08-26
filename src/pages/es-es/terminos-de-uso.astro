@@ -1,147 +1,180 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Texto from '../../components/primitivos/Texto.astro';
+import Prosa from '../../components/padroes/Prosa.astro';
+import { juridico, dataEm } from '../../data/juridico';
+import { ui, type Locale } from '../../i18n/ui';
+
+/* As correcoes desta pagina estao anotadas em src/pages/termos-de-uso.astro,
+   que e a versao de referencia. */
+const lang: Locale = 'es-es';
+const t = ui[lang];
+
+const atualizacao = `${t.legalUpdated} ${dataEm(juridico.termos.atualizadoEm, lang)}`;
 ---
 
-<BaseLayout
-  lang="es-es"
-  route="terms"
-  bodyClass=""
->
-    <!-- Titulo -->
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="text-center">
-                    <h1 class="text-md h2">Términos y condiciones de uso del sitio</h1>
-                    <p><small>Actualizada el 21/02/2022</small></p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Titulo -->
+<LayoutSistema lang={lang} route="terms">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="estreita">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.termsTitle}</Titulo>
+      <Texto tamanho="xs" alinhamento="centro">{atualizacao}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Términos de Uso -->
-    <section>
-        <div class="container">
-            <div class="row">
-                <h4>Bienvenido (a) al sitio de Resorts Brasil!</h4>
-                <p>A seguir, presentamos los Términos y Condiciones de Uso, con las principales reglas que deben ser
-                    observadas por Usted, que accede a la plataforma digital de Resorts Brasil y sus
-                    funcionalidades. Resorts Brasil puede ser identificado de la siguiente manera:</p>
-                <div class="blockquote">
-                    <p class="text-bold">Resorts Brasil, con domicilio en la calle Rua Professor Carlos de Carvalho,
-                        nº 280, bairro Itaim Bibi, CEP 04531-080 - São Paulo/SP.</p>
-                </div>
-                <p>Como condición para utilizar el sitio o los contenidos en él expuestos, Usted declara que ha
-                    leído completa y atentamente las reglas de estos Términos, observando y respetando las reglas
-                    aquí presentadas. Caso usted no concuerde con los términos en cuestión, le recomendamos que no
-                    utilice nuestro sitio.</p>
-                <p>En algunas áreas de nuestro Sitio, podrán ser solicitadas informaciones adicionales relacionas a
-                    Usted para que podamos atenderlo mejor. No se preocupe, la utilización de sus datos personales
-                    está reglamentada de acuerdo con nuestra Política de Privacidad, que Usted puede acceder a
-                    cualquier momento, por medio del link.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>1. Funcionalidad y Uso del sitio por usted</h4>
-                <p>La disponibilidad del contenido como informaciones, textos, datos, imágenes, fotografías, videos,
-                    sonidos, ilustraciones, nombre, logotipo, marca e informaciones diversas sobre Resorts Brasil,
-                    son gratuitas para sus usuarios y no exige un registro previo, como regla.
-                    El sitio Resorts Brasil tiene por objetivo presentar a los asociados al público en general las
-                    informaciones y noticias sobre servicio turístico en la categoría resorts, informaciones sobre
-                    eventos, ferias, workshops y la posibilidad de asociarse y acceder a los beneficios que son
-                    ofrecidos.</p>
-                <p>El contenido del Sitio está dirigido a los asociados, colaboradores e interesados en Resort
-                    Brasil, mayores de 18 años. Caso Usted sea menor de 18 (dieciocho) años, cuando se mencione
-                    “usted”, en este Término, será entendido que las declaraciones han sido otorgadas por usted o su
-                    responsable legal.</p>
-                <p>Resorts Brasil se compromete a preservar la funcionalidad del Sitio con esfuerzos razonables,
-                    utilizando un layout que respeta el uso y la navegabilidad, siempre que posible, y exhibir las
-                    funcionalidades de manera clara, completa, precisa y suficiente de modo que exista una correcta
-                    percepción de lo que está siendo practicado y proteger, por medio del estado de la técnica
-                    disponible, los dados colectados por las funcionalidades disponibles.</p>
-                <p>Sin embargo, Resorts Brasil no da ninguna garantía o asume cualquier responsabilidad respecto a
-                    la confiabilidad, exactitud, validad, actualidad, utilidad, integridad, pertinencia, oportunidad
-                    o alcance de tales informaciones.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>2. Contenido y datos introducidos en el sitio y Derechos de Propiedad Intelectual</h4>
-                <p>Excepto si se indica lo contrario en estos Términos, los derechos de autor, marcas registradas
-                    nombres, logotipos, nombres de dominio y demás signos distintivos, bien como los contenidos
-                    publicados en este sitio son de exclusiva propiedad de Resorts Brasil o licenciado a él. El uso
-                    del Sitio por Usted no genera ninguna presunción de transferencia de esa propiedad o licencia.
-                    Por ese motivo, Usted no deberá comercializar, ni todo o en parte, el Contenido por ningún
-                    medio, onerosamente o no, sabiendo que si lo hace podrá ser penalizado civil y penalmente.</p>
-                <p>Además de eso, Usted se compromete a no acceder a áreas de programación del Sitio, su banco de
-                    datos, códigos fuente o cualquier otro conjunto de datos disponibles en estos ambientes, y no
-                    realizar o permitir ingeniería reversa, ni traducir, descompilar, copiar, modificar, reproducir,
-                    alquilar, sub-licenciar, publicar, divulgar, transmitir, prestar, distribuir o, de otra manera,
-                    disponer inapropiadamente de las funcionalidades del Sitio.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>3. Términos de Condiciones de Uso Específicos - Links de Terceros</h4>
-                <p>El contenido del sitio de Resorts Brasil puede presentar links para otros sitios, y, tratándose
-                    de sitios de terceros, no podemos garantizar o responsabilizarnos por la observación de
-                    privacidad y seguridad.</p>
-                <p>Usted reconoce y concuerda que Resorts Brasil no será responsable, directa o indirectamente, por
-                    ninguna pérdida o daño real o supuestamente causado por, o en conexión, por la confianza
-                    depositada en tales informaciones, bienes y servicios disponibles en, o a través de tales
-                    páginas web de terceros.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>4. Exención y Limitación de Responsabilidad</h4>
-                <p>Resorts Brasil no se responsabiliza por eventual indisponibilidad temporaria decurrente de
-                    manutención necesaria o mismo generada por motivo de fuerza mayor, como desastres naturales,
-                    fallas en los sistemas de comunicación y acceso a internet, ataques cibernéticos invasivos o
-                    cualquier hecho ajeno a nuestro ámbito de vigilancia.</p>
-                <p>Sin perjuicio de otras condiciones de estos Términos, Resorts Brasil, no se responsabilizará:</p>
-                <ul style="color: #525E75;">
-                    <li>Por ningún daño sufrido por los usuarios en razón de la utilización de la aplicación.</li>
-                    <li>Por la reparación de daños de cualquier naturaleza causados por la quiebra de privacidad o
-                        seguridad de datos de los usuarios durante la conexión de su dispositivo móvil a la internet
-                        a través de terceros.</li>
-                    <li>Por cualquier problema, bugs, glitches, fallas o funcionamientos incorrectos que ocurran en
-                        sus dispositivos y equipos.</li>
-                </ul>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>5. Actualización de este Término de Uso</h4>
-                <p>Este Términos de Uso puede sufrir alteraciones buscando mejorar y perfeccionamiento. De esa forma
-                    nos reservamos el derecho de modificarlo a cualquier momento, de acuerdo a su finalidad o
-                    conveniencia, tal como para adecuación y conformidad legal de disposición de ley o norma que
-                    tenga fuerza jurídica equivalente, inclusive de órganos reguladores, o sea, Usted deberá
-                    verificarlo siempre que efectúe el acceso al Sitio.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>6. Disposiciones Ilegales, Inválidas o Inaplicables</h4>
-                <p>Casos Términos de Uso o cualquier contenido que forme parte de este término sean considerados
-                    ilegales, inválidos o inaplicables bajo las leyes de cualquier estado o país, las disposiciones
-                    sean ilegales, inválidas o inaplicables, éstas deben ser tratadas como apartadas y excluidas y
-                    las demás disposiciones de este Termino deben ser mantenidas, permanecer en pleno vigor y efecto
-                    y continuar siendo vinculante e inaplicable. En ese estado o país.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>7. Ley Aplicable</h4>
-                <p>Esos Términos de Uso están sujetos a la legislación brasileña y jurisdicción de los tribunales
-                    brasileños.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>8. Glosario</h4>
-                <ul style="color: #525E75;">
-                    <li>Link: Terminología para dirección de internet.</li>
-                    <li>Layout: Conjunto comprendido entre apariencia, design y flujos del sitio.</li>
-                    <li>Usuario o Usted: Visitantes clientes, asociados o terceros en general que utilizan el Sitio
-                        para acceso a las funcionalidades disponibles.</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-    <!-- end: Términos de Uso -->
-</BaseLayout>
+  <Secao id="terminos-de-uso">
+    <Container largura="estreita">
+      <Prosa>
+        <Titulo nivel={2} tamanho="lg">Bienvenido (a) al sitio de Resorts Brasil!</Titulo>
+        <p>
+          A seguir, presentamos los Términos y Condiciones de Uso, con las principales reglas que
+          deben ser observadas por Usted, que accede a la plataforma digital de Resorts Brasil y sus
+          funcionalidades. Resorts Brasil puede ser identificado de la siguiente manera:
+        </p>
+        <blockquote>
+          <p>
+            <strong>
+              Resorts Brasil, con domicilio en la calle Rua Professor Carlos de Carvalho, nº 280,
+              bairro Itaim Bibi, CEP 04531-080 - São Paulo/SP.
+            </strong>
+          </p>
+        </blockquote>
+        <p>
+          Como condición para utilizar el sitio o los contenidos en él expuestos, Usted declara que
+          ha leído completa y atentamente las reglas de estos Términos, observando y respetando las
+          reglas aquí presentadas. Caso usted no concuerde con los términos en cuestión, le
+          recomendamos que no utilice nuestro sitio.
+        </p>
+        <p>
+          En algunas áreas de nuestro Sitio, podrán ser solicitadas informaciones adicionales
+          relacionas a Usted para que podamos atenderlo mejor. No se preocupe, la utilización de sus
+          datos personales está reglamentada de acuerdo con nuestra Política de Privacidad, que Usted
+          puede acceder a cualquier momento, por medio del link.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">1. Funcionalidad y Uso del sitio por usted</Titulo>
+        <p>
+          La disponibilidad del contenido como informaciones, textos, datos, imágenes, fotografías,
+          videos, sonidos, ilustraciones, nombre, logotipo, marca e informaciones diversas sobre
+          Resorts Brasil, son gratuitas para sus usuarios y no exige un registro previo, como regla.
+          El sitio Resorts Brasil tiene por objetivo presentar a los asociados al público en general
+          las informaciones y noticias sobre servicio turístico en la categoría resorts,
+          informaciones sobre eventos, ferias, workshops y la posibilidad de asociarse y acceder a
+          los beneficios que son ofrecidos.
+        </p>
+        <p>
+          El contenido del Sitio está dirigido a los asociados, colaboradores e interesados en Resort
+          Brasil, mayores de 18 años. Caso Usted sea menor de 18 (dieciocho) años, cuando se mencione
+          “usted”, en este Término, será entendido que las declaraciones han sido otorgadas por usted
+          o su responsable legal.
+        </p>
+        <p>
+          Resorts Brasil se compromete a preservar la funcionalidad del Sitio con esfuerzos
+          razonables, utilizando un layout que respeta el uso y la navegabilidad, siempre que
+          posible, y exhibir las funcionalidades de manera clara, completa, precisa y suficiente de
+          modo que exista una correcta percepción de lo que está siendo practicado y proteger, por
+          medio del estado de la técnica disponible, los dados colectados por las funcionalidades
+          disponibles.
+        </p>
+        <p>
+          Sin embargo, Resorts Brasil no da ninguna garantía o asume cualquier responsabilidad
+          respecto a la confiabilidad, exactitud, validad, actualidad, utilidad, integridad,
+          pertinencia, oportunidad o alcance de tales informaciones.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">
+          2. Contenido y datos introducidos en el sitio y Derechos de Propiedad Intelectual
+        </Titulo>
+        <p>
+          Excepto si se indica lo contrario en estos Términos, los derechos de autor, marcas
+          registradas nombres, logotipos, nombres de dominio y demás signos distintivos, bien como
+          los contenidos publicados en este sitio son de exclusiva propiedad de Resorts Brasil o
+          licenciado a él. El uso del Sitio por Usted no genera ninguna presunción de transferencia
+          de esa propiedad o licencia. Por ese motivo, Usted no deberá comercializar, ni todo o en
+          parte, el Contenido por ningún medio, onerosamente o no, sabiendo que si lo hace podrá ser
+          penalizado civil y penalmente.
+        </p>
+        <p>
+          Además de eso, Usted se compromete a no acceder a áreas de programación del Sitio, su banco
+          de datos, códigos fuente o cualquier otro conjunto de datos disponibles en estos ambientes,
+          y no realizar o permitir ingeniería reversa, ni traducir, descompilar, copiar, modificar,
+          reproducir, alquilar, sub-licenciar, publicar, divulgar, transmitir, prestar, distribuir o,
+          de otra manera, disponer inapropiadamente de las funcionalidades del Sitio.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">
+          3. Términos de Condiciones de Uso Específicos - Links de Terceros
+        </Titulo>
+        <p>
+          El contenido del sitio de Resorts Brasil puede presentar links para otros sitios, y,
+          tratándose de sitios de terceros, no podemos garantizar o responsabilizarnos por la
+          observación de privacidad y seguridad.
+        </p>
+        <p>
+          Usted reconoce y concuerda que Resorts Brasil no será responsable, directa o
+          indirectamente, por ninguna pérdida o daño real o supuestamente causado por, o en conexión,
+          por la confianza depositada en tales informaciones, bienes y servicios disponibles en, o a
+          través de tales páginas web de terceros.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">4. Exención y Limitación de Responsabilidad</Titulo>
+        <p>
+          Resorts Brasil no se responsabiliza por eventual indisponibilidad temporaria decurrente de
+          manutención necesaria o mismo generada por motivo de fuerza mayor, como desastres
+          naturales, fallas en los sistemas de comunicación y acceso a internet, ataques cibernéticos
+          invasivos o cualquier hecho ajeno a nuestro ámbito de vigilancia.
+        </p>
+        <p>Sin perjuicio de otras condiciones de estos Términos, Resorts Brasil, no se responsabilizará:</p>
+        <ul>
+          <li>Por ningún daño sufrido por los usuarios en razón de la utilización de la aplicación.</li>
+          <li>
+            Por la reparación de daños de cualquier naturaleza causados por la quiebra de privacidad
+            o seguridad de datos de los usuarios durante la conexión de su dispositivo móvil a la
+            internet a través de terceros.
+          </li>
+          <li>
+            Por cualquier problema, bugs, glitches, fallas o funcionamientos incorrectos que ocurran
+            en sus dispositivos y equipos.
+          </li>
+        </ul>
+
+        <Titulo nivel={2} tamanho="lg">5. Actualización de este Término de Uso</Titulo>
+        <p>
+          Este Términos de Uso puede sufrir alteraciones buscando mejorar y perfeccionamiento. De esa
+          forma nos reservamos el derecho de modificarlo a cualquier momento, de acuerdo a su
+          finalidad o conveniencia, tal como para adecuación y conformidad legal de disposición de
+          ley o norma que tenga fuerza jurídica equivalente, inclusive de órganos reguladores, o sea,
+          Usted deberá verificarlo siempre que efectúe el acceso al Sitio.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">6. Disposiciones Ilegales, Inválidas o Inaplicables</Titulo>
+        <p>
+          Casos Términos de Uso o cualquier contenido que forme parte de este término sean
+          considerados ilegales, inválidos o inaplicables bajo las leyes de cualquier estado o país,
+          las disposiciones sean ilegales, inválidas o inaplicables, éstas deben ser tratadas como
+          apartadas y excluidas y las demás disposiciones de este Termino deben ser mantenidas,
+          permanecer en pleno vigor y efecto y continuar siendo vinculante e inaplicable. En ese
+          estado o país.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">7. Ley Aplicable</Titulo>
+        <p>
+          Esos Términos de Uso están sujetos a la legislación brasileña y jurisdicción de los
+          tribunales brasileños.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">8. Glosario</Titulo>
+        <ul>
+          <li>Link: Terminología para dirección de internet.</li>
+          <li>Layout: Conjunto comprendido entre apariencia, design y flujos del sitio.</li>
+          <li>
+            Usuario o Usted: Visitantes clientes, asociados o terceros en general que utilizan el
+            Sitio para acceso a las funcionalidades disponibles.
+          </li>
+        </ul>
+      </Prosa>
+    </Container>
+  </Secao>
+</LayoutSistema>

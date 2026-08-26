@@ -1,313 +1,347 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Texto from '../../components/primitivos/Texto.astro';
+import Prosa from '../../components/padroes/Prosa.astro';
+import ListaIcones from '../../components/padroes/ListaIcones.astro';
 import SecaoCookies from '../../components/SecaoCookies.astro';
+import { juridico, dataEm } from '../../data/juridico';
+import { contato } from '../../data/contato';
+import { ui, type Locale } from '../../i18n/ui';
+
+/*
+ * As correcoes estruturais estao anotadas em src/pages/politica-de-privacidade.astro,
+ * que e a versao de referencia. DUAS SAO SO DESTA PAGINA, e sao de conteudo:
+ *
+ *   1. O capitulo "Applicable law and jurisdiction" estava EM ESPANHOL — "En
+ *      caso de cualquier controversia o diligencia relacionada a la
+ *      interpretación..." —, palavra por palavra o mesmo paragrafo da pagina
+ *      espanhola. Numa politica de privacidade, o capitulo que declara a lei
+ *      aplicavel e o foro estava num idioma que o leitor daquela pagina nao
+ *      escolheu.
+ *   2. O capitulo "Changes to this policy" trazia o TEXTO DO FORO — o paragrafo
+ *      sobre controversia e jurisdicao, que e o do capitulo seguinte. Ou seja: o
+ *      texto certo do foro existia, so estava no capitulo errado, e o capitulo
+ *      de alteracoes nunca foi traduzido.
+ *
+ * As duas sao a mesma falha, e cabem numa frase: alguem colou o paragrafo do
+ * foro no lugar do de alteracoes, e preencheu a vaga que sobrou com o espanhol.
+ * O paragrafo do foro voltou para o capitulo dele; o de alteracoes foi traduzido
+ * do portugues, que e o texto de referencia.
+ *
+ * Nenhum dos quatro portoes via isso, e nao ha portao barato que veja: os
+ * headings batem, a contagem de paragrafos bate, a geometria e identica. So
+ * lendo.
+ */
+const lang: Locale = 'en-us';
+const t = ui[lang];
+
+const atualizacao = `${t.legalUpdated} ${dataEm(juridico.privacidade.atualizadoEm, lang)}`;
+
+const fontesDeColeta = [
+  'When you join Resorts. In this case, we will collect personal data (name, position, email, cell phone/whatsApp) of the individuals responsible for each of the associated hotel chains, as well as the contact responsible for the area of activity.',
+  'Through the member area on our website (name of website). Through this area, accessed with own and specific login and passwords, we can collect the following data (what data is collected?).',
+  'When you actively contact us through our customer service, whether by telephone, email, our website or in person with an interest in receiving strategic information from the tourism sector and/or interested in becoming a member.',
+  'Automatically or through cookies, some data related to your navigation and the device you use to access our website.',
+  'When we communicate with you via email or other instant messages.',
+  'To capture new business and/or associated with the Resorts.',
+  'Through information for posting some material and/or content related to Tourism, developed by you or that is part of the authorship or interviews carried out, for placement in communication channels, such as our website or social networks (Facebook, Instagram and LinkedIn).',
+  'When you become one of our employees or when you are participating in our selection and recruitment process.',
+  'When you act as a vendor, Institutional and/or Educational partner or speaker and associate, in order to execute the contract and manage the relationship with the vendor.',
+  'When you are interested in hosting an Event, in person or online, with us. Data is collected through a form, which you fill in, to register for the event.',
+  'When you participate in any Event, fair, congress, workshop, or any other promotional, institutional or commercial actions in which Resorts also participates or organizes, in which there is interaction between you and Resorts.',
+];
+
+const dadosColetados = [
+  'Personal contact information: Any information you provide to Resorts that makes it possible for you to be contacted, such as your full name, position, email and phone number (WhatsApp).',
+  'Personal information for purposes of interest in becoming a member or attending an event: Any information you provide to Resorts for the purposes of negotiating membership and/or executing a contract, such as (i) full name; (ii) position; (iii) email; (iv) CPF, (v) RG, (vi) address, (vii) telephone/cell phone.',
+  "Technical information about the computer / mobile device: Any information about the computer system or other device you use to access our website, such as your IP address, operating system type and web browser type and version. If you access the website using a mobile device, such as a smartphone, the information collected will also, where permitted, include your phone's unique device ID, ad ID, geographic location and other similar mobile device data.",
+  'Website / communication usage information: As you browse and interact on our site, we may use automatic data collection technologies to collect certain information about your actions. This includes information such as which links you click on, which pages or content you view and for how long, and other similar information and statistics about your interactions, such as response time to content, download errors and duration of visits to certain pages. This information is captured through automated technologies such as Cookies.',
+  'Sensitive Personal Data: Resorts always seeks to process Sensitive Personal Data as little as possible. When it is necessary to process your Sensitive Personal Data, we will inform you of the intended purpose and we will obtain your prior and express consent, if the specific legislation expressly so determines.',
+];
+
+const finalidades = [
+  'Assistance to potential Associates and/or Vendors: We use your Personal Data to analyze and conduct initial negotiations of potential associates and/or vendors and to execute a contract that we enter into with you or your company.',
+  `Targeted communications: Resorts uses your Personal Data to provide information about the services (marketing communications, strategic tourism information, collective bargaining, internship programs, benchmarking, workshops, Fairs and/or Events). This can be done through email marketing sent directly by us or through social networks (Facebook, Instagram and LinkedIn) to the extent permitted by applicable law. The use of your Personal Data is not mandatory, that is, you can object to receiving these communications at any time by following the instructions contained in the respective messages or by contacting us via the email ${contato.email} and, therefore, we will stop processing your data for these purposes.`,
+  'Contract execution - Resorts uses your personal data for the purpose of executing any contract that you or your company may formalize with us.',
+];
+
+const compartilhamento = [
+  '(i) Vendors, partners and service providers. We rely on the help of vendors who can process the personal data we collect, such as service providers, data processing companies, law and accounting firms, event organizers, among other providers that, on our behalf, help us launch and/or provide our services and/or help us to perform any legal obligation on our behalf. These companies may need information about you in order to perform their functions and are not authorized to use the Personal Data we share with them for any purpose other than those defined by us and specified in this Policy.',
+  '(ii) The personal data provided by you may also be shared by Resorts with its associates, whenever such sharing is necessary to enable the provision of services, offer products, promotions or benefits, to improve your experience.',
+  '(iii) We will also disclose your Personal Data to third parties: (i) when required by applicable law; (ii) in response to legal proceedings; (iii) in response to a request from the competent legal authority; (iv) to protect our rights, privacy, safety or property; or (v) to enforce the terms of any agreement or the terms of our website.',
+  '(iv) In addition, your Personal Data may be used to comply with obligations set forth by law, regulations of government bodies, tax authorities, the Judiciary, such as judgments and agreements and/or any other competent authority. Said processing may include your identification data and personal documents.',
+  '(v) For other purposes where required by applicable laws and regulations.',
+];
 ---
 
-<BaseLayout
-  lang="en-us"
-  route="privacy"
->
-    <!-- Title -->
-    <section id="title">
-        <div class="container">
-            <div class="row">
-                <div class="text-center">
-                    <h1 class="text-md h2">Privacy Policy</h1>
-                    <p><small>Last update: 12/06/2025</small></p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Title -->
+<LayoutSistema lang={lang} route="privacy">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="estreita">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.privacyTitle}</Titulo>
+      <Texto tamanho="xs" alinhamento="centro">{atualizacao}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Privacy Policy -->
-    <section id="privacy-policy">
-        <div class="container">
-            <div class="row">
-                <h2>We at ASSOCIAÇÃO BRASILEIRA DE RESORTS (“RESORTS BRASIL” or “Resorts”) created this Privacy and
-                    Personal Data Protection Policy (“Policy”) to reinstate the commitment we have with our
-                    associates and all those who interact with us, in order to provide greater transparency on how
-                    we process personal data.</h2>
-                <p>This Policy describes how we collect, store and use your Personal Data, in accordance with
-                    applicable laws, in particular Law No. 13,709/2018 ("General Law for the Protection of Personal
-                    Data"), as well as detailing how you can access and update your personal data as well as
-                    exercise your rights.</p>
-                <p>We recommend that this Policy be read carefully, especially before starting your relationship
-                    with us. If you have any questions about the content of this Policy, please contact us by email:
-                    contato@resortsbrasil.com.br</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>Information you need to know before reading this Policy</h4>
-                <p><strong>Anonymization:</strong> process that removes the personality of the data and the link
-                    between you and the information provided.</p>
-                <p><strong>National Data Protection Authority:</strong> Government body responsible for monitoring
-                    compliance with the General Personal Data Protection Law (LGPD).</p>
-                <p><strong>Legal bases:</strong> these are the legal hypotheses that authorize us to process your
-                    personal data. They could be your consent, the need to fulfill a contract we have with you, or
-                    compliance with a legal obligation, for example.</p>
-                <p><strong>Cookies:</strong> files sent by our server to the computer, cell phone, tablet or any
-                    other device used by You and responsible for collecting access data to Our Environments,
-                    customizing your navigation.</p>
-                <p><strong>Personal Data:</strong> all information that allows your identification. Example: full
-                    name, address, email, telephone, CPF, RG, among others.</p>
-                <p><strong>Sensitive Personal Data:</strong> personal data related to racial or ethnic origin,
-                    religious conviction, political opinion, union membership or organization of a religious,
-                    philosophical or political nature, data referring to health or sex life, genetic or biometric
-                    data, when linked to the individual.</p>
-                <p><strong>Processing of Personal Data:</strong> means any activity, such as collection, storage,
-                    processing, reception, access, storage, transmission, distribution, reproduction, archiving,
-                    use, modification, communication, transfer, sharing carried out with your personal data.</p>
-                <p><strong>Data Holder:</strong> It is you, the individual, to whom the personal data refer. Whether
-                    as an associate, partner, employees, vendors or speakers, as well as any third party that
-                    interacts with us.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>How do we collect your personal data?</h4>
-                <p>In order to establish a relationship of trust and transparency, you need to be aware of the
-                    sources from which we collect information. The way you interact with us (online, offline or in
-                    any other way) will interfere with the collection of your data. We may collect your personal
-                    data through the following sources, namely:</p>
-                <ul style="color: #525E75;" class="list-icon list-icon-arrow list-icon-colored">
-                    <li>When you join Resorts. In this case, we will collect personal data (name, position, email,
-                        cell phone/whatsApp) of the individuals responsible for each of the associated hotel chains,
-                        as well as the contact responsible for the area of activity.</li>
-                    <li>Through the member area on our website (name of website). Through this area, accessed with
-                        own and specific login and passwords, we can collect the following data (what data is
-                        collected?).</li>
-                    <li>When you actively contact us through our customer service, whether by telephone, email, our
-                        website or in person with an interest in receiving strategic information from the tourism
-                        sector and/or interested in becoming a member.</li>
-                    <li>Automatically or through cookies, some data related to your navigation and the device you
-                        use to access our website.</li>
-                    <li>When we communicate with you via email or other instant messages.</li>
-                    <li>To capture new business and/or associated with the Resorts.</li>
-                    <li>Through information for posting some material and/or content related to Tourism, developed
-                        by you or that is part of the authorship or interviews carried out, for placement in
-                        communication channels, such as our website or social networks (Facebook, Instagram and
-                        LinkedIn).</li>
-                    <li>When you become one of our employees or when you are participating in our selection and
-                        recruitment process.</li>
-                    <li>When you act as a vendor, Institutional and/or Educational partner or speaker and associate,
-                        in order to execute the contract and manage the relationship with the vendor.</li>
-                    <li>When you are interested in hosting an Event, in person or online, with us. Data is collected
-                        through a form, which you fill in, to register for the event.</li>
-                    <li>When you participate in any Event, fair, congress, workshop, or any other promotional,
-                        institutional or commercial actions in which Resorts also participates or organizes, in
-                        which there is interaction between you and Resorts.</li>
-                </ul>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>How and what personal data do we collect?</h4>
-                <ul style="color: #525E75;" class="list-icon list-icon-arrow list-icon-colored">
-                    <li>Personal contact information: Any information you provide to Resorts that makes it possible
-                        for you to be contacted, such as your full name, position, email and phone number
-                        (WhatsApp).</li>
-                    <li>Personal information for purposes of interest in becoming a member or attending an event:
-                        Any information you provide to Resorts for the purposes of negotiating membership and/or
-                        executing a contract, such as (i) full name; (ii) position; (iii) email; (iv) CPF, (v) RG,
-                        (vi) address, (vii) telephone/cell phone.</li>
-                    <li>Technical information about the computer / mobile device: Any information about the computer
-                        system or other device you use to access our website, such as your IP address, operating
-                        system type and web browser type and version. If you access the website using a mobile
-                        device, such as a smartphone, the information collected will also, where permitted, include
-                        your phone's unique device ID, ad ID, geographic location and other similar mobile device
-                        data.</li>
-                    <li>Website / communication usage information: As you browse and interact on our site, we may
-                        use automatic data collection technologies to collect certain information about your
-                        actions. This includes information such as which links you click on, which pages or content
-                        you view and for how long, and other similar information and statistics about your
-                        interactions, such as response time to content, download errors and duration of visits to
-                        certain pages. This information is captured through automated technologies such as Cookies.
-                    </li>
-                    <li>Sensitive Personal Data: Resorts always seeks to process Sensitive Personal Data as little
-                        as possible. When it is necessary to process your Sensitive Personal Data, we will inform
-                        you of the intended purpose and we will obtain your prior and express consent, if the
-                        specific legislation expressly so determines.</li>
-                </ul>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>For what purposes do we use your personal data?</h4>
-                <p>Resorts processes your Personal Data mainly to make our institutional relationship viable,
-                    fulfill certain contractual and legal obligations. In addition, we may use your personal data
-                    for the following purposes:</p>
-                <ul style="color: #525E75;" class="list-icon list-icon-arrow list-icon-colored">
-                    <li>Assistance to potential Associates and/or Vendors: We use your Personal Data to analyze and
-                        conduct initial negotiations of potential associates and/or vendors and to execute a
-                        contract that we enter into with you or your company.</li>
-                    <li>Targeted communications: Resorts uses your Personal Data to provide information about the
-                        services (marketing communications, strategic tourism information, collective bargaining,
-                        internship programs, benchmarking, workshops, Fairs and/or Events). This can be done through
-                        email marketing sent directly by us or through social networks (Facebook, Instagram and
-                        LinkedIn) to the extent permitted by applicable law. The use of your Personal Data is
-                        not mandatory, that is, you can object to receiving these communications at any time by
-                        following the instructions contained in the respective messages or by contacting us via the
-                        email contato@resortsbrasil.com.br and, therefore, we will stop processing your data for
-                        these purposes.</li>
-                    <li>Contract execution - Resorts uses your personal data for the purpose of executing any
-                        contract that you or your company may formalize with us.</li>
-                </ul>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>To process your data, we use the following legal bases:</h4>
-                <p><b>Contract Execution</b><br>We may use contract execution when we need to enter into any service
-                    agreement, partnership, association, etc., or to take preliminary steps before entering into
-                    one. If you do not want to provide your data, as providing the requested personal data is
-                    optional, we will not be able to manage our contractual relationship with you.</p>
-                <p><b>Legal Obligation</b><br>In some cases we are required to collect your personal data, for
-                    example: to comply with accounting, tax, financial and regulatory obligations.</p>
-                <p><b>Legitimate Interests</b><br>We may collect your personal data because we have legitimate
-                    interests in doing so and when these interests do not violate the principles of the law, and
-                    also if they do not invalidate your rights regarding privacy and data protection.
-                    Legitimate interests may be to improve our services with the main purpose of increasing the
-                    satisfaction of our members or, even, to tailor our services to your specific preferences and
-                    needs.<br>If You are already our member, we may forward you digital marketing material about
-                    related services and rely on our legitimate interest to do so. If you do not wish to receive our
-                    materials, we provide you with the possibility to unsubscribe by following the unsubscribe
-                    instructions set out in the marketing message you received.<br>We also process your data based
-                    on our legitimate interests in processing your request, when you contact Resorts, when you fill
-                    out one of our physical or digital forms and for the registration of in-person, virtual or
-                    Hybrid Events that are held / organized by Resorts.</p>
-            </div>
-            <div class="space"></div>
-            <SecaoCookies lang="en-us" />
-            <div class="space"></div>
-            <div class="row">
-                <h4>How do we share your personal data?</h4>
-                <p>We do not sell or trade information that identifies individuals who interact with us. We also do
-                    not share or otherwise transfer your personal information to third parties, except as noted
-                    below:</p>
-                <ul style="color: #525E75;" class="list-icon list-icon-arrow list-icon-colored">
-                    <li>(i) Vendors, partners and service providers. We rely on the help of vendors who can process
-                        the personal data we collect, such as service providers, data processing companies, law and
-                        accounting firms, event organizers, among other providers that, on our behalf, help us
-                        launch and/or provide our services and/or help us to perform any legal obligation on our
-                        behalf. These companies may need information about you in order to perform their functions
-                        and are not authorized to use the Personal Data we share with them for any purpose other
-                        than those defined by us and specified in this Policy.</li>
-                    <li>(ii) The personal data provided by you may also be shared by Resorts with its associates,
-                        whenever such sharing is necessary to enable the provision of services, offer products,
-                        promotions or benefits, to improve your experience.</li>
-                    <li>(iii) We will also disclose your Personal Data to third parties:
-                        (i) when required by applicable law; (ii) in response to legal proceedings; (iii) in
-                        response to a request from the competent legal authority; (iv) to protect our rights,
-                        privacy, safety or property; or (v) to enforce the terms of any agreement or the terms of
-                        our website.</li>
-                    <li>(iv) In addition, your Personal Data may be used to comply with obligations set forth by
-                        law, regulations of government bodies, tax authorities, the Judiciary, such as judgments and
-                        agreements and/or any other competent authority. Said processing may include your
-                        identification data and personal documents.</li>
-                    <li>(v) For other purposes where required by applicable laws and regulations.</li>
-                </ul>
-                <p>If appropriate, before sharing Personal Data with a third party, Resorts will contractually
-                    require the third party to take necessary precautions to protect such Personal Data from
-                    unauthorized use or sharing.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>Can your personal data be transferred internationally?</h4>
-                <p>Yes. Your Personal data may be transferred in order to meet the purposes set forth in this
-                    Policy, as some of our cloud data storage service providers may be located outside Brazil.</p>
-                <p>Please note that Brazilian laws regarding the protection of Personal Data apply, since Resorts is
-                    headquartered in Brazil and our services are intended for people located in Brazil.</p>
-                <p>The transfer of personal data only involves companies that demonstrate compliance with applicable
-                    laws, and maintain a level of compliance similar to or even stricter than that provided for in
-                    applicable Brazilian legislation.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>How long is your personal data stored for?</h4>
-                <p>We keep your personal data for the necessary period or when, for legal reasons, we are required
-                    to. Otherwise, we will exclude them from our bases or anonymize them so that with their
-                    processing it is no longer possible to identify you.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>How do we guarantee the security of your personal data?</h4>
-                <p>The security of your personal data is one of our main concerns. To protect it, we use technical
-                    and organizational information security measures aimed at the confidentiality and protection of
-                    all data collected or generated in Our Environments. However, these protections do not apply to
-                    information you choose to share in public areas, such as third-party social networks.</p>
-                <p>The transmission of information over the internet is unfortunately not completely secure and,
-                    although we do our best to protect your Personal Data, we cannot guarantee the security of data
-                    during transmission through our website, especially against attacks perpetrated by malicious
-                    persons, that can be highly sophisticated and innovative, with techniques and methods unknown
-                    until then even by the best information security tools.</p>
-                <p>The security of your data is also dependent on you taking reasonable steps in your use of your
-                    devices and software. If you identify or become aware of something that could compromise the
-                    security of your personal data, or any possible vulnerability in our website or systems, please
-                    contact us.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>What are your rights?</h4>
-                <p>The General Personal Data Protection Law grants you certain rights with regard to the processing
-                    of your personal data. They are:</p>
-                <p><b>Access:</b> The right to be informed and have access to your personal data under our
-                    treatment;</p>
-                <p><b>Correction:</b> The right to request the update or amendment of your out-of-date, incomplete
-                    or incorrect personal data;</p>
-                <p><b>Portability:</b> The right to request that the personal data under our treatment be
-                    transferred to another service provider indicated by you;</p>
-                <p><b>Elimination:</b> The right to have your personal data deleted from our databases, subject to
-                    legal storage hypotheses;</p>
-                <p><b>Anonymization or blocking:</b> The right to request that personal data that is excessive for
-                    processing be submitted to anonymization or that this excessive processing be suspended by us;
-                </p>
-                <p><b>Revocation:</b> The right to revoke your consent for the purposes of processing personal data
-                    linked to it;</p>
-                <p><b>Information on the consequences of revocation:</b> The right to be informed about developments
-                    in the relationship with us and the execution of a specific processing purpose if you wish to
-                    revoke your consent;</p>
-                <p><b>Opposition:</b> The right for you to object to the processing of personal data that is
-                    inconsistent with the provisions of the General Personal Data Protection Law.</p>
-                <p></p>
-                <p>Some circumstances may restrict the exercise of certain rights provided by law, such as, for
-                    example, when the provision of information may reveal a business secret or due to compliance
-                    with any legal / regulatory obligation or to allow our defense in any judicial or administrative
-                    lawsuit. You can exercise these rights by contacting us via email contato@resortsbrasil.com.br
-                </p>
-                <p>We will respond to your requests within a reasonable time, in compliance with the applicable
-                    legislation, bearing in mind that we will only be able to respond to some requests after we have
-                    received the confirmations set out above.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>Third party websites</h4>
-                <p>Our website may provide links to third party websites. These websites, in turn, have their own
-                    privacy policies, which may not be compatible with this Policy. We recommend that you consult
-                    the respective privacy policies of these third parties to inform yourself about the personal
-                    data protection practices adopted by them.</p>
-                <p>Resorts Brasil is not responsible for the regularity of the data protection practices of
-                    third-party websites, nor for their content, which is not validated, ratified or subscribed by
-                    us in any way.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>Changes to this policy</h4>
-                <p>In the event of any controversy or divergence related to the interpretation, validity, execution
-                    or compliance of this Policy, it will be resolved taking into account the Brazilian legislation
-                    and the jurisdiction of the company's headquarters.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>Applicable law and jurisdiction</h4>
-                <p>En caso de cualquier controversia o diligencia relacionada a la interpretación, validad,
-                    celebración o conformidad de esta Política ella será resuelta teniendo en consideración la
-                    legislación brasileña y la jurisdicción del lugar de la sede de la empresa.</p>
-            </div>
-            <div class="space"></div>
-            <div class="row">
-                <h4>How can you contact us?</h4>
-                <p>In case of questions regarding this Policy or requests for the fulfillment of your rights. You or
-                    your legal representative may contact the data subject directly through our official
-                    communication channel via email contato@resortsbrasil.com.br</p>
-            </div>
-        </div>
-    </section>
-    <!-- end: Privacy Policy -->
-</BaseLayout>
+  <Secao id="privacy-policy">
+    <Container largura="estreita">
+      <Prosa>
+        <Texto tamanho="lg" cor="padrao">
+          We at ASSOCIAÇÃO BRASILEIRA DE RESORTS (“RESORTS BRASIL” or “Resorts”) created this Privacy
+          and Personal Data Protection Policy (“Policy”) to reinstate the commitment we have with our
+          associates and all those who interact with us, in order to provide greater transparency on
+          how we process personal data.
+        </Texto>
+        <p>
+          This Policy describes how we collect, store and use your Personal Data, in accordance with
+          applicable laws, in particular Law No. 13,709/2018 ("General Law for the Protection of
+          Personal Data"), as well as detailing how you can access and update your personal data as
+          well as exercise your rights.
+        </p>
+        <p>
+          We recommend that this Policy be read carefully, especially before starting your
+          relationship with us. If you have any questions about the content of this Policy, please
+          contact us by email: <a href={`mailto:${contato.email}`}>{contato.email}</a>
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">Information you need to know before reading this Policy</Titulo>
+        <p>
+          <strong>Anonymization:</strong> process that removes the personality of the data and the
+          link between you and the information provided.
+        </p>
+        <p>
+          <strong>National Data Protection Authority:</strong> Government body responsible for
+          monitoring compliance with the General Personal Data Protection Law (LGPD).
+        </p>
+        <p>
+          <strong>Legal bases:</strong> these are the legal hypotheses that authorize us to process
+          your personal data. They could be your consent, the need to fulfill a contract we have with
+          you, or compliance with a legal obligation, for example.
+        </p>
+        <p>
+          <strong>Cookies:</strong> files sent by our server to the computer, cell phone, tablet or
+          any other device used by You and responsible for collecting access data to Our
+          Environments, customizing your navigation.
+        </p>
+        <p>
+          <strong>Personal Data:</strong> all information that allows your identification. Example:
+          full name, address, email, telephone, CPF, RG, among others.
+        </p>
+        <p>
+          <strong>Sensitive Personal Data:</strong> personal data related to racial or ethnic origin,
+          religious conviction, political opinion, union membership or organization of a religious,
+          philosophical or political nature, data referring to health or sex life, genetic or
+          biometric data, when linked to the individual.
+        </p>
+        <p>
+          <strong>Processing of Personal Data:</strong> means any activity, such as collection,
+          storage, processing, reception, access, storage, transmission, distribution, reproduction,
+          archiving, use, modification, communication, transfer, sharing carried out with your
+          personal data.
+        </p>
+        <p>
+          <strong>Data Holder:</strong> It is you, the individual, to whom the personal data refer.
+          Whether as an associate, partner, employees, vendors or speakers, as well as any third
+          party that interacts with us.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">How do we collect your personal data?</Titulo>
+        <p>
+          In order to establish a relationship of trust and transparency, you need to be aware of the
+          sources from which we collect information. The way you interact with us (online, offline or
+          in any other way) will interfere with the collection of your data. We may collect your
+          personal data through the following sources, namely:
+        </p>
+        <ListaIcones marcador="seta" cor="paragrafo" itens={fontesDeColeta} />
+
+        <Titulo nivel={2} tamanho="lg">How and what personal data do we collect?</Titulo>
+        <ListaIcones marcador="seta" cor="paragrafo" itens={dadosColetados} />
+
+        <Titulo nivel={2} tamanho="lg">For what purposes do we use your personal data?</Titulo>
+        <p>
+          Resorts processes your Personal Data mainly to make our institutional relationship viable,
+          fulfill certain contractual and legal obligations. In addition, we may use your personal
+          data for the following purposes:
+        </p>
+        <ListaIcones marcador="seta" cor="paragrafo" itens={finalidades} />
+
+        <Titulo nivel={2} tamanho="lg">To process your data, we use the following legal bases:</Titulo>
+        <p>
+          <strong>Contract Execution</strong><br />We may use contract execution when we need to
+          enter into any service agreement, partnership, association, etc., or to take preliminary
+          steps before entering into one. If you do not want to provide your data, as providing the
+          requested personal data is optional, we will not be able to manage our contractual
+          relationship with you.
+        </p>
+        <p>
+          <strong>Legal Obligation</strong><br />In some cases we are required to collect your
+          personal data, for example: to comply with accounting, tax, financial and regulatory
+          obligations.
+        </p>
+        <p>
+          <strong>Legitimate Interests</strong><br />We may collect your personal data because we
+          have legitimate interests in doing so and when these interests do not violate the
+          principles of the law, and also if they do not invalidate your rights regarding privacy and
+          data protection. Legitimate interests may be to improve our services with the main purpose
+          of increasing the satisfaction of our members or, even, to tailor our services to your
+          specific preferences and needs.<br />If You are already our member, we may forward you
+          digital marketing material about related services and rely on our legitimate interest to do
+          so. If you do not wish to receive our materials, we provide you with the possibility to
+          unsubscribe by following the unsubscribe instructions set out in the marketing message you
+          received.<br />We also process your data based on our legitimate interests in processing
+          your request, when you contact Resorts, when you fill out one of our physical or digital
+          forms and for the registration of in-person, virtual or Hybrid Events that are held /
+          organized by Resorts.
+        </p>
+
+        <SecaoCookies lang={lang} />
+
+        <Titulo nivel={2} tamanho="lg">How do we share your personal data?</Titulo>
+        <p>
+          We do not sell or trade information that identifies individuals who interact with us. We
+          also do not share or otherwise transfer your personal information to third parties, except
+          as noted below:
+        </p>
+        <ListaIcones marcador="seta" cor="paragrafo" itens={compartilhamento} />
+        <p>
+          If appropriate, before sharing Personal Data with a third party, Resorts will contractually
+          require the third party to take necessary precautions to protect such Personal Data from
+          unauthorized use or sharing.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">Can your personal data be transferred internationally?</Titulo>
+        <p>
+          Yes. Your Personal data may be transferred in order to meet the purposes set forth in this
+          Policy, as some of our cloud data storage service providers may be located outside Brazil.
+        </p>
+        <p>
+          Please note that Brazilian laws regarding the protection of Personal Data apply, since
+          Resorts is headquartered in Brazil and our services are intended for people located in
+          Brazil.
+        </p>
+        <p>
+          The transfer of personal data only involves companies that demonstrate compliance with
+          applicable laws, and maintain a level of compliance similar to or even stricter than that
+          provided for in applicable Brazilian legislation.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">How long is your personal data stored for?</Titulo>
+        <p>
+          We keep your personal data for the necessary period or when, for legal reasons, we are
+          required to. Otherwise, we will exclude them from our bases or anonymize them so that with
+          their processing it is no longer possible to identify you.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">How do we guarantee the security of your personal data?</Titulo>
+        <p>
+          The security of your personal data is one of our main concerns. To protect it, we use
+          technical and organizational information security measures aimed at the confidentiality and
+          protection of all data collected or generated in Our Environments. However, these
+          protections do not apply to information you choose to share in public areas, such as
+          third-party social networks.
+        </p>
+        <p>
+          The transmission of information over the internet is unfortunately not completely secure
+          and, although we do our best to protect your Personal Data, we cannot guarantee the
+          security of data during transmission through our website, especially against attacks
+          perpetrated by malicious persons, that can be highly sophisticated and innovative, with
+          techniques and methods unknown until then even by the best information security tools.
+        </p>
+        <p>
+          The security of your data is also dependent on you taking reasonable steps in your use of
+          your devices and software. If you identify or become aware of something that could
+          compromise the security of your personal data, or any possible vulnerability in our website
+          or systems, please contact us.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">What are your rights?</Titulo>
+        <p>
+          The General Personal Data Protection Law grants you certain rights with regard to the
+          processing of your personal data. They are:
+        </p>
+        <p>
+          <strong>Access:</strong> The right to be informed and have access to your personal data
+          under our treatment;
+        </p>
+        <p>
+          <strong>Correction:</strong> The right to request the update or amendment of your
+          out-of-date, incomplete or incorrect personal data;
+        </p>
+        <p>
+          <strong>Portability:</strong> The right to request that the personal data under our
+          treatment be transferred to another service provider indicated by you;
+        </p>
+        <p>
+          <strong>Elimination:</strong> The right to have your personal data deleted from our
+          databases, subject to legal storage hypotheses;
+        </p>
+        <p>
+          <strong>Anonymization or blocking:</strong> The right to request that personal data that is
+          excessive for processing be submitted to anonymization or that this excessive processing be
+          suspended by us;
+        </p>
+        <p>
+          <strong>Revocation:</strong> The right to revoke your consent for the purposes of
+          processing personal data linked to it;
+        </p>
+        <p>
+          <strong>Information on the consequences of revocation:</strong> The right to be informed
+          about developments in the relationship with us and the execution of a specific processing
+          purpose if you wish to revoke your consent;
+        </p>
+        <p>
+          <strong>Opposition:</strong> The right for you to object to the processing of personal data
+          that is inconsistent with the provisions of the General Personal Data Protection Law.
+        </p>
+        <p>
+          Some circumstances may restrict the exercise of certain rights provided by law, such as,
+          for example, when the provision of information may reveal a business secret or due to
+          compliance with any legal / regulatory obligation or to allow our defense in any judicial
+          or administrative lawsuit. You can exercise these rights by contacting us via email
+          <a href={`mailto:${contato.email}`}>{contato.email}</a>
+        </p>
+        <p>
+          We will respond to your requests within a reasonable time, in compliance with the
+          applicable legislation, bearing in mind that we will only be able to respond to some
+          requests after we have received the confirmations set out above.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">Third party websites</Titulo>
+        <p>
+          Our website may provide links to third party websites. These websites, in turn, have their
+          own privacy policies, which may not be compatible with this Policy. We recommend that you
+          consult the respective privacy policies of these third parties to inform yourself about the
+          personal data protection practices adopted by them.
+        </p>
+        <p>
+          Resorts Brasil is not responsible for the regularity of the data protection practices of
+          third-party websites, nor for their content, which is not validated, ratified or subscribed
+          by us in any way.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">Changes to this policy</Titulo>
+        <p>
+          We are always looking to offer you our services as efficiently as possible, and we keep
+          updating ourselves to do so. For this reason, this Policy may be adjusted at any time, and
+          it is up to You to check it whenever possible at this web address.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">Applicable law and jurisdiction</Titulo>
+        <p>
+          In the event of any controversy or divergence related to the interpretation, validity,
+          execution or compliance of this Policy, it will be resolved taking into account the
+          Brazilian legislation and the jurisdiction of the company's headquarters.
+        </p>
+
+        <Titulo nivel={2} tamanho="lg">How can you contact us?</Titulo>
+        <p>
+          In case of questions regarding this Policy or requests for the fulfillment of your rights.
+          You or your legal representative may contact the data subject directly through our official
+          communication channel via email <a href={`mailto:${contato.email}`}>{contato.email}</a>
+        </p>
+      </Prosa>
+    </Container>
+  </Secao>
+</LayoutSistema>

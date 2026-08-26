@@ -579,11 +579,57 @@ mínimo. Detalhes, e as correções de contraste do menu, em
 [docs/decisoes.md](docs/decisoes.md), "Etapa 5", e em
 [docs/deltas-visuais.md](docs/deltas-visuais.md).
 
-### Etapas 6–9 — Páginas, do mais simples ao mais arriscado
+### Etapa 6 — Termos de uso e política de privacidade ✅ CONCLUÍDA
+
+As seis entregues: `termos-de-uso` e `politica-de-privacidade`, nos três idiomas.
+**17 de 41 páginas migradas, medido no `dist/`.**
+
+Dois componentes novos, e os dois nasceram de medição:
+[`Prosa`](src/components/padroes/Prosa.astro), o ritmo de um documento de texto
+corrido, e [`Tabela`](src/components/padroes/Tabela.astro), para as três tabelas
+de cookies. Os valores saem de
+[`medir-documento.mjs`](scripts/medir-documento.mjs), **quinto da família** — o
+primeiro a olhar para a única coisa no site que é só parágrafo.
+
+**A linha tinha 127 caracteres no desktop.** Nas duas páginas o `<p>` é filho
+direto do `.row` e herda os 1500px do container; a faixa em que se lê sem perder
+a linha é 45–75. O valor que corrige não precisou ser escolhido — **é o da
+própria página no tablet**, 688px, onde ela mede exatamente 75. Virou
+`--container-texto`, e é o que a `largura="estreita"` do `<Container>` passa a
+valer; ela apontava para `max-w-3xl`, um padrão do Tailwind que ninguém tinha
+medido e que nenhuma página tinha usado ainda.
+
+**O `<Prosa>` deliberadamente não redefine tamanho, peso nem cor.** Isso é do
+`base.css`, e estas duas páginas são o teste dele — um componente que o
+sobrepusesse apagaria a única evidência que a etapa produz. Ele responde por três
+coisas que só existem quando o texto é longo: o vão entre capítulos (60px
+medidos, que eram um `<div class="space">` vazio repetido 22 vezes), a citação e
+a cor da lista.
+
+**A política de privacidade inglesa tinha um capítulo em espanhol.** "Applicable
+law and jurisdiction" trazia, palavra por palavra, o parágrafo da página
+espanhola; e o capítulo anterior, "Changes to this policy", trazia o texto do
+foro. Alguém colou o parágrafo do foro no lugar do de alterações e preencheu a
+vaga que sobrou com o espanhol. **Nenhum dos quatro portões via, e não há portão
+barato que veja** — os headings batem, a contagem de parágrafos bate, a geometria
+é idêntica. Só lendo os três idiomas lado a lado.
+
+**O portão reprovou o commit que consertava o defeito**, pela segunda vez com a
+mesma forma: o checador de `style=` inline contava as ocorrências dentro dos
+*comentários* que explicam o `style=` removido — como o checador de headings já
+tinha feito na Etapa 5. Entrou `linhasSemComentario()`, compartilhada pelas duas
+checagens.
+
+E a dívida de transbordo horizontal caiu de **53 para 45**: some o `.row` das
+seis páginas e some a tabela de cookies, que media 445px numa coluna de 358px.
+
+Detalhes em [docs/decisoes.md](docs/decisoes.md), "Etapa 6", e a lista completa
+de correções e refinos em [docs/deltas-visuais.md](docs/deltas-visuais.md).
+
+### Etapas 7–9 — Páginas, do mais simples ao mais arriscado
 
 | etapa | páginas (× 3 idiomas) | por que aqui |
 |---|---|---|
-| 6 | `termos-de-uso`, `politica-de-privacidade` | muito texto, pouca estrutura — valida `base.css` |
 | 7 | `publicacoes`, `estatisticas-e-estudos` | estreia as Content Collections |
 | 8 | `associados`, `associe-se`, `apoie`, `resorts-brasil` | componentes de dado já existem |
 | 9 | `index` / `home` / `inicio` | maior visibilidade; carrossel e kenburns |

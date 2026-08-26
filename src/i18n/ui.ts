@@ -423,6 +423,23 @@ export const ui = {
     /* Só o rótulo traduz; o intervalo de anos vive em src/data/diretoria.ts. */
     boardTermLabel: 'Biênio',
 
+    /*
+     * Etapa 6 — os dois documentos jurídicos.
+     *
+     * Só o título e o rótulo da data ficam aqui. O CORPO dos documentos não:
+     * são ~1.500 e ~4.000 palavras por idioma, e texto dessa natureza é o
+     * conteúdo da página, não um rótulo reaproveitado por várias. A regra do
+     * projeto continua sendo a de sempre — o que se repete entre páginas mora
+     * aqui; o que existe uma vez mora onde é lido.
+     *
+     * O rótulo era DOIS em português: "Atualizada em" nos termos e "Última
+     * atualização:" na política. Mesma informação, duas frases, porque foram
+     * escritas em momentos diferentes por pessoas diferentes.
+     */
+    termsTitle: 'Termos e condições de uso do site',
+    privacyTitle: 'Política de Privacidade',
+    legalUpdated: 'Última atualização em',
+
     videoPlay: 'Assistir ao vídeo',
     videoInstitucional: 'Vídeo institucional da Resorts Brasil',
     videoEbook: 'Vídeo de apresentação do e-book',
@@ -523,6 +540,10 @@ export const ui = {
     boardTitle: 'Management of Resorts Brasil',
     boardCouncilTitle: 'Consulting Board',
     boardTermLabel: 'Biennium',
+
+    termsTitle: 'Terms and conditions of use of the website',
+    privacyTitle: 'Privacy Policy',
+    legalUpdated: 'Last updated',
 
     videoPlay: 'Watch the video',
     videoInstitucional: 'Resorts Brasil institutional video',
@@ -634,6 +655,10 @@ export const ui = {
     boardTitle: 'Directorio de Resorts Brasil',
     boardCouncilTitle: 'Consejo Consultivo',
     boardTermLabel: 'Bienio',
+
+    termsTitle: 'Términos y condiciones de uso del sitio',
+    privacyTitle: 'Política de Privacidad',
+    legalUpdated: 'Última actualización el',
 
     videoPlay: 'Ver el vídeo',
     videoInstitucional: 'Vídeo institucional de Resorts Brasil',

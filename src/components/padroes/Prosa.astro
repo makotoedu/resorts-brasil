@@ -1,0 +1,130 @@
+---
+/**
+ * Prosa — o ritmo de um documento de texto corrido.
+ *
+ * As paginas da Etapa 6 (termos de uso e politica de privacidade) sao a unica
+ * coisa no site que e TEXTO: 8 e 15 capitulos de paragrafo, sem cartao, sem
+ * grade e sem foto. Elas nao pedem componentes, pedem que os elementos nus
+ * fiquem certos — e e por isso que o plano as pos aqui, logo depois do cromo:
+ * sao o teste do `base.css`.
+ *
+ *   <Container largura="estreita">
+ *     <Prosa>
+ *       <Titulo nivel={2} tamanho="lg">1. Funcionalidade e uso</Titulo>
+ *       <p>...</p>
+ *       <ul><li>...</li></ul>
+ *     </Prosa>
+ *   </Container>
+ *
+ * O QUE ELE FAZ, e o que deliberadamente NAO faz. Nao redefine tamanho, peso
+ * nem cor de nada: isso e do `base.css`, e sobrepor aqui seria criar uma segunda
+ * base que ninguem mediu. Ele responde por tres coisas que so existem quando o
+ * texto e longo:
+ *
+ *   o RITMO ENTRE CAPITULOS  no tema era um `<div class="space">` vazio entre
+ *                            cada secao — 60px MEDIDOS (scripts/medir-documento.mjs),
+ *                            iguais nos tres viewports. Aqui e a margem do
+ *                            proprio heading, entao um capitulo novo nao depende
+ *                            de alguem lembrar de por a div;
+ *   a CITACAO                o `.blockquote` do endereco nos termos, medido:
+ *                            recuo 10/20px, filete de 3px na cor de acao;
+ *   a COR DA LISTA           o tema pintava cada `<ul>` com
+ *                            `style="color: #525E75"` — 6 ocorrencias, o mesmo
+ *                            cinza de paragrafo escrito a mao. Aqui a lista
+ *                            dentro de um documento le como corpo de texto, e
+ *                            nenhum `style=` inline sobrevive.
+ *
+ * A LARGURA NAO ESTA AQUI. Quem limita a linha e o
+ * `<Container largura="estreita">`, com o `--container-texto` medido. Sao dois
+ * eixos: o container decide onde a coluna comeca e termina, a prosa decide como
+ * o texto respira dentro dela. Misturar os dois faria o componente disputar
+ * largura com o layout, que e exatamente o que a camada `layout/` existe para
+ * evitar.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: classe } = Astro.props;
+---
+
+<div class:list={['prosa', classe]}>
+  <slot />
+</div>
+
+<style>
+  /*
+   * TODOS OS SELETORES SAO `:global()`, e isso e obrigatorio aqui.
+   *
+   * O Astro escopa o `<style>` marcando os elementos que o PROPRIO componente
+   * renderiza. O conteudo de um `<slot>` e renderizado pela pagina, entao ele
+   * carrega o escopo dela e nao o daqui — um `.prosa h2 {}` simples nao casaria
+   * com nada, sem erro nenhum. E a mesma mecanica que a <ListaIcones> usa no
+   * `.lista :global(.marcador)`.
+   *
+   * O `.prosa` fica FORA do `:global()` de proposito: e ele que carrega o
+   * escopo e limita o alcance ao que esta dentro deste componente.
+   */
+
+  /*
+   * O vao entre capitulos. MEDIDO em 60px no `<div class="space">` que o tema
+   * punha entre cada secao das duas paginas — o mesmo valor nos tres viewports.
+   *
+   * Ele vive no heading e nao num elemento vazio porque um `<div>` de
+   * espacamento e uma instrucao de desenho escrita no conteudo: some quando
+   * alguem move um paragrafo, e nao volta sozinho.
+   */
+  .prosa :global(h2) {
+    margin-top: 3.75rem;
+  }
+
+  /*
+   * A subsecao. As tres categorias da secao de cookies sao o unico caso, e no
+   * tema elas eram separadas por `<hr class="space">` — um filete invisivel de
+   * altura variavel: 26px no mobile, 36 no tablet, 60 no desktop, os tres
+   * medidos. O documento usa um valor so, e e o menor degrau nomeado da escala:
+   * subsecao nao deve soar tao alto quanto capitulo.
+   */
+  .prosa :global(h3) {
+    margin-top: var(--spacing-secao-sm);
+  }
+
+  /*
+   * O primeiro elemento nao empurra: quem decide a distancia ate o titulo da
+   * pagina e a <Secao> acima, nao a margem de um heading.
+   */
+  .prosa > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  /*
+   * A citacao. MEDIDA no `.blockquote` dos termos: recuo de 10px em cima e
+   * embaixo, 20px dos lados, 20px de margem inferior e um filete de 3px na cor
+   * de acao.
+   *
+   * No tema isto era `<div class="blockquote">`. Aqui e `<blockquote>` de
+   * verdade — a citacao do endereco da associacao e literalmente uma citacao, e
+   * a tag certa custa o mesmo que a errada.
+   */
+  .prosa :global(blockquote) {
+    margin-block: 0 1.25rem;
+    padding: 0.625rem 1.25rem;
+    border-inline-start: 3px solid var(--color-acao-primaria);
+  }
+
+  /* A caixa medida tem 43,8px de altura no desktop: 10 + uma linha de 23,8 +
+     10. Nao sobra margem para o paragrafo de dentro, e e assim que o recuo de
+     baixo fica igual ao de cima. */
+  .prosa :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /*
+   * Lista dentro de documento le como corpo de texto. Substitui as 6
+   * ocorrencias de `style="color: #525E75"` — o proprio cinza de paragrafo,
+   * escrito a mao em cada `<ul>` das duas paginas.
+   */
+  .prosa :global(li) {
+    color: var(--color-texto-paragrafo);
+  }
+</style>

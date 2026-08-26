@@ -1,0 +1,101 @@
+---
+/**
+ * Tabela — dado tabular dentro de um documento.
+ *
+ * Um uso hoje, e ele e o mais delicado do site: as tres tabelas de cookies da
+ * politica de privacidade, que sao afirmacao juridica sobre tratamento de dados.
+ * Quem as monta e a <SecaoCookies>, a partir de `src/data/cookies.ts`.
+ *
+ *   <Tabela legenda="Cookies necessarios" colunas={['Nome', 'Fornecedor']}>
+ *     <tr><th scope="row">rb_consent</th><td>Resorts Brasil</td></tr>
+ *   </Tabela>
+ *
+ * MEDIDO (scripts/medir-documento.mjs) no `.table.table-bordered` do tema:
+ * filete de 1px na cor de borda em volta e entre as celulas, 14px de recuo em
+ * cada celula, cabecalho em peso 500 alinhado pela base.
+ *
+ * DUAS CORRECOES em cima do que foi medido:
+ *
+ *   A TABELA TRANSBORDAVA NO MOBILE. Medida em 445px de largura dentro de uma
+ *   coluna de 358px, em 390px de janela — quatro colunas nao cabem, e a pagina
+ *   inteira ganhava barra horizontal. E uma das 53 pendencias de transbordo que
+ *   a varredura de geometria lista, e some aqui: a rolagem passa a ser da
+ *   tabela, dentro de uma regiao que o teclado alcanca.
+ *
+ *   A COR DO TEXTO. O `.table` do tema pinta em #3c4043, um cinza que nao
+ *   existe em nenhum outro lugar do site e cujo papel e exatamente o do
+ *   paragrafo. Consolidado em `--color-texto-paragrafo`, como o #efb72c foi
+ *   consolidado no ambar na Etapa 3 — duas tintas para o mesmo papel sao ruido,
+ *   nao decisao.
+ */
+interface Props {
+  /**
+   * O nome acessivel da tabela. Vira `<caption>` — visivel so para leitor de
+   * tela, porque na pagina o nome ja esta no heading logo acima — e rotula
+   * tambem a regiao rolavel.
+   */
+  legenda: string;
+  /** Os cabecalhos de coluna, na ordem. */
+  colunas: string[];
+  class?: string;
+}
+
+const { legenda, colunas, class: classe } = Astro.props;
+---
+
+<!--
+  `tabindex="0"` num container rolavel nao e enfeite: sem ele, quem navega por
+  teclado nao tem como rolar a tabela na horizontal — o foco pula direto para o
+  proximo link e as colunas da direita ficam inalcancaveis. Com `role="region"`
+  e um nome, o leitor de tela ainda anuncia onde a pessoa entrou.
+-->
+<div class:list={['rolagem', classe]} role="region" aria-label={legenda} tabindex="0">
+  <table>
+    <caption class="sr-only">{legenda}</caption>
+    <thead>
+      <tr>{colunas.map((c) => <th scope="col">{c}</th>)}</tr>
+    </thead>
+    <tbody>
+      <slot />
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .rolagem {
+    overflow-x: auto;
+    /* A margem que o tema dava a propria tabela (14px medidos). Fica no
+       envoltorio para que a tabela e a barra de rolagem andem juntas. */
+    margin-block-end: 0.875rem;
+  }
+
+  table {
+    /* `border-collapse: collapse` ja vem do base.css. */
+    width: 100%;
+    border: 1px solid var(--color-borda);
+    color: var(--color-texto-paragrafo);
+  }
+
+  /*
+   * `:global()` nas celulas porque elas vem do `<slot>` — sao renderizadas pela
+   * <SecaoCookies>, entao carregam o escopo de la e nao o daqui. As do `<thead>`
+   * sao deste arquivo e nao precisariam, mas separar as duas formas do mesmo
+   * seletor duplicaria a medida em dois lugares.
+   */
+  table :global(th),
+  table :global(td) {
+    padding: 0.875rem;
+    border: 1px solid var(--color-borda);
+    vertical-align: middle;
+  }
+
+  /* MEDIDO 500, e nao os 600 que o base.css da a todo `th`. */
+  table :global(th) {
+    font-weight: var(--font-weight-medium);
+    text-align: start;
+  }
+
+  thead th {
+    vertical-align: bottom;
+  }
+</style>

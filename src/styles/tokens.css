@@ -343,6 +343,25 @@
   --container-media: 60rem; /* 960px */
 
   /*
+   * A MEDIDA — a largura de uma linha de texto corrido.
+   *
+   * MEDIDA em `/termos-de-uso.html` (scripts/medir-documento.mjs), e o numero e
+   * o argumento: naquelas paginas o `<p>` e filho direto do `.row`, entao ele
+   * herda o container inteiro e a linha sai com **127 caracteres** no desktop.
+   * A faixa em que se le sem perder a linha e 45-75; 127 e o dobro do teto.
+   *
+   * O valor nao foi escolhido, foi copiado do proprio site: 688px e a caixa que
+   * a MESMA pagina entrega no tablet, onde a linha mede 75 caracteres — o topo
+   * da faixa boa. Descontados os 14px de recuo de cada lado do <Container>,
+   * sobram os 660px de texto que foram medidos ali.
+   *
+   * E o que a `largura="estreita"` do <Container> passa a valer. Ela apontava
+   * para `max-w-3xl`, um padrao do Tailwind que ninguem tinha medido — mesmo
+   * tipo de valor que ja pos o container em 1140px quando o real eram 1500px.
+   */
+  --container-texto: 43rem; /* 688px — 75ch medidos */
+
+  /*
    * PROPORCAO
    *
    * O tema fixava `height: 360px` em `style=` inline nos heros, o que recorta

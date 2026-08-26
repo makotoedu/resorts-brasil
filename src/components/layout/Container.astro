@@ -20,8 +20,13 @@ interface Props {
   /**
    * `conteudo` e a largura do site (1500px). `media` e a coluna centrada de
    * 960px, MEDIDA no `.col-lg-8` que o tema usa para bloco de texto dentro do
-   * container largo. `estreita` limita a linha para leitura corrida — politica
-   * de privacidade e termos, onde 1500px dariam linhas de 200 caracteres.
+   * container largo. `estreita` e a largura de LEITURA CORRIDA — politica de
+   * privacidade e termos de uso.
+   *
+   * `estreita` era `max-w-3xl`, um padrao do Tailwind, e agora e o
+   * `--container-texto` medido: as duas paginas de texto entregam 127
+   * caracteres por linha no desktop, e 688px e a caixa em que a propria pagina
+   * mede 75. O numero saiu do scripts/medir-documento.mjs, nao de gosto.
    */
   largura?: 'conteudo' | 'media' | 'estreita' | 'total';
   class?: string;
@@ -35,7 +40,7 @@ const Tag = como;
 const LARGURAS = {
   conteudo: 'max-w-conteudo',
   media: 'max-w-media',
-  estreita: 'max-w-3xl',
+  estreita: 'max-w-texto',
   total: 'max-w-none',
 } as const;
 ---

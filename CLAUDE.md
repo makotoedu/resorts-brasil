@@ -24,10 +24,11 @@ O plano completo, com etapas e critérios, está em
 | 3 — padrões (CartaoMembro, Hero, Abas…) | concluída |
 | 4 — conteúdo (Content Collections) | concluída |
 | 5 — cromo + páginas pequenas (404, história, contato, diretoria) | concluída |
-| 6 — termos de uso e política de privacidade | **próxima** |
-| 7–11 | não iniciadas |
+| 6 — termos de uso e política de privacidade | concluída |
+| 7 — publicações e estatísticas e estudos | **próxima** |
+| 8–11 | não iniciadas |
 
-**Páginas migradas: 11 de 41.** Confira sempre com
+**Páginas migradas: 17 de 41.** Confira sempre com
 `node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
 nesta tabela.
 
@@ -64,13 +65,18 @@ nesta tabela.
    `node scripts/medir-base.mjs` para o elemento nu, `node
    scripts/medir-primitivos.mjs` para o que tem classe (botão, seção, container,
    grade, ícone), `node scripts/medir-padroes.mjs` para as composições (cartão,
-   chamada, hero, abas…) e `node scripts/medir-cromo.mjs` para o cabeçalho, o
-   rodapé, a faixa de cookies e o voltar-ao-topo, sempre com o **hover** junto —
-   e, no cromo, com o **estado aberto**, porque menu, submenu e seletor de idioma
+   chamada, hero, abas…), `node scripts/medir-cromo.mjs` para o cabeçalho, o
+   rodapé, a faixa de cookies e o voltar-ao-topo, e `node
+   scripts/medir-documento.mjs` para o texto corrido (separador, citação, tabela
+   e **a largura da linha em caracteres**, que só se mede com a fonte real
+   carregada) — sempre com o **hover** junto e, no cromo, com o **estado
+   aberto**, porque menu, submenu e seletor de idioma
    medem zero em repouso. Nunca lido do
    `style.css`, nunca contado no markup. O `padding` das listas já entrou errado
    por leitura (28px onde o real é 14px), a largura do container por suposição
-   (1140px onde o real é 1500px), e **duas cores por contagem de ocorrências**:
+   (1140px onde o real é 1500px), a largura da linha de leitura por padrão do
+   Tailwind (`max-w-3xl` onde o medido são 688px), e **duas cores por contagem de
+   ocorrências**:
    as 123 do `#0c71c3` são todas títulos de capítulo do ebook e nenhuma é botão,
    e as 141 do `#0c101b` são todas do ebook também — a superfície escura da
    chamada de ação é o navy, medido.
@@ -307,6 +313,24 @@ título de seção e a dupla `title`/`description` traduzem.
 Editar markup de página para acrescentar um resort ou um parceiro é o caminho
 errado — foi exatamente assim que a home em espanhol ficou com um logo a menos e
 a página inglesa de associe-se com dois parceiros a mais.
+
+**Há um limite nessa regra, e a Etapa 6 o encontrou: corpo de documento não vai
+para o `ui.ts`.** Os termos de uso e a política de privacidade traduzem, mas são
+~1.500 e ~4.000 palavras por idioma — pô-los ali transformaria um arquivo de
+rótulos curtos num repositório de prosa jurídica, e não resolveria nada: o texto
+continuaria existindo três vezes, só que mais longe da página que o exibe. O
+critério que vale é **o que se repete entre páginas mora no `ui.ts`; o que existe
+uma vez mora onde é lido.** Dali saem o título e o rótulo da data; o corpo fica
+na página. O que não é texto — a data de vigência de cada documento — está em
+[`src/data/juridico.ts`](src/data/juridico.ts), porque ela é a mesma nos três
+idiomas e já tinha seis cópias.
+
+Quando uma etapa toca texto traduzido, **ler os três idiomas lado a lado faz
+parte da etapa**. Foi assim que apareceu o "Leia agora" em duas páginas inglesas,
+e foi assim que se descobriu que a política de privacidade inglesa tinha um
+capítulo inteiro em espanhol — o que declara a lei aplicável e o foro. Nenhum dos
+quatro portões vê isso, e não há portão barato que veja: a estrutura estava
+certa.
 
 **Publicações e estudos são Content Collections**, não `src/data/`: os dados
 ficam em [`src/content/*.yaml`](src/content/), o schema em

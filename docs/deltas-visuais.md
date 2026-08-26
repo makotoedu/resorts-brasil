@@ -209,6 +209,75 @@ botão de fundo âmbar com texto navy — o par `--color-acento-ambar` /
 intenção de marca e muda mais o desenho do menu; ficou registrada aqui em vez de
 tomada sozinha.
 
+## Etapa 6 — as duas páginas de texto, e a linha que tinha 127 caracteres
+
+Medida em 25/08/2026. Seis páginas: `termos-de-uso` e
+`politica-de-privacidade`, nos três idiomas. **17 de 41 migradas.**
+
+Vale aqui a mesma leitura da Etapa 5: o diff visual não foi rodado como número
+porque uma página que troca de camada de apresentação inteira diverge em tudo.
+Quem sustenta a etapa são os quatro portões — build, comportamento (51/51),
+geometria (zero bloqueios em 123 páginas × viewport) e orçamento — mais uma
+quinta conferência, que nestas páginas era a que de fato importava: a
+**comparação do texto do `<main>` gerado**, bloco a bloco, contra o build
+anterior. São dois documentos jurídicos transcritos; o risco não é o pixel, é uma
+frase que fica pelo caminho.
+
+O resultado dessa comparação é o resumo mais curto possível da etapa: **34 → 34
+blocos nos termos e 98 → 100 na política**, e cada diferença é uma das linhas
+listadas abaixo. Os dois blocos a mais são os `<caption>` das tabelas de cookies.
+
+### O que ficou mais leve
+
+| página | antes | depois |
+|---|---|---|
+| `termos-de-uso` (× 3 idiomas) | 109 KB | **91 KB** |
+| `politica-de-privacidade` (× 3) | 127 KB | **121 KB** |
+
+E a dívida de transbordo horizontal caiu de **53 para 45**: some o `.row` das
+seis páginas e some a tabela de cookies, que media 445px dentro de uma coluna de
+358px no mobile e punha barra horizontal na página inteira.
+
+### Correções
+
+| onde | tipo | motivo |
+|---|---|---|
+| `en-us/privacy-policy` | **correção, e é a mais séria da etapa** | o capítulo "Applicable law and jurisdiction" estava **em espanhol**, palavra por palavra o parágrafo da página espanhola. Numa política de privacidade, o capítulo que declara a lei aplicável e o foro |
+| `en-us/privacy-policy` | correção | o capítulo "Changes to this policy" trazia o **texto do foro**. Ou seja: alguém colou o parágrafo do foro no lugar do de alterações e preencheu a vaga que sobrou com o espanhol. O do foro voltou ao capítulo dele; o de alterações foi traduzido do português |
+| `en-us/terms-of-use` | correção | o capítulo 2 estava **sem número** — "The content and data inserted…" no meio de uma sequência de 1 a 8, numerada em português e espanhol |
+| ambas × 3 | correção | hierarquia. Eram `<h1 class="text-md h2">` seguido de oito (termos) e catorze (política) `<h4>`: um h1 disfarçado de h2 e um salto de três níveis, repetido |
+| `politica-de-privacidade` × 3 | correção | o bloco de abertura era um `<h2>` com um **parágrafo inteiro** dentro — 638px de altura de heading no mobile, medidos. Virou `<Texto tamanho="lg">`, mesma correção que a `historia` recebeu na Etapa 5 |
+| seção de cookies × 3 | correção | o título era `<h4>` e o nome de cada categoria era `<p class="text-bold">` — três subseções de verdade, cada uma com a sua tabela, desenhadas como parágrafo |
+| `politica-de-privacidade` × 3 | correção | o e-mail de contato aparecia quatro vezes e, em português, estava dentro de `<a>` **sem `href`** nas três últimas: parecia link, não era. Agora vem de `src/data/contato.ts` e é `mailto:` nos três idiomas |
+| ambas × 3 | correção | a data era `12/06/2025` nos três idiomas. Em inglês, `12/06` é 6 de dezembro. Agora o dia é dado (`src/data/juridico.ts`) e cada idioma o escreve por extenso |
+| tabela de cookies | correção | quatro colunas não cabem em 390px. A rolagem passa a ser da tabela, numa região com `tabindex="0"` — sem isso o teclado não alcançaria as colunas da direita |
+| `politica-de-privacidade` × 3 | correção | um `<p></p>` vazio antes do último bloco de "Quais são os seus direitos?" |
+| ambas × 3 | correção | `<body class="modern">` some. `en-us/terms-of-use` era a única das três irmãs **com** a classe |
+
+### Refinos
+
+| onde | tipo | motivo |
+|---|---|---|
+| ambas × 3 | **refino, e é o motivo de a etapa existir** | a linha tinha **127 caracteres** no desktop, medidos: o `<p>` era filho direto do `.row` e herdava os 1500px do container. Passa a 75, que é o topo da faixa em que se lê sem perder a linha — e é a largura que a própria página já entregava no tablet |
+| ambas × 3 | refino | o vão entre capítulos deixa de ser um `<div class="space">` vazio (60px medidos, repetidos 22 vezes à mão) e vira a margem do próprio título |
+| ambas × 3 | refino | o título da página passa a `3xl`, como nas páginas da Etapa 5 — e o vão entre título e corpo cai de 160px (duas seções de 80) para 80 |
+| ambas × 3 | refino | os capítulos ficam em 19 → 25px fluidos (`tamanho="lg"`), que é o degrau em que o `<h4>` do tema já media |
+| `termos-de-uso` × 3 | refino | a citação do endereço vira `<blockquote>` de verdade, com os valores medidos do `.blockquote` (filete de 3px, recuo 10/20px) |
+| seção de cookies | refino | o `<hr class="space">` entre categorias some. Ele media 26px no mobile e 60 no desktop; o documento usa um valor só, o menor degrau nomeado (40px), porque subseção não deve soar tão alto quanto capítulo |
+| tabela de cookies | refino | o texto era `#3c4043`, um cinza que não existe em nenhum outro lugar do site e cujo papel é o do parágrafo. Consolidado em `--color-texto-paragrafo` |
+| ambas × 3 | refino | `<b>` vira `<strong>` em inglês e espanhol, que já era o que o português usava |
+
+### Uma divergência de conteúdo que NÃO foi corrigida, e por quê
+
+A citação dos termos diz que a associação fica na "Rua Professor Carlos de
+Carvalho, **nº 280**"; `src/data/contato.ts` diz "**28**, sl. 82". Os dois não
+podem estar certos.
+
+Ficou como está. É um documento jurídico com data de vigência, e corrigir a
+identificação da parte num texto de 2022 não é trabalho de migração de layout —
+é decisão de quem responde pelo documento. Está anotado no topo de
+[`termos-de-uso.astro`](../src/pages/termos-de-uso.astro) para não se perder.
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

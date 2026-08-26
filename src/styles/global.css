@@ -58,5 +58,21 @@
 @source '../pages/es-es/contactenos.astro';
 @source '../pages/es-es/directorio.astro';
 
+/* Etapa 6: os dois documentos juridicos, nos tres idiomas. */
+@source '../pages/termos-de-uso.astro';
+@source '../pages/politica-de-privacidade.astro';
+@source '../pages/en-us/terms-of-use.astro';
+@source '../pages/en-us/privacy-policy.astro';
+@source '../pages/es-es/terminos-de-uso.astro';
+@source '../pages/es-es/politica-de-privacidad.astro';
+
+/*
+ * A secao de cookies da politica. Nao esta em nenhum dos quatro diretorios de
+ * componente — e montagem de conteudo, como a ListaPublicacoes —, entao precisa
+ * da propria linha. Ela deixou de emitir markup do tema na Etapa 6, junto com as
+ * tres paginas que a usam.
+ */
+@source '../components/SecaoCookies.astro';
+
 @import './tokens.css';
 @import './base.css';

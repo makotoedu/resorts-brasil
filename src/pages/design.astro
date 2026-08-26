@@ -34,6 +34,8 @@ import Hero from '../components/padroes/Hero.astro';
 import FaixaDestaque from '../components/padroes/FaixaDestaque.astro';
 import Contador from '../components/padroes/Contador.astro';
 import Abas from '../components/padroes/Abas.astro';
+import Prosa from '../components/padroes/Prosa.astro';
+import Tabela from '../components/padroes/Tabela.astro';
 import Cabecalho from '../components/cromo/Cabecalho.astro';
 import Rodape from '../components/cromo/Rodape.astro';
 import FaixaCookies from '../components/cromo/FaixaCookies.astro';
@@ -1001,6 +1003,89 @@ const faixas = [
             painel inativo recebe <code>hidden</code>, e não uma classe — conteúdo escondido por
             classe continua achável pela busca da página, e a pessoa "encontra" um resort que não
             está na tela.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>Prosa</h3>
+        <p class="legenda">
+          O ritmo de um documento de texto corrido — os termos de uso e a política de privacidade,
+          que são a única coisa no site feita só de parágrafo. Ele não redefine tamanho, peso nem cor
+          de nada: isso é do <code>base.css</code>, e é justamente por isso que essas duas páginas
+          são o teste dele.
+        </p>
+        <div class="demo">
+          <Container largura="estreita" class="px-0">
+            <Prosa>
+              <Titulo nivel={4} tamanho="lg">1. Funcionalidade e Uso do site por você</Titulo>
+              <p>
+                A disponibilização do conteúdo como informações, textos, dados, imagens, fotografias
+                e vídeos tem caráter gratuito para os seus usuários e não exige cadastro prévio, em
+                regra. A Resorts Brasil pode ser identificada da seguinte maneira:
+              </p>
+              <blockquote>
+                <p>
+                  <strong>
+                    Resorts Brasil, com endereço Rua Professor Carlos de Carvalho, bairro Itaim Bibi
+                    — São Paulo/SP.
+                  </strong>
+                </p>
+              </blockquote>
+              <p>Sem prejuízo de outras condições destes Termos, a Resorts Brasil não se responsabilizará:</p>
+              <ul>
+                <li>Por quaisquer danos sofridos pelos usuários em razão da utilização do aplicativo</li>
+                <li>Por problemas que ocorrerem nos seus dispositivos e equipamentos</li>
+              </ul>
+              <Titulo nivel={4} tamanho="lg">2. Glossário</Titulo>
+              <p>
+                O vão acima é a margem deste título, e não um elemento vazio. No tema era
+                <code>&lt;div class="space"&gt;</code> entre cada capítulo — 60px medidos, repetidos
+                à mão 22 vezes nas duas páginas.
+              </p>
+            </Prosa>
+          </Container>
+          <p class="legenda">
+            <strong>A linha tem 75 caracteres, e o número é o argumento.</strong> Naquelas páginas o
+            <code>&lt;p&gt;</code> era filho direto do <code>.row</code> e herdava os 1500px do
+            container: <strong>127 caracteres por linha</strong> no desktop, medidos. O
+            <code>--container-texto</code> é a caixa em que a própria página mede 75 — a largura que
+            ela já entrega no tablet.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>Tabela</h3>
+        <p class="legenda">
+          Um uso, e é o mais delicado do site: as três tabelas de cookies da política de privacidade,
+          que são afirmação jurídica sobre tratamento de dados. Quem as monta é a
+          <code>&lt;SecaoCookies&gt;</code>, a partir de <code>src/data/cookies.ts</code>.
+        </p>
+        <div class="demo">
+          <Tabela
+            legenda="Cookies necessários"
+            colunas={['Nome', 'Fornecedor', 'Validade', 'Finalidade']}
+          >
+            <tr>
+              <th scope="row">rb_consent</th>
+              <td>Resorts Brasil</td>
+              <td>180 dias</td>
+              <td>Guarda quais categorias de cookies você autorizou.</td>
+            </tr>
+            <tr>
+              <th scope="row">_ga</th>
+              <td>Google</td>
+              <td>730 dias</td>
+              <td>Distingue visitantes, para contar quantas pessoas diferentes acessam o site.</td>
+            </tr>
+          </Tabela>
+          <p class="legenda">
+            <strong>Ela transbordava no mobile.</strong> Medida em 445px de largura dentro de uma
+            coluna de 358px, em 390px de janela: quatro colunas não cabem, e a
+            <em>página inteira</em> ganhava barra horizontal. Agora a rolagem é da tabela, numa
+            região com <code>tabindex="0"</code> — sem isso, quem navega por teclado não teria como
+            rolá-la, e as colunas da direita ficariam inalcançáveis.
           </p>
         </div>
       </section>

@@ -13,7 +13,22 @@
  * o que traduz (finalidade, rotulos, descricao das categorias) vem de
  * src/i18n/ui.ts. As categorias e as descricoes sao as MESMAS do painel de
  * preferencias, entao a politica e a interface nao tem como discordar.
+ *
+ * ELE VAI DENTRO DE UM <Prosa>. E ali que o vao entre as categorias mora — no
+ * `margin-top` do `<h3>` — e nao num elemento de espacamento aqui dentro, que
+ * era o `<hr class="space">` do tema. A Etapa 6 migrou as tres paginas de
+ * politica juntas, entao este arquivo deixou de emitir markup do tema; se
+ * alguem o usar fora de um documento, o texto sai certo e o ritmo, nao.
+ *
+ * DUAS CORRECOES DE HIERARQUIA, herdadas do tema:
+ *
+ *   o titulo da secao era `<h4>` numa pagina cujo unico heading acima era o
+ *   `<h1>` — salto de tres niveis;
+ *   o nome de cada categoria era `<p class="text-bold">`, um heading desenhado
+ *   como paragrafo. Sao tres subsecoes de verdade, cada uma com a sua tabela.
  */
+import Titulo from './primitivos/Titulo.astro';
+import Tabela from './padroes/Tabela.astro';
 import { ui, type Locale } from '../i18n/ui';
 import { cookies, categoriasCookie, type CategoriaCookie } from '../data/cookies';
 
@@ -28,7 +43,7 @@ const t = ui[lang];
  * Aborta o build em vez de renderizar celula vazia. Uma tabela de tratamento de
  * dados com uma finalidade em branco e pior do que um erro de build: ninguem
  * repara, e ela vai ao ar afirmando nada sobre um cookie que existe. Mesmo
- * criterio do title/description ausente no BaseLayout.
+ * criterio do title/description ausente no Cabeca.
  */
 const semFinalidade = cookies.filter((c) => !t.cookiePurposes[c.nome]);
 if (semFinalidade.length > 0) {
@@ -43,51 +58,42 @@ const rotulo: Record<CategoriaCookie, { nome: string; desc: string }> = {
   analise: { nome: t.cookieCatAnalytics, desc: t.cookieCatAnalyticsDesc },
   publicidade: { nome: t.cookieCatAds, desc: t.cookieCatAdsDesc },
 };
+
+const colunas = [t.cookieColName, t.cookieColProvider, t.cookieColDuration, t.cookieColPurpose];
 ---
 
-<div class="row">
-  <h4>{t.cookiePolicyTitle}</h4>
-  <p>{t.cookiePolicyIntro}</p>
-  <p>{t.cookiePolicyManage}</p>
-  <p>{t.cookiePolicyCategories}</p>
+<Titulo nivel={2} tamanho="lg">{t.cookiePolicyTitle}</Titulo>
+<p>{t.cookiePolicyIntro}</p>
+<p>{t.cookiePolicyManage}</p>
+<p>{t.cookiePolicyCategories}</p>
 
-  {
-    categoriasCookie.map((categoria) => {
-      const doGrupo = cookies.filter((c) => c.categoria === categoria);
-      return (
-        <>
-          <hr class="space" />
-          <div>
-            <p class="text-bold">{rotulo[categoria].nome}</p>
-            <p>{rotulo[categoria].desc}</p>
-            {categoria === 'publicidade' && <p>{t.cookieAdsNote}</p>}
-            {doGrupo.length === 0 ? (
-              <p>{t.cookieNoneYet}</p>
-            ) : (
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th scope="col">{t.cookieColName}</th>
-                    <th scope="col">{t.cookieColProvider}</th>
-                    <th scope="col">{t.cookieColDuration}</th>
-                    <th scope="col">{t.cookieColPurpose}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {doGrupo.map((c) => (
-                    <tr>
-                      <th scope="row">{c.nome}</th>
-                      <td>{c.fornecedor}</td>
-                      <td>{c.dias} {t.cookieDays}</td>
-                      <td>{t.cookiePurposes[c.nome]}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </>
-      );
-    })
-  }
-</div>
+{
+  categoriasCookie.map((categoria) => {
+    const doGrupo = cookies.filter((c) => c.categoria === categoria);
+    return (
+      <>
+        <Titulo nivel={3} tamanho="md">
+          {rotulo[categoria].nome}
+        </Titulo>
+        <p>{rotulo[categoria].desc}</p>
+        {categoria === 'publicidade' && <p>{t.cookieAdsNote}</p>}
+        {doGrupo.length === 0 ? (
+          <p>{t.cookieNoneYet}</p>
+        ) : (
+          <Tabela legenda={rotulo[categoria].nome} colunas={colunas}>
+            {doGrupo.map((c) => (
+              <tr>
+                <th scope="row">{c.nome}</th>
+                <td>{c.fornecedor}</td>
+                <td>
+                  {c.dias} {t.cookieDays}
+                </td>
+                <td>{t.cookiePurposes[c.nome]}</td>
+              </tr>
+            ))}
+          </Tabela>
+        )}
+      </>
+    );
+  })
+}

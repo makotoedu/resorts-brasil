@@ -1745,3 +1745,201 @@ ela **já estava**, desde antes. O `astro check` pegou na hora.
 Nota de método: o arquivo tem 130 linhas e a leitura tinha parado na 60ª, o
 suficiente para ver o `cargoEm` e não o resto. Ler o trecho que interessa é
 barato; assumir que o resto não existe, não.
+
+---
+
+# Design system — Etapa 6
+
+## A linha tinha 127 caracteres, e ninguém tinha medido
+
+O plano pôs os dois documentos jurídicos nesta etapa com uma frase: "muito texto,
+pouca estrutura — valida `base.css`". A medição achou algo mais concreto.
+
+Nas duas páginas o `<p>` é **filho direto do `.row`**, sem nenhum `.col-*`. Ele
+herda o container inteiro, e o container do tema tem 1500px. O resultado, medido
+com [`medir-documento.mjs`](../scripts/medir-documento.mjs):
+
+| viewport | caixa do texto | caracteres por linha |
+|---|---|---|
+| mobile (390) | 358px | 38 |
+| tablet (768) | 688px | **75** |
+| desktop (1440) | 1141px | **127** |
+
+A faixa em que se lê sem perder a linha é 45–75. O desktop entregava o dobro do
+teto — e o valor que corrige isso não precisou ser escolhido: **é o do tablet**.
+688px é a caixa que a mesma página já produz numa tela estreita, e é onde ela
+mede exatamente 75. Virou `--container-texto`, e é o que a `largura="estreita"`
+do `<Container>` passa a valer.
+
+Aquela prop apontava para `max-w-3xl`, um padrão do Tailwind. Mesma classe de
+valor que já pôs o container em 1140px quando o real eram 1500 — um número que
+parece razoável, escrito por quem não mediu. Ninguém tinha usado a prop ainda, o
+que é a única razão de a correção ter saído de graça.
+
+Nota de método: o script mede caracteres por linha com um `<canvas>`, medindo o
+"0" na fonte computada do próprio elemento. Não dá para derivar isso do CSS —
+`ch` depende da fonte real, e a fonte real depende de a Poppins ter carregado.
+
+## O componente de prosa não redefine nada, e é isso que ele faz
+
+O [`<Prosa>`](../src/components/padroes/Prosa.astro) responde por três coisas —
+o vão entre capítulos, a citação e a cor da lista — e deliberadamente por mais
+nenhuma. Tamanho, peso e cor continuam vindo do `base.css`.
+
+A tentação é óbvia: um componente chamado "prosa" quer declarar tipografia. Mas
+isso criaria uma **segunda base**, com valores que ninguém mediu, competindo com
+a que a Etapa 0 mediu no navegador — e as duas páginas de texto são justamente
+o teste de que a primeira está certa. Um componente que sobrepõe o `base.css`
+aqui apagaria a única evidência que a etapa produz.
+
+O mesmo raciocínio vale para a largura: quem limita a linha é o `<Container>`.
+São dois eixos — o container decide onde a coluna começa e termina, a prosa
+decide como o texto respira dentro dela. Misturá-los faria o padrão disputar
+largura com a camada `layout/`, que existe exatamente para isso não acontecer.
+
+### O detalhe de mecânica que faz o componente funcionar
+
+Todos os seletores do `<style>` são `:global()`, e não por preguiça. O Astro
+escopa o CSS marcando os elementos que o **próprio componente** renderiza; o
+conteúdo de um `<slot>` é renderizado pela página, então carrega o escopo dela.
+Um `.prosa h2 {}` simples não casaria com nada — sem erro, sem aviso, sem estilo.
+O `.prosa` fica fora do `:global()` de propósito: é ele que carrega o escopo e
+limita o alcance.
+
+## O vão entre capítulos era um `<div>` vazio, 22 vezes
+
+O tema separava as seções com `<div class="space"></div>` — 60px medidos, iguais
+nos três viewports, repetidos à mão entre cada capítulo das duas páginas.
+
+Passou a ser a `margin-top` do próprio título. A diferença não é de aparência, é
+de durabilidade: um `<div>` de espaçamento é uma instrução de desenho escrita
+dentro do conteúdo. Ele some quando alguém move um parágrafo, e não volta
+sozinho. A margem do heading acompanha o heading.
+
+O `<hr class="space">` da seção de cookies caiu junto, e esse tinha uma
+particularidade: media **26px no mobile, 36 no tablet e 60 no desktop** — três
+valores, por duas media queries do `ajustes.css`. O documento usa um só, e é o
+menor degrau nomeado da escala (40px), porque subseção não deve soar tão alto
+quanto capítulo. É um refino, e está classificado como tal.
+
+## A tabela de cookies transbordava, e nenhum portão reclamava
+
+Medida em **445px de largura dentro de uma coluna de 358px**, no viewport de
+390px. Quatro colunas não cabem, e a página inteira ganhava barra de rolagem
+horizontal — uma das 53 pendências que a varredura de geometria listava.
+
+A correção é uma `<div>` com `overflow-x: auto` em volta, e com ela veio um
+detalhe que é fácil não fazer: **`tabindex="0"` no contêiner rolável**. Sem isso,
+quem navega por teclado não tem como rolar a tabela na horizontal — o foco pula
+direto para o próximo link, e as colunas da direita ficam inalcançáveis. Com
+`role="region"` e um nome vindo do `<caption>`, o leitor de tela ainda anuncia
+onde a pessoa entrou.
+
+Vale registrar o que a tabela ensinou sobre cor: o `.table` do tema pinta o texto
+em `#3c4043`, um cinza que **não existe em nenhum outro lugar do site** e cujo
+papel é exatamente o do parágrafo. Consolidado em `--color-texto-paragrafo`, pelo
+mesmo critério que consolidou o `#efb72c` no âmbar na Etapa 3.
+
+## O portão reprovou o commit que consertava o defeito
+
+O `verifica-sistema.mjs` abortou o build com duas falhas:
+
+```
+FALHA  src/pages/politica-de-privacidade.astro  1 style= inline em pagina migrada
+FALHA  src/pages/termos-de-uso.astro            1 style= inline em pagina migrada
+```
+
+As duas páginas não têm `style=` inline nenhum. O que elas têm é um **comentário**
+explicando que as listas eram `<ul style="color: …">` — exatamente o markup que
+aquele commit removeu.
+
+**É a segunda vez que isso acontece, com a mesma forma.** Na Etapa 5 o checador
+de headings reprovou as duas primeiras páginas migradas porque os comentários
+delas citam `<h1 class="text-md h2">` para explicar a correção. Um projeto que
+documenta o defeito ao lado do conserto vai citar markup em comentário o tempo
+todo; quem precisa saber a diferença é a checagem.
+
+A resposta foi extrair `linhasSemComentario()`, que apaga comentário de bloco,
+de linha e de HTML preservando a numeração, e passar as duas checagens por ela —
+o `semCorLiteral` já tinha metade disso escrita à mão, dentro dele. Uma função,
+duas checagens, e a próxima nasce com o problema resolvido.
+
+## A política de privacidade inglesa tinha um capítulo em espanhol
+
+O capítulo "Applicable law and jurisdiction" da página inglesa estava **em
+espanhol**, palavra por palavra o mesmo parágrafo da página espanhola. E o
+capítulo anterior, "Changes to this policy", trazia o **texto do foro** — o
+parágrafo sobre controvérsia e jurisdição, que é o do capítulo seguinte.
+
+Lidas juntas, as duas falhas são uma só: alguém colou o parágrafo do foro no
+lugar do de alterações, e preencheu a vaga que sobrou com o espanhol. O texto
+certo do foro existia; estava no capítulo errado. O de alterações nunca foi
+traduzido.
+
+**Nenhum dos quatro portões via, e não há portão barato que veja.** Os headings
+batem, a contagem de parágrafos bate, a geometria é idêntica, o peso é idêntico.
+Um verificador de paridade estrutural entre idiomas — que chegou a ser
+considerado nesta etapa — também não pegaria: a estrutura estava certa. Só lendo.
+
+O que dá para tirar disso é mais modesto e mais útil do que um portão novo:
+**quando uma etapa toca texto traduzido, ler os três idiomas lado a lado faz
+parte da etapa.** Foi assim que a Etapa 4 achou o "Leia agora" em duas páginas
+inglesas, e é assim que este apareceu.
+
+## A data que só acertava em dois dos três idiomas
+
+As duas páginas exibiam `12/06/2025` e `21/02/2022` nos três idiomas. Em
+português e espanhol, `12/06` é 12 de junho. Para um leitor de língua inglesa,
+`12/06` é **6 de dezembro**. A data certa, escrita de um jeito que erra em um
+terço do público.
+
+O dia virou dado ISO em [`src/data/juridico.ts`](../src/data/juridico.ts) e cada
+idioma o escreve por extenso, com `Intl.DateTimeFormat`. De quebra, as seis
+ocorrências viraram duas: atualizar uma política é mexer no texto dos três
+arquivos, e a data é a última linha em que alguém pensa.
+
+Uma armadilha no caminho, e ela é silenciosa: `new Date('2022-02-21')` é
+meia-noite **UTC**, e formatar isso no fuso do Brasil (UTC−3) devolve **20 de
+fevereiro**. O `timeZone: 'UTC'` no formatador não é zelo — sem ele, o dia
+exibido mudaria conforme a máquina que rodasse o build.
+
+## O que ficou em `ui.ts` e o que não ficou
+
+A regra do projeto é conhecida: o que traduz vai para o `ui.ts`. Aqui ela
+encontrou o primeiro caso em que a resposta literal está errada.
+
+Os dois documentos somam **~1.500 e ~4.000 palavras por idioma**. Pô-los no
+`ui.ts` transformaria um arquivo de rótulos curtos — nav, rodapé, cookies,
+títulos de página — em um repositório de prosa jurídica, e não resolveria nada:
+o texto continuaria existindo três vezes, só que mais longe da página que o
+exibe.
+
+O critério que vale, e que o `ui.ts` sempre aplicou na prática, é outro: **o que
+se repete entre páginas mora lá; o que existe uma vez mora onde é lido.** Foram
+para o `ui.ts` o título e o rótulo da data — que aparecem em duas páginas cada e
+já tinham divergido ("Atualizada em" nos termos, "Última atualização:" na
+política, mesma informação em duas frases). O corpo dos documentos ficou na
+página.
+
+O que substitui o portão automático que o `ui.ts` daria é a comparação de texto
+do `<main>` gerado, bloco a bloco, contra o build anterior — 34 → 34 blocos nos
+termos, 98 → 100 na política, e cada diferença explicada. Custa segundos e é o
+método que o `CLAUDE.md` já prescreve para extração de markup.
+
+## A `<SecaoCookies>` deixou de ser componente de transição
+
+Ela existia emitindo markup do tema (`.row`, `.table-bordered`, `.text-bold`),
+como a `ListaPublicacoes` e a `ListaEstudos` ainda fazem. A diferença é que as
+**três** páginas que a usam migraram na mesma etapa — então não havia nada a
+preservar, e ela foi reescrita direto para o sistema novo.
+
+Ficou em `src/components/`, e não em `padroes/`, de propósito: ela é montagem de
+conteúdo a partir de `src/data/cookies.ts`, não uma decisão de desenho. O desenho
+mora na [`<Tabela>`](../src/components/padroes/Tabela.astro), que está no
+catálogo. O preço é uma linha de `@source` própria em `global.css` — componente
+fora dos quatro diretórios não é varrido por diretório.
+
+Há um acoplamento que vale dizer em voz alta: ela **espera estar dentro de um
+`<Prosa>`**. É lá que o vão entre as categorias mora, no `margin-top` do `<h3>`.
+Fora de um documento, o texto sai certo e o ritmo não. Está escrito no topo do
+arquivo.
