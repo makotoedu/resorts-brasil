@@ -53,6 +53,29 @@ const ALVOS = [
   { grupo: 'grade', nome: '.col-lg-3', pagina: '/diretoria.html', seletor: 'main .col-lg-3' },
   { grupo: 'grade', nome: '.col-lg-4', pagina: '/publicacoes.html', seletor: 'main .col-lg-4' },
   { grupo: 'grade', nome: '.col-lg-6', pagina: '/fale-conosco.html', seletor: 'main .col-lg-6' },
+  /*
+   * As duas grades masonry, e elas sao o unico lugar do site em que o numero de
+   * colunas NAO esta no CSS: quem posiciona e o `gridLayout()` do site.js, em
+   * absoluto. Ler `.post-5-columns` no style.css da a largura da celula, nao a
+   * contagem — a contagem sai de quantas posicoes horizontais distintas os itens
+   * ocupam de fato, que e o que `itens` conta abaixo.
+   */
+  {
+    grupo: 'grade',
+    nome: '.grid-layout.post-5-columns',
+    pagina: '/publicacoes.html',
+    seletor: 'main .grid-layout',
+    itens: 'main .grid-layout .post-item',
+  },
+  {
+    grupo: 'grade',
+    nome: '.grid-layout.post-4-columns',
+    pagina: '/estatisticas-e-estudos.html',
+    seletor: 'main .grid-layout',
+    itens: 'main .grid-layout .post-item',
+  },
+  { grupo: 'grade', nome: '.post-item (publicacoes)', pagina: '/publicacoes.html', seletor: 'main .post-item' },
+  { grupo: 'grade', nome: '.post-item (estudos)', pagina: '/estatisticas-e-estudos.html', seletor: 'main .post-item' },
 
   // ---- icone ----
   { grupo: 'icone', nome: 'i.fab (rodape)', pagina: '/index.html', seletor: '#footer i.fab' },
@@ -94,7 +117,7 @@ for (const vp of VIEWPORTS) {
     const props = PROPS[alvo.grupo];
     const medir = () =>
       page.evaluate(
-        ({ seletor, props, pseudo }) => {
+        ({ seletor, props, pseudo, itens }) => {
           const el = document.querySelector(seletor);
           if (!el) return null;
           const cs = getComputedStyle(el, pseudo || undefined);
@@ -102,9 +125,20 @@ for (const vp of VIEWPORTS) {
           for (const p of props) saida[p] = cs[p];
           const r = el.getBoundingClientRect();
           saida['_caixa'] = `${Math.round(r.width)}x${Math.round(r.height)}`;
+          /*
+           * Quantas COLUNAS a grade tem de fato: posicoes horizontais distintas
+           * entre os itens. Numa grade masonry posicionada em absoluto, e a
+           * unica forma de saber — e nas duas do tema o numero nao esta em lugar
+           * nenhum do CSS.
+           */
+          if (itens) {
+            const caixas = [...document.querySelectorAll(itens)];
+            const xs = new Set(caixas.map((n) => Math.round(n.getBoundingClientRect().left)));
+            saida['_colunas'] = `${xs.size} colunas / ${caixas.length} itens`;
+          }
           return saida;
         },
-        { seletor: alvo.seletor, props, pseudo: alvo.pseudo }
+        { seletor: alvo.seletor, props, pseudo: alvo.pseudo, itens: alvo.itens }
       );
 
     const repouso = await medir();
@@ -145,7 +179,8 @@ for (const grupo of Object.keys(PROPS)) {
       const linha = PROPS[grupo]
         .map((p) => `${p}=${r.repouso[p]}`)
         .join('  ');
-      console.log(`    ${r.viewport.padEnd(8)} ${r.repouso._caixa.padEnd(10)} ${linha}`);
+      const colunas = r.repouso._colunas ? `${r.repouso._colunas.padEnd(22)}` : '';
+      console.log(`    ${r.viewport.padEnd(8)} ${r.repouso._caixa.padEnd(10)} ${colunas}${linha}`);
       if (r.hover) {
         // So o que muda no hover: repetir o resto esconde a diferenca.
         const delta = PROPS[grupo].filter((p) => r.hover[p] !== r.repouso[p]).map((p) => `${p}: ${r.repouso[p]} -> ${r.hover[p]}`);

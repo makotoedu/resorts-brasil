@@ -68,11 +68,24 @@
 
 /*
  * A secao de cookies da politica. Nao esta em nenhum dos quatro diretorios de
- * componente — e montagem de conteudo, como a ListaPublicacoes —, entao precisa
+ * componente — e montagem de conteudo, e nao decisao de desenho —, entao precisa
  * da propria linha. Ela deixou de emitir markup do tema na Etapa 6, junto com as
  * tres paginas que a usam.
  */
 @source '../components/SecaoCookies.astro';
+
+/* Etapa 7: publicacoes e estatisticas e estudos, nos tres idiomas. */
+@source '../pages/publicacoes.astro';
+@source '../pages/estatisticas-e-estudos.astro';
+@source '../pages/en-us/publications.astro';
+@source '../pages/en-us/statistics-and-studies.astro';
+@source '../pages/es-es/publicaciones.astro';
+@source '../pages/es-es/estadisticas-y-estudios.astro';
+
+/* O convite de associacao, que fecha as duas — e, a partir da Etapa 8, mais
+   duas. Mesma situacao da SecaoCookies: montagem de conteudo, fora dos quatro
+   diretorios varridos. */
+@source '../components/ConviteAssociese.astro';
 
 @import './tokens.css';
 @import './base.css';

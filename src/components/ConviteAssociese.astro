@@ -1,0 +1,77 @@
+---
+import Secao from './layout/Secao.astro';
+import Container from './layout/Container.astro';
+import Titulo from './primitivos/Titulo.astro';
+import Texto from './primitivos/Texto.astro';
+import Botao from './primitivos/Botao.astro';
+import { ui, routes, type Locale } from '../i18n/ui';
+
+/**
+ * O convite para se associar, que fecha varias paginas.
+ *
+ * EXISTE PORQUE SAO DOZE COPIAS. O mesmo bloco — pergunta, frase e dois botoes —
+ * esta escrito a mao no markup de QUATRO paginas por idioma: publicacoes,
+ * estatisticas e estudos, associados e resorts-brasil. Doze lugares para a mesma
+ * frase, e a de resorts-brasil ja divergiu: la ela vive sobre fundo escuro e com
+ * outra quebra de linha.
+ *
+ * A Etapa 7 migra as duas primeiras; as outras duas vem na Etapa 8, e ate la o
+ * texto delas continua no markup do tema. Nao ha como evitar isso sem migrar a
+ * pagina junto — o componente emite markup do design system, e a folha nova so
+ * entra por quem usa o LayoutSistema.
+ *
+ * Fica em `src/components/` e nao em `padroes/` pelo mesmo criterio da
+ * <SecaoCookies>: e montagem de CONTEUDO a partir do `ui.ts`, nao uma decisao de
+ * desenho. O desenho e a <Secao>, o <Container>, o <Titulo> e o <Botao>, que ja
+ * estao no catalogo.
+ *
+ * O `p-b-150` do tema — 150px de recuo so embaixo — vira `espacoBase="xl"`, que
+ * e o mesmo valor com nome.
+ */
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+
+<Secao id="convite" espacoBase="xl">
+  <Container>
+    <div class="centro">
+      {/*
+        `nivel={2}`: numa pagina cujo unico heading acima e o `<h1>`, este e o
+        segundo nivel. No tema era `<h3>`, escolhido pelo tamanho — a causa raiz
+        que o <Titulo> existe para separar.
+      */}
+      <Titulo nivel={2} tamanho="lg" alinhamento="centro">{t.joinInviteTitle}</Titulo>
+      <Texto alinhamento="centro">{t.joinInviteText}</Texto>
+      <div class="botoes">
+        <Botao href={routes.joinUs[lang]}>{t.joinInviteAction}</Botao>
+        <Botao href={routes.associates[lang]} variante="contorno">{t.joinInviteSecondary}</Botao>
+      </div>
+    </div>
+  </Container>
+</Secao>
+
+<style>
+  .centro {
+    text-align: center;
+  }
+
+  /*
+   * Os dois botoes lado a lado, e embaixo um do outro quando nao couberem.
+   *
+   * No tema eles eram dois `<a>` soltos separados pelo espaco em branco do
+   * HTML, o que em 390px punha "Conheca os associados" a meio caminho da linha
+   * seguinte. `flex-wrap` com `gap` resolve os dois casos e nao depende de o
+   * navegador manter o espaco entre as tags.
+   */
+  .botoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+</style>

@@ -278,6 +278,58 @@ identificação da parte num texto de 2022 não é trabalho de migração de lay
 é decisão de quem responde pelo documento. Está anotado no topo de
 [`termos-de-uso.astro`](../src/pages/termos-de-uso.astro) para não se perder.
 
+## Etapa 7 — publicações e estudos, e o fim do masonry
+
+Medida em 25/08/2026. Seis páginas: `publicacoes` e `estatisticas-e-estudos`,
+nos três idiomas. **23 de 41 migradas.**
+
+Mesma leitura das duas etapas anteriores: o diff visual não foi rodado como
+número, porque uma página que troca de camada inteira diverge em tudo. Sustentam
+a etapa os quatro portões — build, comportamento (51/51), geometria (zero
+bloqueios em 123 páginas × viewport) e orçamento — e a comparação de texto do
+`<main>` gerado, que aqui deu o melhor resultado possível: **as seis páginas
+saíram com o texto idêntico ao build anterior**, bloco a bloco. Nenhuma frase
+mudou; o que mudou foi tudo o que está em volta delas.
+
+### O que ficou mais leve
+
+| página | antes | depois |
+|---|---|---|
+| `publicacoes` (× 3 idiomas) | 402 KB | **189 KB** |
+| `estatisticas-e-estudos` (× 3) | 342 KB | **192 KB** |
+
+Metade do peso. As capas eram `<img src>` sem `srcset` e sem `loading`, servidas
+no tamanho original; agora passam pelo pipeline da Etapa 2. O transbordo
+horizontal herdado caiu de **45 para 33**.
+
+### Correções
+
+| onde | tipo | motivo |
+|---|---|---|
+| ambas × 3 | correção | hierarquia. Era `<h1 class="text-md h2">` seguido de um `<h3>` que não é cabeçalho de nada — é a frase de abertura. Virou `<Texto tamanho="lg">`, mesma correção da `historia` |
+| ambas × 3 | correção | o convite de associação era `<h3>`, escolhido pelo tamanho. É o segundo nível da página, e virou `<h2>` |
+| `publicacoes` × 3 | correção | `m-b-30` na grade em inglês e espanhol, e não em português. A divergência estava anotada desde a Etapa 4 e some com a `<Grade>` |
+| ambas × 3 | correção | o vão da grade era 30px numa página e 20px na outra — e o 20 vinha de `data-margin` **ausente**, cujo padrão é 20 e não zero. Consolidados nos 28px medidos do `.row` |
+| ambas × 3 | correção | os dois botões do convite eram dois `<a>` separados pelo espaço em branco do HTML; em 390px o segundo quebrava a meio caminho da linha. `flex-wrap` com `gap` |
+| ambas × 3 | correção | `<body class="modern">` some |
+
+### Refinos
+
+| onde | tipo | motivo |
+|---|---|---|
+| ambas × 3 | **refino, e é o de maior consequência** | o empacotamento masonry sai do JavaScript. Era `.grid-layout[data-item]` posicionado em absoluto pelo `gridLayout()`; agora é grade CSS. Com ele morrem a terceira armadilha do tema, dois listeners persistentes e 44 linhas do `site.js` |
+| `publicacoes` × 3 | refino | o `<br>` no meio da abertura sai. Havia um em português e espanhol, nenhum em inglês — a quebra manual só acertava numa largura |
+| ambas × 3 | refino | o título da página passa a `3xl`, como nas páginas das Etapas 5 e 6 |
+| `estatisticas-e-estudos` × 3 | refino | o tablet passa de 3+1 para 2×2. É o único desvio de contagem de colunas da etapa, e é uma fileira mais equilibrada do que a órfã que havia |
+| ambas × 3 | refino | os cartões passam a ter altura igual dentro da fileira, com os "Leia agora" alinhados na base — é o que dispensava o masonry |
+
+### Uma pendência que esta etapa fechou
+
+A Etapa 4 registrou uma divergência de `/publicacoes` no mobile — 23px de
+empilhamento por cartão, do `gridLayout()` contra o Isotope — como
+**pendência com prazo: se a Etapa 7 não zerar, vira regressão.** Zerou, e por
+construção: a página não tem mais nem `gridLayout()` nem `.grid-layout`.
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

@@ -25,10 +25,11 @@ O plano completo, com etapas e critérios, está em
 | 4 — conteúdo (Content Collections) | concluída |
 | 5 — cromo + páginas pequenas (404, história, contato, diretoria) | concluída |
 | 6 — termos de uso e política de privacidade | concluída |
-| 7 — publicações e estatísticas e estudos | **próxima** |
-| 8–11 | não iniciadas |
+| 7 — publicações e estatísticas e estudos | concluída |
+| 8 — associados, associe-se, apoie, resorts-brasil | **próxima** |
+| 9–11 | não iniciadas |
 
-**Páginas migradas: 17 de 41.** Confira sempre com
+**Páginas migradas: 23 de 41.** Confira sempre com
 `node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
 nesta tabela.
 
@@ -144,8 +145,16 @@ nenhum HTML estático contém antes de remover qualquer script.
 A mesma armadilha mordeu uma segunda vez, pior: `.grid-layout > *` tem
 `opacity: 0` e só `.grid-layout.grid-loaded > *` devolve `opacity: 1` — e quem
 adicionava `.grid-loaded` era o Isotope. Seis páginas ficaram com o conteúdo
-**invisível**. Hoje a visibilidade está no CSS (funciona mesmo se o JS falhar) e
-o empacotamento masonry em `gridLayout()` no [`site.js`](src/scripts/site.js).
+**invisível**. A correção foi pôr a visibilidade no CSS (funciona mesmo se o JS
+falhar) e o empacotamento masonry em `gridLayout()`, no `site.js`.
+
+**Essa armadilha deixou de existir na Etapa 7.** As duas últimas páginas com
+`.grid-layout` migraram para a [`<Grade>`](src/components/layout/Grade.astro), o
+`gridLayout()` saiu do [`site.js`](src/scripts/site.js) e com ele os dois últimos
+listeners persistentes que só existiam por causa do masonry. Fica registrada aqui
+porque as outras duas ainda valem, e porque o padrão que ela ensina — plugin
+removido, CSS que dependia dele silenciosamente inerte — é o que se deve procurar
+no que sobrou.
 
 E uma terceira vez, mais silenciosa: o `.kenburns-bg` do hero tem `z-index: -1` e
 só aparece se o `.slide` for um contexto de empilhamento — quem criava isso era o

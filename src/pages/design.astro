@@ -584,6 +584,22 @@ const faixas = [
             caracteres em células de 150px, e eles vazaram por cima da coluna vizinha. A
             <code>&lt;Grade&gt;</code> não tem como saber o que há dentro da célula; quem usa, sim.
           </p>
+
+          <p class="rotulo-demo">
+            <code>&lt;Grade colunas={5} piso={1}&gt;</code>
+            <small>1 → 3 → 5, a grade de publicações</small>
+          </p>
+          <Grade colunas={5} piso={1} espaco="sm">
+            {[1, 2, 3, 4, 5].map((n) => <div class="celula">{n}</div>)}
+          </Grade>
+          <p class="legenda">
+            <strong>Cinco é o degrau estranho da escala, e está aqui porque foi medido.</strong> Não
+            divide doze e não casa com nada — mas o <code>.grid-layout.post-5-columns</code> do tema
+            põe as cinco publicações numa fileira só no desktop, e quatro colunas deixariam a quinta
+            sozinha numa segunda linha. As demais contagens saem de <code>col-lg-*</code>; esta
+            saiu de contar as posições horizontais que os itens ocupam de fato, porque numa grade
+            <em>masonry</em> posicionada em absoluto o número não está em lugar nenhum do CSS.
+          </p>
         </div>
       </section>
 

@@ -381,18 +381,74 @@
   {
     "viewport": "mobile",
     "grupo": "grade",
-    "nome": ".row",
-    "pagina": "/diretoria.html",
+    "nome": ".grid-layout.post-5-columns",
+    "pagina": "/publicacoes.html",
     "repouso": {
-      "display": "flex",
-      "flexWrap": "wrap",
-      "marginLeft": "-14px",
-      "marginRight": "-14px",
-      "width": "358px",
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "-30px",
+      "width": "360px",
       "paddingLeft": "0px",
       "paddingRight": "0px",
       "flexBasis": "auto",
-      "_caixa": "358x117"
+      "_caixa": "360x3467",
+      "_colunas": "1 colunas / 5 itens"
+    },
+    "hover": null
+  },
+  {
+    "viewport": "mobile",
+    "grupo": "grade",
+    "nome": ".grid-layout.post-4-columns",
+    "pagina": "/estatisticas-e-estudos.html",
+    "repouso": {
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "-20px",
+      "width": "350px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "flexBasis": "auto",
+      "_caixa": "350x2443",
+      "_colunas": "1 colunas / 4 itens"
+    },
+    "hover": null
+  },
+  {
+    "viewport": "mobile",
+    "grupo": "grade",
+    "nome": ".post-item (publicacoes)",
+    "pagina": "/publicacoes.html",
+    "repouso": {
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "width": "360px",
+      "paddingLeft": "0px",
+      "paddingRight": "30px",
+      "flexBasis": "auto",
+      "_caixa": "360x675"
+    },
+    "hover": null
+  },
+  {
+    "viewport": "mobile",
+    "grupo": "grade",
+    "nome": ".post-item (estudos)",
+    "pagina": "/estatisticas-e-estudos.html",
+    "repouso": {
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "width": "350px",
+      "paddingLeft": "0px",
+      "paddingRight": "20px",
+      "flexBasis": "auto",
+      "_caixa": "350x623"
     },
     "hover": null
   },
@@ -410,23 +466,6 @@
       "color": "rgb(255, 255, 255)",
       "content": "normal",
       "_caixa": "10x16"
-    },
-    "hover": null
-  },
-  {
-    "viewport": "mobile",
-    "grupo": "icone",
-    "nome": "i.icon-* (caixa)",
-    "pagina": "/fale-conosco.html",
-    "repouso": {
-      "fontSize": "36px",
-      "lineHeight": "36px",
-      "fontFamily": "inspiro-icons",
-      "width": "46px",
-      "height": "46px",
-      "color": "rgb(0, 30, 108)",
-      "content": "normal",
-      "_caixa": "46x46"
     },
     "hover": null
   },
@@ -812,18 +851,74 @@
   {
     "viewport": "tablet",
     "grupo": "grade",
-    "nome": ".row",
-    "pagina": "/diretoria.html",
+    "nome": ".grid-layout.post-5-columns",
+    "pagina": "/publicacoes.html",
     "repouso": {
-      "display": "flex",
-      "flexWrap": "wrap",
-      "marginLeft": "-14px",
-      "marginRight": "-14px",
-      "width": "736px",
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "-30px",
+      "width": "738px",
       "paddingLeft": "0px",
       "paddingRight": "0px",
       "flexBasis": "auto",
-      "_caixa": "736x87"
+      "_caixa": "738x1211",
+      "_colunas": "3 colunas / 5 itens"
+    },
+    "hover": null
+  },
+  {
+    "viewport": "tablet",
+    "grupo": "grade",
+    "nome": ".grid-layout.post-4-columns",
+    "pagina": "/estatisticas-e-estudos.html",
+    "repouso": {
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "-20px",
+      "width": "728px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "flexBasis": "auto",
+      "_caixa": "728x942",
+      "_colunas": "3 colunas / 4 itens"
+    },
+    "hover": null
+  },
+  {
+    "viewport": "tablet",
+    "grupo": "grade",
+    "nome": ".post-item (publicacoes)",
+    "pagina": "/publicacoes.html",
+    "repouso": {
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "width": "245.984px",
+      "paddingLeft": "0px",
+      "paddingRight": "30px",
+      "flexBasis": "auto",
+      "_caixa": "246x560"
+    },
+    "hover": null
+  },
+  {
+    "viewport": "tablet",
+    "grupo": "grade",
+    "nome": ".post-item (estudos)",
+    "pagina": "/estatisticas-e-estudos.html",
+    "repouso": {
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "width": "242.656px",
+      "paddingLeft": "0px",
+      "paddingRight": "20px",
+      "flexBasis": "auto",
+      "_caixa": "243x471"
     },
     "hover": null
   },
@@ -841,23 +936,6 @@
       "color": "rgb(255, 255, 255)",
       "content": "normal",
       "_caixa": "10x16"
-    },
-    "hover": null
-  },
-  {
-    "viewport": "tablet",
-    "grupo": "icone",
-    "nome": "i.icon-* (caixa)",
-    "pagina": "/fale-conosco.html",
-    "repouso": {
-      "fontSize": "36px",
-      "lineHeight": "36px",
-      "fontFamily": "inspiro-icons",
-      "width": "46px",
-      "height": "46px",
-      "color": "rgb(0, 30, 108)",
-      "content": "normal",
-      "_caixa": "46x46"
     },
     "hover": null
   },
@@ -1243,18 +1321,74 @@
   {
     "viewport": "desktop",
     "grupo": "grade",
-    "nome": ".row",
-    "pagina": "/diretoria.html",
+    "nome": ".grid-layout.post-5-columns",
+    "pagina": "/publicacoes.html",
     "repouso": {
-      "display": "flex",
-      "flexWrap": "wrap",
-      "marginLeft": "-14px",
-      "marginRight": "-14px",
-      "width": "1440px",
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "-30px",
+      "width": "1442px",
       "paddingLeft": "0px",
       "paddingRight": "0px",
       "flexBasis": "auto",
-      "_caixa": "1440x87"
+      "_caixa": "1442x620",
+      "_colunas": "5 colunas / 5 itens"
+    },
+    "hover": null
+  },
+  {
+    "viewport": "desktop",
+    "grupo": "grade",
+    "nome": ".grid-layout.post-4-columns",
+    "pagina": "/estatisticas-e-estudos.html",
+    "repouso": {
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "-20px",
+      "width": "1432px",
+      "paddingLeft": "0px",
+      "paddingRight": "0px",
+      "flexBasis": "auto",
+      "_caixa": "1432x634",
+      "_colunas": "4 colunas / 4 itens"
+    },
+    "hover": null
+  },
+  {
+    "viewport": "desktop",
+    "grupo": "grade",
+    "nome": ".post-item (publicacoes)",
+    "pagina": "/publicacoes.html",
+    "repouso": {
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "width": "288.391px",
+      "paddingLeft": "0px",
+      "paddingRight": "30px",
+      "flexBasis": "auto",
+      "_caixa": "288x620"
+    },
+    "hover": null
+  },
+  {
+    "viewport": "desktop",
+    "grupo": "grade",
+    "nome": ".post-item (estudos)",
+    "pagina": "/estatisticas-e-estudos.html",
+    "repouso": {
+      "display": "block",
+      "flexWrap": "nowrap",
+      "marginLeft": "0px",
+      "marginRight": "0px",
+      "width": "358px",
+      "paddingLeft": "0px",
+      "paddingRight": "20px",
+      "flexBasis": "auto",
+      "_caixa": "358x634"
     },
     "hover": null
   },
@@ -1272,23 +1406,6 @@
       "color": "rgb(255, 255, 255)",
       "content": "normal",
       "_caixa": "10x16"
-    },
-    "hover": null
-  },
-  {
-    "viewport": "desktop",
-    "grupo": "icone",
-    "nome": "i.icon-* (caixa)",
-    "pagina": "/fale-conosco.html",
-    "repouso": {
-      "fontSize": "36px",
-      "lineHeight": "36px",
-      "fontFamily": "inspiro-icons",
-      "width": "46px",
-      "height": "46px",
-      "color": "rgb(0, 30, 108)",
-      "content": "normal",
-      "_caixa": "46x46"
     },
     "hover": null
   }

@@ -1929,7 +1929,7 @@ método que o `CLAUDE.md` já prescreve para extração de markup.
 ## A `<SecaoCookies>` deixou de ser componente de transição
 
 Ela existia emitindo markup do tema (`.row`, `.table-bordered`, `.text-bold`),
-como a `ListaPublicacoes` e a `ListaEstudos` ainda fazem. A diferença é que as
+como a `ListaPublicacoes` e a `ListaEstudos` faziam até a Etapa 7. A diferença é que as
 **três** páginas que a usam migraram na mesma etapa — então não havia nada a
 preservar, e ela foi reescrita direto para o sistema novo.
 
@@ -1943,3 +1943,142 @@ Há um acoplamento que vale dizer em voz alta: ela **espera estar dentro de um
 `<Prosa>`**. É lá que o vão entre as categorias mora, no `margin-top` do `<h3>`.
 Fora de um documento, o texto sai certo e o ritmo não. Está escrito no topo do
 arquivo.
+
+---
+
+# Design system — Etapa 7
+
+## A Etapa 4 tinha razão, e esta é a prova
+
+A Etapa 4 moveu publicações e estudos para Content Collections e deixou dois
+componentes de transição — `ListaPublicacoes` e `ListaEstudos` — emitindo markup
+do tema. A justificativa registrada era: "a Etapa 7 também não mexe em dado,
+porque o formato que a página recebe já é o formato que o componente consome".
+
+Foi exatamente isso. A migração das seis páginas **não tocou em uma linha de
+`src/content/`, de `src/content.config.ts` ou de `src/conteudo.ts`**. Trocou-se
+quem consome `publicacoesEm(lang)`: era um componente que escrevia `.post-item`,
+passou a ser um `<CartaoPublicacao>` dentro de uma `<Grade>`. Os dois componentes
+de transição foram apagados.
+
+Vale registrar porque é a única forma de saber se uma camada de acesso a dados
+está no lugar certo: ela prova o valor na etapa seguinte, não na sua.
+
+## A terceira armadilha morreu, e levou dois listeners junto
+
+`.grid-layout` era o masonry do tema — herdeiro do Isotope, reimplementado em
+`gridLayout()` quando o jQuery saiu. É onde nasceu a segunda das três armadilhas
+do `CLAUDE.md`: `.grid-layout > *` tem `opacity: 0` e só `.grid-layout.grid-loaded > *`
+devolve `opacity: 1`; sem o plugin que adicionava a classe, **seis páginas
+ficaram com o conteúdo invisível**.
+
+As duas páginas desta etapa eram as duas últimas a usá-la. Com a `<Grade>`:
+
+- `gridLayout()` sai do `site.js`, que cai de 592 para 548 linhas;
+- saem com ela os **dois últimos listeners persistentes** que existiam só por
+  causa do masonry (`resize` e `load` em `window`), mais um `load` por imagem.
+  Isso importa além da limpeza: a nota da Etapa 0 sobre View Transitions listava
+  seis listeners persistentes como o custo de instalar o `<ClientRouter />`.
+  Restam quatro;
+- e some a dependência de o JavaScript rodar para o conteúdo se **posicionar**.
+  Grade CSS com `gap` não precisa de ninguém calculando coluna mais curta.
+
+O `.grid-layout` também saiu da lista `GRADES` do `verify-geometria.mjs`, por ter
+deixado de existir — e a linha que ele ocupava foi para `.grade`. Ver abaixo.
+
+## O portão que estava cego há seis etapas
+
+A varredura de geometria tem uma checagem de coerência de colunas: numa tela
+larga, uma grade com quatro ou mais filhos precisa ter mais de uma coluna. Foi
+escrita na Etapa 0.5 para pegar o tipo de defeito que deixou a grade de logos
+quebrada com a suíte comportamental passando 14/14.
+
+Ela roda sobre uma lista de seletores, e a lista era
+`['.grid-layout', '.team-members', '.grid', '.polo-carousel']` — **os quatro do
+tema**. O design system tem grade própria desde a Etapa 1, e em nenhum momento
+entre a Etapa 1 e a Etapa 7 aquela checagem olhou para ela. Uma container query
+escrita errada — um `min-width` em `px` onde devia ser `rem`, um degrau
+invertido — colapsaria a grade de 23 páginas migradas sem que nada reclamasse.
+
+Entrou `.grade`. Passou de primeira nas 123 páginas × viewport, o que confirma o
+`colunas={5}` novo mas não muda o argumento: a checagem que não olha para a
+camada nova é uma checagem que envelhece junto com a camada velha. **Toda vez que
+o design system ganha um contêiner de grade, a lista precisa saber.**
+
+## Cinco colunas, e por que o número não estava no CSS
+
+`<Grade>` aceitava 2, 3, 4 e 6 — divisores de doze, a escala que qualquer sistema
+de grade escolhe. Publicações são **cinco**, e o tema as põe numa fileira só.
+
+A alternativa era `colunas={4}`, que deixaria a quinta publicação sozinha numa
+segunda linha. Não é refino, é órfã. Entrou o 5, com a escada 2 → 3 → 5.
+
+O interessante é como o número foi obtido. Nas outras grades do tema ele está no
+markup (`col-lg-3`, `col-6`) ou no CSS. Nesta **não está em lugar nenhum**: o
+`gridLayout()` lê a largura da célula, divide pela largura do contêiner e
+descobre a contagem em tempo de execução, posicionando tudo em absoluto. Ler
+`.post-5-columns` no `style.css` dá a largura da célula, não o número de colunas
+que aquilo produz em cada viewport.
+
+Então o `medir-primitivos.mjs` aprendeu a contar **posições horizontais distintas
+entre os itens**. O resultado:
+
+| grade | mobile | tablet | desktop |
+|---|---|---|---|
+| `.post-5-columns` (publicações) | 1 | 3 | 5 |
+| `.post-4-columns` (estudos) | 1 | 3 | 4 |
+
+`colunas={5} piso={1}` reproduz a primeira linha inteira. A segunda fica em
+1 → 2 → 4: o tablet passa de 3+1 para 2×2, que é o único desvio da etapa em
+contagem de colunas — e é uma fileira mais equilibrada do que a órfã que havia.
+
+## Dois vãos para a mesma fileira, um deles por omissão
+
+A grade de publicações declarava `data-margin="30"`; a de estudos não declarava
+nada. E o `CLAUDE.md` já avisava o que isso significa: **`data-margin` vale 20
+quando ausente**, não zero. Duas fileiras do mesmo cartão com vãos de 30px e
+20px, e a diferença nasceu de um atributo que ninguém escreveu.
+
+Consolidados em `espaco="md"` — os 28px medidos no `.row` do tema. Mesmo critério
+que consolidou o `#efb72c` no âmbar e o `#3c4043` no cinza de parágrafo: duas
+medidas para o mesmo papel são ruído, não decisão.
+
+## O convite de associação, doze vezes no markup
+
+O bloco que fecha estas páginas — pergunta, frase e dois botões — está escrito à
+mão em **quatro páginas por idioma**: publicações, estatísticas, associados e
+resorts-brasil. Doze cópias, e a de resorts-brasil já divergiu: vive sobre fundo
+escuro e com outra quebra de linha.
+
+Virou [`ConviteAssociese`](../src/components/ConviteAssociese.astro), com o texto
+no `ui.ts`. Seis cópias saíram nesta etapa; as outras seis saem na Etapa 8, e não
+há como antecipá-las — o componente emite markup do design system, e a folha nova
+só entra por quem usa o `LayoutSistema`.
+
+Ele fica em `src/components/`, e não em `padroes/`, pelo mesmo critério da
+`<SecaoCookies>`: é montagem de conteúdo a partir do `ui.ts`, não uma decisão de
+desenho. O desenho é a `<Secao>`, o `<Container>`, o `<Titulo>` e o `<Botao>`,
+que já estão no catálogo.
+
+Um detalhe do CSS vale nota. No tema os dois botões eram dois `<a>` separados
+pelo **espaço em branco do HTML**, e em 390px o segundo quebrava a meio caminho
+da linha. `flex-wrap` com `gap` resolve os dois casos e não depende de o
+navegador preservar o espaço entre as tags — que é uma das coisas que este
+projeto já viu o Astro aparar.
+
+## Um susto que não era defeito
+
+A primeira captura de tela da página de publicações mostrou os cinco cartões
+**sem capa** — só o retângulo branco onde a imagem deveria estar. O `<img>`
+estava no HTML com `srcset` correto, os arquivos existiam no `dist/`, e o
+`naturalWidth` respondia 288 quando o `srcset` só oferece 640, 750 e 828.
+
+Não era defeito. A captura pegou a página entre o `complete` do `<img>` e a
+pintura: capturando o elemento sozinho, com folga, a capa aparece inteira. O
+`naturalWidth` estranho era leitura no meio da decodificação.
+
+Fica registrado porque o caminho até a conclusão passou por decodificar o AVIF
+com `sharp` — que confirmou 640×910 e a capa certa — e porque o reflexo de
+"conferir no artefato antes de concluir pela aparência" vale nos dois sentidos:
+serviu para não acreditar na captura, do mesmo jeito que serve para não acreditar
+no `style.css`.

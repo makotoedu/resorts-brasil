@@ -267,60 +267,16 @@ function logoCarousel() {
 }
 
 /* Grades .grid-layout ---------------------------------------------------- */
-// Substitui o Isotope, que o tema usava nas paginas de publicacoes e
-// estatisticas. Empacota cada item na coluna mais curta (masonry): com floats
-// as alturas desiguais produziriam uma escada, e no tablet a diferenca passa
-// de 500px de altura de pagina.
+// REMOVIDO NA ETAPA 7, e a nota fica porque a funcao era citada em tres lugares
+// da documentacao. Ela substituia o Isotope nas paginas de publicacoes e de
+// estatisticas — empacotava os itens na coluna mais curta, em posicionamento
+// absoluto, com listeners de `resize` e de `load` para refazer a conta.
 //
-// A visibilidade fica no CSS (ver public/css/ajustes.css), nao aqui: o tema
-// mantinha os itens em opacity 0 ate inicializar, e se o script falhasse o
-// conteudo simplesmente sumia.
-function gridLayout() {
-  const grids = document.querySelectorAll('.grid-layout[data-item]');
-  if (!grids.length) return;
-
-  const layout = (grid) => {
-    const seletor = '.' + grid.getAttribute('data-item');
-    const items = [...grid.children].filter((el) => el.matches(seletor));
-    if (!items.length) return;
-
-    // Largura vem do CSS do tema (.post-5-columns .post-item etc.), que ja e
-    // responsivo; aqui so descobrimos quantas colunas isso da.
-    items.forEach((item) => {
-      item.style.position = '';
-      item.style.left = '';
-      item.style.top = '';
-    });
-    const itemWidth = items[0].getBoundingClientRect().width;
-    if (!itemWidth) return;
-    const cols = Math.max(1, Math.round(grid.clientWidth / itemWidth));
-
-    const alturas = new Array(cols).fill(0);
-    grid.style.position = 'relative';
-
-    items.forEach((item) => {
-      const menor = alturas.indexOf(Math.min(...alturas));
-      item.style.position = 'absolute';
-      item.style.left = `${menor * itemWidth}px`;
-      item.style.top = `${alturas[menor]}px`;
-      alturas[menor] += item.getBoundingClientRect().height;
-    });
-
-    grid.style.height = `${Math.max(...alturas)}px`;
-  };
-
-  const relayout = () => grids.forEach(layout);
-
-  relayout();
-  window.addEventListener('resize', relayout);
-  // As imagens mudam a altura dos itens depois de carregarem.
-  window.addEventListener('load', relayout);
-  grids.forEach((grid) => {
-    grid.querySelectorAll('img').forEach((img) => {
-      if (!img.complete) img.addEventListener('load', relayout, { once: true });
-    });
-  });
-}
+// As seis paginas passaram para <Grade>, que e grade CSS com `gap` e container
+// query: alturas desiguais deixam de produzir escada sem que ninguem calcule
+// nada. Com ela saem os dois ultimos listeners persistentes que existiam so por
+// causa do masonry — e some a classe `.grid-loaded`, cujo `opacity: 0` ja deixou
+// seis paginas invisiveis quando o jQuery foi removido.
 
 /* Contadores ------------------------------------------------------------- */
 // Sobe de data-from ate data-to quando o numero entra na tela.
@@ -583,7 +539,6 @@ ready(() => {
   navDropdowns();
   hero();
   logoCarousel();
-  gridLayout();
   counters();
   tabs();
   cookieNotice();

@@ -440,6 +440,26 @@ export const ui = {
     privacyTitle: 'Política de Privacidade',
     legalUpdated: 'Última atualização em',
 
+    /*
+     * Etapa 7 — publicações e estatísticas e estudos.
+     *
+     * O convite de associação abaixo aparece em QUATRO páginas por idioma:
+     * publicações, estatísticas, associados e resorts-brasil. Doze cópias do
+     * mesmo parágrafo no markup, e a de resorts-brasil já tinha divergido — está
+     * sobre fundo escuro e com outra quebra de linha. As duas primeiras migram
+     * aqui; as outras duas na Etapa 8.
+     */
+    publicationsTitle: 'Publicações',
+    publicationsLead:
+      'Uma de nossas missões é gerar informação relevante para o mercado. Confira abaixo nossas últimas publicações:',
+    statisticsTitle: 'Estatísticas e Estudos',
+    statisticsLead:
+      'Confira abaixo os últimos estudos do setor de resorts, elaborados pela Resorts Brasil ou por parceiros.',
+    joinInviteTitle: 'Quer fazer parte de um grupo seleto de resorts brasileiros?',
+    joinInviteText: 'Faça parte e ajude a transformar o setor. 😍',
+    joinInviteAction: 'Associe-se',
+    joinInviteSecondary: 'Conheça os associados',
+
     videoPlay: 'Assistir ao vídeo',
     videoInstitucional: 'Vídeo institucional da Resorts Brasil',
     videoEbook: 'Vídeo de apresentação do e-book',
@@ -544,6 +564,17 @@ export const ui = {
     termsTitle: 'Terms and conditions of use of the website',
     privacyTitle: 'Privacy Policy',
     legalUpdated: 'Last updated',
+
+    publicationsTitle: 'Publications',
+    publicationsLead:
+      'One of our missions is to generate relevant information for the market. Check out our latest publications below:',
+    statisticsTitle: 'Statistics and Studies',
+    statisticsLead:
+      'Check below the latest studies of the resort sector, prepared by Resorts Brasil or by partners.',
+    joinInviteTitle: 'Do you want to be part of a select group of Brazilian resorts?',
+    joinInviteText: 'Take part and help transform the sector. 😍',
+    joinInviteAction: 'Become a member',
+    joinInviteSecondary: 'Meet the associates',
 
     videoPlay: 'Watch the video',
     videoInstitucional: 'Resorts Brasil institutional video',
@@ -659,6 +690,17 @@ export const ui = {
     termsTitle: 'Términos y condiciones de uso del sitio',
     privacyTitle: 'Política de Privacidad',
     legalUpdated: 'Última actualización el',
+
+    publicationsTitle: 'Publicaciones',
+    publicationsLead:
+      'Una de nuestras misiones es generar información relevante para el mercado. Confiera abajo nuestras últimas publicaciones:',
+    statisticsTitle: 'Estadísticas y Estudios',
+    statisticsLead:
+      'Confiera abajo los últimos estudios del sector de resorts, elaborados por Resorts Brasil o por colaboradores.',
+    joinInviteTitle: '¿Quiere formar parte de un grupo selecto de resorts brasileños?',
+    joinInviteText: 'Forme parte y ayude a transformar el sector. 😍',
+    joinInviteAction: 'Asóciese',
+    joinInviteSecondary: 'Conozca los asociados',
 
     videoPlay: 'Ver el vídeo',
     videoInstitucional: 'Vídeo institucional de Resorts Brasil',

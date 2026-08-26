@@ -1,52 +1,50 @@
 ---
-import ListaEstudos from '../../components/ListaEstudos.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Grade from '../../components/layout/Grade.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Texto from '../../components/primitivos/Texto.astro';
+import CartaoPublicacao from '../../components/padroes/CartaoPublicacao.astro';
+import ConviteAssociese from '../../components/ConviteAssociese.astro';
+import { estudosEm } from '../../conteudo';
+import { ui, type Locale } from '../../i18n/ui';
+
+/* As correcoes desta pagina estao anotadas em
+   src/pages/estatisticas-e-estudos.astro, que e a versao de referencia. */
+const lang: Locale = 'es-es';
+const t = ui[lang];
+const estudos = await estudosEm(lang);
+
+const tamanhosCapa = '(min-width: 64rem) 22rem, (min-width: 30rem) 45vw, 92vw';
 ---
 
-<BaseLayout
-  lang="es-es"
-  route="statistics"
->
-    <!-- Título -->
-    <section id="title">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-9 center text-center">
-                    <h1 class="text-md h2">Estadísticas y Estudios</h1>
-                    <h3>Confiera abajo los últimos estudios del sector de resorts, elaborados por Resorts Brasil o
-                        por colaboradores.</h3>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Título -->
+<LayoutSistema lang={lang} route="statistics">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="media">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.statisticsTitle}</Titulo>
+      <Texto tamanho="lg" alinhamento="centro">{t.statisticsLead}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Estatisticas e Estudos -->
-    <section id="estatisticas-e-estudos" class="no-padding">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 center">
-                    <div class="grid-layout post-4-columns m-b-30" data-item="post-item">
-                        <ListaEstudos lang="es-es" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Estatisticas e Estudos -->
+  <Secao id="estadisticas-y-estudios">
+    <Container>
+      <Grade colunas={4} piso={1} espaco="md">
+        {
+          estudos.map((e) => (
+            <CartaoPublicacao
+              titulo={e.titulo}
+              capa={e.capa}
+              href={e.url}
+              rotuloLink={t.leiaAgora}
+              nivel={2}
+              tamanhos={tamanhosCapa}
+            />
+          ))
+        }
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- CTA -->
-    <section id="cta" class="p-b-150">
-        <div class="container">
-            <div class="row text-center">
-                <h3 class="m-b-0">¿Quiere formar parte de un grupo selecto de resorts brasileños?</h3>
-                <p>Forme parte y ayude a transformar el sector. 😍</p>
-                <div>
-                    <a href="/es-es/asociese" class="btn">Asóciese</a>
-                    <a href="/es-es/asociados" class="btn btn-outline">Conozca los asociados</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: CTA -->
-</BaseLayout>
+  <ConviteAssociese lang={lang} />
+</LayoutSistema>

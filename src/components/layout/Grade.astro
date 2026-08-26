@@ -25,11 +25,20 @@
  * fixa e esta na tabela do <style> abaixo.
  */
 interface Props {
-  /** Colunas na largura cheia. Lista de itens iguais: 2, 3, 4 ou 6. */
-  colunas?: 1 | 2 | 3 | 4 | 6;
   /**
-   * Colunas na MENOR largura. Sem ele vale a tabela do <style> abaixo, em que 4
-   * e 6 comecam em duas.
+   * Colunas na largura cheia. Lista de itens iguais: 2, 3, 4, 5 ou 6.
+   *
+   * O 5 entrou na Etapa 7 — a grade de publicacoes. Ele parece o degrau
+   * estranho da lista, e e: nao divide 12, nao casa com nada. Esta aqui porque
+   * foi MEDIDO (`scripts/medir-primitivos.mjs`, grupo `grade`): o
+   * `.grid-layout.post-5-columns` do tema poe as cinco publicacoes numa fileira
+   * so no desktop, e a alternativa — quatro colunas — deixaria a quinta sozinha
+   * numa segunda linha.
+   */
+  colunas?: 1 | 2 | 3 | 4 | 5 | 6;
+  /**
+   * Colunas na MENOR largura. Sem ele vale a tabela do <style> abaixo, em que 4,
+   * 5 e 6 comecam em duas.
    *
    * Ele existe porque aquele piso de duas depende do que ha dentro da celula, e
    * a <Grade> nao tem como saber: cartao de associado e logo de parceiro ficam
@@ -121,13 +130,17 @@ const PISOS = { 1: 'piso-1', 2: 'piso-2' } as const;
    *   2         1         2          2
    *   3         1         2          3
    *   4         2         2          4
+   *   5         2         3          5
    *   6         2         3          6
    *
-   * Quatro e seis comecam em duas porque e o que o tema fazia com
+   * Quatro, cinco e seis comecam em duas porque e o que o tema fazia com
    * `col-lg-3 col-6` e `col-lg-2 col-6`: cartao de associado e logo de parceiro
-   * ficam pequenos demais empilhados um por linha.
+   * ficam pequenos demais empilhados um por linha. Cartao de publicacao e o
+   * contrario — a capa e o titulo pedem largura —, e por isso as duas paginas da
+   * Etapa 7 passam `piso={1}`, que e o que o tema tambem fazia.
    */
   .colunas-4,
+  .colunas-5,
   .colunas-6 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -156,6 +169,7 @@ const PISOS = { 1: 'piso-1', 2: 'piso-2' } as const;
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .colunas-5,
     .colunas-6 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
@@ -168,6 +182,10 @@ const PISOS = { 1: 'piso-1', 2: 'piso-2' } as const;
 
     .colunas-4 {
       grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .colunas-5 {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
     .colunas-6 {

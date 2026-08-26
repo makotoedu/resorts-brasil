@@ -503,10 +503,10 @@ por idioma quando traduz — e aí o Zod **exige os três**. O `Record<Locale, �
 schema amarra isso ao `src/i18n/ui.ts`: um quarto idioma para de compilar aqui,
 em vez de gerar página com campo vazio.
 
-Dois componentes de transição, [`ListaPublicacoes`](src/components/ListaPublicacoes.astro)
-e [`ListaEstudos`](src/components/ListaEstudos.astro), ainda emitem o markup do
-tema — eles somem na Etapa 7, quando as três páginas passarem para o
-`<CartaoPublicacao>`. Substituíram 27 blocos escritos à mão.
+Dois componentes de transição, `ListaPublicacoes` e `ListaEstudos`, emitiam o
+markup do tema e substituíram 27 blocos escritos à mão. **Sumiram na Etapa 7**,
+como esta etapa previa, quando as seis páginas passaram para o
+`<CartaoPublicacao>`.
 
 **A comparação de HTML normalizado pegou uma regressão que o diff visual não
 pegaria**: o Astro apara o espaço em volta de uma expressão, então
@@ -626,11 +626,52 @@ seis páginas e some a tabela de cookies, que media 445px numa coluna de 358px.
 Detalhes em [docs/decisoes.md](docs/decisoes.md), "Etapa 6", e a lista completa
 de correções e refinos em [docs/deltas-visuais.md](docs/deltas-visuais.md).
 
-### Etapas 7–9 — Páginas, do mais simples ao mais arriscado
+### Etapa 7 — Publicações e estatísticas e estudos ✅ CONCLUÍDA
+
+As seis entregues, nos três idiomas. **23 de 41 páginas migradas, medido no
+`dist/`.**
+
+É a etapa que fecha o ciclo aberto na Etapa 4: os dados já eram Content
+Collection, o markup é que ainda era do tema. Os dois componentes de transição —
+`ListaPublicacoes` e `ListaEstudos` — **sumiram**, substituídos pelo
+[`<CartaoPublicacao>`](src/components/padroes/CartaoPublicacao.astro) que a
+Etapa 3 já havia construído para eles. Nenhum dado mudou de lugar: `publicacoesEm(lang)`
+já entregava o formato que o componente consome, que era exatamente a aposta
+daquela etapa.
+
+**A terceira armadilha do tema morreu aqui.** As duas páginas eram as últimas com
+`.grid-layout`, o masonry que o `gridLayout()` do [site.js](src/scripts/site.js)
+posicionava em absoluto — herdeiro do Isotope, e onde nasceu o bug do
+`.grid-loaded` que deixou seis páginas invisíveis. Com a `<Grade>`, saem a função,
+os **dois últimos listeners persistentes** (`resize` e `load`) que existiam só por
+causa dela, e a dependência de o JavaScript rodar para o conteúdo se posicionar.
+O `site.js` caiu de 592 para 548 linhas.
+
+**O `colunas={5}` entrou na `<Grade>`, e é o degrau estranho da escala.** Não
+divide doze e não casa com nada — está lá porque foi medido: o
+`.grid-layout.post-5-columns` põe as cinco publicações numa fileira só no desktop,
+e quatro colunas deixariam a quinta sozinha. O número não estava em lugar nenhum
+do CSS (numa grade masonry em absoluto ele não está), então o
+[`medir-primitivos.mjs`](scripts/medir-primitivos.mjs) aprendeu a **contar
+posições horizontais distintas**.
+
+**Um portão estava cego há seis etapas:** a varredura de geometria só olhava as
+grades do tema (`.grid-layout`, `.team-members`, `.grid`, `.polo-carousel`). O
+design system tem grade própria desde a Etapa 1, e uma container query escrita
+errada não seria vista pela checagem de colunas — a mesma que teria pego a grade
+de logos quebrada. Entrou `.grade` na lista.
+
+E o convite de associação, doze cópias do mesmo parágrafo no markup, virou
+[`ConviteAssociese`](src/components/ConviteAssociese.astro); seis delas já saíram,
+as outras seis saem na Etapa 8.
+
+Peso: `publicacoes` caiu de **402 para 189 KB**, `estatisticas-e-estudos` de 342
+para 192. O transbordo horizontal herdado caiu de **45 para 33**.
+
+### Etapas 8–9 — Páginas, do mais simples ao mais arriscado
 
 | etapa | páginas (× 3 idiomas) | por que aqui |
 |---|---|---|
-| 7 | `publicacoes`, `estatisticas-e-estudos` | estreia as Content Collections |
 | 8 | `associados`, `associe-se`, `apoie`, `resorts-brasil` | componentes de dado já existem |
 | 9 | `index` / `home` / `inicio` | maior visibilidade; carrossel e kenburns |
 

@@ -1,52 +1,70 @@
 ---
-import ListaEstudos from '../components/ListaEstudos.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
+import LayoutSistema from '../layouts/LayoutSistema.astro';
+import Secao from '../components/layout/Secao.astro';
+import Container from '../components/layout/Container.astro';
+import Grade from '../components/layout/Grade.astro';
+import Titulo from '../components/primitivos/Titulo.astro';
+import Texto from '../components/primitivos/Texto.astro';
+import CartaoPublicacao from '../components/padroes/CartaoPublicacao.astro';
+import ConviteAssociese from '../components/ConviteAssociese.astro';
+import { estudosEm } from '../conteudo';
+import { ui, type Locale } from '../i18n/ui';
+
+/*
+ * Irma da /publicacoes, e as correcoes sao as mesmas — ver as notas la. Duas
+ * diferencas valem registro:
+ *
+ *   ESTUDO NAO TEM RESUMO NEM ANO. Nao e recorte desta migracao: e o que as
+ *   paginas sempre mostraram, e o schema da colecao ja dizia isso desde a
+ *   Etapa 4. O <CartaoPublicacao> tem os dois campos opcionais exatamente por
+ *   causa deste caso.
+ *
+ *   O VAO DA GRADE ERA OUTRO. Esta pagina nao declarava `data-margin`, e o valor
+ *   padrao daquele atributo e 20 — enquanto a /publicacoes declarava 30. Dois
+ *   vaos para a mesma fileira de cartoes, um deles por omissao. Consolidados no
+ *   `espaco="md"` (28px, o vao medido no `.row` do tema), pelo mesmo criterio
+ *   que consolidou as cores repetidas: duas medidas para o mesmo papel sao
+ *   ruido, nao decisao.
+ *
+ * MEDIDO (scripts/medir-primitivos.mjs): o tema poe 1 coluna no mobile, 3 no
+ * tablet e 4 no desktop. Com `colunas={4}` e `piso={1}` sao 1 / 2 / 4 — o tablet
+ * passa de 3+1 para 2x2, que e o unico desvio e e uma fileira mais equilibrada
+ * do que a orfa que havia.
+ */
+const lang: Locale = 'pt-br';
+const t = ui[lang];
+const estudos = await estudosEm(lang);
+
+/* Celula de 347px no desktop, com o container de 1500px e o vao de 28px. */
+const tamanhosCapa = '(min-width: 64rem) 22rem, (min-width: 30rem) 45vw, 92vw';
 ---
 
-<BaseLayout
-  lang="pt-br"
-  route="statistics"
->
-    <!-- Título -->
-    <section id="title">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-9 center text-center">
-                    <h1 class="text-md h2">Estatísticas e Estudos</h1>
-                    <h3>Confira abaixo os últimos estudos do setor de resorts, elaborados pela Resorts Brasil
-                        ou por parceiros.</h3>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Título -->
+<LayoutSistema lang={lang} route="statistics">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="media">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.statisticsTitle}</Titulo>
+      <Texto tamanho="lg" alinhamento="centro">{t.statisticsLead}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Estatisticas e Estudos -->
-    <section id="estatisticas-e-estudos" class="no-padding">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 center">
-                    <div class="grid-layout post-4-columns m-b-30" data-item="post-item">
-                        <ListaEstudos lang="pt-br" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Estatisticas e Estudos -->
+  <Secao id="estatisticas-e-estudos">
+    <Container>
+      <Grade colunas={4} piso={1} espaco="md">
+        {
+          estudos.map((e) => (
+            <CartaoPublicacao
+              titulo={e.titulo}
+              capa={e.capa}
+              href={e.url}
+              rotuloLink={t.leiaAgora}
+              nivel={2}
+              tamanhos={tamanhosCapa}
+            />
+          ))
+        }
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- CTA -->
-    <section id="cta" class="p-b-150">
-        <div class="container">
-            <div class="row text-center">
-                <h3 class="m-b-0">Quer fazer parte de um grupo seleto de resorts brasileiros?</h3>
-                <p>Faça parte e ajude a transformar o setor. 😍</p>
-                <div>
-                    <a href="/associe-se" class="btn">Associe-se</a>
-                    <a href="/associados" class="btn btn-outline">Conheça os associados</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: CTA -->
-</BaseLayout>
+  <ConviteAssociese lang={lang} />
+</LayoutSistema>

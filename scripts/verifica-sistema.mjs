@@ -55,6 +55,14 @@ const MIGRADAS = [
   'src/pages/es-es/politica-de-privacidad.astro',
   /* A secao de cookies passou a emitir markup do sistema junto com elas. */
   'src/components/SecaoCookies.astro',
+  /* Etapa 7 — publicacoes e estatisticas e estudos, nos tres idiomas. */
+  'src/pages/publicacoes.astro',
+  'src/pages/estatisticas-e-estudos.astro',
+  'src/pages/en-us/publications.astro',
+  'src/pages/en-us/statistics-and-studies.astro',
+  'src/pages/es-es/publicaciones.astro',
+  'src/pages/es-es/estadisticas-y-estudios.astro',
+  'src/components/ConviteAssociese.astro',
   /* O layout do sistema e o <head> compartilhado. */
   'src/layouts/LayoutSistema.astro',
   'src/layouts/Cabeca.astro',

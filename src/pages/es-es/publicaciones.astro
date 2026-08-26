@@ -1,48 +1,52 @@
 ---
-import ListaPublicacoes from '../../components/ListaPublicacoes.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Grade from '../../components/layout/Grade.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Texto from '../../components/primitivos/Texto.astro';
+import CartaoPublicacao from '../../components/padroes/CartaoPublicacao.astro';
+import ConviteAssociese from '../../components/ConviteAssociese.astro';
+import { publicacoesEm } from '../../conteudo';
+import { ui, type Locale } from '../../i18n/ui';
+
+/* As correcoes desta pagina estao anotadas em src/pages/publicacoes.astro, que
+   e a versao de referencia. */
+const lang: Locale = 'es-es';
+const t = ui[lang];
+const publicacoes = await publicacoesEm(lang);
+
+const tamanhosCapa = '(min-width: 64rem) 18rem, (min-width: 30rem) 32vw, 92vw';
 ---
 
-<BaseLayout
-  lang="es-es"
-  route="publications"
->
-    <!-- Título -->
-    <section id="title">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-10 center text-center">
-                    <h1 class="text-md h2">Publicaciones</h1>
-                    <h3>Una de nuestras misiones es generar información relevante para el mercado.<br>
-                        Confiera abajo nuestras últimas publicaciones:</h3>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Título -->
+<LayoutSistema lang={lang} route="publications">
+  <Secao id="titulo" espacoBase="nenhum">
+    <Container largura="media">
+      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.publicationsTitle}</Titulo>
+      <Texto tamanho="lg" alinhamento="centro">{t.publicationsLead}</Texto>
+    </Container>
+  </Secao>
 
-    <!-- Publicacoes -->
-    <section id="publicacoes" class="no-padding">
-        <div class="container">
-            <div class="grid-layout post-5-columns m-b-30" data-item="post-item" data-margin="30">
-                <ListaPublicacoes lang="es-es" />
-            </div>
-        </div>
-    </section>
-    <!-- end: Publicacoes -->
+  <Secao id="publicaciones">
+    <Container>
+      <Grade colunas={5} piso={1} espaco="md">
+        {
+          publicacoes.map((p) => (
+            <CartaoPublicacao
+              titulo={p.titulo}
+              resumo={p.resumo}
+              capa={p.capa}
+              etiqueta={String(p.ano)}
+              href={p.url}
+              rotuloLink={t.leiaAgora}
+              nivel={2}
+              tamanhos={tamanhosCapa}
+            />
+          ))
+        }
+      </Grade>
+    </Container>
+  </Secao>
 
-    <!-- CTA -->
-    <section id="cta" class="p-b-150">
-        <div class="container">
-            <div class="row text-center">
-                <h3 class="m-b-0">¿Quiere formar parte de un grupo selecto de resorts brasileños?</h3>
-                <p>Forme parte y ayude a transformar el sector. 😍</p>
-                <div>
-                    <a href="/es-es/asociese" class="btn">Asóciese</a>
-                    <a href="/es-es/asociados" class="btn btn-outline">Conozca los asociados</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: CTA -->
-</BaseLayout>
+  <ConviteAssociese lang={lang} />
+</LayoutSistema>

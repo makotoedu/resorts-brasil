@@ -34,13 +34,21 @@ const VIEWPORTS = viewportsSelecionados();
  * Contêineres cujos filhos formam uma grade. Sao os que ja quebraram neste
  * projeto ou que quebrariam sem aviso:
  *
- *   .grid-layout   masonry posicionado em JS — onde nasceu o bug do
- *                  `.grid-loaded` que deixou 6 paginas invisiveis
- *   .team-members  a grade de diretoria e conselho
+ *   .grade         a <Grade> do design system, em 23 paginas migradas
+ *   .team-members  a grade de diretoria e conselho, no tema
  *   .grid          as grades de logos do tema (grid-5-columns etc.)
  *   .polo-carousel o carrossel de logos, que ja colapsou uma vez
+ *
+ * O `.grade` ENTROU NA ETAPA 7, e a ausencia dele era um buraco: desde a Etapa 1
+ * o design system tem grade propria, e por seis etapas esta varredura so olhou
+ * as do tema. Se uma container query fosse escrita errada, a checagem de colunas
+ * abaixo — a que teria pego a grade de logos quebrada — nao veria.
+ *
+ * O `.grid-layout` saiu na mesma etapa, e por ter deixado de existir: era o
+ * masonry posicionado em JavaScript, onde nasceu o bug do `.grid-loaded` que
+ * deixou seis paginas invisiveis. As duas ultimas paginas que o usavam migraram.
  */
-const GRADES = ['.grid-layout', '.team-members', '.grid', '.polo-carousel'];
+const GRADES = ['.grade', '.team-members', '.grid', '.polo-carousel'];
 
 /*
  * Duas listas, nao uma.
