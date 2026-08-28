@@ -408,6 +408,89 @@ sobre a política de privacidade inglesa: a estrutura estava certa. Elas
 apareceram lendo os três idiomas lado a lado e comparando o texto gerado com o
 do tema.
 
+## Etapa 9 — a home, e o carrossel que ninguém via
+
+Medida em 26/08/2026. Três páginas: `index`, `en-us/home` e `es-es/inicio`.
+**38 de 41 migradas.**
+
+Mesma leitura das quatro etapas anteriores: o diff visual não foi rodado como
+número, porque uma página que troca de camada inteira diverge em tudo. Sustentam
+a etapa os quatro portões — build, comportamento (**63/63**), geometria (zero
+bloqueios em 123 páginas × viewport) e orçamento — mais duas comparações de HTML
+gerado.
+
+A segunda dessas comparações é o resultado mais forte da etapa: **as três homes
+saíram com 1590 elementos, idênticos tag a tag e classe a classe**. A home era a
+página com mais divergências entre idiomas de todo o site.
+
+### O delta que não é delta: a faixa de associados estava invisível
+
+Antes de qualquer refino, a correção que domina a etapa. `.carousel` tem
+`opacity: 0` e `visibility: hidden` no `style.css`, e só `.carousel-loaded` —
+classe que o init do flickity punha — devolvia as duas. **As três homes baixavam
+70 logotipos em tamanho original para não mostrar nenhum.**
+
+Não aparece como percentual de pixel porque o `visual-diff.mjs` esconde aquela
+região de propósito, nos dois lados. Aparece como uma seção que passa a existir.
+A análise dos quatro portões que não viram está em
+[decisoes.md](decisoes.md#o-carrossel-da-home-estava-invisível-em-produção).
+
+### O que ficou mais leve
+
+| página | antes | depois |
+|---|---|---|
+| `index` mobile | 4405 KB | **451 KB** |
+| `index` desktop | 4405 KB | **621 KB** |
+| `en-us/home` mobile | 4405 KB | **456 KB** |
+| `es-es/inicio` mobile | 4405 KB | **451 KB** |
+
+**É o maior corte do projeto, e o quarto seguido.** O conjunto medido caiu de
+47 971 KB para **24 456 KB** — metade do peso total do site em nove etapas.
+
+Um número cresceu, e fica declarado: `/design` foi de 225 para **238 KB**, porque
+o catálogo ganhou o `<CarrosselLogos>` com oito logotipos de demonstração. É
+crescimento de vitrine, não de página de conteúdo — o `/design` é `noindex` e
+está fora do sitemap —, e a demonstração já foi cortada de doze para oito, que é
+o mínimo em que a volta fecha sem deixar vão no desktop.
+
+E o transbordo horizontal herdado caiu de **33 para 3**: sobram as três páginas
+de ebook.
+
+### Correções
+
+| onde | tipo | motivo |
+|---|---|---|
+| as três | correção | **hierarquia**. O `<h2>` do hero vinha antes do `<h1 class="text-md h2">` da associação — o h1 não era o primeiro heading da página —, e depois vinham seis `<h3>` e três `<h4>`, todos escolhidos pelo tamanho. Agora o hero é o h1 e as seções são h2 |
+| `en-us/home`, `es-es/inicio` | correção | o **título** da faixa de parceiros não existia nas duas: elas abriam direto no rótulo "Maintainers:" |
+| `en-us/home`, `es-es/inicio` | correção | o `#ApoieOTurismoBrasileiro` só existia em português — e traduzido ele já estava no `ui.ts` desde a Etapa 8 |
+| `es-es/inicio` | correção | `Socios / Partners:`, o único dos nove rótulos de parceiro com duas línguas na mesma linha, vira `Socios:` |
+| `es-es/inicio` | correção | os rótulos dos destaques tratavam o leitor por *usted* num cartão ("Acceda a la cartilla") e por *tú* no seguinte ("Accede a la guía"). O resto do site é *usted* |
+| `en-us/home`, `es-es/inicio` | correção | o `alt` da foto da associação era "Periquito por Claire Thibault" — **em português nas três**. Alt é texto lido em voz alta |
+| as três | correção | o `id` da seção de associados só existia na home portuguesa |
+| as três | correção | `<body class="modern">` some |
+| seis páginas já migradas | **correção fora da etapa** | o `<LinkAcao>` volta a ser maiúsculo com `letter-spacing: 1px`, como o `.item-link` do tema sempre foi. Nasceu sem as duas porque a lista do medidor não pedia `textTransform` nem `letterSpacing` — ver [decisoes.md](decisoes.md) |
+
+### Refinos
+
+| onde | tipo | motivo |
+|---|---|---|
+| as três | **refino, e é o de maior consequência** | o carrossel sai do JavaScript. Eram 105 linhas reproduzindo a matemática de célula do flickity; agora é uma trilha de CSS com a fila escrita duas vezes e `translateX(-50%)`. Com ele morre o **único `setInterval`** do projeto |
+| as três | refino | o movimento é **contínuo** no lugar de um salto de uma célula por segundo com 600 ms de `ease`. A velocidade média é a mesma — um logotipo por segundo, o `data-autoplay` medido |
+| as três | refino | a escada de colunas do carrossel passa a ser 2 → 3 → 6 por container query, no lugar de 1 → 2 → 3 → 4 → 6 por faixa de janela. Some o degrau de **um** logotipo por tela no celular, que dava uma célula de 340 px de lado |
+| as três | refino | os seis cartões de destaque perdem o `height: 360px` inline e ganham `aspect-ratio` 3/2. No celular a caixa era **mais alta que larga** (360 × 330) |
+| as três | refino | o hero deixa de ser `background-image` num `style=` inline: vira `<Imagem>` com `srcset`, `fetchpriority` e o zoom em CSS. A página encolhe ~30% de altura no tablet |
+| as três | refino | tipografia fluida no título da associação — o tema saltava de 32 px no celular para 62 px a partir do tablet; agora interpola, e o extremo do desktop é o medido |
+| as três | refino | `text-wrap: balance` nos títulos dos cartões e do hero |
+| as três | refino | os 70 logotipos deixam de ser links. Ver a nota de decisão — no site original eram 71 `<a href="#">`, e desde a saída do jQuery nenhum deles estava na ordem de tabulação |
+
+### Uma mudança de defesa, não de conserto
+
+O `object-fit: contain` da célula do carrossel **não** corrige distorção. A
+leitura do CSS do tema sugeria que corrigisse (`width: 100%` e `height: 100%` sem
+`object-fit`, em célula quadrada), mas os 80 logotipos do acervo são todos
+320 × 320 — conferidos um a um. Fica como defesa para o dia em que entrar um
+logotipo largo.
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**
@@ -443,3 +526,11 @@ esconder no meio dos refinos, que é o risco real de abrir mão do portão de pi
 O diff visual nunca foca elemento nenhum, então estados de foco não aparecem
 aqui — quem os cobre é a suíte comportamental. O mesmo vale para o carrossel de
 logos, escondido durante a comparação por girar sozinho.
+
+**E essa segunda exclusão custou caro.** Ela é legítima — a posição de cada logo
+depende do instante da captura —, mas cegou a única verificação de pixel daquela
+região, e o carrossel das três homes ficou **invisível em produção** por meses
+sem que nenhum dos quatro portões visse. A regra que fica: uma exclusão de portão
+entra junto com quem cobre o buraco, e não só com o motivo dela. Hoje quem cobre
+são as verificações `carrossel: a faixa está visível`, `a faixa anda` e
+`geometria das células`, em `tests/verify-behaviors.mjs`.

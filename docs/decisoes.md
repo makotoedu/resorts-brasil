@@ -2262,3 +2262,264 @@ um `<link href=>`, e é isso que a checagem passou a procurar.
 
 Um projeto que documenta o defeito ao lado da correção vai citar markup o tempo
 todo. Quem precisa saber a diferença é a checagem.
+
+# Design system — Etapa 9
+
+## O carrossel da home estava invisível em produção
+
+A Etapa 9 começou medindo o carrossel de logos para reproduzi-lo, e a primeira
+medição devolveu isto:
+
+```
+.carousel.client-logos
+  mobile   358x340   ... opacity=0
+  tablet   736x239   ... opacity=0
+  desktop  1440x237  ... opacity=0
+```
+
+A regra é `style.css:17305`:
+
+```css
+.carousel { opacity: 0; visibility: hidden; transition: opacity .3s ease; }
+.carousel.carousel-loaded { opacity: 1; visibility: visible; }
+```
+
+E quem punha `carousel-loaded` era o init do flickity — `js/functions.js:1179`,
+`elem.addClass("carousel-loaded")` —, que saiu com o jQuery. Desde então as três
+homes baixavam **70 logotipos em tamanho original para não mostrar nenhum**.
+
+É a **quarta** vez que este projeto encontra a mesma forma: plugin removido, CSS
+que dependia dele silenciosamente inerte. As outras três estão no `CLAUDE.md` —
+o `.grid-loaded` que deixou seis páginas sem conteúdo, o `z-index` do kenburns
+que parou o zoom, e o `.hover-active` dos submenus.
+
+### Por que nenhum dos quatro portões viu
+
+Esta é a parte que vale mais que o defeito, porque cada portão falhou por um
+motivo diferente e todos são reproduzíveis:
+
+| portão | por que passou |
+|---|---|
+| comportamental | comparava o `src` do primeiro `.polo-carousel-item` antes e depois de 8s. O JavaScript reciclava a fila **dentro** do elemento invisível, então o `src` mudava |
+| geometria | a lista `GRADES` tinha `.polo-carousel`, e a classe do tema é `.polo-carousel-item`. Um seletor de classe casa o nome inteiro: **nunca casou com nada**, em nenhuma das 41 páginas |
+| diff visual | esconde `.carousel.client-logos` de propósito — a posição depende do instante da captura |
+| orçamento | o peso não muda: as imagens carregam invisíveis do mesmo jeito, e eram elas o grosso dos 4,4 MB da home |
+
+Duas lições ficam. A primeira é que **um seletor que não casa nada não falha —
+ele passa**, e passa em silêncio; `.polo-carousel` estava na lista desde a Etapa
+0.5 dando a impressão de cobertura. A segunda é que **uma exclusão de portão
+precisa vir com quem cobre o buraco**, e não só com o motivo dela: a linha do
+`visual-diff.mjs` que esconde o carrossel é legítima, mas cegava a única
+verificação de pixel daquela região sem apontar para nada em seguida.
+
+### O que passou a cobrir
+
+Três verificações novas, e a primeira é literalmente a pergunta que faltava:
+
+- **"carrossel: a faixa está visível"** — `checkVisibility({ checkOpacity: true,
+  checkVisibilityCSS: true })`. Rodada contra o build do tema, ela devolvia
+  `false`;
+- **"carrossel: a faixa anda"** — compara a posição da **caixa** do primeiro
+  logotipo, não o conteúdo do DOM. `getBoundingClientRect` já inclui o
+  `transform` do ancestral, então não há como passar num elemento parado;
+- **"carrossel: a fila está escrita duas vezes"** — a volta só fecha sem emenda
+  se as duas metades forem iguais em número.
+
+E `.polo-carousel` saiu da lista `GRADES`, substituído por `.trilho`.
+
+## Não há link nos logotipos, e isso é escolha
+
+O site original punha `<a href="#">` nos 71 logotipos — links que o teclado
+percorria para lugar nenhum. A refatoração de 2026 trocou por URLs de verdade, e
+elas **nunca funcionaram**: `visibility: hidden` tira o elemento da ordem de
+tabulação, então ninguém jamais alcançou nenhuma delas.
+
+Repô-las agora custaria caro por um motivo mecânico. São 70 links dentro de uma
+faixa recortada e em movimento: ao tabular, o navegador rola o recorte para
+revelar o link focado, e `scrollLeft` **não volta sozinho** quando o foco sai. A
+faixa fica deslocada e, quando a animação completa a volta, aparece o vazio
+depois do fim da fila. Um listener de `blur` corrigiria — e o ponto desta etapa é
+justamente tirar JavaScript dali.
+
+A função não se perde: os 78 resorts estão em `/associados`, cada um com o seu
+link, e o botão do `<Hero>` logo acima aponta para lá. A faixa passa a ser o que
+sempre foi de fato — uma vitrine — e agora com os nomes legíveis por leitor de
+tela, coisa que 71 âncoras vazias não davam.
+
+## A volta fecha sem emenda, e a duplicata não custa rede
+
+A fila é escrita **duas vezes** e a animação desloca a trilha em `-50%`. Com as
+duas metades idênticas, a segunda para exatamente onde a primeira começou: ao
+reiniciar, o quadro é o mesmo pixel a pixel.
+
+A duplicata custa DOM, e não rede — são os mesmos 70 endereços, com o mesmo
+`srcset` e o mesmo `sizes`, então o navegador baixa cada logotipo uma vez. Ela
+vem com `aria-hidden` e `alt` vazio, para o leitor de tela ouvir a lista uma vez
+só.
+
+A duração precisa do **número de itens**: a trilha anda uma fila inteira por
+volta, e um segundo por logotipo (o `data-autoplay="1000"` medido, igual no
+original) só continua sendo um segundo por logotipo se o total acompanhar a
+lista. Com um número fixo no CSS, acrescentar um resort aceleraria a faixa em
+silêncio.
+
+### `define:vars` escreve o `style=` em todos os elementos, não só na raiz
+
+A primeira tentativa de levar `--itens` ao CSS foi `<style define:vars>`.
+Compila, funciona — e o Astro escreve `style="--itens: 70"` em **cada elemento do
+template**: 143 atributos iguais por página, dois terços deles nas células, que
+não usam a variável.
+
+Ficou um `style=` explícito num elemento só, declarado na allowlist de
+`verifica-sistema.mjs`. Ver abaixo.
+
+## O portão de `style=` inline só via metade das ocorrências
+
+A checagem procurava `style="` — com aspas. Num arquivo `.astro`, o estilo
+**calculado** se escreve com chaves, e essa forma nunca foi contada. O catálogo
+tinha três desde a Etapa 0 (as amostras de cor e de tipografia, que só existem
+porque leem o token do dado) e o portão nunca as viu.
+
+Um buraco assim é pior que a ausência da checagem: dá a impressão de que ela
+cobre. Com as duas formas contadas, a allowlist que o plano previa desde o início
+— *"nenhum `style=` inline **fora de allowlist**"* — passou a ser necessária de
+fato. Ela guarda o **número** esperado por arquivo, e não só o nome: um `style=`
+novo numa página que já tem exceção continua reprovando. E se o arquivo tiver
+**menos** que o reservado, sai um aviso pedindo que a entrada seja removida —
+exceção esquecida em lista é exceção que ninguém revoga.
+
+## O `<LinkAcao>` perdeu duas propriedades porque o medidor não as pedia
+
+`.item-link` do tema é:
+
+```css
+.item-link { color: #001E6C; font-size: 14px; letter-spacing: 1px;
+             text-transform: uppercase !important; }
+```
+
+O `<LinkAcao>` da Etapa 3 nasceu sem as duas últimas. A causa não foi descuido de
+leitura — foi que `medir-padroes.mjs` mede **as propriedades que a lista do grupo
+pede**, e a lista de `chamadaAcao` não tinha `textTransform` nem `letterSpacing`.
+O resumo não as mostrou, e ninguém as inventou.
+
+**Medir sem pedir a propriedade certa é não medir.** É a variante mais silenciosa
+do problema que este projeto documenta desde a Etapa 1: ali o erro era ler o CSS
+em vez de medir; aqui foi medir a coisa errada.
+
+Apareceu comparando o cartão da home com uma captura do tema — "SAIBA MAIS"
+contra "Saiba mais". A correção alcança as seis páginas já migradas que usam o
+componente, e as duas propriedades entraram na lista do medidor.
+
+## O acervo desmentiu uma correção que parecia óbvia
+
+Medido, `.polo-carousel-item img` tem `width: 100%` e `height: 100%` **sem
+`object-fit`**, dentro de uma célula quadrada. A leitura imediata é que o tema
+deformava todo logotipo que não fosse quadrado, e a primeira versão deste
+componente registrou isso como correção.
+
+Não é. Os **80 logotipos** de `src/assets/imagens/associados` são todos 320×320,
+conferidos um a um com `sharp`. Numa célula quadrada com fonte quadrada, `cover`,
+`contain` e `fill` dão o mesmo pixel.
+
+O `object-fit: contain` ficou mesmo assim, porque é o único dos três que continua
+certo no dia em que entrar um logotipo largo — mas como **defesa**, e não como
+conserto. É o aviso do `CLAUDE.md` ao contrário: ali, ler o seletor sem medir
+engana; aqui o seletor prometia um defeito que o acervo não tem.
+
+## O orçamento deixou de ser um número, e voltou a ser
+
+Três medições seguidas da mesma home deram **451, 201 e 451 KB**. A catraca
+reprovaria e aprovaria a mesma página em execuções consecutivas — e a primeira
+reprovação ensinaria a ignorá-la.
+
+A causa: o limiar de `loading="lazy"` do Chromium depende da velocidade
+**estimada** da conexão, e essa estimativa não existe na primeira navegação de um
+processo. Ali ele usa um limiar curto e, das seguintes em diante, um mais
+generoso. Medido: a home entregou 2 imagens na primeira navegação e 26 em todas
+as outras — 26 KB contra 275, para o mesmo HTML.
+
+O efeito era invisível enquanto nenhuma página tinha muita imagem abaixo da
+dobra. Com os 70 logotipos do carrossel, ele passou a decidir o número — e o
+número passou a depender de a home ser **a primeira da lista**, que ela é.
+
+Quatro mudanças, e as quatro precisam estar juntas:
+
+| mudança | o que ela resolve |
+|---|---|
+| `--force-effective-connection-type=4G` | fixa o limiar; e 4G é o que um visitante comum tem, não o piso de um navegador que ainda não sabe onde está |
+| uma navegação de aquecimento, descartada | a flag sozinha não bastou: a primeira navegação após o `launch()` ainda entregava 2 imagens |
+| `networkidle` no lugar de 300 ms de cortesia | o `load` não espera imagem lazy, e a janela fixa media se a máquina estava ocupada |
+| `reducedMotion: 'reduce'` no contexto | com a faixa andando, novas imagens entram na tela para sempre e a rede **nunca** silencia |
+
+As duas últimas são a mesma decisão vista de dois lados. Com as quatro, duas
+rodadas completas consecutivas deram **24 456 KB** as duas vezes.
+
+**O que a medida não cobre, e fica dito:** quem ficar na home vendo a volta
+inteira baixa os 70 logotipos, ~447 KB de AVIF, espalhados por 70 segundos e em
+prioridade baixa. Contra os 4,4 MB que a página do tema baixava **de uma vez** —
+para não mostrar nenhum deles — é o teto que se aceitou.
+
+## O `site.js` perdeu quatro funções, e três já estavam mortas
+
+`logoCarousel()` morreu com esta etapa: eram 105 linhas reproduzindo a matemática
+de célula do flickity, mais o **único `setInterval`** que o projeto ainda tinha —
+o autoplay que a nota da Etapa 0 listava como obstáculo às View Transitions,
+porque acumularia a cada navegação e aceleraria a faixa progressivamente.
+
+`hero()` morreu junto, e pelo mesmo motivo: só a home o usava. Ele criava a
+camada `.kenburns-bg` lendo a URL de um `style=` inline — o que impedia `srcset`
+e `lazy` na maior imagem do site — e revelava as legendas com `setTimeout`.
+
+E aí veio a parte que não estava prevista: **`counters()` e `tabs()` já estavam
+inertes desde a Etapa 8**, quando `/associados` migrou. O `<Contador>` emite
+`[data-contador]` e a função procurava `[data-to]`; as `<Abas>` não emitem
+`data-bs-toggle="tab"`, que era o gancho de toda a função. Conferido no `dist/`:
+as quatro strings só aparecem no `/design`, dentro de `<code>`, como
+documentação.
+
+`tabs()` não era só código parado: ele varria `[role="tablist"]`, que as `<Abas>`
+**usam**. Saía sem fazer nada por não achar o atributo do Bootstrap dentro, mas
+era um segundo dono a um passo de distância do mesmo elemento.
+
+O arquivo caiu de **547 para 370 linhas**, e com as funções saíram seis entradas
+da safelist de `purge-css.mjs` — `kenburns-bg`, `kenburns-bg-animate`,
+`animate__fadeInUp`, `polo-carousel-item`, `active` e `show`. Uma entrada a mais
+ali não quebra nada, só segura CSS que ninguém usa; por isso a lista precisa
+encolher junto com o script, senão vira o inverso do que existe para ser.
+
+Resta **um** listener de `resize` e nenhum `setInterval`. O que sobrou fecha o
+menu ao passar para o breakpoint de desktop — **nenhum listener deste projeto
+calcula geometria**.
+
+## As três homes ficaram idênticas em estrutura
+
+Comparado o HTML gerado dos três idiomas, elemento por elemento e classe por
+classe, ignorando `href`/`alt`/`aria-*`: **1590 elementos, idênticos nos três**.
+
+Não é elegância — é a resposta ao defeito que a auditoria encontrou. Antes desta
+etapa, as três homes divergiam em cinco pontos, e nenhum deles é o tipo de coisa
+que se percebe olhando uma página de cada vez:
+
+| divergência | onde estava |
+|---|---|
+| o **título** da faixa de parceiros | só em português |
+| o `#ApoieOTurismoBrasileiro` | só em português — e traduzido ele já existia no `ui.ts` desde a Etapa 8 |
+| o `id` da seção de associados | só em português |
+| `Socios / Partners:` | só em espanhol: o único dos nove rótulos com duas línguas na mesma linha |
+| o `alt` da foto da associação | em **português nos três** |
+
+Os quatro primeiros somem porque o bloco virou componente. O quinto é o único que
+precisou de tradução nova, e é o mais instrutivo: `alt` é texto lido em voz alta,
+e um `alt` em português numa página inglesa é a mesma classe de defeito que o
+"Leia agora" da Etapa 4 — só que nenhum portão o vê e nenhuma captura o mostra.
+
+## O que a etapa deixou para trás, de propósito
+
+Uma coisa foi anotada e **não** corrigida: o Guia do Viajante Responsável aparece
+com três grafias inglesas no site — "Responsible Traveler Guide" no cartão da
+home, "Responsible Traveller Guide" na `description` de `/publicacoes`, e
+"Responsible traveler guide" na coleção. A home ficou com a que ela já tinha.
+
+Unificar mexeria em duas páginas fora desta etapa, e a regra do projeto é que
+cada etapa responde pelo que migra. Fica registrado aqui para a Etapa 11, que é
+quando a revisão do conjunto acontece.

@@ -718,20 +718,67 @@ ser a última a migrar no plano.
 Detalhes em [docs/decisoes.md](docs/decisoes.md), "Etapa 8", e a lista completa
 em [docs/deltas-visuais.md](docs/deltas-visuais.md).
 
-### Etapa 9 — a home
+### Etapa 9 — a home ✅ CONCLUÍDA
 
-| etapa | páginas (× 3 idiomas) | por que aqui |
-|---|---|---|
-| 9 | `index` / `home` / `inicio` | maior visibilidade; carrossel e kenburns |
+As três entregues, nos três idiomas. **38 de 41 páginas migradas, medido no
+`dist/`.**
 
-Em cada página, três correções deliberadas: hierarquia de headings, `bodyClass`
-uniformizado, e as divergências entre idiomas resolvidas por componentização.
+**A etapa começou encontrando um defeito que ninguém procurava: o carrossel de
+logos das três homes estava INVISÍVEL em produção.** `.carousel` tem
+`opacity: 0` e `visibility: hidden` no `style.css`, e só `.carousel-loaded`
+devolve as duas — classe que o init do flickity punha (`js/functions.js:1179`) e
+que saiu com o jQuery. As três páginas baixavam 70 logotipos em tamanho original
+para não mostrar nenhum. É a **quarta** vez que este projeto encontra a mesma
+forma: plugin removido, CSS que dependia dele silenciosamente inerte.
 
-Duas coisas que a Etapa 8 deixou preparadas para ela: o `<GradeLogos>` e o
-`<YouTube>` do tema só existem por causa da home e do ebook, e a
-[`<FaixaParceiros>`](src/components/FaixaParceiros.astro) já cobre o bloco de
-logos que a home repete. E uma divergência já anotada: `index.astro` tem o
-`#ApoieOTurismoBrasileiro` que `home.astro` e `inicio.astro` não têm.
+**Nenhum dos quatro portões via, e cada um falhou por um motivo diferente.** O
+comportamental comparava o `src` de um elemento escondido; a geometria vigiava
+`.polo-carousel`, um seletor que **nunca casou com nada** porque a classe do tema
+é `.polo-carousel-item`; o diff visual esconde aquela região de propósito; e o
+orçamento não muda quando a imagem carrega sem aparecer. Um seletor que não casa
+nada não falha — ele passa, e passa em silêncio.
+
+O substituto é o [`<CarrosselLogos>`](src/components/padroes/CarrosselLogos.astro),
+que é CSS: a fila é escrita duas vezes e a trilha anda `translateX(-50%)`, o que
+fecha a volta sem emenda. A duplicata custa DOM e não rede — são os mesmos
+endereços — e vem com `aria-hidden`. Com ele morre o **único `setInterval`** que
+o projeto ainda tinha, o autoplay que a nota da Etapa 0 listava como obstáculo às
+View Transitions.
+
+**O `site.js` caiu de 547 para 370 linhas**, e três das quatro funções removidas
+já estavam mortas: `counters()` procura `[data-to]` e o `<Contador>` emite
+`[data-contador]`; `tabs()` depende de `data-bs-toggle="tab"`, que as `<Abas>` não
+emitem — as duas ficaram inertes na Etapa 8 sem que ninguém notasse. E `tabs()`
+não era só código parado: varria `[role="tablist"]`, que as `<Abas>` usam.
+
+**Dois portões estavam furados, e os dois foram consertados:**
+
+- o checador de `style=` inline procurava `style="`, com aspas, e portanto nunca
+  via o estilo **calculado** — a forma com chaves, que é a única que aparece num
+  `.astro`. O catálogo tinha três desde a Etapa 0. Com as duas formas contadas, a
+  allowlist que este plano previa desde o início passou a ser necessária de fato;
+- o orçamento deixou de ser um número: três medições seguidas da mesma home deram
+  451, 201 e 451 KB. O limiar de `loading="lazy"` do Chromium depende da conexão
+  **estimada**, que não existe na primeira navegação de um processo — e a home é a
+  primeira da lista. Resolvido com quatro mudanças que só funcionam juntas.
+
+**Um componente da Etapa 3 estava incompleto por um motivo instrutivo:** o
+`<LinkAcao>` nasceu sem `text-transform: uppercase` e sem `letter-spacing`,
+porque a lista de propriedades do grupo `chamadaAcao` no `medir-padroes.mjs` não
+pedia nenhuma das duas. **Medir sem pedir a propriedade certa é não medir.** A
+correção alcança as seis páginas já migradas que usam o componente.
+
+E o resultado que a etapa existia para dar: **as três homes saíram com 1590
+elementos, idênticos tag a tag e classe a classe.** Era a página com mais
+divergências entre idiomas do site — cinco, incluindo um `alt` em português nas
+três versões.
+
+Peso: `index` cai de **4405 para 451 KB** no mobile, e o conjunto medido de 47,9
+para **24,4 MB**. O transbordo horizontal herdado caiu de **33 para 3** — sobram
+as três páginas de ebook.
+
+Detalhes em [docs/decisoes.md](docs/decisoes.md), "Etapa 9", e a lista completa
+em [docs/deltas-visuais.md](docs/deltas-visuais.md).
 
 ### Etapa 10 — Ebook
 

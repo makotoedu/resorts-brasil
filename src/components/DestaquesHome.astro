@@ -1,0 +1,96 @@
+---
+import Secao from './layout/Secao.astro';
+import Container from './layout/Container.astro';
+import Grade from './layout/Grade.astro';
+import Titulo from './primitivos/Titulo.astro';
+import ChamadaAcao from './padroes/ChamadaAcao.astro';
+import LinkAcao from './padroes/LinkAcao.astro';
+import { destaquesHome } from '../data/destaques-home';
+import { ui, routes, type Locale } from '../i18n/ui';
+
+/**
+ * Os seis cartoes de destaque da home — o bloco inteiro.
+ *
+ * EXISTE PORQUE SAO DEZOITO COPIAS, como a <FaixaParceiros> e o
+ * <ConviteAssociese>: seis blocos de doze linhas, escritos a mao nas tres
+ * paginas. E como sempre acontece com markup triplicado, duas ja tinham
+ * divergido — o espanhol tratava o leitor por usted num cartao e por tu no
+ * seguinte, e o titulo ingles do e-book trazia um espaco sobrando no fim.
+ *
+ * Fica em `src/components/` e nao em `padroes/` pelo criterio de sempre: e
+ * montagem de CONTEUDO a partir do `ui.ts` e do `src/data/`, nao uma decisao de
+ * desenho. O desenho e a <Secao>, a <Grade>, a <ChamadaAcao> e o <LinkAcao>, que
+ * estao no catalogo.
+ *
+ * AS DUAS METADES SE ENCONTRAM PELO `id`, e a guarda abaixo aborta o build se
+ * uma delas ficar para tras. E a mesma disciplina do <BlocoEixo> da Etapa 8:
+ * quando dois arquivos precisam concordar, quem verifica e o build, e nao a
+ * lembranca de quem editar o segundo.
+ *
+ * O HEADING DOS CARTOES E h2, e nao h3. Na home do tema eram `<h3>` logo depois
+ * de um `<h1 class="text-md h2">` — a tag escolhida pelo tamanho, que e a causa
+ * raiz dos 39 sumarios quebrados que a auditoria encontrou. Cada cartao e um
+ * destaque de primeiro nivel da pagina, entao e h2; o h1 e o titulo do <Hero>.
+ *
+ * A ALTURA DEIXA DE SER `height: 360px`. Era `style=` inline nos dezoito, e por
+ * isso o cartao do celular tinha 360px de altura em 330 de largura — mais alto
+ * que largo. Agora e `proporcao="larga"` (3/2), a caixa acompanha a largura, e
+ * `min-height: fit-content` da <ChamadaAcao> deixa o titulo espanhol crescer
+ * quando precisa.
+ */
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
+/*
+ * O `sizes` da foto de cada cartao: tres colunas de 1500px dao ~470px, e abaixo
+ * de 48rem a <Grade colunas={3} piso={1}> desce para uma e depois para duas. Sem
+ * isto o pipeline assumiria 100vw e baixaria o dobro do necessario, seis vezes.
+ */
+const TAMANHOS = '(min-width: 64rem) 31vw, (min-width: 30rem) 46vw, 92vw';
+
+const cartoes = destaquesHome.map((destaque) => {
+  const rotulo = t.homeHighlights[destaque.id];
+  if (!rotulo) {
+    throw new Error(
+      `DestaquesHome: o destaque "${destaque.id}" (src/data/destaques-home.ts) nao tem rotulo em ` +
+        `ui['${lang}'].homeHighlights. Os dois lados precisam listar os mesmos ids.`
+    );
+  }
+  const href = destaque.rota ? routes[destaque.rota][lang] : destaque.url;
+  if (!href) {
+    throw new Error(`DestaquesHome: o destaque "${destaque.id}" nao tem nem \`rota\` nem \`url\`.`);
+  }
+  return { ...destaque, ...rotulo, href };
+});
+---
+
+<Secao id="destaques" espacoTopo="nenhum">
+  <Container>
+    <Grade colunas={3} piso={1} espaco="md">
+      {
+        cartoes.map((cartao) => (
+          <ChamadaAcao
+            fundo="imagem"
+            imagem={cartao.imagem}
+            alt=""
+            proporcao="larga"
+            alinhamento="centro"
+            conteudo="fim"
+            tamanhos={TAMANHOS}
+          >
+            <Titulo nivel={2} tamanho="lg" cor="inverso">
+              {cartao.titulo}
+            </Titulo>
+            <LinkAcao href={cartao.href} externo={cartao.novaAba} cor="inverso">
+              {cartao.rotulo}
+            </LinkAcao>
+          </ChamadaAcao>
+        ))
+      }
+    </Grade>
+  </Container>
+</Secao>

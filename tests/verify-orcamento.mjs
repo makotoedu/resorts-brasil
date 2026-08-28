@@ -62,7 +62,46 @@ try {
   /* primeira execução: a linha de base nasce agora */
 }
 
-const navegador = await chromium.launch();
+/*
+ * A CONEXAO E FIXADA EM 4G, E SEM ISSO A CATRACA NAO TEM NUMERO.
+ *
+ * Entrou na Etapa 9. O limiar de `loading="lazy"` do Chromium depende da
+ * velocidade ESTIMADA da conexao, e essa estimativa nao existe na primeira
+ * navegacao de um processo: ali ele usa um limiar curto e, das seguintes em
+ * diante, um mais generoso. Medido, a home entregou 2 imagens na primeira
+ * navegacao e 26 em todas as outras — 26 KB contra 275, para o mesmo HTML.
+ *
+ * O efeito era invisivel enquanto nenhuma pagina tinha muita imagem abaixo da
+ * dobra. Com os 70 logotipos do <CarrosselLogos>, tres medicoes seguidas da
+ * mesma home deram 451, 201 e 451 KB — e o numero passava a depender de a home
+ * ser a primeira da lista, que ela e. Uma catraca que reprova e aprova a mesma
+ * pagina em execucoes consecutivas ensina a ser ignorada.
+ *
+ * Fixar em 4G torna a medida repetivel E mais honesta: e o que um visitante
+ * comum baixa, e nao o piso de um navegador que ainda nao sabe onde esta.
+ */
+const navegador = await chromium.launch({ args: ['--force-effective-connection-type=4G'] });
+
+/*
+ * E UMA NAVEGACAO DE AQUECIMENTO, DESCARTADA, porque a flag sozinha nao bastou.
+ *
+ * Medido: com a flag, uma primeira navegacao logo apos o `launch()` ainda
+ * entregava 2 imagens onde todas as seguintes entregavam 26 — e a primeira
+ * pagina da lista e justamente a home. A flag fixa o TIPO de conexao; o que
+ * ainda faltava era o processo ter visto uma navegacao qualquer antes de a
+ * medicao comecar.
+ *
+ * As duas juntas dao o mesmo numero em execucoes consecutivas, que e o unico
+ * requisito de uma catraca. A pagina escolhida e a 404, a mais leve do site.
+ */
+{
+  const contexto = await navegador.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await contexto.newPage();
+  await page.goto(`${BASE}/404.html`, { waitUntil: 'load' }).catch(() => {});
+  await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+  await contexto.close();
+}
+
 const medido = {};
 
 for (const vp of VIEWPORTS) {
@@ -77,7 +116,31 @@ for (const vp of VIEWPORTS) {
      *
      * Cada página é um visitante novo, que é também o caso que interessa medir.
      */
-    const contexto = await navegador.newContext({ viewport: { width: vp.width, height: vp.height } });
+    /*
+     * `reducedMotion` NAO E PREFERENCIA AQUI, E O QUE TORNA A MEDIDA UM NUMERO.
+     *
+     * Entrou na Etapa 9, e a razao apareceu na primeira execucao com a home
+     * migrada: tres medicoes seguidas da MESMA pagina deram 451, 201 e 378 KB.
+     * O culpado e o <CarrosselLogos>, cuja fila anda sozinha — os 70 logotipos
+     * sao `loading="lazy"`, e quantos deles entraram na tela ate o `load` depende
+     * do instante em que o navegador comecou a animar. Uma catraca precisa de um
+     * numero estavel; com essa variacao ela reprovaria e aprovaria a mesma
+     * pagina em execucoes consecutivas, e a primeira reprovacao ensinaria a
+     * ignora-la.
+     *
+     * Parar a animacao e coerente com o criterio que este arquivo ja adotava:
+     * "imagem com loading=lazy fora da dobra nao entra, porque de fato nao e
+     * baixada". A faixa parada mede exatamente o que a primeira tela pede.
+     *
+     * O QUE A MEDIDA NAO COBRE, e fica dito: quem ficar na home vendo a volta
+     * inteira baixa os 70 logotipos, ~447 KB de AVIF, espalhados por 70 segundos
+     * e em prioridade baixa. Contra os 4,4 MB que a pagina do tema baixava DE
+     * UMA VEZ — para nao mostrar nenhum deles —, e o teto que se aceitou.
+     */
+    const contexto = await navegador.newContext({
+      viewport: { width: vp.width, height: vp.height },
+      reducedMotion: 'reduce',
+    });
     const page = await contexto.newPage();
 
     const pesos = { html: 0, css: 0, js: 0, imagem: 0, fonte: 0, outro: 0 };
@@ -100,9 +163,24 @@ for (const vp of VIEWPORTS) {
 
     page.on('response', ouvinte);
     await page.goto(`${BASE}${caminho}`, { waitUntil: 'load' });
-    // Dá tempo para o que o `load` dispara em seguida (imagem decodificando,
-    // fonte trocando) chegar à contagem.
-    await page.waitForTimeout(300);
+    /*
+     * ESPERAR A REDE SILENCIAR, e não 300ms de cortesia.
+     *
+     * O `load` não espera imagem com `loading="lazy"`: o navegador decide
+     * buscá-la logo depois, e a resposta chega no instante seguinte. Com uma
+     * janela fixa de 300ms, o que entrava na conta dependia de a máquina estar
+     * ocupada — três medições seguidas da home deram 451, 201 e 451 KB, porque
+     * às vezes os 24 logotipos do carrossel chegavam a tempo e às vezes não.
+     *
+     * `networkidle` fecha a janela quando a rede para de fato. Ele só é
+     * alcançável porque a animação está congelada logo acima; com a faixa
+     * andando, novas imagens entrariam na tela para sempre e a rede nunca
+     * silenciaria. As duas decisões são a mesma decisão.
+     *
+     * O `catch` mantém a página que não silencia (um `<video>`, um poll) medida
+     * pelo que já chegou, em vez de derrubar a rodada inteira.
+     */
+    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
     page.off('response', ouvinte);
 
     const total = Object.values(pesos).reduce((a, b) => a + b, 0);

@@ -1,204 +1,116 @@
 ---
-import GradeLogos from '../components/GradeLogos.astro';
-import { mantenedores, parceiros } from '../data/parceiros';
-import CarrosselAssociados from '../components/CarrosselAssociados.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
+import LayoutSistema from '../layouts/LayoutSistema.astro';
+import Secao from '../components/layout/Secao.astro';
+import Container from '../components/layout/Container.astro';
+import Grade from '../components/layout/Grade.astro';
+import Titulo from '../components/primitivos/Titulo.astro';
+import Botao from '../components/primitivos/Botao.astro';
+import Imagem from '../components/primitivos/Imagem.astro';
+import Hero from '../components/padroes/Hero.astro';
+import ChamadaAcao from '../components/padroes/ChamadaAcao.astro';
+import LinkAcao from '../components/padroes/LinkAcao.astro';
+import DestaquesHome from '../components/DestaquesHome.astro';
+import FaixaAssociados from '../components/FaixaAssociados.astro';
+import FaixaParceiros from '../components/FaixaParceiros.astro';
+import { ui, routes, type Locale } from '../i18n/ui';
+
+/*
+ * A home. E a pagina de maior visibilidade do site e a ultima antes do ebook.
+ *
+ * O ACHADO DA ETAPA, e ele nao estava previsto: O CARROSSEL DE LOGOS DAS TRES
+ * HOMES ESTAVA INVISIVEL EM PRODUCAO. `.carousel` tem `opacity: 0` e
+ * `visibility: hidden`, e so `.carousel.carousel-loaded` devolve as duas — classe
+ * que o init do flickity punha e que saiu com o jQuery. As tres paginas baixavam
+ * 70 logotipos em tamanho original para nao mostrar nenhum, e nenhum dos quatro
+ * portoes viu. A analise completa esta no <CarrosselLogos>.
+ *
+ * CINCO CORRECOES DELIBERADAS, nos tres idiomas:
+ *
+ *   1. HIERARQUIA. O `<h2>` do hero vinha ANTES do `<h1 class="text-md h2">` da
+ *      associacao — h1 nao era o primeiro heading da pagina —, e depois vinham
+ *      seis `<h3>` e tres `<h4>`, todos escolhidos pelo tamanho. Agora o hero e
+ *      o h1 e as secoes sao h2, com os rotulos da faixa de parceiros em h3.
+ *   2. O TITULO DA FAIXA DE PARCEIROS SO EXISTIA EM PORTUGUES. "Conheca algumas
+ *      empresas que apoiam o turismo atraves da Resorts Brasil" estava na home
+ *      brasileira e nao nas outras duas, que abriam a faixa direto no rotulo
+ *      "Maintainers:". Vem da <FaixaParceiros>, e agora esta nas tres.
+ *   3. O HASHTAG TAMBEM SO EXISTIA EM PORTUGUES, e traduzido ele ja existia no
+ *      `ui.ts` desde a Etapa 8 (#SupportBrazilianTourism, #ApoyeElTurismoBrasileño).
+ *   4. O `id` DA SECAO DE ASSOCIADOS so estava na home portuguesa; o rotulo
+ *      espanhol de parceiros era "Socios / Partners:", o unico dos nove com duas
+ *      linguas na mesma linha.
+ *   5. O ALT DA FOTO DA ASSOCIACAO estava em portugues nas tres — "Periquito por
+ *      Claire Thibault" tambem em /en-us/home. Alt e texto lido em voz alta.
+ *
+ * E DOIS `style=` INLINE POR IDIOMA SOMEM COM O MARKUP: o `height: 360px` dos
+ * seis cartoes (que fazia o cartao do celular ficar mais alto que largo) e o
+ * `letter-spacing: 1px` dos rotulos da faixa de parceiros.
+ */
+const lang: Locale = 'pt-br';
+const t = ui[lang];
+
+/* A foto ocupa metade do bloco no desktop e a largura toda abaixo de 48rem. */
+const tamanhosFoto = '(min-width: 64rem) 46vw, 92vw';
 ---
 
-<BaseLayout
-  lang="pt-br"
-  route="home"
->
-    <!-- Slider -->
-    <section class="p-t-10 p-b-30">
-        <div class="container">
-            <div id="slider" class="inspiro-slider slider-halfscreen dots-creative rounded">
-                <!-- Slide 1 -->
-                <div class="slide kenburns rounded"
-                    style="background-image:url('/images/hero/pexels-775687.jpg');">
-                    <div class="container">
-                        <div class="slide-captions text-center text-light">
-                            <!-- Captions -->
-                            <span class="strong">EM TODO O BRASIL</span>
-                            <h2 class="m-b-30">Viva a experiência de um Resort</h2>
-                            <a class="btn btn-warning btn-lg" href="/associados">Conheça os resorts</a>
-                            <!-- end: Captions -->
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Slide 1 -->
-            </div>
-        </div>
-    </section>
-    <!-- end: Slider -->
+<LayoutSistema lang={lang} route="home">
+  <Secao id="hero" espacoTopo="nenhum" espacoBase="sm">
+    <Container>
+      {/*
+        O hero da home e a PRIMEIRA imagem visivel da pagina: `prioridade` fica
+        no padrao (`true`), entao ela carrega sem lazy e com `fetchpriority`.
+      */}
+      <Hero
+        imagem="/images/hero/pexels-775687.jpg"
+        alt=""
+        sobretitulo={t.homeHeroKicker}
+        titulo={t.homeHeroTitle}
+        nivel={1}
+      >
+        <Botao href={routes.associates[lang]} variante="destaque" tamanho="lg">
+          {t.homeHeroAction}
+        </Botao>
+      </Hero>
+    </Container>
+  </Secao>
 
-    <!-- Associação -->
-    <section id="associacao" class="p-t-40 p-b-0">
-        <div class="container">
-            <div class="call-to-action background-grey rounded">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6 m-b-30">
-                            <h1 class="text-md h2">Ajudando a transformar o segmento de resorts e o turismo nacional
-                            </h1>
-                            <a href="/resorts-brasil" class="item-link">Conheça a associação &gt;</a>
-                        </div>
-                        <div class="col-lg-6">
-                            <img src="/images/hero/pexels-57021.jpg"
-                                alt="Periquito por Claire Thibault" class="img-fluid rounded center">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Associação -->
+  <Secao id="associacao" espacoTopo="nenhum" espacoBase="sm">
+    <Container>
+      <ChamadaAcao fundo="clara">
+        <Grade colunas={2} piso={1} espaco="md" alinhamento="centro">
+          {/*
+            O <div> e daqui, e nao uma `class` passada a <Grade>: classe escopada
+            entregue pela prop `class` de um componente chega ao HTML sem o
+            atributo de escopo, e a regra fica inerte sem erro nenhum. Ver
+            docs/decisoes.md, "Etapa 8".
+          */}
+          <div class="texto">
+            <Titulo nivel={2} tamanho="3xl" peso="medio">{t.homeAssociationTitle}</Titulo>
+            <LinkAcao href={routes.resortsBrasil[lang]}>{t.homeAssociationAction}</LinkAcao>
+          </div>
 
-    <!-- Destaques -->
-    <section class="p-t-0">
-        <div class="container">
-            <div class="row">
-                <!-- Apoie o Turismo -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/hero/pexels-1072842.jpg'); height: 360px;">
-                        <div class="bg-overlay"></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>Apoie o Turismo</h3>
-                                <a href="/apoie" class="item-link">Saiba mais <i
-                                        class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Apoie o Turismo -->
-                <!-- Associe-se -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/hero/pexels-1437264.jpg'); height: 360px;">
-                        <div class="bg-overlay"></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>Seja um associado</h3>
-                                <a href="/associe-se" class="item-link">Associe-se <i
-                                        class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Associe-se -->
-                <!-- Turistech -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/hero/pexels-450062.jpg'); height: 360px;">
-                        <div class="bg-overlay" data-style=""></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>Turistech Hub</h3>
-                                <a href="https://www.turistechhub.com.br/" target="_blank" rel="noopener noreferrer" class="item-link">Saiba
-                                    mais <i class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Turistech -->
-                <!-- Cartilha ESG -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/hero/pexels-2246950.jpg'); height: 360px;">
-                        <div class="bg-overlay" data-style="0"></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>Cartilha ESG Resorts Brasil</h3>
-                                <a href="https://drive.google.com/file/d/1DGEOHuJVlPhR7b4iSVQCZDqpviZSeu3c/view"
-                                    target="_blank" rel="noopener noreferrer" class="item-link">Acesse a cartilha <i
-                                        class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Cartilha ESG -->
-                <!-- Guia do Viajante -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/hero/pexels-161212.jpg'); height: 360px;">
-                        <div class="bg-overlay" data-style="10"></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>Guia do Viajante Responsável</h3>
-                                <a href="https://drive.google.com/file/d/1ypL8zoFP8NExwSGdi8tz77XGgYyZy00b/view"
-                                    target="_blank" rel="noopener noreferrer" class="item-link">Acesse o guia <i
-                                        class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Guia do Viajante -->
-                <!-- E-book -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/destaques/ebook.png'); height: 360px;">
-                        <div class="bg-overlay" data-style="10"></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>A Gestão da Jornada do Viajante</h3>
-                                <a href="/ebook" target="_blank" rel="noopener noreferrer" class="item-link">Baixe o e-book <i
-                                        class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: E-book -->
-            </div>
-        </div>
-    </section>
-    <!-- end: Destaques -->
+          <Imagem
+            src="/images/hero/pexels-57021.jpg"
+            alt={t.homeAssociationPhotoAlt}
+            escala="largura-total"
+            tamanhos={tamanhosFoto}
+            arredondada
+          />
+        </Grade>
+      </ChamadaAcao>
+    </Container>
+  </Secao>
 
-    <!-- Resorts Associados -->
-    <section id="resorts-associados">
-        <div class="container">
-            <div class="row">
-                <div class="heading-text heading-line text-center m-b-10">
-                    <h4>Resorts Associados</h4>
-                </div>
-                <CarrosselAssociados />
-            </div>
-        </div>
-    </section>
-    <!-- end: Resorts Associados -->
+  <DestaquesHome lang={lang} />
 
-    <!-- Parceiros -->
-    <section id="mantenedores-parceiros">
-        <div class="container">
-            <div class="row m-b-30">
-                <div class="col-lg-8 center">
-                    <div class="heading-text heading-line text-center">
-                        <h4>Conheça algumas empresas que apoiam o turismo através da Resorts Brasil</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Mantenedores:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={mantenedores} colunas={5} />
-                </div>
-            </div>
-            <div class="row p-t-30">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Parceiros:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={parceiros} colunas={5} />
-                </div>
-            </div>
-            <hr class="space">
-            <div class="text-center">
-                <h5 class="text-muted">#ApoieOTurismoBrasileiro❤️</h5>
-            </div>
-        </div>
-    </section>
-    <!-- end: Parceiros -->
-</BaseLayout>
+  <FaixaAssociados lang={lang} />
+
+  <FaixaParceiros lang={lang} comHashtag colunas={5} />
+</LayoutSistema>
+
+<style>
+  /* MEDIDO: 16px entre o titulo e o link, dentro do bloco da associacao. */
+  .texto :global(h2) {
+    margin-bottom: 1rem;
+  }
+</style>

@@ -594,6 +594,40 @@ export const ui = {
     resortsBrasilMissionText:
       'Acreditamos que os resorts são indutores de desenvolvimento socioeconômico que transformam a vida de muitas pessoas. Por isso, buscamos conectar profissionais, inspirar as boas práticas e advogar pelos resorts brasileiros.',
 
+    /*
+     * Etapa 9 — a home.
+     *
+     * O SOBRETÍTULO DO HERO ESTÁ EM CAIXA NORMAL, e o rótulo do botão também.
+     * No markup os três idiomas escreviam "EM TODO O BRASIL" e o inglês ainda
+     * escrevia "MEET THE RESORTS" no botão, enquanto português e espanhol
+     * usavam caixa mista — três cópias, dois critérios. Quem sobe a caixa é o
+     * CSS (`text-transform: uppercase` no <Hero> e no <Botao>), então o texto
+     * renderizado não muda e a fonte deixa de ter duas convenções.
+     *
+     * O ALT DA FOTO ERA O MESMO NOS TRÊS: "Periquito por Claire Thibault",
+     * em português, nas páginas inglesa e espanhola. Alt é texto lido em voz
+     * alta — traduz como qualquer outro.
+     */
+    homeHeroKicker: 'Em todo o Brasil',
+    homeHeroTitle: 'Viva a experiência de um Resort',
+    homeHeroAction: 'Conheça os resorts',
+    homeAssociationTitle: 'Ajudando a transformar o segmento de resorts e o turismo nacional',
+    homeAssociationAction: 'Conheça a associação',
+    homeAssociationPhotoAlt: 'Periquito, foto de Claire Thibault',
+    /*
+     * Os seis destaques. O que NÃO traduz — foto, destino e se abre em outra
+     * aba — está em src/data/destaques-home.ts, e as duas metades se encontram
+     * pelo `id`. <DestaquesHome> aborta o build se um id ficar sem rótulo.
+     */
+    homeHighlights: {
+      apoie: { titulo: 'Apoie o Turismo', rotulo: 'Saiba mais' },
+      'associe-se': { titulo: 'Seja um associado', rotulo: 'Associe-se' },
+      turistech: { titulo: 'Turistech Hub', rotulo: 'Saiba mais' },
+      'cartilha-esg': { titulo: 'Cartilha ESG Resorts Brasil', rotulo: 'Acesse a cartilha' },
+      'guia-viajante': { titulo: 'Guia do Viajante Responsável', rotulo: 'Acesse o guia' },
+      ebook: { titulo: 'A Gestão da Jornada do Viajante', rotulo: 'Baixe o e-book' },
+    } as Record<string, { titulo: string; rotulo: string }>,
+
     videoPlay: 'Assistir ao vídeo',
     videoInstitucional: 'Vídeo institucional da Resorts Brasil',
     videoEbook: 'Vídeo de apresentação do e-book',
@@ -821,6 +855,26 @@ export const ui = {
       'The association exists to contribute to the strengthening and development of tourism, as well as the locations where the resorts are present.',
     resortsBrasilMissionText:
       'We believe resorts drive the socioeconomic development that transform the lives of many people. Therefore, we seek to connect professionals, inspire good practices and advocate for Brazilian resorts.',
+
+    /* Etapa 9 — a home. As notas estão na versão em português. */
+    homeHeroKicker: 'Throughout Brazil',
+    homeHeroTitle: 'Live a Resort experience',
+    homeHeroAction: 'Meet the resorts',
+    homeAssociationTitle: 'Helping to transform the resort segment and national tourism',
+    homeAssociationAction: 'About the association',
+    homeAssociationPhotoAlt: 'Parakeet, photo by Claire Thibault',
+    homeHighlights: {
+      apoie: { titulo: 'Support Tourism', rotulo: 'Learn more' },
+      'associe-se': { titulo: 'Become an Associate', rotulo: 'Join us' },
+      turistech: { titulo: 'Turistech Hub', rotulo: 'Learn more' },
+      'cartilha-esg': { titulo: 'ESG Resorts Brasil Booklet', rotulo: 'Access the booklet' },
+      /* "Traveler" com um L, como o cartão da home dizia. O mesmo documento
+         aparece com "Traveller" no `meta` de /publicacoes e como "Responsible
+         traveler guide" na coleção — três grafias para um só título. Unificar
+         mexeria em duas páginas fora desta etapa; fica anotado, não corrigido. */
+      'guia-viajante': { titulo: 'Responsible Traveler Guide', rotulo: 'Access the guide' },
+      ebook: { titulo: "Managing the Traveller's Journey", rotulo: 'Download the e-book' },
+    } as Record<string, { titulo: string; rotulo: string }>,
 
     videoPlay: 'Watch the video',
     videoInstitucional: 'Resorts Brasil institutional video',
@@ -1071,6 +1125,28 @@ export const ui = {
       'La asociación existe para contribuir con el fortalecimiento y desarrollo del turismo, así como de las localidades en las que se encuentran los resorts.',
     resortsBrasilMissionText:
       'Creemos que los resorts son inductores de desarrollo socioeconómico, que transforman la vida de muchas personas. Por eso, buscamos conectar profesionales, inspirar las buenas prácticas y abogar por los resorts brasileños.',
+
+    /*
+     * Etapa 9 — a home. As notas estão na versão em português.
+     *
+     * "Acceda a la guía", e não "Accede": os dois rótulos vizinhos tratavam o
+     * leitor por usted ("Acceda a la cartilla") e por tú ("Accede a la guía") na
+     * mesma fileira de cartões. O resto do site é usted.
+     */
+    homeHeroKicker: 'En todo Brasil',
+    homeHeroTitle: 'Viva la experiencia de un Resort',
+    homeHeroAction: 'Conozca los resorts',
+    homeAssociationTitle: 'Ayudando a transformar el segmento de resorts y al turismo nacional',
+    homeAssociationAction: 'Conozca la asociación',
+    homeAssociationPhotoAlt: 'Periquito, foto de Claire Thibault',
+    homeHighlights: {
+      apoie: { titulo: 'Apoye al Turismo', rotulo: 'Ver más' },
+      'associe-se': { titulo: 'Sea un asociado', rotulo: 'Asóciese' },
+      turistech: { titulo: 'Turistech Hub', rotulo: 'Ver más' },
+      'cartilha-esg': { titulo: 'Cartilla ESG Resorts Brasil', rotulo: 'Acceda a la cartilla' },
+      'guia-viajante': { titulo: 'Guía del Viajante Responsable', rotulo: 'Acceda a la guía' },
+      ebook: { titulo: 'La Gestión de la Jornada del Viajante', rotulo: 'Descargue el e-book' },
+    } as Record<string, { titulo: string; rotulo: string }>,
 
     videoPlay: 'Ver el vídeo',
     videoInstitucional: 'Vídeo institucional de Resorts Brasil',

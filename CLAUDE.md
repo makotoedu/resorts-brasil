@@ -27,10 +27,11 @@ O plano completo, com etapas e critérios, está em
 | 6 — termos de uso e política de privacidade | concluída |
 | 7 — publicações e estatísticas e estudos | concluída |
 | 8 — associados, associe-se, apoie, resorts-brasil | concluída |
-| 9 — home (`index` / `home` / `inicio`) | **próxima** |
-| 10–11 | não iniciadas |
+| 9 — home (`index` / `home` / `inicio`) | concluída |
+| 10 — ebook (`ebook` × 3) | **próxima** |
+| 11 — demolição | não iniciada |
 
-**Páginas migradas: 35 de 41.** Confira sempre com
+**Páginas migradas: 38 de 41.** Confira sempre com
 `node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
 nesta tabela.
 
@@ -50,9 +51,10 @@ nesta tabela.
    **Não importe nada do design system dentro do `BaseLayout`** — nem a folha,
    nem um componente com `<style>`, nem dentro de um `if` que nunca executa. O
    Astro empacota CSS pelo **grafo de módulos**, não pelo que a página renderiza,
-   então o `import` sozinho já põe o CSS nas 30 páginas do tema. Importar a folha
-   no layout já fez 22 delas divergirem: o Preflight do Tailwind vaza para onde o
-   tema não declara a mesma propriedade, e `@layer` não protege disso.
+   então o `import` sozinho já põe o CSS nas páginas do tema — eram 40 quando
+   isto foi escrito, hoje são 3. Importar a folha no layout já fez 22 delas
+   divergirem: o Preflight do Tailwind vaza para onde o tema não declara a mesma
+   propriedade, e `@layer` não protege disso.
 
    Isto substitui a prop `legado`, que **nunca funcionou** — o `BaseLayout`
    renderiza `Header` e `Footer` do tema, então `legado={false}` entregava uma
@@ -126,8 +128,10 @@ defeito só aparece olhando.
    `/resorts-brasil` com ele entregaria a fachada de vídeo sem caixa e sem botão
    de play, sem quebrar portão nenhum. E o inverso também vale: **antes de
    converter um componente compartilhado, veja quem mais o importa** — o
-   `<GradeLogos>` não pôde ser convertido porque as três páginas de home ainda o
-   usam, e o `<style>` dele iria para o bundle delas pelo grafo de módulos.
+   `<GradeLogos>` não pôde ser convertido na Etapa 8 porque as três páginas de
+   home ainda o usavam, e o `<style>` dele iria para o bundle delas pelo grafo de
+   módulos. Ele foi apagado na Etapa 9, junto com o `<CarrosselAssociados>`,
+   quando as homes migraram.
 
 ### Onde ficam as decisões
 
@@ -160,9 +164,12 @@ As faixas são **as de `js/functions.js`, não as do array padrão do plugin em
 
 Ler o array errado desloca tudo uma faixa e **acerta nos extremos**: o celular e
 o desktop ficam certos e o erro se esconde no meio da escala. Foi assim que 22
-comparações de tablet ficaram reprovadas sem sintoma óbvio. Os mesmos valores
-governam o número de colunas do carrossel de logos no
-[`site.js`](src/scripts/site.js).
+comparações de tablet ficaram reprovadas sem sintoma óbvio.
+
+Desde a Etapa 9 **nenhum JavaScript deste projeto lê essas faixas**: o carrossel
+de logos era o último a fazê-lo, e a contagem de colunas dele virou container
+query. As faixas continuam valendo para o `ajustes.css`, que serve as três
+páginas de ebook até a Etapa 11.
 
 Consequências práticas:
 
@@ -187,9 +194,9 @@ falhar) e o empacotamento masonry em `gridLayout()`, no `site.js`.
 `.grid-layout` migraram para a [`<Grade>`](src/components/layout/Grade.astro), o
 `gridLayout()` saiu do [`site.js`](src/scripts/site.js) e com ele os dois últimos
 listeners persistentes que só existiam por causa do masonry. Fica registrada aqui
-porque as outras duas ainda valem, e porque o padrão que ela ensina — plugin
-removido, CSS que dependia dele silenciosamente inerte — é o que se deve procurar
-no que sobrou.
+porque o padrão que ela ensina — plugin removido, CSS que dependia dele
+silenciosamente inerte — é o que se deve procurar no que sobrou. Ele reapareceu
+na Etapa 9, e a quarta vez está logo abaixo.
 
 E uma terceira vez, mais silenciosa: o `.kenburns-bg` do hero tem `z-index: -1` e
 só aparece se o `.slide` for um contexto de empilhamento — quem criava isso era o
@@ -197,9 +204,33 @@ flickity, posicionando o slide. Sem ele a camada foi para trás do fundo do
 próprio slide e **o zoom parou de acontecer**, sem mudar altura nem quebrar
 nenhum teste. Resolvido com `position: relative` no slide, em `ajustes.css`.
 
-O padrão comum às três: **plugin removido, CSS que dependia dele silenciosamente
-inerte**. Procure por `z-index` negativo, `opacity: 0` e classes de estado antes
-de tirar qualquer script.
+**E uma quarta, que ficou meses em produção sem ninguém ver.** `.carousel` tem
+`opacity: 0` e `visibility: hidden`, e só `.carousel.carousel-loaded` devolve as
+duas — classe que o init do flickity punha. O carrossel de logos das três homes
+ficou **invisível**, e elas continuaram baixando 70 logotipos em tamanho original
+para não mostrar nenhum. Morreu na Etapa 9, com a home.
+
+O que faz a quarta valer mais que as outras três não é o defeito — é **por que
+nenhum dos quatro portões viu**, e cada um falhou por um motivo diferente:
+
+| portão | por que passou |
+|---|---|
+| comportamental | comparava o `src` do primeiro item antes e depois de 8s, e o script reciclava a fila **dentro** do elemento invisível |
+| geometria | vigiava `.polo-carousel`; a classe do tema é `.polo-carousel-item`. **Nunca casou com nada** |
+| diff visual | esconde aquela região de propósito — a posição depende do instante |
+| orçamento | o peso não muda quando a imagem carrega sem aparecer |
+
+Duas regras saem daí, e as duas são gerais:
+
+1. **Um seletor que não casa nada não falha — ele passa.** Ao pôr um seletor numa
+   lista de vigilância, confirme que ele encontra alguma coisa hoje.
+2. **Uma exclusão de portão entra junto com quem cobre o buraco.** Esconder o
+   carrossel no diff visual é legítimo; fazê-lo sem nada em seguida deixou aquela
+   região sem verificação nenhuma.
+
+O padrão comum às quatro: **plugin removido, CSS que dependia dele
+silenciosamente inerte**. Procure por `z-index` negativo, `opacity: 0`,
+`visibility: hidden` e classes de estado antes de tirar qualquer script.
 
 ## Antes de mexer em fonte de ícone ou em qualquer script de terceiro
 
@@ -220,7 +251,7 @@ purgado pedir um codepoint fora dela. Não desative essa guarda.
 `python scripts/glifos-para-svg.py` depois de mexer no `glifos.json`, nunca edite
 o arquivo à mão. [`tests/verify-icones.mjs`](tests/verify-icones.mjs) compara
 cada desenho com a webfont de origem e reprova codepoint trocado, contorno vazio
-ou eixo espelhado. As três webfonts continuam servindo as 6 páginas do tema até
+ou eixo espelhado. As três webfonts continuam servindo as 3 páginas do tema até
 a Etapa 11 — e por isso o teste de glifos da suíte comportamental roda numa
 página do TEMA: numa migrada ele mediria tofu contra tofu e passaria sempre.
 

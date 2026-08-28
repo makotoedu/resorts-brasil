@@ -49,15 +49,21 @@ const runtimeClasses = [
   'menu-animate',
   'hover-active',
   'dropdown-active',
-  'kenburns-bg',
-  'kenburns-bg-animate',
-  'polo-carousel-item',
   'modal-active',
   'menu-invert',
   'menu-last',
-  'animate__fadeInUp',
-  'active',
-  'show',
+  /*
+   * SAIRAM NA ETAPA 9, com as funcoes que as aplicavam:
+   *
+   *   kenburns-bg, kenburns-bg-animate, animate__fadeInUp   hero()
+   *   polo-carousel-item                                    logoCarousel()
+   *   active, show                                          tabs()
+   *
+   * As tres funcoes so serviam a home e a /associados, e as duas migraram. Uma
+   * entrada a mais aqui nao quebra nada — so segura CSS que ninguem usa —, e por
+   * isso a lista precisa encolher junto com o script: senao ela vira o inverso do
+   * que existe para ser, uma lista de classes que o JavaScript NAO aplica.
+   */
 ];
 
 async function main() {

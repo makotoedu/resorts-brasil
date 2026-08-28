@@ -1,193 +1,78 @@
 ---
-import GradeLogos from '../../components/GradeLogos.astro';
-import { mantenedores, parceiros } from '../../data/parceiros';
-import CarrosselAssociados from '../../components/CarrosselAssociados.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import LayoutSistema from '../../layouts/LayoutSistema.astro';
+import Secao from '../../components/layout/Secao.astro';
+import Container from '../../components/layout/Container.astro';
+import Grade from '../../components/layout/Grade.astro';
+import Titulo from '../../components/primitivos/Titulo.astro';
+import Botao from '../../components/primitivos/Botao.astro';
+import Imagem from '../../components/primitivos/Imagem.astro';
+import Hero from '../../components/padroes/Hero.astro';
+import ChamadaAcao from '../../components/padroes/ChamadaAcao.astro';
+import LinkAcao from '../../components/padroes/LinkAcao.astro';
+import DestaquesHome from '../../components/DestaquesHome.astro';
+import FaixaAssociados from '../../components/FaixaAssociados.astro';
+import FaixaParceiros from '../../components/FaixaParceiros.astro';
+import { ui, routes, type Locale } from '../../i18n/ui';
+
+/* As correcoes desta pagina estao anotadas em src/pages/index.astro, que e a
+   versao de referencia. DUAS delas nasceram aqui: o rotulo de parceiros era
+   "Socios / Partners:", o unico dos nove com duas linguas na mesma linha, e os
+   dois rotulos vizinhos dos destaques tratavam o leitor por usted num cartao
+   ("Acceda a la cartilla") e por tu no seguinte ("Accede a la guia"). */
+const lang: Locale = 'es-es';
+const t = ui[lang];
+
+const tamanhosFoto = '(min-width: 64rem) 46vw, 92vw';
 ---
 
-<BaseLayout
-  lang="es-es"
-  route="home"
->
-    <!-- Slider -->
-    <section class="p-t-10 p-b-30">
-        <div class="container">
-            <div id="slider" class="inspiro-slider slider-halfscreen dots-creative rounded">
-                <!-- Slide 1 -->
-                <div class="slide kenburns rounded"
-                    style="background-image:url('/images/hero/pexels-775687.jpg');">
-                    <div class="container">
-                        <div class="slide-captions text-center text-light">
-                            <!-- Captions -->
-                            <span class="strong">EN TODO BRASIL</span>
-                            <h2 class="m-b-30">Viva la experiencia de un Resort</h2>
-                            <a class="btn btn-warning btn-lg" href="/es-es/asociados">Conozca los resorts</a>
-                            <!-- end: Captions -->
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Slide 1 -->
-            </div>
-        </div>
-    </section>
-    <!-- end: Slider -->
+<LayoutSistema lang={lang} route="home">
+  <Secao id="hero" espacoTopo="nenhum" espacoBase="sm">
+    <Container>
+      <Hero
+        imagem="/images/hero/pexels-775687.jpg"
+        alt=""
+        sobretitulo={t.homeHeroKicker}
+        titulo={t.homeHeroTitle}
+        nivel={1}
+      >
+        <Botao href={routes.associates[lang]} variante="destaque" tamanho="lg">
+          {t.homeHeroAction}
+        </Botao>
+      </Hero>
+    </Container>
+  </Secao>
 
-    <!-- Asociación -->
-    <section id="associacao" class="p-t-40 p-b-0">
-        <div class="container">
-            <div class="call-to-action background-grey rounded">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6 m-b-30">
-                            <h1 class="text-md h2">Ayudando a transformar el segmento de resorts y al turismo nacional
-                            </h1>
-                            <a href="/es-es/resorts-brasil" class="item-link">Conozca la asociación &gt;</a>
-                        </div>
-                        <div class="col-lg-6">
-                            <img src="/images/hero/pexels-57021.jpg"
-                                alt="Periquito por Claire Thibault" class="img-fluid rounded center">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Asociación -->
+  <Secao id="associacao" espacoTopo="nenhum" espacoBase="sm">
+    <Container>
+      <ChamadaAcao fundo="clara">
+        <Grade colunas={2} piso={1} espaco="md" alinhamento="centro">
+          <div class="texto">
+            <Titulo nivel={2} tamanho="3xl" peso="medio">{t.homeAssociationTitle}</Titulo>
+            <LinkAcao href={routes.resortsBrasil[lang]}>{t.homeAssociationAction}</LinkAcao>
+          </div>
 
-    <!-- Destaques -->
-    <section class="p-t-0">
-        <div class="container">
-            <div class="row">
-                <!-- Apoye al Turismo -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/hero/pexels-1072842.jpg'); height: 360px;">
-                        <div class="bg-overlay"></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>Apoye al Turismo</h3>
-                                <a href="/es-es/apoye" class="item-link">Ver más <i
-                                        class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Apoye al Turismo -->
-                <!-- Asóciese -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/hero/pexels-1437264.jpg'); height: 360px;">
-                        <div class="bg-overlay"></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>Sea un asociado</h3>
-                                <a href="/es-es/asociese" class="item-link">Asóciese <i
-                                        class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Asóciese -->
-                <!-- Turistech Hub-->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/hero/pexels-450062.jpg'); height: 360px;">
-                        <div class="bg-overlay" data-style=""></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>Turistech Hub</h3>
-                                <a href="https://www.turistechhub.com.br/" target="_blank" rel="noopener noreferrer" class="item-link">Ver más
-                                    <i class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Turistech Hub -->
-                <!-- Cartilla ESG -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/hero/pexels-2246950.jpg'); height: 360px;">
-                        <div class="bg-overlay" data-style="0"></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>Cartilla ESG Resorts Brasil</h3>
-                                <a href="https://drive.google.com/file/d/1DGEOHuJVlPhR7b4iSVQCZDqpviZSeu3c/view"
-                                    target="_blank" rel="noopener noreferrer" class="item-link">Acceda a la cartilla <i
-                                        class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: Cartilla ESG -->
-                <!-- Guía del Viajante Responsable -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/hero/pexels-161212.jpg'); height: 360px;">
-                        <div class="bg-overlay" data-style="10"></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>Guía del Viajante Responsable</h3>
-                                <a href="https://drive.google.com/file/d/1ypL8zoFP8NExwSGdi8tz77XGgYyZy00b/view"
-                                    target="_blank" rel="noopener noreferrer" class="item-link">Accede a la guía <i
-                                        class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Guía del Viajante Responsable -->
-                <!-- E-book -->
-                <div class="col-lg-4 m-b-20">
-                    <div class="call-to-action background-image rounded text-center text-bottom text-light"
-                        style="background-image:url('/images/destaques/ebook.png'); height: 360px;">
-                        <div class="bg-overlay" data-style="10"></div>
-                        <div class="container">
-                            <div class="row">
-                                <h3>La Gestión de la Jornada del Viajante</h3>
-                                <a href="/es-es/ebook" target="_blank" rel="noopener noreferrer" class="item-link">Descargue el e-book <i
-                                        class="icon-chevron-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- end: E-book -->
-            </div>
-        </div>
-    </section>
-    <!-- end: Destaques -->
+          <Imagem
+            src="/images/hero/pexels-57021.jpg"
+            alt={t.homeAssociationPhotoAlt}
+            escala="largura-total"
+            tamanhos={tamanhosFoto}
+            arredondada
+          />
+        </Grade>
+      </ChamadaAcao>
+    </Container>
+  </Secao>
 
-    <!-- Resorts Asociados -->
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="heading-text heading-line text-center m-b-10">
-                    <h4>Resorts Asociados</h4>
-                </div>
-                <CarrosselAssociados />
-            </div>
-        </div>
-    </section>
-    <!-- end: Resorts Associados -->
+  <DestaquesHome lang={lang} />
 
-    <!-- Mantenedores e Socios -->
-    <section id="mantenedores-socios">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Mantenedores:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={mantenedores} colunas={5} />
-                </div>
-            </div>
-            <div class="row p-t-30">
-                <div class="col-lg-3 text-bottom">
-                    <h4 class="text-center" style="letter-spacing: 1px;">Socios / Partners:</h4>
-                </div>
-                <div class="col-lg-9">
-                    <GradeLogos itens={parceiros} colunas={5} />
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- end: Mantenedores e Socios -->
-</BaseLayout>
+  <FaixaAssociados lang={lang} />
+
+  <FaixaParceiros lang={lang} comHashtag colunas={5} />
+</LayoutSistema>
+
+<style>
+  /* MEDIDO: 16px entre o titulo e o link, dentro do bloco da associacao. */
+  .texto :global(h2) {
+    margin-bottom: 1rem;
+  }
+</style>

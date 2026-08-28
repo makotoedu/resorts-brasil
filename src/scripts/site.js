@@ -122,149 +122,47 @@ function navDropdowns() {
 }
 
 /* Hero: Ken Burns e legendas --------------------------------------------- */
-// O hero tem um unico slide, entao nao ha carrossel: basta montar a camada de
-// fundo que recebe o zoom e revelar as legendas em cascata.
-// .slide-captions > * comeca com opacity 0 no CSS do tema.
-function hero() {
-  document.querySelectorAll('.inspiro-slider .slide.kenburns').forEach((slide) => {
-    if (slide.querySelector('.kenburns-bg')) return;
-    const image = slide.style.backgroundImage;
-    if (!image) return;
-
-    const bg = document.createElement('div');
-    bg.className = 'kenburns-bg';
-    bg.style.backgroundImage = image;
-    bg.style.width = '100%';
-    slide.insertBefore(bg, slide.firstChild);
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => bg.classList.add('kenburns-bg-animate'));
-    });
-  });
-
-  document.querySelectorAll('.inspiro-slider .slide-captions').forEach((captions) => {
-    [...captions.children].forEach((el, i) => {
-      const duration = el.getAttribute('data-animate-duration') || 600;
-      const delay = el.getAttribute('data-caption-delay') || i * 350 + 1000;
-      const animation = el.getAttribute('data-caption-animate') || 'animate__fadeInUp';
-      el.style.animationDuration = `${duration}ms`;
-      setTimeout(() => {
-        el.style.opacity = 1;
-        el.classList.add(animation);
-      }, Number(delay));
-    });
-  });
-}
+// REMOVIDO NA ETAPA 9, junto com a home que era a unica pagina a usa-lo.
+//
+// `hero()` criava a camada `.kenburns-bg` lendo a URL de um `style=` inline —
+// o que impedia `srcset` e `lazy` na maior imagem do site — e revelava as
+// legendas com `setTimeout`, porque `.slide-captions > *` nasce com
+// `opacity: 0` no CSS do tema. As duas coisas eram armadilha: a camada tinha
+// `z-index: -1` e so aparecia dentro de um contexto de empilhamento que o
+// flickity criava, entao o zoom PAROU quando o plugin saiu; e as legendas sao
+// da mesma familia do `.grid-loaded` que deixou seis paginas invisiveis.
+//
+// O <Hero> faz as duas em CSS, e nos dois casos a falha aponta para o lado
+// seguro: a foto e um filho posicionado por `inset: 0`, sem z-index negativo, e
+// a cascata parte de `animation-fill-mode: both` — se a animacao nao rodar, o
+// texto aparece.
 
 /* Carrossel de logos ----------------------------------------------------- */
-// Marquee continuo: avanca um item por vez e recicla o primeiro para o fim,
-// o que dispensa clonar a lista para dar a volta.
-function logoCarousel() {
-  document.querySelectorAll('.carousel.client-logos').forEach((carousel) => {
-    const originals = [...carousel.children];
-    if (originals.length < 2) return;
-
-    // Reproduz a estrutura que o flickity montava: cada item embrulhado em
-    // .polo-carousel-item. E essa classe que o CSS do tema estiliza
-    // (padding: 20px 30px, e img { width: 100% }), entao recriar o wrapper
-    // faz o dimensionamento das logos voltar a valer sem tocar no CSS.
-    const cells = originals.map((child) => {
-      if (child.classList.contains('polo-carousel-item')) return child;
-      const cell = document.createElement('div');
-      cell.className = 'polo-carousel-item';
-      child.replaceWith(cell);
-      cell.appendChild(child);
-      return cell;
-    });
-
-    // 7000 e o padrao do tema (`autoPlay: data-autoplay || 7000`). O carrossel
-    // de logos nao traz o atributo, entao girava a cada 7s, nao a cada 1s.
-    const interval = Number(carousel.getAttribute('data-autoplay')) || 7000;
-    // O tema aplicava padding-right inline a partir de data-margin, sobrepondo
-    // os 30px do CSS. Sem isso a logo fica menor que no original.
-    const margin = Number(carousel.getAttribute('data-margin')) || 10;
-
-    // Cadeia de colunas do tema (js/functions.js, linhas 1048-1089): cada faixa
-    // menor herda a de cima limitada a um teto, salvo data-items-* explicito.
-    const attrNum = (nome) => Number(carousel.getAttribute(nome)) || 0;
-    const items = attrNum('data-items') || 4;
-    const itemsLg = attrNum('data-items-lg') || Math.min(items, 4);
-    const itemsMd = attrNum('data-items-md') || Math.min(itemsLg, 3);
-    const itemsSm = attrNum('data-items-sm') || Math.min(itemsMd, 2);
-    const itemsXs = attrNum('data-items-xs') || Math.min(itemsSm, 1);
-
-    carousel.style.display = 'flex';
-    carousel.style.overflow = 'hidden';
-
-    // As faixas sao as de js/functions.js, nao as do plugin — ver o comentario
-    // em public/css/ajustes.css. O plugin media com $(window).width(), que e o
-    // clientWidth do documento (sem a barra de rolagem).
-    const columns = () => {
-      const w = document.documentElement.clientWidth;
-      if (w < 576) return itemsXs;
-      if (w < 768) return itemsSm;
-      if (w < 1025) return itemsMd;
-      if (w < 1200) return itemsLg;
-      return items;
-    };
-
-    // Largura da celula como o flickity calculava: a margem entra na conta e so
-    // depois vira padding, entao as colunas somadas preenchem exatamente a
-    // largura util e o padding da ultima celula fica para fora, no corte do
-    // overflow. Dividir a largura por colunas deixa cada logo alguns px menor.
-    const layout = () => {
-      const cols = columns();
-      const estilo = getComputedStyle(carousel);
-      const util =
-        carousel.clientWidth -
-        parseFloat(estilo.paddingLeft) -
-        parseFloat(estilo.paddingRight);
-      const cellWidth = (util + margin) / cols;
-      cells.forEach((cell) => {
-        cell.style.flex = `0 0 ${cellWidth}px`;
-        cell.style.maxWidth = `${cellWidth}px`;
-        // As celulas do flickity eram quadradas: a altura do carrossel
-        // acompanhava a largura da celula.
-        cell.style.height = `${cellWidth}px`;
-        cell.style.paddingRight = `${margin}px`;
-      });
-    };
-
-    layout();
-    window.addEventListener('resize', layout);
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    let busy = false;
-    setInterval(() => {
-      if (busy || document.hidden) return;
-      busy = true;
-      const first = carousel.firstElementChild;
-      // Um passo e uma celula. Em px, nao em %: a celula mede
-      // (largura util + margem) / colunas, que nao e uma fracao redonda da
-      // largura do carrossel.
-      const step = first.getBoundingClientRect().width;
-      carousel.style.transition = 'transform 600ms ease';
-      carousel.style.transform = `translateX(-${step}px)`;
-
-      let encerrado = false;
-      const done = () => {
-        if (encerrado) return;
-        encerrado = true;
-        carousel.style.transition = 'none';
-        carousel.style.transform = 'translateX(0)';
-        carousel.appendChild(first);
-        busy = false;
-        carousel.removeEventListener('transitionend', done);
-      };
-      carousel.addEventListener('transitionend', done);
-      // Rede de seguranca: transicao de duracao zero nao emite transitionend, e
-      // sem isto o `busy` ficaria preso e o carrossel pararia de vez. Acontece
-      // com prefers-reduced-motion e com o CSS que o diff visual injeta.
-      setTimeout(done, 800);
-    }, interval);
-  });
-}
+// REMOVIDO NA ETAPA 9, e a nota fica pelo mesmo motivo da do masonry logo
+// abaixo: a funcao era citada em varios lugares da documentacao.
+//
+// `logoCarousel()` reproduzia a matematica de celula do flickity para a faixa de
+// logotipos das tres homes — embrulhava cada filho em `.polo-carousel-item`,
+// media a largura util, dividia pelo numero de colunas da faixa da janela e
+// avancava um item por segundo, reciclando o primeiro para o fim.
+//
+// ELA ANIMAVA UM ELEMENTO INVISIVEL. `.carousel` tem `opacity: 0` e
+// `visibility: hidden` no style.css, e so `.carousel.carousel-loaded` devolve as
+// duas — classe que o init do flickity punha (js/functions.js:1179) e que saiu
+// com o jQuery. Desde entao as tres homes baixavam 70 logotipos em tamanho
+// original para nao mostrar nenhum, e o teste de comportamento continuava
+// passando porque comparava o `src` do primeiro item, que mudava do mesmo jeito.
+//
+// A faixa passou para <CarrosselLogos>, que e CSS: a fila e escrita duas vezes e
+// uma animacao de `transform` desloca a trilha em -50%, fechando a volta sem
+// emenda. Com ela sai o UNICO `setInterval` que o projeto ainda tinha — o
+// autoplay que a Etapa 0 registrou como obstaculo as View Transitions, porque
+// acumularia a cada navegacao e aceleraria a faixa progressivamente.
+//
+// Sobra UM listener de `resize`, o do mobileMenu(), e ele nao mede layout: fecha
+// o menu ao passar para o breakpoint de desktop. Nenhum listener persistente do
+// projeto calcula geometria — a Etapa 7 tirou os dois do masonry e esta tirou os
+// do carrossel.
 
 /* Grades .grid-layout ---------------------------------------------------- */
 // REMOVIDO NA ETAPA 7, e a nota fica porque a funcao era citada em tres lugares
@@ -279,95 +177,24 @@ function logoCarousel() {
 // seis paginas invisiveis quando o jQuery foi removido.
 
 /* Contadores ------------------------------------------------------------- */
-// Sobe de data-from ate data-to quando o numero entra na tela.
-function counters() {
-  const targets = document.querySelectorAll('[data-to]');
-  if (!targets.length) return;
-
-  const run = (el) => {
-    const from = Number(el.getAttribute('data-from')) || 0;
-    const to = Number(el.getAttribute('data-to')) || 0;
-    const duration = Number(el.getAttribute('data-speed')) || 500;
-    const suffix = el.getAttribute('data-suffix') || '';
-    const start = performance.now();
-
-    const step = (now) => {
-      const progress = Math.min((now - start) / duration, 1);
-      el.textContent = Math.round(from + (to - from) * progress) + suffix;
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  };
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        run(entry.target);
-        observer.unobserve(entry.target);
-      });
-    },
-    { threshold: 0.5 }
-  );
-  targets.forEach((el) => observer.observe(el));
-}
+// REMOVIDO NA ETAPA 9. Ja estava inerte desde a Etapa 8, quando /associados
+// migrou: a funcao procura `[data-to]`, e o <Contador> emite
+// `[data-contador]` com o valor final JA ESCRITO dentro do elemento, mais o
+// proprio script. No tema o `<span data-to="83">` vinha VAZIO, entao a secao
+// que existe para dizer cinco numeros mostrava cinco rotulos em branco para
+// quem chegasse sem JavaScript.
+//
+// Com ela sai o unico IntersectionObserver deste arquivo.
 
 /* Abas ------------------------------------------------------------------- */
-// Equivale ao data-bs-toggle="tab" do Bootstrap: .active no link e no painel.
-function tabs() {
-  const ativar = (tab) => {
-    const targetId = tab.getAttribute('href');
-    const scope = tab.closest('.tabs') || document;
-    const pane = scope.querySelector(targetId);
-    if (!pane) return false;
-
-    scope.querySelectorAll('.nav-link').forEach((link) => {
-      link.classList.remove('active');
-      link.setAttribute('aria-selected', 'false');
-      // Tabulacao rotativa: so a aba selecionada fica na ordem de tabulacao,
-      // as outras se alcancam pelas setas. E o que o padrao ARIA de abas pede.
-      link.setAttribute('tabindex', '-1');
-    });
-    scope.querySelectorAll('.tab-pane').forEach((p) => p.classList.remove('active', 'show'));
-
-    tab.classList.add('active');
-    tab.setAttribute('aria-selected', 'true');
-    tab.removeAttribute('tabindex');
-    pane.classList.add('active', 'show');
-    return true;
-  };
-
-  document.querySelectorAll('[role="tablist"]').forEach((lista) => {
-    const abas = [...lista.querySelectorAll('[data-bs-toggle="tab"]')];
-    if (!abas.length) return;
-
-    // Estado inicial da tabulacao rotativa, a partir de quem ja esta ativo.
-    const ativa = abas.find((t) => t.classList.contains('active')) || abas[0];
-    abas.forEach((t) => t !== ativa && t.setAttribute('tabindex', '-1'));
-
-    lista.addEventListener('keydown', (e) => {
-      const atual = abas.indexOf(document.activeElement);
-      if (atual === -1) return;
-
-      const passo = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-      let alvo;
-      if (passo) alvo = abas[(atual + passo + abas.length) % abas.length];
-      else if (e.key === 'Home') alvo = abas[0];
-      else if (e.key === 'End') alvo = abas[abas.length - 1];
-      else return;
-
-      e.preventDefault();
-      if (ativar(alvo)) alvo.focus();
-    });
-  });
-
-  document.querySelectorAll('[data-bs-toggle="tab"]').forEach((tab) => {
-    tab.addEventListener('click', (e) => {
-      e.preventDefault();
-      ativar(tab);
-    });
-  });
-}
+// REMOVIDO NA ETAPA 9, e como o contador ja estava inerte desde a Etapa 8.
+// Toda a funcao dependia de `[data-bs-toggle="tab"]`, o gancho do Bootstrap, e
+// as <Abas> nao o emitem — elas trazem o proprio script, com `role="tab"`,
+// `aria-selected` e tabulacao rotativa.
+//
+// Nao era so codigo morto parado: `tabs()` varria `[role="tablist"]`, que as
+// <Abas> USAM. Ele saia sem fazer nada por nao achar o atributo do Bootstrap
+// dentro, mas era um segundo dono a um passo de distancia do mesmo elemento.
 
 /* Consentimento de cookies ----------------------------------------------- */
 /*
@@ -537,10 +364,6 @@ ready(() => {
   mobileMenu();
   languageDropdown();
   navDropdowns();
-  hero();
-  logoCarousel();
-  counters();
-  tabs();
   cookieNotice();
   videoFacades();
   scrollTop();

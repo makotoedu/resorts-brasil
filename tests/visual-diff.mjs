@@ -52,9 +52,21 @@ const FREEZE = `
    * das celulas, que e o que de fato podia regredir, esta coberta pela
    * verificacao "carrossel: geometria das celulas" em verify-behaviors.mjs.
    */
-  .carousel.client-logos { visibility: hidden !important; }
-  /* as legendas do hero entram em cascata por timer */
-  .slide-captions > * { opacity: 1 !important; }
+  .carousel.client-logos, .trilho { visibility: hidden !important; }
+  /*
+   * ESCONDER O CARROSSEL FOI PARTE DE COMO ELE FICOU INVISIVEL POR MESES sem
+   * ninguem notar. Esta regra e legitima — a posicao depende do instante —, mas
+   * ela cega o unico portao que olhava pixels naquela regiao, e os outros tres
+   * tambem nao viam: a suite comportamental comparava o src de um elemento
+   * escondido, a varredura de geometria vigiava .polo-carousel, que nunca casou
+   * com nada, e o orcamento nao muda quando a imagem carrega sem aparecer.
+   *
+   * Uma exclusao de portao precisa vir com quem cobre o buraco, e nao so com o
+   * motivo dela. Hoje sao "carrossel: a faixa esta visivel", "a faixa anda" e
+   * "geometria das celulas", em verify-behaviors.mjs.
+   */
+  /* as legendas do hero entram em cascata por timer, nas duas camadas */
+  .slide-captions > *, .hero .legendas > * { opacity: 1 !important; animation: none !important; }
   /*
    * O Ken Burns e uma transition de 14s (scale 1 -> 1.2), nao uma animation, e
    * transition-duration: 0s nao interrompe transicao ja em curso — o valor so
@@ -62,6 +74,9 @@ const FREEZE = `
    * zoom. Fixar o destino faz cada um saltar para la de imediato.
    */
   .kenburns-bg { transform: translate3d(0, 0, 0) scale(1.2) !important; }
+  /* O zoom do <Hero> migrado e uma animation de 20s em alternate; parar no
+     quadro inicial e o unico ponto que os dois lados podem compartilhar. */
+  .hero .foto { animation: none !important; transform: none !important; }
 `;
 
 async function shot(page, base, path) {

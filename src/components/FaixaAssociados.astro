@@ -1,0 +1,41 @@
+---
+import Secao from './layout/Secao.astro';
+import Container from './layout/Container.astro';
+import TituloSecao from './padroes/TituloSecao.astro';
+import CarrosselLogos from './padroes/CarrosselLogos.astro';
+import { carrosselHome } from '../data/carrossel-home';
+import { ui, type Locale } from '../i18n/ui';
+
+/**
+ * A faixa "Resorts Associados" da home — titulo e carrossel.
+ *
+ * Tres linhas de markup por idioma, e mesmo assim elas ja divergiam: so a home
+ * portuguesa dava um `id` a secao (`#resorts-associados`), e as outras duas
+ * ficavam com uma `<section>` anonima. Aqui a secao tem o mesmo id nos tres.
+ *
+ * Fica em `src/components/` pelo criterio de sempre: e montagem de conteudo. O
+ * desenho e o <TituloSecao> e o <CarrosselLogos>, que estao no catalogo.
+ *
+ * O TITULO REAPROVEITA `associatesTitle`, o mesmo rotulo que da nome a pagina
+ * /associados nos tres idiomas. E a regra que o `joinInvite*` ja seguia: um
+ * rotulo por coisa, porque duas cadeias para o mesmo texto e como a proxima
+ * divergencia comeca.
+ *
+ * O NIVEL E h2, e nao o `<h4>` do tema. Ali a tag saiu do tamanho — o mesmo
+ * defeito de sempre —, e um h4 depois de um h3 saltava um nivel no sumario da
+ * pagina. Esta e uma secao de primeiro nivel da home.
+ */
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+
+<Secao id="resorts-associados" espacoBase="nenhum">
+  <Container>
+    <TituloSecao nivel={2}>{t.associatesTitle}</TituloSecao>
+    <CarrosselLogos itens={carrosselHome} />
+  </Container>
+</Secao>

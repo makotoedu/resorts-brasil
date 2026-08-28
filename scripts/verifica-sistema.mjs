@@ -77,12 +77,20 @@ const MIGRADAS = [
   'src/pages/es-es/apoye.astro',
   'src/pages/es-es/resorts-brasil.astro',
   /* A faixa de parceiros e as abas de associados passaram a emitir markup do
-     sistema junto com elas. O <GradeLogos> NAO entra: as tres paginas de home
-     ainda o usam, e ele continua sendo markup do tema ate a Etapa 9. */
+     sistema junto com elas. */
   'src/components/FaixaParceiros.astro',
   'src/components/AssociadosTabs.astro',
   'src/components/PainelRegiao.astro',
   'src/components/BlocoEixo.astro',
+  /* Etapa 9 — a home, nos tres idiomas, e os dois blocos que ela repetia. O
+     <GradeLogos> e o <CarrosselAssociados> nao aparecem aqui porque deixaram de
+     existir: eram os dois ultimos componentes de transicao do tema, e so as tres
+     homes os usavam. */
+  'src/pages/index.astro',
+  'src/pages/en-us/home.astro',
+  'src/pages/es-es/inicio.astro',
+  'src/components/DestaquesHome.astro',
+  'src/components/FaixaAssociados.astro',
   /* O layout do sistema e o <head> compartilhado. */
   'src/layouts/LayoutSistema.astro',
   'src/layouts/Cabeca.astro',
@@ -110,6 +118,7 @@ const MIGRADAS = [
   'src/components/padroes/FaixaLogos.astro',
   'src/components/padroes/CartaoModalidade.astro',
   'src/components/padroes/Video.astro',
+  'src/components/padroes/CarrosselLogos.astro',
   'src/components/cromo/Cabecalho.astro',
   'src/components/cromo/Rodape.astro',
   'src/components/cromo/FaixaCookies.astro',
@@ -262,7 +271,39 @@ async function semCorLiteral(fontes) {
  * 549 no site hoje, 420 deles nas tres paginas de ebook. A checagem so bloqueia
  * nas paginas ja migradas; nas demais conta, para o numero cair visivelmente a
  * cada etapa.
+ *
+ * ELA SO VIA `style="` ATE A ETAPA 9, e portanto nao via NADA do que importa num
+ * arquivo `.astro`: o estilo calculado se escreve `style={...}`, com chaves. O
+ * catalogo tinha tres desde a Etapa 0 — as amostras de cor e de tipografia, que
+ * so existem porque leem o token do dado — e o portao nunca os contou. Um buraco
+ * assim e pior que a ausencia da checagem: da a impressao de que ela cobre.
+ *
+ * Com as duas formas contadas, a allowlist que o plano previa desde o inicio
+ * ("nenhum `style=` inline FORA DE ALLOWLIST") passa a ser necessaria de fato.
+ * Ela guarda o NUMERO esperado por arquivo, e nao so o nome: um `style=` novo
+ * numa pagina que ja tem excecao continua reprovando.
  */
+const ESTILO_INLINE_PERMITIDO = {
+  /*
+   * O catalogo pinta a amostra de cada token lendo o proprio token. Escrever as
+   * cores no CSS derrotaria o que a vitrine existe para mostrar — e cairia na
+   * checagem 2, que e a que de fato protege a paleta.
+   */
+  'src/pages/design.astro': {
+    quantos: 3,
+    porque: 'amostras de cor e de tipografia, pintadas a partir do token',
+  },
+  /*
+   * A duracao da volta do carrossel depende de quantos logotipos ha na fila.
+   * Sem a variavel, o CSS teria o numero fixo e a faixa aceleraria em silencio
+   * quando alguem acrescentasse um resort. Ver a nota no proprio componente.
+   */
+  'src/components/padroes/CarrosselLogos.astro': {
+    quantos: 1,
+    porque: '--itens, que da a duracao da volta a partir do tamanho da lista',
+  },
+};
+
 async function semEstiloInline(fontes) {
   let total = 0;
   for (const f of fontes) {
@@ -273,12 +314,28 @@ async function semEstiloInline(fontes) {
      * commit que o removeu. Ver a nota do linhasSemComentario.
      */
     const quantos = linhasSemComentario(texto).reduce(
-      (n, linha) => n + [...linha.matchAll(/\sstyle="/g)].length,
+      (n, linha) => n + [...linha.matchAll(/\sstyle=["{]/g)].length,
       0
     );
-    total += quantos;
-    if (quantos && MIGRADAS.includes(f)) {
-      falhas.push(`${f}  ${quantos} style= inline em pagina migrada`);
+    const permitido = ESTILO_INLINE_PERMITIDO[f];
+    total += quantos - (permitido ? Math.min(quantos, permitido.quantos) : 0);
+
+    if (!MIGRADAS.includes(f)) continue;
+
+    if (!permitido) {
+      if (quantos) falhas.push(`${f}  ${quantos} style= inline em pagina migrada`);
+    } else if (quantos > permitido.quantos) {
+      falhas.push(
+        `${f}  ${quantos} style= inline, e a allowlist permite ${permitido.quantos} ` +
+          `(${permitido.porque})`
+      );
+    } else if (quantos < permitido.quantos) {
+      /* A excecao saiu do arquivo e ficou na lista. Nao quebra nada hoje, e por
+         isso mesmo some se ninguem avisar. */
+      avisos.push(
+        `${f}  a allowlist reserva ${permitido.quantos} style= inline e o arquivo tem ${quantos} — ` +
+          `tire a entrada de ESTILO_INLINE_PERMITIDO`
+      );
     }
   }
   return total;

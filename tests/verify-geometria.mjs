@@ -34,10 +34,10 @@ const VIEWPORTS = viewportsSelecionados();
  * Contêineres cujos filhos formam uma grade. Sao os que ja quebraram neste
  * projeto ou que quebrariam sem aviso:
  *
- *   .grade         a <Grade> do design system, em 23 paginas migradas
+ *   .grade         a <Grade> do design system, em 38 paginas migradas
+ *   .trilho        a fila do <CarrosselLogos>, na home
  *   .team-members  a grade de diretoria e conselho, no tema
  *   .grid          as grades de logos do tema (grid-5-columns etc.)
- *   .polo-carousel o carrossel de logos, que ja colapsou uma vez
  *
  * O `.grade` ENTROU NA ETAPA 7, e a ausencia dele era um buraco: desde a Etapa 1
  * o design system tem grade propria, e por seis etapas esta varredura so olhou
@@ -47,8 +47,20 @@ const VIEWPORTS = viewportsSelecionados();
  * O `.grid-layout` saiu na mesma etapa, e por ter deixado de existir: era o
  * masonry posicionado em JavaScript, onde nasceu o bug do `.grid-loaded` que
  * deixou seis paginas invisiveis. As duas ultimas paginas que o usavam migraram.
+ *
+ * `.polo-carousel` SAIU NA ETAPA 9, E NUNCA CASOU COM NADA. A celula do carrossel
+ * do tema chama-se `.polo-carousel-item`, e um seletor de classe casa o nome
+ * inteiro: `.polo-carousel` nao encontrava um elemento sequer, em nenhuma das 41
+ * paginas, desde o dia em que foi escrito. Enquanto isso o carrossel que ele
+ * dizia vigiar estava INVISIVEL em producao — `opacity: 0` mais
+ * `visibility: hidden`, esperando uma classe que o flickity punha. Um seletor que
+ * nao casa nada nao falha: ele passa, e passa em silencio.
+ *
+ * E a razao de `.trilho` entrar no lugar. A checagem de colunas abaixo nao serve
+ * para uma fila horizontal, mas as outras cinco servem — e a primeira delas, a de
+ * caixa zerada, e exatamente a que teria visto o carrossel do tema.
  */
-const GRADES = ['.grade', '.team-members', '.grid', '.polo-carousel'];
+const GRADES = ['.grade', '.trilho', '.team-members', '.grid'];
 
 /*
  * Duas listas, nao uma.

@@ -40,8 +40,10 @@ npm run verify          # precisa de um preview rodando
 
 [`tests/verify-behaviors.mjs`](../tests/verify-behaviors.mjs) exercita num
 navegador real os comportamentos que o [`site.js`](../src/scripts/site.js)
-reimplementou depois da remoção do jQuery: menu mobile, seletor de idioma, hero
-(Ken Burns e legendas), carrossel de logos, contadores, abas e voltar ao topo.
+reimplementou depois da remoção do jQuery: menu mobile, seletor de idioma e
+voltar ao topo. O hero, o carrossel de logos, os contadores e as abas continuam
+verificados, mas já não são JavaScript — desde a Etapa 9 as quatro funções que os
+serviam saíram do `site.js`, e o que se verifica agora é o CSS que as substituiu.
 Mais duas famílias que não são do jQuery — o consentimento e os glifos do subset
 — descritas adiante. Também verifica ausência de erros de console em 6 páginas
 dos 3 idiomas.
@@ -236,7 +238,17 @@ Dois cuidados que o script já resolve, e que custaram uma medição errada cada
 
 A linha de base inicial, com o tema ainda em 40 páginas: `index` 4,4 MB (4,3 MB
 de imagem), `ebook` 1,1 MB, `associe-se` 770 KB, `404` 100 KB, e o catálogo
-`/design` — a única migrada — em **78 KB**.
+`/design` — a única migrada — em **78 KB**. Com 38 das 41 migradas, o conjunto
+medido está em **24,4 MB** contra os 47,9 MB de partida, e a `index` em 451 KB.
+
+**Três decisões de medição, todas da Etapa 9, e todas pelo mesmo motivo:** o
+limiar de `loading="lazy"` do Chromium depende da conexão *estimada*, que não
+existe na primeira navegação de um processo — e três medições seguidas da mesma
+home deram 451, 201 e 451 KB. Uma catraca que reprova e aprova a mesma página em
+execuções consecutivas ensina a ser ignorada. O script fixa a conexão em 4G,
+descarta uma navegação de aquecimento, espera `networkidle` em vez de 300 ms, e
+mede com `prefers-reduced-motion` — sem congelar a faixa de logos, novas imagens
+entram na tela para sempre e a rede nunca silencia.
 
 ## 3. Diff visual — hoje um changelog
 
@@ -275,9 +287,14 @@ para não gerar falso positivo:
 - o **carrossel de logos**, que gira sozinho e nunca para — qual logo está em
   qual posição depende do instante do screenshot, nos dois sites. Ele fica
   `hidden`, não removido: a caixa continua ocupando espaço, então a altura da
-  página e tudo abaixo continuam sendo comparados. A geometria das células, que
-  é o que podia de fato regredir, está coberta pela verificação
-  *carrossel: geometria das células* na suíte comportamental.
+  página e tudo abaixo continuam sendo comparados.
+
+  **Esta exclusão custou caro, e a lição é geral.** Ela é legítima, mas cegou a
+  única verificação de pixel daquela região — e o carrossel das três homes ficou
+  invisível em produção por meses (`opacity: 0` esperando uma classe do flickity)
+  sem que nenhum dos quatro portões visse. Uma exclusão de portão entra junto com
+  quem cobre o buraco. Hoje cobrem *carrossel: a faixa está visível*, *a faixa
+  anda* e *geometria das células*, na suíte comportamental.
 
 Leva cerca de 15 minutos. **Rode sempre que mexer em CSS.**
 

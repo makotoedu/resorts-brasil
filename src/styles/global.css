@@ -96,8 +96,13 @@
 @source '../pages/es-es/apoye.astro';
 @source '../pages/es-es/resorts-brasil.astro';
 
+/* Etapa 9: a home, nos tres idiomas. */
+@source '../pages/index.astro';
+@source '../pages/en-us/home.astro';
+@source '../pages/es-es/inicio.astro';
+
 /*
- * Os tres componentes de montagem de conteudo, fora dos quatro diretorios
+ * Os componentes de montagem de conteudo, fora dos quatro diretorios
  * varridos — mesma situacao da <SecaoCookies>.
  *
  * O <ConviteAssociese> fecha as QUATRO paginas que o repetiam; a
@@ -110,6 +115,9 @@
 @source '../components/AssociadosTabs.astro';
 @source '../components/PainelRegiao.astro';
 @source '../components/BlocoEixo.astro';
+/* Etapa 9: os dois blocos da home que se repetiam nos tres idiomas. */
+@source '../components/DestaquesHome.astro';
+@source '../components/FaixaAssociados.astro';
 
 @import './tokens.css';
 @import './base.css';

@@ -17,6 +17,17 @@ import Icone from '../primitivos/Icone.astro';
  * MEDIDO em `.item-link` (scripts/medir-padroes.mjs): 14px, cor do texto do
  * site (navy) em repouso e cor de acao no hover. Nao e azul em repouso — quem
  * lesse o CSS suporia que sim, porque `a` nu e azul; aqui o `.item-link` vence.
+ *
+ * DUAS PROPRIEDADES FALTAVAM DESDE A ETAPA 3, e a causa e instrutiva: o
+ * `medir-padroes.mjs` mede as propriedades que a lista do GRUPO pede, e a lista
+ * de `chamadaAcao` nao tinha `textTransform` nem `letterSpacing`. O `.item-link`
+ * do tema e `text-transform: uppercase !important` com `letter-spacing: 1px` —
+ * "SAIBA MAIS", e nao "Saiba mais" —, e nada disso apareceu no resumo porque
+ * ninguem perguntou. Medir sem pedir a propriedade certa e nao medir.
+ *
+ * Apareceu na Etapa 9, comparando o cartao da home com uma captura do tema, e a
+ * correcao alcanca as seis paginas ja migradas que usam este componente. Os dois
+ * campos entraram na lista do medidor, para a omissao nao se repetir.
  */
 interface Props extends Omit<HTMLAttributes<'a'>, 'class' | 'href'> {
   href: string;
@@ -58,6 +69,10 @@ const {
     color: var(--color-texto);
     font-size: var(--text-base);
     font-weight: var(--font-weight-medium);
+    /* MEDIDO: `text-transform: uppercase !important` e `letter-spacing: 1px` no
+       `.item-link` do tema. Ver a nota do cabecalho. */
+    letter-spacing: 1px;
+    text-transform: uppercase;
     text-decoration: none;
     transition: color 0.3s;
   }

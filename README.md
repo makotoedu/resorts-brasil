@@ -184,7 +184,8 @@ a tabela da política sai de lá, nos três idiomas — e suba a versão do cook
 Feito e verificado:
 
 - 40 páginas em um layout único, URLs preservadas, `hreflang` nos 3 idiomas
-- jQuery e o engine do tema trocados por ~9 KB de JS nativo
+- jQuery e o engine do tema trocados por ~9 KB de JS nativo — hoje **4,3 KB**, à
+  medida que o design system substitui cada comportamento por CSS
 - CSS de 805 KB para 64 KB (purga contra o HTML gerado + lightningcss)
 - **120/120 comparações visuais idênticas** ao site original — 40 páginas × 3
   viewports, sem divergência aceita (20/08/2026)

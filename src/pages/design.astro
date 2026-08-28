@@ -38,6 +38,7 @@ import Prosa from '../components/padroes/Prosa.astro';
 import Tabela from '../components/padroes/Tabela.astro';
 import TituloSecao from '../components/padroes/TituloSecao.astro';
 import FaixaLogos from '../components/padroes/FaixaLogos.astro';
+import CarrosselLogos from '../components/padroes/CarrosselLogos.astro';
 import CartaoModalidade from '../components/padroes/CartaoModalidade.astro';
 import Video from '../components/padroes/Video.astro';
 import Cabecalho from '../components/cromo/Cabecalho.astro';
@@ -55,6 +56,15 @@ import { diretoria, cargoEm } from '../data/diretoria';
  * pipeline exigisse `import` de cada arquivo, esta linha seria impossível.
  */
 const logosDemo = regioesAssociados[0].estados[0].resorts.slice(0, 4);
+
+/**
+ * Oito logos para o carrossel, e o número tem um piso: a volta anda metade da
+ * trilha, então depois dela restam N células para preencher as `colunas`
+ * visíveis. Com menos de seis no desktop sobraria um vão. Oito é o mínimo
+ * confortável — e cada célula custa um `<picture>`, que o orçamento cobra. A
+ * faixa de verdade tem 70.
+ */
+const carrosselDemo = regioesAssociados.flatMap((r) => r.estados.flatMap((e) => e.resorts)).slice(0, 8);
 
 const primitivas = [
   '--cor-navy-900',
@@ -1069,6 +1079,47 @@ const faixas = [
             <code>gap</code> somado ao recuo, o corredor daria 96px onde o medido são 80.
           </p>
         </div>
+      </section>
+
+      <section>
+        <h3>CarrosselLogos</h3>
+        <p class="legenda">
+          A faixa de logotipos que anda sozinha — os resorts associados, na home. Substitui o
+          <code>&lt;CarrosselAssociados&gt;</code> de transição e, com ele, o
+          <code>logoCarousel()</code> do <code>site.js</code>: 105 linhas que reproduziam a
+          matemática de célula do flickity, mais o <strong>único</strong>
+          <code>setInterval</code> que o projeto ainda tinha — o autoplay que a Etapa 0 registrou
+          como obstáculo às View Transitions.
+        </p>
+        <div class="demo">
+          <CarrosselLogos itens={carrosselDemo} />
+        </div>
+        <p class="legenda pendente">
+          <strong>Esta faixa estava invisível em produção.</strong> O <code>style.css</code> dá
+          <code>opacity: 0</code> e <code>visibility: hidden</code> a <code>.carousel</code>, e só
+          <code>.carousel-loaded</code> devolve as duas — classe que o init do flickity punha e que
+          saiu com o jQuery. As três homes baixavam 70 logotipos em tamanho original para não
+          mostrar nenhum. É a <strong>quarta</strong> vez que este projeto encontra a mesma forma:
+          plugin removido, CSS que dependia dele silenciosamente inerte. Aqui não há classe de
+          estado nenhuma — a animação só mexe em <code>transform</code>, e se ela não rodar a faixa
+          fica parada e cheia.
+        </p>
+        <p class="legenda">
+          <strong>A volta fecha sem emenda</strong> porque a fila é escrita duas vezes e a trilha
+          anda <code>-50%</code>: com as duas metades iguais, a segunda para exatamente onde a
+          primeira começou. A duplicata custa DOM e não rede — são os mesmos endereços, com o mesmo
+          <code>srcset</code> —, e vem com <code>aria-hidden</code> para o leitor de tela ouvir a
+          lista uma vez só.
+        </p>
+        <p class="legenda">
+          <strong>Não há link nos logotipos, e isso é escolha.</strong> O site original punha
+          <code>&lt;a href="#"&gt;</code> nos 71; a refatoração trocou por URLs de verdade, que
+          nunca funcionaram porque <code>visibility: hidden</code> tira o elemento da ordem de
+          tabulação. Repô-las custaria caro: ao tabular, o navegador rola o recorte para revelar o
+          link focado e <code>scrollLeft</code> não volta sozinho — a faixa fica deslocada e, na
+          volta seguinte, aparece o vazio depois do fim da fila. Os 78 resorts estão em
+          <code>/associados</code>, cada um com o seu link.
+        </p>
       </section>
 
       <section>

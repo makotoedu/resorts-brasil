@@ -1,0 +1,291 @@
+---
+import Imagem from '../primitivos/Imagem.astro';
+
+/**
+ * CarrosselLogos — a fileira de logotipos que anda sozinha.
+ *
+ * Substitui o `<CarrosselAssociados>` de transicao e, com ele, o logoCarousel()
+ * do site.js: 105 linhas de JavaScript que reproduziam a matematica de celula do
+ * flickity, mais o UNICO `setInterval` que o projeto ainda tinha — o autoplay que
+ * a Etapa 0 registrou como obstaculo as View Transitions.
+ *
+ *   <CarrosselLogos itens={carrosselHome} />
+ *
+ * ============================================================================
+ * O CARROSSEL DESTA SECAO ESTAVA INVISIVEL EM PRODUCAO, e essa e a nota que
+ * importa mais que todas as outras.
+ * ============================================================================
+ *
+ * `style.css:17305` diz `.carousel { opacity: 0; visibility: hidden }` e so
+ * `.carousel.carousel-loaded` devolve as duas. Quem punha aquela classe era o
+ * init do flickity (`js/functions.js:1179`, `elem.addClass("carousel-loaded")`),
+ * que saiu com o jQuery. Desde entao as tres homes baixavam 70 logotipos em
+ * tamanho original para nao mostrar nenhum.
+ *
+ * E a QUARTA vez que este projeto encontra a mesma forma — plugin removido, CSS
+ * que dependia dele silenciosamente inerte —, depois do `.grid-loaded` que
+ * deixou seis paginas sem conteudo, do `z-index` do kenburns que parou o zoom e
+ * do `.hover-active` dos submenus. E os quatro portoes nao viram nenhuma das
+ * duas coisas:
+ *
+ *   comportamental  a checagem 4 comparava o `src` do primeiro logotipo antes e
+ *                   depois de 8s. O JavaScript continuava reciclando a fila
+ *                   dentro de um elemento invisivel, entao o `src` mudava e o
+ *                   teste passava;
+ *   geometria       a lista GRADES tinha `.polo-carousel`, que NAO casa com
+ *                   `.polo-carousel-item` — seletor morto desde que foi escrito;
+ *   diff visual     esconde `.carousel.client-logos` de proposito, porque a
+ *                   posicao depende do instante da captura;
+ *   orcamento       o peso nao muda: as imagens carregam invisiveis do mesmo
+ *                   jeito, e eram elas o grosso dos 4,4 MB da home.
+ *
+ * Aqui nao ha classe de estado nenhuma: o que se ve e o que o HTML diz, e a
+ * animacao so mexe em `transform`. Se ela nao rodar, a faixa fica parada e
+ * cheia — a falha aponta para o lado seguro, como no <Hero>.
+ *
+ * ---------------------------------------------------------------------------
+ * NAO HA LINK NOS LOGOTIPOS, e isso e escolha.
+ *
+ * O site original punha `<a href="#">` nos 71 — links que o teclado percorria
+ * para lugar nenhum. A refatoracao trocou por URLs de verdade, e elas nunca
+ * funcionaram: `visibility: hidden` tira o elemento da ordem de tabulacao, entao
+ * ninguem jamais alcancou nenhuma delas.
+ *
+ * Repo-las agora custaria caro por um motivo mecanico: 70 links dentro de uma
+ * faixa recortada e em movimento. Ao tabular, o navegador rola o recorte para
+ * revelar o link focado — e `scrollLeft` NAO volta sozinho quando o foco sai.
+ * A faixa fica deslocada, e quando a animacao completa a volta aparece o vazio
+ * depois do fim da fila. E um defeito visivel que so um listener de `blur`
+ * corrigiria, e o ponto desta etapa e justamente tirar JavaScript daqui.
+ *
+ * A funcao nao se perde: os 78 resorts estao em /associados, cada um com o seu
+ * link, e o botao do <Hero> logo acima aponta para la. Aqui a faixa e o que
+ * sempre foi de fato — uma vitrine — e agora com os nomes legiveis por leitor de
+ * tela, coisa que 71 ancoras vazias nao davam.
+ *
+ * ---------------------------------------------------------------------------
+ * COMO A VOLTA FECHA SEM EMENDA. A fila e escrita DUAS vezes e a animacao
+ * desloca a trilha em `-50%` — que, com as duas metades identicas, poe a
+ * segunda exatamente onde a primeira comecou. Ao reiniciar, o quadro e o mesmo
+ * pixel a pixel.
+ *
+ * A duplicata custa DOM, e nao rede: sao os mesmos 70 enderecos, com o mesmo
+ * `srcset` e o mesmo `sizes`, entao o navegador baixa cada logotipo uma vez. Ela
+ * vem com `aria-hidden` e sem `alt`, para o leitor de tela ouvir a lista uma vez
+ * so.
+ *
+ * MEDIDO (scripts/medir-padroes.mjs, grupo `carrossel`, na ultima vez em que a
+ * home era do tema):
+ *
+ *   celula quadrada, 340px no mobile / 239 no tablet / 237 no desktop;
+ *   recuo de 20px em cima e embaixo e 30px nos lados (`.client-logos
+ *     .polo-carousel-item`), mais 10px de calha que era do flickity;
+ *   um logotipo por segundo (`data-autoplay="1000"`, no original tambem);
+ *   nenhuma mudanca no hover — medido com o mouse em cima, o tema nao responde.
+ *
+ * DUAS COISAS MUDAM DE PROPOSITO:
+ *
+ *   1. A ESCADA DE COLUNAS PASSA A SER 2 -> 3 -> 6, por container query, no
+ *      lugar de 1 -> 2 -> 3 -> 4 -> 6 por faixa de janela. E a mesma escada que
+ *      a <Grade colunas={6}> ja usa e que a <FaixaLogos> logo abaixo na pagina
+ *      segue com cinco — duas faixas de logotipo vizinhas com o mesmo ritmo. De
+ *      quebra some o degrau de UM logotipo por tela no celular, que dava uma
+ *      celula de 340px de lado.
+ *   2. O MOVIMENTO E CONTINUO, e nao um salto de uma celula por segundo com
+ *      600ms de `ease`. A velocidade media e a mesma — `--passo` e o segundo
+ *      medido —, e some a fila de `setTimeout` que a emendava.
+ *
+ * O `object-fit: contain` DA CELULA NAO E UMA CORRECAO, e a distincao importa
+ * porque a leitura do CSS sugeria que fosse. O tema poe `width: 100%` e
+ * `height: 100%` na `<img>` sem `object-fit`, o que deformaria qualquer arquivo
+ * que nao fosse quadrado — so que os 80 logotipos de
+ * `src/assets/imagens/associados` sao TODOS 320x320, conferidos um a um. Numa
+ * celula quadrada com fonte quadrada, `cover`, `contain` e `fill` dao o mesmo
+ * pixel. O `contain` fica porque e o unico dos tres que continua certo no dia em
+ * que entrar um logotipo largo, e o defeito seria silencioso.
+ *
+ * E o aviso do CLAUDE.md ao contrario: ali, ler o seletor sem medir engana; aqui
+ * o seletor prometia um defeito que o ACERVO nao tem.
+ */
+interface LogoItem {
+  nome: string;
+  /** Caminho publico (`/images/...`). Resolvido por src/imagens.ts. */
+  logo: string;
+}
+
+interface Props {
+  itens: LogoItem[];
+  class?: string;
+}
+
+const { itens, class: classe } = Astro.props;
+
+if (itens.length < 2) {
+  throw new Error(`CarrosselLogos: a volta precisa de 2 itens ou mais; recebeu ${itens.length}.`);
+}
+
+/*
+ * A largura maxima que um logotipo ocupa: 6 colunas de 1500px dao celulas de
+ * 250px, menos os 60px de recuo lateral, 190. O `srcset` de `ajustada` para em
+ * 192 e na variante 2x — dois arquivos por logotipo, e nao a escada inteira de
+ * `largura-total`, que aqui sairia repetida 140 vezes no HTML.
+ */
+const LARGURA = 192;
+const TAMANHOS = '(min-width: 48rem) 12rem, 8rem';
+
+/*
+ * `--itens` VAI PARA O CSS NUM `style=`, e a excecao esta declarada na
+ * allowlist de scripts/verifica-sistema.mjs.
+ *
+ * POR QUE A DURACAO PRECISA DO NUMERO: a trilha anda uma fila inteira por volta,
+ * entao um segundo por logotipo so continua sendo um segundo por logotipo se o
+ * total acompanhar a lista. Com um numero fixo no CSS, acrescentar um resort
+ * aceleraria a faixa em silencio — a classe de defeito que este projeto passa o
+ * tempo todo tentando nao ter.
+ *
+ * POR QUE NAO `define:vars`: ele foi a primeira tentativa, e o Astro escreve o
+ * `style=` em TODOS os elementos do template, nao so na raiz. Aqui isso davam
+ * 143 atributos iguais por pagina — dois terços deles nas celulas, que nao usam
+ * a variavel. Um elemento so, explicito, e menor e diz onde a variavel mora.
+ */
+const totalItens = itens.length;
+---
+
+<div class:list={['caixa', classe]} style={`--itens:${totalItens}`}>
+  <div class="janela">
+    <ul class="trilho">
+      {
+        itens.map((item) => (
+          <li class="celula">
+            <Imagem src={item.logo} alt={item.nome} largura={LARGURA} tamanhos={TAMANHOS} />
+          </li>
+        ))
+      }
+      {/*
+        A segunda volta. `aria-hidden` mais `alt` vazio: para o leitor de tela
+        ela nao existe, e para o navegador sao os mesmos enderecos ja baixados.
+      */}
+      {
+        itens.map((item) => (
+          <li class="celula copia" aria-hidden="true">
+            <Imagem src={item.logo} alt="" largura={LARGURA} tamanhos={TAMANHOS} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  /*
+   * Tres caixas, e cada uma faz uma coisa so: a de fora e o container da query
+   * (um elemento nao pode consultar o proprio tamanho), a do meio recorta, e a
+   * de dentro anda. Juntar duas delas quebra uma das tres.
+   */
+  .caixa {
+    container-type: inline-size;
+  }
+
+  .janela {
+    overflow: hidden;
+  }
+
+  .trilho {
+    /* MEDIDO: `data-autoplay="1000"` — um logotipo por segundo, tambem no
+       original. A volta inteira leva `--itens` segundos. */
+    --passo: 1s;
+    --colunas: 2;
+    display: flex;
+    width: max-content;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    animation: desliza calc(var(--itens) * var(--passo)) linear infinite;
+  }
+
+  /*
+   * A escada da <Grade colunas={6}>, nos mesmos dois degraus e pela largura do
+   * PAI. Ver a nota 2 no topo do arquivo.
+   */
+  @container (min-width: 30rem) {
+    .trilho {
+      --colunas: 3;
+    }
+  }
+
+  @container (min-width: 48rem) {
+    .trilho {
+      --colunas: 6;
+    }
+  }
+
+  /*
+   * `-50%` da PROPRIA trilha, que tem as duas voltas: e exatamente uma fila.
+   * Em `%` e nao em pixels de proposito — a celula mede `100cqi / colunas`, uma
+   * fracao que muda com a janela e com o degrau da container query, e a conta em
+   * porcentagem acompanha as duas sem ninguem recalcular nada.
+   */
+  @keyframes desliza {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Parar para ler um logotipo. O tema tinha `pauseAutoPlayOnHover` no flickity;
+     `focus-within` entra junto porque a faixa fica dentro do fluxo do teclado. */
+  .trilho:hover,
+  .trilho:focus-within {
+    animation-play-state: paused;
+  }
+
+  .celula {
+    /*
+     * `cqi` e a largura da `.caixa`, que e o container da query — nao a da
+     * trilha, que e `max-content` e dependeria da celula. Sem um denominador
+     * externo a conta seria circular.
+     */
+    flex: 0 0 calc(100cqi / var(--colunas));
+    /* MEDIDA: a celula do tema e quadrada nos tres viewports. */
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* MEDIDO: 20px em cima e embaixo, 30px nos lados. Os 10px de calha do
+       flickity ficam de fora — nao ha mais celula para alinhar. */
+    padding: 1.25rem 1.875rem;
+  }
+
+  /* `contain`, e nao o `width:100%; height:100%` sem `object-fit` do tema, que
+     deformava todo logotipo para um quadrado. Ver a nota 1 no topo. */
+  .celula :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /*
+   * Movimento reduzido: a faixa PARA e vira uma lista que se rola com o dedo ou
+   * com a roda do mouse.
+   *
+   * A regra generica do base.css nao serve aqui, e essa e a diferenca que
+   * justifica o bloco. Ela zera a duracao e poe `animation-iteration-count: 1`,
+   * o que faz a animacao pular direto para o quadro final — `translateX(-50%)`,
+   * ou seja, a SEGUNDA volta. A faixa nasceria no meio da fila e parada ali.
+   * `animation: none` desliga o nome, entao nada roda; a duplicata sai (sem
+   * movimento ela so repetiria a lista); e o recorte vira rolagem, senao os
+   * logotipos alem da primeira tela ficariam inalcancaveis.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .janela {
+      overflow-x: auto;
+    }
+
+    .trilho {
+      animation: none;
+    }
+
+    .copia {
+      display: none;
+    }
+  }
+</style>

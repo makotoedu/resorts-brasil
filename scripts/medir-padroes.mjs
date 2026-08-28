@@ -172,6 +172,73 @@ const ALVOS = [
   { grupo: 'tituloSecao', nome: '.heading-text.heading-line', pagina: '/apoie.html', seletor: 'main .heading-text.heading-line' },
   { grupo: 'tituloSecao', nome: '.heading-line h4', pagina: '/apoie.html', seletor: 'main .heading-text.heading-line h4' },
   { grupo: 'tituloSecao', nome: '.heading-line h4::before', pagina: '/apoie.html', seletor: 'main .heading-text.heading-line h4', pseudo: '::before' },
+
+  /*
+   * ---- carrossel de logos dos associados: so na home ----
+   *
+   * ACRESCENTADO NA ETAPA 9, e ele e o ULTIMO alvo desta familia que so existe
+   * enquanto a home for do tema — depois desta medicao nao ha mais como medi-lo,
+   * porque a pagina que o contem migra no mesmo commit. Mesma situacao dos
+   * grupos `hero` e `chamadaAcao`, que tambem apontam para `/index.html`.
+   *
+   * A CELULA NAO EXISTE NO HTML. O `.polo-carousel-item` e criado pelo
+   * logoCarousel() do site.js, que embrulha cada filho e escreve `flex`,
+   * `maxWidth`, `height` e `paddingRight` em `style=` inline — reproduzindo a
+   * matematica de celula do flickity. O recuo de cima, de baixo e da esquerda
+   * vem do style.css do TEMA (`padding: 20px 30px`), e e exatamente por isso que
+   * medir importa aqui: pagina migrada nao carrega aquele arquivo, entao o que
+   * nao estiver medido some sem erro nenhum. E a armadilha de fronteira que a
+   * Etapa 8 encontrou no <YouTube>.
+   *
+   * `itens` conta as colunas efetivas por faixa, como na faixa de logos: o
+   * numero vem de `data-items="6"` desdobrado na cadeia de tetos do tema
+   * (xs 1, sm 2, md 3, lg 4, xl 6), e nao esta em lugar nenhum do CSS.
+   */
+  {
+    grupo: 'carrossel',
+    nome: '.carousel.client-logos',
+    pagina: '/index.html',
+    seletor: 'main .carousel.client-logos',
+    itens: 'main .carousel.client-logos > .polo-carousel-item',
+    esperar: 'main .carousel.client-logos > .polo-carousel-item',
+  },
+  {
+    grupo: 'carrossel',
+    nome: '.polo-carousel-item',
+    pagina: '/index.html',
+    seletor: 'main .carousel.client-logos > .polo-carousel-item',
+    esperar: 'main .carousel.client-logos > .polo-carousel-item',
+  },
+  {
+    grupo: 'carrossel',
+    nome: '.polo-carousel-item img',
+    pagina: '/index.html',
+    seletor: 'main .carousel.client-logos > .polo-carousel-item img',
+    esperar: 'main .carousel.client-logos > .polo-carousel-item img',
+  },
+  {
+    grupo: 'carrossel',
+    nome: '.polo-carousel-item a (hover)',
+    pagina: '/index.html',
+    seletor: 'main .carousel.client-logos > .polo-carousel-item a[href]',
+    esperar: 'main .carousel.client-logos > .polo-carousel-item a[href]',
+    hover: true,
+    /*
+     * O UNICO ALVO DA FAMILIA QUE PRECISA PARAR O RELOGIO.
+     *
+     * `page.hover()` espera o elemento ficar estavel por dois quadros, e uma
+     * celula que anda 600ms a cada segundo nunca fica — a chamada esgota o
+     * tempo com "element is not stable". Medir em movimento tambem nao serve:
+     * a celula sob o cursor troca de identidade quando o primeiro item vai para
+     * o fim da fila.
+     *
+     * `reducedMotion` resolve os dois de uma vez, e sem simular nada: o
+     * logoCarousel() ja consulta `prefers-reduced-motion` e RETORNA antes de
+     * criar o intervalo (src/scripts/site.js). A celula fica montada e medida,
+     * parada — que e o estado em que o hover existe.
+     */
+    reducedMotion: true,
+  },
 ];
 
 /**
@@ -187,7 +254,15 @@ const TEXTO = ['fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'textTra
 
 const PROPS = {
   cartaoMembro: [...CAIXA, 'textAlign', 'overflow', 'width', 'height', 'objectFit', 'borderTopWidth', 'borderColor', 'fontSize', 'fontWeight'],
-  chamadaAcao: [...CAIXA, 'backgroundImage', 'backgroundSize', 'backgroundPosition', 'opacity', 'position', 'textAlign', 'fontSize', 'fontWeight'],
+  /*
+   * `textTransform` e `letterSpacing` entraram na ETAPA 9, e a falta deles
+   * custou seis paginas: o `.item-link` do tema e maiusculo com 1px de
+   * espacamento, e como esta lista nao pedia as duas propriedades, o resumo da
+   * Etapa 3 nao as mostrou e o <LinkAcao> nasceu sem elas. Medir sem pedir a
+   * propriedade certa e nao medir — acrescente aqui antes de concluir que uma
+   * composicao "so tem estes valores".
+   */
+  chamadaAcao: [...CAIXA, 'backgroundImage', 'backgroundSize', 'backgroundPosition', 'opacity', 'position', 'textAlign', 'fontSize', 'fontWeight', 'textTransform', 'letterSpacing'],
   caixaIcone: [...CAIXA, 'textAlign', 'fontSize', 'fontWeight', 'lineHeight', 'width', 'height'],
   cartaoPublicacao: [...CAIXA, 'borderTopWidth', 'borderColor', 'borderStyle', 'position', 'width', 'height', 'objectFit', 'fontSize', 'fontWeight', 'textTransform'],
   listaIcones: [...CAIXA, 'listStyleType', 'paddingInlineStart', 'content', 'fontFamily', 'fontSize', 'position', 'left', 'top'],
@@ -198,6 +273,7 @@ const PROPS = {
   gradeLogos: [...CAIXA, 'listStyleType', 'float', 'width', 'maxWidth', 'height', 'objectFit', 'verticalAlign', 'opacity', 'filter', 'textAlign'],
   cartaoModalidade: [...CAIXA, 'borderTopWidth', 'borderStyle', 'borderColor', 'textAlign', 'fontSize', 'fontWeight'],
   tituloSecao: [...CAIXA, 'textAlign', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'content', 'position', 'width', 'height', 'left', 'bottom'],
+  carrossel: [...CAIXA, 'flexBasis', 'width', 'maxWidth', 'height', 'objectFit', 'overflow', 'opacity', 'filter', 'textAlign', 'verticalAlign'],
 };
 
 const navegador = await chromium.launch();
@@ -207,15 +283,38 @@ for (const vp of VIEWPORTS) {
   const page = await navegador.newPage({ viewport: { width: vp.width, height: vp.height } });
 
   for (const alvo of ALVOS) {
-    const resp = await page.goto(`${BASE}${alvo.pagina}`, { waitUntil: 'load' });
+    /* Aba propria so para quem pede o relogio parado — ver a nota do alvo. */
+    const aba = alvo.reducedMotion
+      ? await navegador.newPage({
+          viewport: { width: vp.width, height: vp.height },
+          reducedMotion: 'reduce',
+        })
+      : page;
+
+    const resp = await aba.goto(`${BASE}${alvo.pagina}`, { waitUntil: 'load' });
     if (!resp || !resp.ok()) {
       console.error(`FALHA ao carregar ${alvo.pagina} — ${resp ? resp.status() : 'sem resposta'}`);
+      if (aba !== page) await aba.close();
       continue;
+    }
+
+    /*
+     * `esperar` existe so para o carrossel, cujo `.polo-carousel-item` nao esta
+     * no HTML — o site.js o cria depois do `load`. Medir sem aguardar daria
+     * `AUSENTE` para os quatro alvos do grupo, que e o mesmo cuidado que a suite
+     * comportamental ja toma na checagem 4.
+     */
+    if (alvo.esperar) {
+      try {
+        await aba.waitForSelector(alvo.esperar, { state: 'attached', timeout: 5000 });
+      } catch {
+        console.error(`ESPERA expirou  ${vp.nome}  ${alvo.nome}  (${alvo.esperar})`);
+      }
     }
 
     const props = PROPS[alvo.grupo];
     const medir = () =>
-      page.evaluate(
+      aba.evaluate(
         ({ seletor, props, pseudo, itens }) => {
           const el = document.querySelector(seletor);
           if (!el) return null;
@@ -245,18 +344,35 @@ for (const vp of VIEWPORTS) {
     const repouso = await medir();
     if (!repouso) {
       console.error(`AUSENTE  ${vp.nome}  ${alvo.nome}  (${alvo.seletor} em ${alvo.pagina})`);
+      if (aba !== page) await aba.close();
       continue;
     }
 
     let hover = null;
     if (alvo.hover) {
-      await page.hover(alvo.seletor);
+      /*
+       * O carrossel usa COORDENADA em vez de `hover()`.
+       *
+       * `page.hover()` roda a checagem de acionabilidade do Playwright, e ela
+       * exige um elemento visivel e estavel. O `<a>` da celula e `display:
+       * inline` envolvendo uma `<img>` que o tema poe em bloco: a caixa do link
+       * mede 300x20 — a linha vazia —, e a chamada esgota o tempo repetindo
+       * "element is not visible". Mover o mouse para o centro da CELULA entrega
+       * o mesmo estado de hover sem pedir permissao a ninguem.
+       */
+      if (alvo.reducedMotion) {
+        const caixa = await aba.locator(alvo.seletor).first().boundingBox();
+        if (caixa) await aba.mouse.move(caixa.x + caixa.width / 2, caixa.y + caixa.height / 2);
+      } else {
+        await aba.hover(alvo.seletor);
+      }
       // O tema anima; sem esperar, mede-se o meio da transicao.
-      await page.waitForTimeout(400);
+      await aba.waitForTimeout(400);
       hover = await medir();
     }
 
     registros.push({ viewport: vp.nome, grupo: alvo.grupo, nome: alvo.nome, pagina: alvo.pagina, repouso, hover });
+    if (aba !== page) await aba.close();
   }
 
   await page.close();

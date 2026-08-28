@@ -32,10 +32,12 @@ src/
     Footer.astro          (tema) widgets do rodapé, copyright e revogar cookies
     SocialIcons.astro     (tema) os 4 links de rede social, com nome acessível
     AssociadosTabs.astro  as abas por região da página de associados
-    CarrosselAssociados.astro  o carrossel de logos da home
-    GradeLogos.astro      uma faixa de logos (mantenedores/parceiros/descontos)
+    ConviteAssociese.astro  o convite de associação, em quatro páginas
+    DestaquesHome.astro   os seis cartões de destaque da home
+    FaixaAssociados.astro   o título e o carrossel de logos da home
+    FaixaParceiros.astro  mantenedores, parceiros e descontos
     SecaoCookies.astro    a seção de cookies da política de privacidade
-    YouTube.astro         vídeo com fachada de clique-para-carregar
+    YouTube.astro         (tema) vídeo com fachada de clique-para-carregar
     primitivos/           Titulo, Texto, Botao, Icone, Imagem
     layout/               Secao, Container, Grade
     padroes/              CartaoMembro, ChamadaAcao, CaixaIcone, Hero, Abas…

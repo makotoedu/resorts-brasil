@@ -151,26 +151,42 @@ for (const camada of CAMADAS) {
   await page.close();
 }
 
-/* 3. Hero: kenburns + legendas ------------------------------------------ */
+/* 3. Hero: o zoom e as legendas ------------------------------------------ */
+/*
+ * A HOME MIGROU NA ETAPA 9, e com ela o hero inteiro. O que este bloco testava
+ * antes — `.kenburns-bg` montado por JavaScript a partir de um `style=` inline —
+ * simplesmente nao existe mais: o <Hero> e uma <Imagem> com `animation` de CSS.
+ *
+ * O que continua valendo e a PERGUNTA, e ela e a mesma de sempre: montado nao e
+ * o mesmo que visivel, e visivel nao e o mesmo que animando. No tema a camada
+ * tinha `z-index: -1` e sumia atras do fundo do proprio slide quando o flickity
+ * saiu — a classe continuava aplicada, a altura da pagina nao mudava, e o zoom
+ * simplesmente nao acontecia. Aqui olhamos os pixels, como antes.
+ */
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(`${BASE}/`);
-  await page.waitForTimeout(300);
-  const kb = await page.evaluate(() => {
-    const bg = document.querySelector('.slide.kenburns .kenburns-bg');
-    return bg
-      ? { exists: true, animate: bg.classList.contains('kenburns-bg-animate'), img: !!bg.style.backgroundImage }
-      : { exists: false };
-  });
-  check('kenburns montado', kb.exists && kb.animate && kb.img, JSON.stringify(kb));
+  await page.waitForSelector('.hero .foto');
 
-  // Montado nao e o mesmo que visivel. A camada tem z-index: -1 e so aparece se
-  // o slide for um contexto de empilhamento — no original quem garantia isso
-  // era o flickity, posicionando o slide. Sem esse contexto a camada some atras
-  // do fundo do proprio slide: a classe continua aplicada, a altura da pagina
-  // nao muda, e o zoom simplesmente nao acontece. Aqui olhamos os pixels.
-  await page.addStyleTag({ content: '.slide-captions { visibility: hidden !important; }' });
-  const quadro = async () => PNG.sync.read(await page.locator('.slide.kenburns').screenshot());
+  const foto = await page.evaluate(() => {
+    const img = document.querySelector('.hero .foto');
+    if (!img) return { existe: false };
+    return {
+      existe: true,
+      carregou: img.complete && img.naturalWidth > 0,
+      // O hero e a primeira imagem da pagina: lazy aqui atrasa o maior pixel.
+      ansiosa: img.getAttribute('loading') !== 'lazy',
+      anima: getComputedStyle(img).animationName !== 'none',
+    };
+  });
+  check(
+    'hero: foto carregada, sem lazy e com animacao',
+    foto.existe && foto.carregou && foto.ansiosa && foto.anima,
+    JSON.stringify(foto)
+  );
+
+  await page.addStyleTag({ content: '.hero .legendas { visibility: hidden !important; }' });
+  const quadro = async () => PNG.sync.read(await page.locator('.hero').screenshot());
   const q1 = await quadro();
   await page.waitForTimeout(1500);
   const q2 = await quadro();
@@ -180,56 +196,133 @@ for (const camada of CAMADAS) {
     n++;
   }
   const media = soma / n;
-  check('kenburns realmente amplia', media > 1,
+  check('hero: o zoom realmente acontece', media > 1,
     `variacao media de ${media.toFixed(2)}/255 no canal R em 1,5 s`);
 
+  // A cascata termina em 1,7s + 600ms; 3,2s cobre com folga.
   await page.waitForTimeout(3200);
-  const captions = await page.evaluate(() =>
-    [...document.querySelectorAll('.inspiro-slider .slide-captions > *')]
-      .map((el) => Number(getComputedStyle(el).opacity)));
-  check('legendas do hero visiveis', captions.length > 0 && captions.every((o) => o === 1),
-    `opacidades=[${captions.join(', ')}]`);
+  const legendas = await page.evaluate(() =>
+    [...document.querySelectorAll('.hero .legendas > *')].map((el) => Number(getComputedStyle(el).opacity)));
+  check('hero: legendas visiveis depois da cascata',
+    legendas.length > 0 && legendas.every((o) => o === 1), `opacidades=[${legendas.join(', ')}]`);
   await page.close();
 }
 
-/* 4. Carrossel de logos -------------------------------------------------- */
+/* 3b. Hero sem animacao: a falha aponta para o lado seguro ---------------- */
+/*
+ * A PROMESSA CENTRAL DO <Hero>, e ela merece um teste proprio porque o defeito
+ * que ela evita ja aconteceu duas vezes neste projeto — `.grid-loaded` deixou
+ * seis paginas invisiveis, e as legendas do tema nasciam com `opacity: 0`
+ * esperando um `setTimeout`.
+ *
+ * Aqui a cascata e uma animacao de CSS com `animation-fill-mode: both`, entao o
+ * quadro inicial vale durante o atraso e o final permanece depois. Com
+ * `prefers-reduced-motion`, o base.css zera duracao E atraso: o texto tem de
+ * aparecer NA HORA, e nao sumir.
+ */
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  await page.goto(`${BASE}/`);
+  await page.waitForSelector('.hero .legendas');
+  const legendas = await page.evaluate(() =>
+    [...document.querySelectorAll('.hero .legendas > *')].map((el) => Number(getComputedStyle(el).opacity)));
+  check('hero: sem animacao, as legendas aparecem mesmo assim',
+    legendas.length > 0 && legendas.every((o) => o === 1), `opacidades=[${legendas.join(', ')}]`);
+  await page.close();
+}
+
+/* 4. Carrossel de logos: visivel e andando ------------------------------- */
+/*
+ * ESTE BLOCO PASSOU MESES APROVANDO UM CARROSSEL INVISIVEL, e a licao esta na
+ * diferenca entre as duas versoes.
+ *
+ * A antiga comparava o `src` do primeiro `.polo-carousel-item` antes e depois de
+ * oito segundos. O JavaScript do tema reciclava a fila — tirava o primeiro filho
+ * e o punha no fim — dentro de um elemento com `opacity: 0` e
+ * `visibility: hidden`, herdados de `.carousel` no style.css: so
+ * `.carousel-loaded` devolvia as duas, e quem a punha era o init do flickity, que
+ * saiu com o jQuery. O `src` mudava, o teste passava, e as tres homes baixavam 70
+ * logotipos para nao mostrar nenhum.
+ *
+ * A nova pergunta as duas coisas separadamente, e nessa ordem: ESTA VISIVEL, e
+ * SE MOVE NA TELA. A segunda mede a posicao da caixa, e nao o conteudo do DOM —
+ * `getBoundingClientRect` ja inclui o `transform` do ancestral, entao ela nao tem
+ * como passar num elemento parado.
+ */
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(`${BASE}/`);
-  // Esperar o embrulho em .polo-carousel-item antes de medir. Comparar o
-  // innerHTML do primeiro filho logo apos o goto acusava "avanco" so porque o
-  // script tinha acabado de inserir o wrapper — o teste passava com o
-  // carrossel parado.
-  await page.waitForSelector('.carousel.client-logos > .polo-carousel-item', { state: 'attached' });
-  const logo = () => page.evaluate(() =>
-    document.querySelector('.carousel.client-logos > .polo-carousel-item img').getAttribute('src'));
-  const antes = await logo();
-  // O intervalo do tema e 7000ms; a espera precisa passar de uma volta.
-  await page.waitForTimeout(8000);
-  check('carrossel de logos avanca', antes !== (await logo()));
+  await page.waitForSelector('.trilho > .celula');
+
+  const visivel = await page.evaluate(() => {
+    const trilho = document.querySelector('.trilho');
+    const cs = getComputedStyle(trilho);
+    return {
+      // A checagem exata que teria pego o carrossel do tema.
+      renderizado: trilho.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }),
+      opacity: cs.opacity,
+      visibility: cs.visibility,
+    };
+  });
+  check('carrossel: a faixa esta visivel', visivel.renderizado, JSON.stringify(visivel));
+
+  const posicao = () => page.evaluate(() =>
+    document.querySelector('.trilho > .celula').getBoundingClientRect().left);
+  const antes = await posicao();
+  await page.waitForTimeout(1500);
+  const depois = await posicao();
+  check('carrossel: a faixa anda', Math.abs(depois - antes) > 2,
+    `${antes.toFixed(1)}px -> ${depois.toFixed(1)}px em 1,5 s`);
+
+  /*
+   * A volta so fecha sem emenda se as duas metades forem iguais em NUMERO: a
+   * animacao desloca `-50%` da propria trilha, e meia trilha e uma fila inteira
+   * so quando a fila foi escrita exatamente duas vezes.
+   */
+  const metades = await page.evaluate(() => ({
+    total: document.querySelectorAll('.trilho > .celula').length,
+    copias: document.querySelectorAll('.trilho > .celula.copia').length,
+    ocultas: document.querySelectorAll('.trilho > .celula.copia[aria-hidden="true"]').length,
+  }));
+  check('carrossel: a fila esta escrita duas vezes, e a segunda e oculta',
+    metades.total > 0 && metades.copias * 2 === metades.total && metades.ocultas === metades.copias,
+    JSON.stringify(metades));
   await page.close();
 }
 
 /* 4b. Geometria das celulas do carrossel --------------------------------- */
-// O diff visual esconde o carrossel (a posicao depende do instante), entao a
-// formula do flickity fica coberta aqui. Ver o comentario em visual-diff.mjs.
+/*
+ * A escada de colunas agora e uma container query, entao ela responde a largura
+ * do PAI e nao a da janela. As tres larguras abaixo sao viewports so porque o
+ * container da faixa acompanha o <Container> da pagina — o que a checagem afirma
+ * e a relacao: celula = largura do container / colunas, e quadrada.
+ *
+ * O diff visual esconde o carrossel (a posicao depende do instante da captura),
+ * entao esta e a unica cobertura que a formula tem.
+ */
 {
-  // largura da janela -> colunas, pelas faixas de js/functions.js com
-  // data-items="6": xs 1, sm 2, md 3, lg 4, xl 6.
-  const casos = [[390, 1], [700, 2], [900, 3], [1100, 4], [1440, 6]];
+  // largura da janela -> colunas esperadas, pelos degraus de 30rem e 48rem.
+  const casos = [[390, 2], [768, 3], [1440, 6]];
   const erros = [];
   for (const [width, colunas] of casos) {
-    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    const page = await browser.newPage({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
     await page.goto(`${BASE}/`);
-    await page.waitForSelector('.carousel.client-logos > .polo-carousel-item', { state: 'attached' });
+    await page.waitForSelector('.trilho > .celula');
     const m = await page.evaluate(() => {
-      const c = document.querySelector('.carousel.client-logos');
-      const cs = getComputedStyle(c);
-      const util = c.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-      const cel = c.querySelector('.polo-carousel-item').getBoundingClientRect();
-      return { util, largura: cel.width, altura: cel.height };
+      const trilho = document.querySelector('.trilho');
+      const caixa = trilho.parentElement.parentElement;
+      const cel = trilho.querySelector('.celula').getBoundingClientRect();
+      return {
+        container: caixa.getBoundingClientRect().width,
+        largura: cel.width,
+        altura: cel.height,
+        colunas: Number(getComputedStyle(trilho).getPropertyValue('--colunas')),
+      };
     });
-    const esperado = (m.util + 10) / colunas;
+    const esperado = m.container / colunas;
+    if (m.colunas !== colunas) {
+      erros.push(`${width}px: --colunas=${m.colunas}, esperado ${colunas}`);
+    }
     if (Math.abs(m.largura - esperado) > 1) {
       erros.push(`${width}px: celula ${m.largura.toFixed(1)}, esperado ${esperado.toFixed(1)} (${colunas} col)`);
     }
@@ -238,7 +331,40 @@ for (const camada of CAMADAS) {
     }
     await page.close();
   }
-  check('carrossel: geometria das celulas', erros.length === 0, erros.join('; ') || '5 larguras conferem');
+  check('carrossel: geometria das celulas', erros.length === 0, erros.join('; ') || '3 larguras conferem');
+}
+
+/* 4c. Carrossel sem animacao: a fila continua alcancavel ----------------- */
+/*
+ * O outro lado do `prefers-reduced-motion`, e ele nao e simetrico ao do hero.
+ *
+ * A regra generica do base.css zera a duracao e poe `animation-iteration-count:
+ * 1`, o que faria a animacao SALTAR para o quadro final — `translateX(-50%)`, a
+ * segunda volta — e parar ali. O componente desliga o nome da animacao, esconde a
+ * duplicata e troca o recorte por rolagem, senao os logotipos alem da primeira
+ * tela ficariam inalcancaveis por qualquer meio.
+ */
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  await page.goto(`${BASE}/`);
+  await page.waitForSelector('.trilho > .celula');
+  const m = await page.evaluate(() => {
+    const trilho = document.querySelector('.trilho');
+    const janela = trilho.parentElement;
+    return {
+      animacao: getComputedStyle(trilho).animationName,
+      transform: getComputedStyle(trilho).transform,
+      rolavel: janela.scrollWidth > janela.clientWidth + 1 && getComputedStyle(janela).overflowX === 'auto',
+      copiasVisiveis: [...document.querySelectorAll('.trilho > .celula.copia')]
+        .filter((el) => el.checkVisibility()).length,
+    };
+  });
+  check('carrossel: sem animacao, a faixa para no inicio e vira lista rolavel',
+    m.animacao === 'none' &&
+      (m.transform === 'none' || m.transform === 'matrix(1, 0, 0, 1, 0, 0)') &&
+      m.rolavel && m.copiasVisiveis === 0,
+    JSON.stringify(m));
+  await page.close();
 }
 
 /* 5. Contadores ---------------------------------------------------------- */
