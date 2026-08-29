@@ -53,6 +53,26 @@ def main():
 
     for familia in spec["familias"]:
         origem = ORIGEM / familia["origem"]
+
+        # `saida: null` = familia que NAO E MAIS PUBLICADA como webfont, mas cujos
+        # contornos continuam sendo a origem dos SVG de src/icones/glifos.ts.
+        #
+        # A distincao existe desde a Etapa 10, quando a ultima pagina do tema
+        # migrou e as duas familias do Font Awesome ficaram sem nenhum CSS que as
+        # peca. Tirar a entrada de `familias` seria o caminho obvio e o errado:
+        # o glifos-para-svg.py le esta MESMA lista para desenhar os oito icones
+        # que vinham dali, e o verify-icones.mjs a usa como referencia. Os
+        # desenhos sumiriam sem erro de build — que e a forma exata da armadilha
+        # que este arquivo ja documenta no `_leia`.
+        if familia.get("saida") is None:
+            if origem.exists():
+                total_antes += origem.stat().st_size
+            print(
+                f"  {familia['origem']:24} {kb(origem.stat().st_size) if origem.exists() else '?':>9}"
+                f" -> nao publicado   (so contorno; ver _saida em glifos.json)"
+            )
+            continue
+
         destino = DESTINO / familia["saida"]
         esperados.add(destino.name)
 

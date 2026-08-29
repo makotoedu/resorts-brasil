@@ -11,7 +11,7 @@ const check = (name, pass, detail = '') => {
 const browser = await chromium.launch();
 
 /*
- * DUAS CAMADAS, DUAS PAGINAS DE REFERENCIA.
+ * DUAS PAGINAS DE REFERENCIA, E NA ETAPA 10 ELAS TROCARAM DE SIGNIFICADO.
  *
  * Ate a Etapa 5 esta suite usava `/historia.html` para tudo — menu, seletor de
  * idioma, cookies, glifos. Aquela pagina migrou, e com ela o cromo inteiro: o
@@ -19,42 +19,42 @@ const browser = await chromium.launch();
  * mobile e as webfontes de icone sumiram. Metade das checagens passou a testar a
  * camada nova achando que testava a antiga.
  *
- * Enquanto as duas convivem, o que e cromo roda NAS DUAS. Nao e zelo: os dois
- * cabecalhos sao dirigidos pelo MESMO src/scripts/site.js, atraves dos mesmos
- * nomes de estado, e essa e a aposta que sustenta a migracao inteira. Se ela
- * quebrar de um lado so, e aqui que tem de aparecer.
+ * Daí nasceu o par `tema` / `sistema`: enquanto as duas camadas conviviam, o que
+ * e cromo rodava NAS DUAS, porque os dois cabecalhos eram dirigidos pelo MESMO
+ * src/scripts/site.js atraves dos mesmos nomes de estado. Aquela era a aposta
+ * que sustentava a migracao inteira.
  *
- * Quando a ultima pagina migrar, `PAGINA_TEMA` some junto com o tema.
+ * O `PAGINA_TEMA` MORREU NA ETAPA 10, e nao na 11 como o plano previa: a ultima
+ * pagina do tema era justamente `/ebook.html`, escolhida como referencia por ser
+ * a ultima a migrar. Nao existe mais pagina do tema para apontar. A escolha era
+ * entre perder a segunda camada de teste ou lhe dar outro sentido.
  *
- * ELA JA MUDOU DUAS VEZES, E PELO MESMO MOTIVO: a pagina de referencia migrou.
- * Era `/historia.html` ate a Etapa 5 e `/resorts-brasil.html` ate a Etapa 8.
- * Agora e `/ebook.html`, escolhida de proposito por ser a ULTIMA a migrar no
- * plano (Etapa 10) — a home sai na 9. Ao migrar uma pagina, confira se ela nao
- * era a referencia de algum teste: a Etapa 5 descobriu isso depois, com metade
- * das checagens testando a camada nova achando que testava a antiga.
+ * O SEGUNDO SENTIDO E MELHOR QUE O PRIMEIRO. As duas paginas continuam sendo
+ * duas, mas agora o que se compara sao as duas VARIACOES DE CROMO do sistema:
+ * o claro, que 38 paginas usam, e o escuro do e-book, que so tres usam e que
+ * nasceu na Etapa 10. As duas sao dirigidas pelo mesmo site.js, pelos mesmos
+ * nomes de estado — a aposta e a mesma, so mudou entre o que.
+ *
+ * Ao migrar uma pagina, confira se ela nao era a referencia de algum teste. Esta
+ * suite ja pagou tres vezes por isso.
  */
-const PAGINA_TEMA = '/ebook.html';
 const PAGINA_SISTEMA = '/historia.html';
+const PAGINA_EBOOK = '/ebook.html';
 
 const CAMADAS = [
   {
-    nome: 'tema',
-    pagina: PAGINA_TEMA,
-    gatilhoIdioma: '.p-dropdown > a',
-    /* O tema deixa os 11 itens do menu mobile visiveis de uma vez: os submenus
-       nascem abertos e nao ha o que acionar. */
-    submenuNasceAberto: true,
-    traducoes: ['/en-us/ebook', '/es-es/ebook'],
+    nome: 'claro',
+    pagina: PAGINA_SISTEMA,
+    /* O gatilho e `<button>`: ele abre um submenu, nao navega. O `href="#"` do
+       tema sujava o historico e punha um destino falso na barra de status. */
+    gatilhoIdioma: '.p-dropdown > button',
+    traducoes: ['/en-us/history', '/es-es/historia'],
   },
   {
-    nome: 'sistema',
-    pagina: PAGINA_SISTEMA,
-    /* O gatilho virou `<button>`: ele abre um submenu, nao navega. O
-       `href="#"` do tema sujava o historico e punha um destino falso na barra
-       de status. */
+    nome: 'escuro',
+    pagina: PAGINA_EBOOK,
     gatilhoIdioma: '.p-dropdown > button',
-    submenuNasceAberto: false,
-    traducoes: ['/en-us/history', '/es-es/historia'],
+    traducoes: ['/en-us/ebook', '/es-es/ebook'],
   },
 ];
 
@@ -75,15 +75,15 @@ for (const camada of CAMADAS) {
     open.body && open.trigger && open.animate && open.minHeight > 100 && open.navVisible,
     `minHeight=${open.minHeight}px, nav visivel=${open.navVisible}`);
 
-  if (camada.submenuNasceAberto) {
-    const submenu = await page.evaluate(() =>
-      getComputedStyle(document.querySelector('#mainMenu .dropdown-menu')).display);
-    check(`[${camada.nome}] submenu expandido no mobile`, submenu === 'block', `display=${submenu}`);
-  } else {
+  {
     /*
-     * No sistema o submenu abre no toque, e o `aria-expanded` acompanha. Vale a
-     * pena testar os dois juntos: um menu que abre com o atributo mentindo e
-     * pior do que um que nao abre, porque so quem usa leitor de tela descobre.
+     * O submenu abre no toque, e o `aria-expanded` acompanha. Vale a pena testar
+     * os dois juntos: um menu que abre com o atributo mentindo e pior do que um
+     * que nao abre, porque so quem usa leitor de tela descobre.
+     *
+     * O RAMO `submenuNasceAberto` SAIU NA ETAPA 10. Ele cobria o tema, que
+     * deixava os 11 itens do menu mobile visiveis de uma vez porque nao havia o
+     * que acionar sem jQuery. Nao ha mais pagina do tema.
      */
     const antes = await page.evaluate(() =>
       getComputedStyle(document.querySelector('#mainMenu .dropdown-menu')).display);
@@ -641,17 +641,24 @@ for (const camada of CAMADAS) {
  */
 for (const alvo of [
   {
-    nome: 'tema',
-    pagina: PAGINA_TEMA,
-    video: 'C-_CoEDJu7o',
-    /* 420px fixos, o `style=` inline do <YouTube>. */
-    alturaEsperada: () => 420,
-  },
-  {
-    nome: 'sistema',
+    nome: 'institucional',
     pagina: '/resorts-brasil.html',
     video: 'LJ_9oUeE4e8',
     /* 16/9 sobre a largura medida, com 1px de folga para o arredondamento. */
+    alturaEsperada: (w) => Math.round((w * 9) / 16),
+  },
+  /*
+   * O SEGUNDO ALVO ERA `[tema]`, com 420px fixos — a altura que o `<iframe>`
+   * original rendia e que o <YouTube> repetia num `style=` inline. A pagina do
+   * e-book migrou na Etapa 10 e passou ao <Video>, entao os dois alvos agora
+   * medem a MESMA regra de proporcao. Ele continua aqui, e nao vira redundancia:
+   * este e o unico video dentro de uma coluna estreita (`largura="media"`), e o
+   * outro ocupa o container inteiro. A conta de 16/9 tem de valer nos dois.
+   */
+  {
+    nome: 'ebook',
+    pagina: PAGINA_EBOOK,
+    video: 'C-_CoEDJu7o',
     alturaEsperada: (w) => Math.round((w * 9) / 16),
   },
 ]) {
@@ -711,15 +718,20 @@ for (const alvo of [
 
 /* 8. Voltar ao topo ------------------------------------------------------ */
 /*
- * Nas duas camadas: o site.js escreve `bottom`, `opacity` e `z-index` inline no
- * mesmo `#scrollTop`, mas o estado de REPOUSO vem do CSS, e sao dois CSS
- * diferentes. O do sistema precisa nascer invisivel por conta propria — se
- * nascesse visivel, o botao ficaria parado num canto sem funcao para quem esta
- * sem JavaScript, e nenhum teste de clique veria isso.
+ * Nas duas variacoes de cromo. O site.js escreve `bottom`, `opacity` e
+ * `z-index` inline no mesmo `#scrollTop`, mas o estado de REPOUSO vem do CSS: o
+ * botao precisa nascer invisivel por conta propria — se nascesse visivel,
+ * ficaria parado num canto sem funcao para quem esta sem JavaScript, e nenhum
+ * teste de clique veria isso.
+ *
+ * As duas paginas eram `[tema]` e `[sistema]` ate a Etapa 10; a de politica
+ * migrou na Etapa 6 e a rotulagem estava desatualizada desde entao — o teste
+ * comparava sistema com sistema achando que comparava camadas. Nao era defeito,
+ * mas tambem nao era o que o nome dizia.
  */
 for (const { nome, pagina } of [
-  { nome: 'tema', pagina: '/politica-de-privacidade.html' },
-  { nome: 'sistema', pagina: '/diretoria.html' },
+  { nome: 'claro', pagina: '/politica-de-privacidade.html' },
+  { nome: 'escuro', pagina: PAGINA_EBOOK },
 ]) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(BASE + pagina);
@@ -740,91 +752,59 @@ for (const { nome, pagina } of [
   await page.close();
 }
 
-/* 9. Glifos das fontes subsetadas ---------------------------------------- */
+/* 9. Nenhuma pagina baixa webfont de icone ------------------------------- */
 /*
- * Cobre o buraco que deixou o subset incompleto passar: nada nesta suite
- * verificava fonte, e o diff visual so pegaria as 6 paginas afetadas.
+ * ESTA CHECAGEM ERA O CONTRARIO DELA MESMA ATE A ETAPA 10.
  *
- * O `check-glifos.mjs` do build garante que a LISTA cobre o que o CSS pede;
- * este teste garante que os ARQUIVOS gerados contem mesmo os glifos da lista.
- * Sao coisas diferentes: um pyftsubset com a flag errada passa no primeiro e
- * falha aqui.
+ * Ela pintava cada codepoint do subset num canvas e o comparava com um
+ * codepoint sabidamente ausente: glifo que caiu do subset renderiza como tofu, e
+ * o tofu e identico para qualquer ausente. Existia porque um subset incompleto
+ * apagou as setas e bolinhas de 6 paginas sem erro de build, e porque medir
+ * largura nao serve — o tofu ocupa 1em, e varios icones tambem.
  *
- * Metodo: pintar o codepoint num canvas e comparar com um codepoint sabidamente
- * ausente da mesma familia. Glifo que caiu do subset renderiza como tofu, e o
- * tofu e identico para qualquer codepoint ausente — se os bitmaps baterem, o
- * glifo sumiu. Medir largura NAO serve: o tofu ocupa 1em, e varios icones
- * tambem (info-circle e dot-circle dao exatamente os mesmos 100px).
+ * Ela rodava numa pagina do TEMA de proposito: numa migrada mediria tofu contra
+ * tofu e passaria sempre. A ultima pagina do tema era `/ebook.html`, e ela
+ * migrou nesta etapa. Nao ha mais onde medir, e nao ha mais o que medir: as duas
+ * familias do Font Awesome deixaram de ser publicadas (ver `saida: null` em
+ * scripts/glifos.json) e nenhum CSS pede mais um codepoint delas.
+ *
+ * O QUE ELA GARANTIA CONTINUA GARANTIDO, POR OUTRO PORTAO. Os 16 contornos agora
+ * sao SVG inline em src/icones/glifos.ts, e tests/verify-icones.mjs compara
+ * desenho a desenho contra as fontes de vendor/webfonts/ — codepoint trocado,
+ * contorno vazio e eixo espelhado reprovam la.
+ *
+ * O QUE ENTRA NO LUGAR e a afirmacao inversa, e ela e barata: nenhuma pagina
+ * pode voltar a baixar webfont de icone. E a mesma classe de vigilancia do
+ * isolamento de folhas no verifica-sistema.mjs — afirmar a AUSENCIA, porque e a
+ * ausencia que a migracao conquistou. Um `<i class="fa-...">` reintroduzido num
+ * componente passaria em todos os outros portoes.
  */
 {
-  const { readFile } = await import('node:fs/promises');
-  const spec = JSON.parse(await readFile(new URL('../scripts/glifos.json', import.meta.url), 'utf8'));
-
-  // Peso do @font-face de cada familia, e um codepoint que o subset nao tem.
-  const perfil = {
-    'Font Awesome 5 Brands': { peso: 400, controle: 0xf099 },
-    'Font Awesome 5 Free (peso 900)': { peso: 900, controle: 0xf007, css: 'Font Awesome 5 Free' },
-    'inspiro-icons': { peso: 400, controle: 0xe919 },
-  };
-
-  /*
-   * PAGINA_TEMA, e nao mais /historia.html. As tres webfontes servem so as
-   * paginas nao migradas — o cromo novo desenha SVG inline pelo <Icone>, e a
-   * pagina de historia deixou de baixar fonte de icone na Etapa 5. Rodar isto
-   * la mediria tofu contra tofu e passaria sempre.
-   *
-   * A checagem morre junto com as webfontes, na Etapa 11.
-   */
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  await page.goto(BASE + PAGINA_TEMA);
-
-  const alvos = spec.familias.map((f) => {
-    const p = perfil[f.familia_css];
-    return {
-      familia: p.css ?? f.familia_css,
-      peso: p.peso,
-      controle: p.controle,
-      glifos: Object.entries(f.glifos).map(([cp, nome]) => ({
-        cp: parseInt(cp.slice(2), 16),
-        nome: String(nome).split(' ')[0],
-      })),
-    };
+  const fontes = [];
+  page.on('request', (r) => {
+    if (r.resourceType() === 'font') fontes.push(new URL(r.url()).pathname);
   });
 
-  const ausentes = await page.evaluate(async (alvos) => {
-    const pintar = async (familia, peso, cp) => {
-      await document.fonts.load(`${peso} 64px "${familia}"`);
-      const c = document.createElement('canvas');
-      c.width = c.height = 80;
-      const ctx = c.getContext('2d');
-      ctx.font = `${peso} 64px "${familia}"`;
-      ctx.textBaseline = 'top';
-      ctx.fillText(String.fromCodePoint(cp), 8, 8);
-      return c.toDataURL();
-    };
-    const faltando = [];
-    for (const alvo of alvos) {
-      const tofu = await pintar(alvo.familia, alvo.peso, alvo.controle);
-      for (const g of alvo.glifos) {
-        if ((await pintar(alvo.familia, alvo.peso, g.cp)) === tofu) faltando.push(`${alvo.familia}/${g.nome}`);
-      }
-    }
-    return faltando;
-  }, alvos);
+  const amostra = [PAGINA_SISTEMA, PAGINA_EBOOK, '/', '/diretoria.html', '/associados.html'];
+  for (const path of amostra) {
+    await page.goto(BASE + path);
+    await page.waitForTimeout(800);
+  }
 
-  const total = alvos.reduce((n, a) => n + a.glifos.length, 0);
-  check('todos os glifos do subset renderizam', ausentes.length === 0,
-    ausentes.length ? `tofu em: ${ausentes.join(', ')}` : `${total} glifos, 3 familias`);
+  const icones = fontes.filter((p) => p.includes('/webfonts/'));
+  check('nenhuma pagina baixa webfont de icone', icones.length === 0,
+    icones.length ? `baixou: ${[...new Set(icones)].join(', ')}` : `${amostra.length} paginas, 0 requisicoes a /webfonts/`);
   await page.close();
 }
 
 /* 10. Erros de console em todas as paginas ------------------------------- */
 {
-  // Uma de cada camada, de proposito: o cromo novo traz um <script> proprio
-  // (o seletor de idioma), e erro nele so apareceria nas paginas migradas.
-  const pages = ['/', PAGINA_TEMA, PAGINA_SISTEMA, '/diretoria.html', '/404.html',
+  // Uma de cada variacao de cromo, e as tres traducoes do e-book: o seletor de
+  // idioma e um <script> do proprio componente de cabecalho.
+  const pages = ['/', PAGINA_SISTEMA, PAGINA_EBOOK, '/diretoria.html', '/404.html',
     '/associados.html', '/en-us/home.html', '/en-us/contact-us.html',
-    '/es-es/inicio.html', '/es-es/directorio.html', '/ebook.html'];
+    '/en-us/ebook.html', '/es-es/inicio.html', '/es-es/directorio.html', '/es-es/ebook.html'];
   const errors = [];
   for (const path of pages) {
     const page = await browser.newPage();

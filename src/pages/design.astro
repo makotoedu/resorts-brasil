@@ -41,6 +41,7 @@ import FaixaLogos from '../components/padroes/FaixaLogos.astro';
 import CarrosselLogos from '../components/padroes/CarrosselLogos.astro';
 import CartaoModalidade from '../components/padroes/CartaoModalidade.astro';
 import Video from '../components/padroes/Video.astro';
+import SecaoEbook from '../components/padroes/SecaoEbook.astro';
 import Cabecalho from '../components/cromo/Cabecalho.astro';
 import Rodape from '../components/cromo/Rodape.astro';
 import FaixaCookies from '../components/cromo/FaixaCookies.astro';
@@ -49,6 +50,8 @@ import VoltarAoTopo from '../components/cromo/VoltarAoTopo.astro';
 import { glifos, nomesDeIcone } from '../icones/glifos';
 import { regioesAssociados } from '../data/associados';
 import { diretoria, cargoEm } from '../data/diretoria';
+import { textoEm } from '../data/ebook';
+import { autoresEbook } from '../data/autores-ebook';
 
 /**
  * Quatro logos reais, tirados de `src/data/associados.ts` sem tocar no arquivo.
@@ -109,6 +112,29 @@ const variantesBotao = [
   { variante: 'contorno' as const, papel: 'acao secundaria, mesmo peso visual menor' },
   { variante: 'clara' as const, papel: 'sobre foto ou fundo escuro (17 usos no site)' },
   { variante: 'destaque' as const, papel: 'chamada de conversao, uma por pagina' },
+  { variante: 'ebook' as const, papel: 'so a landing page do e-book, que tem paleta propria' },
+];
+
+/**
+ * Tres autores reais para a variante escura do cartao, e a escolha nao e
+ * aleatoria: o primeiro tem o capitulo mais longo da lista (duas linhas em
+ * qualquer largura), e o ultimo nao tem LinkedIn — os dois casos dificeis.
+ */
+const autoresDemo = [
+  autoresEbook.find((a) => a.nome === 'Patricia Azevedo')!,
+  autoresEbook.find((a) => a.nome === 'Tricia Neves')!,
+  autoresEbook.find((a) => a.nome === 'Eliane Brito')!,
+];
+
+/** As sete superficies do ebook, na ordem em que a pagina desce por elas. */
+const superficiesEbook = [
+  { superficie: 'topo' as const, papel: 'a abertura, sob a foto' },
+  { superficie: 'sobre' as const, papel: 'carvao -> noite-700' },
+  { superficie: 'faixa' as const, papel: 'iniciativa e creditos, com textura' },
+  { superficie: 'video' as const, papel: 'carvao-750, sob a foto' },
+  { superficie: 'estrutura' as const, papel: 'petroleo-800 -> carvao' },
+  { superficie: 'secoes' as const, papel: 'carvao -> oceano-800' },
+  { superficie: 'autores' as const, papel: 'carvao -> noite-750' },
 ];
 
 /** Os cinco estados. `estado` e a prop que existe so para esta pagina. */
@@ -381,11 +407,18 @@ const faixas = [
       <section>
         <h3>Botão</h3>
         <p class="legenda">
-          Quatro variantes × três tamanhos × cinco estados. Os valores são medidos com
+          Cinco variantes × três tamanhos × cinco estados. Os valores são medidos com
           <code>scripts/medir-primitivos.mjs</code>, <strong>hover incluído</strong> — ele não
           aparece no HTML nem no diff visual, então seria a parte mais fácil de inventar.
           <code>href</code> decide a tag: com ele sai <code>&lt;a&gt;</code>, sem ele
           <code>&lt;button&gt;</code>.
+        </p>
+        <p class="legenda">
+          <strong>O rótulo da variante <code>ebook</code> não é branco</strong>, e essa é a
+          correção que a Etapa 10 trouxe. O gradiente do tema ia do ciano ao coral com texto
+          branco: 1,65:1 numa ponta e 3,74:1 na outra, reprovando nas duas. O carvão do próprio
+          e-book dá 11,50:1 e 5,08:1. Ela também é a única variante cujo hover o tema não tinha —
+          medido, o botão não mudava nada com o mouse em cima.
         </p>
 
         {
@@ -396,7 +429,7 @@ const faixas = [
                 'demo-botoes',
                 /* `superficie-inversa` nao e decoracao: e a marca que o base.css
                    procura para trocar a cor do contorno de foco. */
-                variante === 'clara' && 'demo-escura superficie-inversa',
+                (variante === 'clara' || variante === 'ebook') && 'demo-escura superficie-inversa',
               ]}
             >
               <p class="rotulo-demo">
@@ -659,6 +692,67 @@ const faixas = [
             também não serve — mudaria a altura de um cartão no meio da grade.
           </p>
         </div>
+
+        <p class="legenda">
+          <code>superficie="inversa"</code> são os 41 autores do e-book, e <code>destaque</code> é
+          a linha extra entre o nome e o cargo — ali, o capítulo que a pessoa assina. É uma prop e
+          não um componente novo: são os mesmos 124 usos claros mais 41 escuros, e um
+          <code>&lt;CartaoAutor&gt;</code> separado duplicaria a foto quadrada, o círculo do
+          LinkedIn e os dois hovers.
+        </p>
+        <div class="demo demo-escura superficie-inversa">
+          <Grade colunas={3} espaco="md">
+            {
+              autoresDemo.map((a) => (
+                <CartaoMembro
+                  nome={a.nome}
+                  cargo={textoEm(a.cargo, 'pt-br')}
+                  destaque={textoEm(a.capitulo, 'pt-br')}
+                  foto={a.foto}
+                  linkedin={a.linkedin}
+                  superficie="inversa"
+                  nivel={4}
+                />
+              ))
+            }
+          </Grade>
+          <p class="legenda">
+            <strong>O azul do capítulo não é o do tema.</strong> O <code>#0c71c3</code> original dá
+            3,77:1 em 13px sobre este carvão; o token aponta para o mesmo azul clareado 12%, que dá
+            4,58:1. São 123 ocorrências — a cor mais repetida da página do e-book.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>SecaoEbook</h3>
+        <p class="legenda">
+          As sete superfícies da landing page do e-book — cinco gradientes que partem sempre do
+          mesmo carvão e duas faixas com textura. No tema eram sete
+          <code>style="background:linear-gradient(…)"</code> inline, com <code>!important</code> em
+          cinco deles, repetidos nas três páginas de idioma. Os stops saem de
+          <code>scripts/medir-ebook.mjs</code>, que lê o <code>background-image</code> computado:
+          eles nunca estiveram no <code>style.css</code>.
+        </p>
+        <p class="legenda">
+          A foto de fundo, quando há, é um <code>&lt;Imagem&gt;</code> posicionado por
+          <code>inset: 0</code> — a mesma forma do <code>&lt;Hero&gt;</code>, e pelo mesmo motivo:
+          fundo em CSS não tem <code>srcset</code> nem <code>loading</code>, e são três fotos de
+          até 2560px de largura.
+        </p>
+        {
+          superficiesEbook.map(({ superficie, papel }) => (
+            <div class="demo demo-superficie">
+              <SecaoEbook superficie={superficie} espaco="sm">
+                <Container>
+                  <p class="rotulo-demo">
+                    <code>superficie="{superficie}"</code> <small>{papel}</small>
+                  </p>
+                </Container>
+              </SecaoEbook>
+            </div>
+          ))
+        }
       </section>
 
       <section>
@@ -1544,8 +1638,20 @@ const faixas = [
   }
 
   .demo-escura .rotulo-demo,
-  .demo-escura .estado small {
+  .demo-escura .estado small,
+  .demo-escura .legenda {
     color: var(--color-texto-inverso);
+  }
+
+  /*
+   * A <SecaoEbook> ja traz o proprio recuo e a propria superficie, entao a caixa
+   * de demonstracao aqui e so uma moldura sem recuo — com o padding da `.demo`,
+   * o gradiente apareceria com uma borda branca em volta e a superficie nao se
+   * leria de ponta a ponta.
+   */
+  .demo-superficie {
+    padding: 0;
+    overflow: hidden;
   }
 
   .icones {

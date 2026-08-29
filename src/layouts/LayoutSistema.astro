@@ -37,9 +37,27 @@ interface Props {
   ogImage?: string;
   /** Rodape so com a faixa de copyright, como a 404 sempre teve. */
   rodapeMinimo?: boolean;
+  /**
+   * A variacao de cromo das tres paginas do e-book: cabecalho sem topbar e
+   * escuro, rodape invertido.
+   *
+   * E UMA PROP SO PARA OS TRES TRACOS, e nao tres props, porque no site eles
+   * nunca apareceram separados — a mesma decisao que o `variacaoEbook` do
+   * BaseLayout ja registrava. Tres booleanos permitiriam oito combinacoes, das
+   * quais uma existe.
+   */
+  variacaoEbook?: boolean;
 }
 
-const { lang, title, description, route, ogImage, rodapeMinimo = false } = Astro.props;
+const {
+  lang,
+  title,
+  description,
+  route,
+  ogImage,
+  rodapeMinimo = false,
+  variacaoEbook = false,
+} = Astro.props;
 const t = ui[lang];
 ---
 
@@ -64,13 +82,20 @@ const t = ui[lang];
     -->
     <FaixaCookies lang={lang} />
 
-    <Cabecalho lang={lang} route={route} />
+    <Cabecalho lang={lang} route={route} semTopbar={variacaoEbook} escuro={variacaoEbook} />
 
+    <!--
+      SEM `mainClass`. O BaseLayout precisa de `hero-fullscreen` no <main> para
+      o ajustes.css puxar o hero para tras do cabecalho transparente; aqui o
+      cabecalho e `position: relative` dentro do fluxo e a secao de topo comeca
+      logo abaixo dele, sem deslocamento negativo nenhum. Um numero a menos para
+      manter sincronizado com uma media query.
+    -->
     <main id="conteudo">
       <slot />
     </main>
 
-    <Rodape lang={lang} minimo={rodapeMinimo} />
+    <Rodape lang={lang} minimo={rodapeMinimo} invertido={variacaoEbook} />
 
     <VoltarAoTopo lang={lang} />
 

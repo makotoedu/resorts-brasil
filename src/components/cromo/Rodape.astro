@@ -32,9 +32,18 @@ interface Props {
   lang: Locale;
   /** Só a faixa de copyright, sem as listas. É o rodapé que a 404 sempre teve. */
   minimo?: boolean;
+  /**
+   * O rodape escuro das tres paginas do e-book — o `.inverted` do tema.
+   *
+   * MEDIDO na Etapa 10, e ate ali nunca tinha sido: o medir-cromo.mjs mede em
+   * /historia.html, que usa o rodape claro. A medicao encontrou o pior conjunto
+   * de contraste do site inteiro, e ele esta em producao ha anos — ver a nota
+   * das cores no <style> abaixo.
+   */
+  invertido?: boolean;
 }
 
-const { lang, minimo = false } = Astro.props;
+const { lang, minimo = false, invertido = false } = Astro.props;
 const t = ui[lang];
 
 // Resolvido no build. Antes o ano vinha de document.write() nas home e estava
@@ -73,7 +82,7 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
 ];
 ---
 
-<footer id="footer" class="rodape">
+<footer id="footer" class:list={['rodape', invertido && 'invertido superficie-inversa']}>
   {
     !minimo && (
       <div class="conteudo">
@@ -234,5 +243,63 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
     cursor: pointer;
     text-decoration: underline;
     text-underline-offset: 0.2em;
+  }
+
+  /* ---------------- rodape invertido ---------------- */
+
+  /*
+   * O rodape das tres paginas do e-book. MEDIDO na Etapa 10, e o que a medicao
+   * encontrou e o PIOR CONJUNTO DE CONTRASTE DO SITE — pior que os dois que as
+   * Etapas 3 e 5 corrigiram, e em producao ha anos:
+   *
+   *   elemento                     tema        aqui
+   *   ---------------------------  ----------  ----------------------------
+   *   fundo                        #0e121d     o mesmo (superficie-inversa-alt)
+   *   titulo das listas            3,69:1      branco, 18,7:1
+   *   os 12 links de navegacao     2,86:1      texto-sutil, 7,1:1
+   *   hover do link                3,22:1      branco, 18,7:1
+   *   faixa de copyright (fundo)   #10141e     carvao-750, dois pontos, consolidado
+   *   a LINHA DE COPYRIGHT         1,23:1      texto-sutil, 7,0:1
+   *   "Preferencias de cookies"    1,23:1      texto-sutil, 7,0:1
+   *
+   * As duas ultimas linhas sao a parte grave, e nao e so contraste ruim: o tema
+   * nunca declarou cor de texto ali, entao a faixa herdou o navy do <body> e
+   * ficou navy sobre quase-preto. A frase de copyright e o botao que REVOGA O
+   * CONSENTIMENTO de cookies estao invisiveis nas tres paginas.
+   *
+   * O hover dos links tambem invertia de sentido: o azul de acao da 3,22:1 sobre
+   * este fundo, ou seja, apontar o link o deixava MENOS legivel. Aqui ele vai
+   * para o branco, que e o que "mais destacado" significa sobre fundo escuro.
+   */
+  .invertido {
+    background-color: var(--color-superficie-inversa-alt);
+  }
+
+  .invertido :global(.titulo-lista) {
+    color: var(--color-texto-inverso);
+  }
+
+  .invertido .lista a {
+    color: var(--color-texto-sutil);
+  }
+
+  .invertido .lista a:hover {
+    color: var(--color-texto-inverso);
+  }
+
+  /* O par escuro da `--color-superficie-clara-alt`. Ver a nota do token. */
+  .invertido .copyright {
+    background-color: var(--color-superficie-inversa-faixa);
+  }
+
+  .invertido .copyright-texto,
+  .invertido .copyright-texto a,
+  .invertido .cookie-manage-btn {
+    color: var(--color-texto-sutil);
+  }
+
+  .invertido .copyright-texto a:hover,
+  .invertido .cookie-manage-btn:hover {
+    color: var(--color-texto-inverso);
   }
 </style>

@@ -51,9 +51,23 @@ interface Props {
   route?: RouteKey;
   /** As tres paginas do ebook nunca tiveram topbar. */
   semTopbar?: boolean;
+  /**
+   * O cabecalho sobre fundo escuro — o `.dark` das tres paginas do e-book.
+   *
+   * MEDIDO na Etapa 10 (scripts/medir-ebook.mjs), e ate ali nunca tinha sido: o
+   * medir-cromo.mjs da Etapa 5 mede em /historia.html, que e clara. O que muda e
+   * so a cor — link de menu e gatilho passam a branco, e o hover deixa de ser o
+   * azul de acao (que sumiria sobre o fundo) e vira um cinza claro, medido em
+   * rgb(193,195,206).
+   *
+   * O SUBMENU CONTINUA BRANCO. No tema a classe vinha sempre com `submenu-light`
+   * ao lado, e medido ele e o mesmo painel claro das outras paginas — o escuro
+   * vale para a barra, nao para o que ela abre.
+   */
+  escuro?: boolean;
 }
 
-const { lang, route, semTopbar = false } = Astro.props;
+const { lang, route, semTopbar = false, escuro = false } = Astro.props;
 const t = ui[lang];
 
 // Resolvido aqui e nao no template: uma anotacao de tipo com generics dentro do
@@ -123,7 +137,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
   )
 }
 
-<header id="header" class="cabecalho">
+<header id="header" class:list={['cabecalho', escuro && 'escuro']}>
   <Container>
     <div class="barra">
       <div id="logo" class="logo">
@@ -744,6 +758,129 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
     top: 0;
     transform: rotate(-45deg);
   }
+
+  /* ---------------- cabecalho escuro ---------------- */
+
+  /*
+   * ELE FLUTUA SOBRE O CONTEUDO, e essa e a metade da variacao que quase passou.
+   *
+   * O cabecalho e transparente — medido, e vale para as 41 paginas. Nas 38
+   * claras isso nao aparece, porque o fundo do <body> tambem e claro e o texto
+   * do menu e escuro. Aqui o texto e BRANCO: sem a foto do e-book atras dele, o
+   * menu inteiro fica branco sobre branco. Foi exatamente o que aconteceu na
+   * primeira versao desta etapa, e nenhum dos quatro portoes viu — as caixas
+   * estao certas, o contraste medido pelo verifica-sistema compara pares de
+   * TOKEN e nao token contra a superficie que calhou de estar embaixo.
+   *
+   * O tema resolvia com `margin-top: -80px` no <main> (public/css/ajustes.css),
+   * puxando a pagina para tras do cabecalho — e com -120px quando havia topbar,
+   * um segundo numero para manter sincronizado. Aqui quem sai do fluxo e o
+   * cabecalho, que e o elemento que de fato flutua. Um numero em vez de dois, e
+   * ele nao depende de quem vem depois.
+   */
+  .escuro {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+  }
+
+  /*
+   * E FLUTUAR TEM UM PRECO NO MOBILE, que so aparece com o menu ABERTO.
+   *
+   * Abaixo de 992px o menu e um painel que ocupa a segunda linha da barra, e o
+   * site.js lhe da a altura da janela. No cromo claro o cabecalho esta no fluxo:
+   * o painel EMPURRA a pagina para baixo e se le sobre o branco do <body>. Aqui
+   * o cabecalho e absoluto, entao o painel se sobrepoe ao hero — os seis itens
+   * do menu ficam impressos por cima do titulo, e nenhum dos dois se le.
+   *
+   * O fundo so existe enquanto `.mainMenu-open` esta no <body>, que e o mesmo
+   * nome de estado que o site.js ja escreve nas duas camadas. Em repouso o
+   * cabecalho continua transparente sobre a foto, que e o desenho da pagina.
+   *
+   * Isto nao aparece em captura de pagina parada nem em nenhum dos quatro
+   * portoes: a geometria mede caixas, e as caixas estao certas. Apareceu abrindo
+   * o menu.
+   */
+  :global(body.mainMenu-open) .escuro {
+    background-color: var(--color-ebook-superficie);
+  }
+
+  /*
+   * A variacao de COR das tres paginas do e-book, MEDIDA na Etapa 10. Caixa,
+   * recuo e faixa continuam sendo os mesmos de cima, e por isso ela e um punhado
+   * de regras no fim do arquivo em vez de um segundo componente.
+   *
+   * O hover NAO e o azul de acao. Medido, o tema usa rgb(193,195,206) — e faz
+   * sentido: sobre o carvao do e-book, o azul-500 daria 3,0:1 e o item ficaria
+   * menos legivel ao ser apontado. O cinza claro do sistema da 12,4:1 ali.
+   */
+  .escuro .menu-nivel1 > li > a,
+  .escuro .menu-nivel1 > li > button,
+  .escuro .p-dropdown > button {
+    color: var(--color-texto-inverso);
+  }
+
+  .escuro .menu-nivel1 > li > a:hover,
+  .escuro .menu-nivel1 > li > button:hover,
+  .escuro .p-dropdown > button:hover {
+    color: var(--color-texto-sutil);
+  }
+
+  /*
+   * O item destacado do menu sobre fundo escuro.
+   *
+   * O ambar-800 existe para passar sobre BRANCO (4,96:1, ver o tokens.css) e
+   * sobre o carvao do e-book ele da 2,6:1 — o mesmo tipo de par invertido que a
+   * topbar ja tinha. A saida e a mesma que a topbar adotou: o item deixa de ser
+   * dourado e fica branco, distinguido por peso.
+   */
+  .escuro .menu-nivel1 > li > a.destaque {
+    color: var(--color-texto-inverso);
+    font-weight: var(--font-weight-bold);
+  }
+
+  /*
+   * O SUBMENU MUDA DE FUNDO CONFORME A FAIXA, e por isso a cor do link dele
+   * tambem tem de mudar.
+   *
+   * Acima de 992px o submenu e um painel BRANCO (ver a regra na media query
+   * acima), e ali o cinza de paragrafo esta certo nas duas variacoes. Abaixo de
+   * 992px o painel nao tem fundo proprio: ele herda o do cabecalho. No claro
+   * isso da cinza sobre branco; no escuro, cinza sobre carvao — 2,86:1, o mesmo
+   * numero que o rodape invertido do tema entregava nos 12 links dele.
+   *
+   * Por isso a regra vive numa consulta de largura MAXIMA, e nao junto das
+   * outras: `.escuro .dropdown-menu a` pesa 0-2-1 e venceria o painel branco do
+   * desktop tambem. O 61.9375rem e o complemento exato dos 62rem usados no resto
+   * do arquivo — os 992px do Bootstrap que o site.js tambem compara.
+   */
+  @media (max-width: 61.9375rem) {
+    .escuro .dropdown-menu a {
+      color: var(--color-texto-sutil);
+    }
+
+    .escuro .dropdown-menu a:hover {
+      color: var(--color-texto-inverso);
+    }
+  }
+
+  /* As tres barras do gatilho, e a borda do X quando ele abre. */
+  .escuro .lines,
+  .escuro .lines::before,
+  .escuro .lines::after {
+    background-color: var(--color-texto-inverso);
+  }
+
+  .escuro .lines-button.toggle-active .lines {
+    background-color: transparent;
+  }
+
+  /*
+   * O painel do menu mobile abre SOBRE a pagina, e abaixo de 992px ele nao tem
+   * fundo proprio — no cromo claro isso funciona porque a pagina tambem e clara.
+   * Aqui o fundo do e-book ja e escuro e o texto branco continua legivel, entao
+   * nao ha nada a acrescentar. A nota fica porque foi verificado, e nao suposto.
+   */
 
   /* O fundo nao rola atras do painel aberto. `:global` porque o <body> nao e
      deste componente. */

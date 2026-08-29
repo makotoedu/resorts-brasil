@@ -31,16 +31,41 @@ const TINTA_MINIMA = 0.01;
 
 const inventario = JSON.parse(await readFile(new URL('../scripts/glifos.json', import.meta.url), 'utf8'));
 
-/** origem (nome do arquivo em vendor/) -> como pedir a fonte no navegador. */
+/**
+ * origem (nome do arquivo em vendor/) -> como pedir a fonte no navegador.
+ *
+ * A FONTE VEM DE `vendor/webfonts/`, EMBUTIDA COMO data:, e nao de
+ * `/webfonts/` pela rede. A diferenca importa duas vezes:
+ *
+ *   1. e o que o teste sempre quis dizer. A pergunta e "o SVG desenha o mesmo
+ *      contorno que a fonte ORIGINAL?", e `public/webfonts/` guarda o subset
+ *      gerado — comparar com ele deixaria passar um erro introduzido pelo
+ *      proprio pyftsubset;
+ *   2. desde a Etapa 10 as duas familias do Font Awesome nao sao mais
+ *      publicadas (`saida: null` em glifos.json), porque nenhuma pagina baixa
+ *      webfont de icone. Pela rede, `/webfonts/<null>` daria 404, a fonte nao
+ *      carregaria e os oito icones dali reprovariam por TOFU — o teste
+ *      acusando o desenho quando o defeito seria dele mesmo.
+ */
+const VENDOR = new URL('../vendor/webfonts/', import.meta.url);
+const FORMATO = { woff2: 'woff2', woff: 'woff', ttf: 'truetype', otf: 'opentype' };
+
 const familias = new Map(
-  inventario.familias.map((f) => [
-    f.origem,
-    {
-      familiaCss: f.familia_css.replace(/\s*\(peso \d+\)$/, ''),
-      peso: /peso (\d+)/.exec(f.familia_css)?.[1] ?? '400',
-      arquivo: `/webfonts/${f.saida}`,
-    },
-  ])
+  await Promise.all(
+    inventario.familias.map(async (f) => {
+      const ext = f.origem.split('.').pop();
+      const bytes = await readFile(new URL(f.origem, VENDOR));
+      return [
+        f.origem,
+        {
+          familiaCss: f.familia_css.replace(/\s*\(peso \d+\)$/, ''),
+          peso: /peso (\d+)/.exec(f.familia_css)?.[1] ?? '400',
+          fonte: `data:font/${ext};base64,${bytes.toString('base64')}`,
+          formato: FORMATO[ext] ?? ext,
+        },
+      ];
+    })
+  )
 );
 
 const paraCaractere = (cp) => String.fromCodePoint(parseInt(cp.replace('U+', ''), 16));
@@ -48,7 +73,7 @@ const paraCaractere = (cp) => String.fromCodePoint(parseInt(cp.replace('U+', '')
 const fontFaces = [...familias.values()]
   .map(
     (f) => `@font-face{font-family:'${f.familiaCss}';font-weight:${f.peso};font-display:block;` +
-      `src:url('${f.arquivo}') format('woff2')}`
+      `src:url('${f.fonte}') format('${f.formato}')}`
   )
   .join('\n');
 

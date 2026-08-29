@@ -93,6 +93,60 @@
   --cor-roxo-800: #570a57;
   --cor-magenta-700: #a91079;
 
+  /*
+   * ==========================================================
+   * PRIMITIVOS — a paleta do EBOOK
+   * ==========================================================
+   * A landing page do ebook tem paleta propria, e ela nao estava em lugar
+   * nenhum do `style.css`: as sete superficies, o gradiente da chamada e o do
+   * botao vinham TODOS de `style=` inline, 140 por pagina. Ler o CSS daria zero
+   * resposta; estes valores saem de `node scripts/medir-ebook.mjs`, que le o
+   * `background-image` computado — o unico lugar onde os stops aparecem
+   * resolvidos em rgb.
+   *
+   * Duas ja existiam e nao ganharam nome novo: o `--cor-carvao-900` (#0c101b) e
+   * a base de tudo aqui, e o `--cor-carvao-800` (#0e121d) e a faixa da
+   * iniciativa E o fundo do rodape invertido — medidos iguais. O
+   * `--cor-coral-500` e o acento das secoes, tambem ja existia.
+   */
+  --cor-carvao-750: #101420; /* medido: o fundo da secao de video */
+  --cor-noite-700: #1d2848; /* fim do gradiente do "sobre" */
+  --cor-noite-750: #1b2645; /* fim do gradiente dos autores */
+  --cor-petroleo-800: #0c2833; /* inicio do gradiente da estrutura */
+  --cor-oceano-800: #002e54; /* fim do gradiente das secoes */
+  --cor-oceano-700: #1d456a; /* fim do gradiente da chamada */
+
+  /*
+   * O VERDE DA CHAMADA, ESCURECIDO 25%.
+   *
+   * Medido, o gradiente vai de #6ca898 a #1d456a com texto BRANCO por cima — e
+   * o titulo fica no topo, no ponto mais claro: 2,73:1, reprovando o criterio
+   * 1.4.3 da WCAG. Trocar a cor do texto nao resolve, e essa e a diferenca em
+   * relacao as correcoes anteriores: no outro extremo do mesmo gradiente o navy
+   * da 1,51:1. Nenhuma cor de texto passa nas duas pontas.
+   *
+   * Entao quem cede e o fundo. #517e72 e o menor escurecimento em que o branco
+   * alcanca 4,5:1 (medido 4,59:1), e o gradiente continua indo de sage a azul.
+   */
+  --cor-verde-800: #517e72;
+
+  /*
+   * O AZUL DO TITULO DE CAPITULO, CLAREADO 12%.
+   *
+   * O #0c71c3 e a cor mais repetida do ebook — 123 ocorrencias, todas no
+   * `<span>` que nomeia o capitulo de cada autor. Sobre o carvao do cartao ele
+   * da 3,77:1 em texto de 13px, e reprova.
+   *
+   * #0d7fda e o menor clareamento que alcanca 4,5:1 (medido 4,58:1). O fundo
+   * daquele span e SEMPRE o carvao-900, porque o cartao tem superficie propria
+   * — o gradiente da secao nao chega nele, e por isso um numero so basta.
+   */
+  --cor-azul-550: #0d7fda;
+
+  /* As duas pontas do gradiente do botao do ebook, medidas. */
+  --cor-ciano-300: #5bd8ff;
+  --cor-coral-600: #e55056;
+
   --cor-preto: #000; /* so o veu sobre foto; nenhum texto usa */
 
   /* ==========================================================
@@ -141,6 +195,19 @@
    * uma superficie precisa de uma vizinha um degrau adiante, ela ganha `-alt`.
    */
   --color-superficie-clara-alt: var(--cor-nevoa-75);
+
+  /*
+   * A MESMA faixa, no rodape invertido. MEDIDA na Etapa 10 em rgb(16,20,30) e
+   * consolidada no carvao-750 — dois pontos num canal so, ruido pelo criterio
+   * que ja uniu o fundo do rodape claro a nevoa-50.
+   *
+   * Ela e o par escuro da `--color-superficie-clara-alt`, e nao um token do
+   * e-book: o papel e "a faixa um degrau adiante do rodape", e o rodape escuro
+   * existe por causa do e-book mas nao pertence a ele. Que o valor medido bata
+   * com o fundo da secao de video e confirmacao, nao coincidencia — e a mesma
+   * paleta.
+   */
+  --color-superficie-inversa-faixa: var(--cor-carvao-750);
 
   /*
    * O botao flutuante de voltar ao topo, MEDIDO: rgba(0,0,0,0.25). Nao e o
@@ -226,6 +293,58 @@
   --color-acento-roxo-texto: var(--cor-branco);
   --color-acento-magenta: var(--cor-magenta-700);
   --color-acento-magenta-texto: var(--cor-branco);
+
+  /*
+   * ==========================================================
+   * SEMANTICOS — o EBOOK
+   * ==========================================================
+   * A landing page do ebook e a unica do site com paleta propria, e a Etapa 10
+   * existe em parte para testar se a camada semantica aguenta isso. O criterio
+   * que a etapa aplicou: se o papel ja existe no site, reusa o token; se o papel
+   * so existe aqui, ganha um `--color-ebook-*`.
+   *
+   * O que NAO ganhou nome novo, e essa e a metade que importa: o texto e branco,
+   * o cargo e `--color-texto-sutil`, o acento e `--color-destaque` e o cartao de
+   * autor e `--color-superficie-inversa`. Sao os mesmos papeis do resto do site,
+   * pintados pelos mesmos tokens. Sobrou de fato o que e desenho desta pagina —
+   * as sete superficies e os dois gradientes.
+   */
+  --color-ebook-superficie: var(--cor-carvao-900);
+  --color-ebook-superficie-faixa: var(--cor-carvao-800);
+  --color-ebook-superficie-video: var(--cor-carvao-750);
+
+  /* As quatro pontas dos gradientes de secao. A outra ponta e sempre a
+     `--color-ebook-superficie`, o que e o proprio desenho da pagina: cada faixa
+     nasce do mesmo preto e vai para uma cor diferente. */
+  --color-ebook-sobre-fim: var(--cor-noite-700);
+  --color-ebook-estrutura-inicio: var(--cor-petroleo-800);
+  --color-ebook-secoes-fim: var(--cor-oceano-800);
+  --color-ebook-autores-fim: var(--cor-noite-750);
+
+  /* A chamada de acao do "sobre". Ver a nota do --cor-verde-800. */
+  --color-ebook-chamada-inicio: var(--cor-verde-800);
+  --color-ebook-chamada-fim: var(--cor-oceano-700);
+
+  /*
+   * O BOTAO DO EBOOK, e o texto dele NAO e branco.
+   *
+   * Medido, o gradiente vai do ciano ao coral com rotulo branco: 1,65:1 na ponta
+   * clara e 3,74:1 na escura — reprova nas DUAS. E o CTA principal da pagina,
+   * tres vezes por pagina, nove no total.
+   *
+   * A correcao e a mesma que a <FaixaDestaque> fez na Etapa 3: mantem o fundo,
+   * troca o texto. O carvao do proprio ebook da 11,50:1 no ciano e 5,08:1 no
+   * coral — passa nas duas pontas, que e o que um gradiente exige.
+   */
+  --color-ebook-acao-inicio: var(--cor-ciano-300);
+  --color-ebook-acao-fim: var(--cor-coral-600);
+  --color-ebook-acao-texto: var(--cor-carvao-900);
+
+  /*
+   * O titulo de capitulo. Ver a nota do --cor-azul-550: e o #0c71c3 clareado
+   * ate passar em 13px sobre o carvao do cartao.
+   */
+  --color-ebook-capitulo: var(--cor-azul-550);
 
   /*
    * O veu sobre foto. MEDIDO no `.bg-overlay`: rgba(0,0,0,0.59) pintado num

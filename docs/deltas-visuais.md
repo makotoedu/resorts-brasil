@@ -491,6 +491,70 @@ leitura do CSS do tema sugeria que corrigisse (`width: 100%` e `height: 100%` se
 320 × 320 — conferidos um a um. Fica como defesa para o dia em que entrar um
 logotipo largo.
 
+## Etapa 10 — o e-book, e o texto invisível no rodapé
+
+As três páginas do e-book. É a etapa que fecha a migração: **41 de 41**.
+
+O diff visual não foi rodado como comparação contra o original, e a razão é a
+mesma que a Etapa 9 já registrava para a home — a página mudou de propósito em
+quase toda superfície. O que substitui a comparação de pixel aqui é a
+**conferência de conteúdo**, que é o risco real quando 700 linhas de markup viram
+dois arquivos de dados:
+
+| conferido | resultado |
+|---|---|
+| nomes de autor | 41 no markup antigo, 41 no novo, nenhum ausente |
+| cartões renderizados | 41 |
+| capítulos no cartão | 41, nenhum ausente |
+| cargos | 41, nenhum ausente |
+| títulos do índice | 24, nenhum ausente |
+| linhas de autoria do índice | 24, nenhuma ausente |
+| perfis do LinkedIn | 35 antes, 35 depois |
+| elementos gerados, pt × en × es | 864, idênticos nos três |
+
+### Correções
+
+| onde | classificação | o quê |
+|---|---|---|
+| rodapé das três | **correção, e a mais grave da migração** | a linha de copyright e o botão **"Preferências de cookies"** estavam a **1,23:1** — navy sobre quase-preto, porque o tema nunca declarou cor de texto naquela faixa e ela herdou a do `<body>`. Estavam invisíveis em produção |
+| rodapé das três | correção | os 12 links de navegação iam de 2,86:1 para 7,08:1. E o *hover* deles era **pior** que o repouso (3,22:1): apontar o link o deixava menos legível. Agora vai para o branco |
+| rodapé das três | correção | os títulos das três listas, de 3,69:1 para 18,7:1 |
+| botão de download, 3× por página | correção | o rótulo era branco sobre um gradiente ciano→coral: **1,65:1** numa ponta e 3,74:1 na outra. Passa ao carvão do e-book — 11,50:1 e 5,08:1 |
+| 41 cartões de autor | correção | o azul do capítulo (`#0c71c3`, **123 ocorrências**) dava 3,77:1 em texto de 13 px. Clareado 12%, dá 4,58:1 |
+| chamada de ação do "sobre" | correção | o verde do gradiente escurece 25%. Aqui **nenhuma cor de texto** passava nas duas pontas — branco dava 2,73:1 no verde e o navy 1,51:1 no azul —, então quem cedeu foi o fundo |
+| as três | correção | o `<h1>` e o botão passam a falar o idioma da página. O cartão da home já prometia *"Managing the Traveller's Journey → Download the e-book"* e entregava português |
+| as três | correção | o subtítulo do topo era `<h4>` logo abaixo do `<h1>`, e os três rótulos de seção do índice eram `<h4>` sob um `<h2>`. Vira `<p>` e `<h3>` — as três páginas saem do grupo dos sumários quebrados |
+| as três | correção | o `href="#"` de sete perfis vira ausência de link: o `<CartaoMembro>` mantém o símbolo, apagado. Um link focável sem destino a menos, sete vezes |
+| Felipe Bogéa | correção | o LinkedIn dele terminava em `%20` — um espaço codificado no fim da URL |
+
+### Refinos
+
+| onde | classificação | o quê |
+|---|---|---|
+| as três | **refino de maior consequência** | as três fotos de fundo deixam de ser `background-image` em `style=` inline e viram `<Imagem>` posicionada — AVIF/WebP, `srcset` e `loading`. A de 2560 px entregava 78 KB para todo mundo |
+| as três | refino | os 41 retratos passam pelo pipeline. É a maior fatia dos 1.156 KB → 315 KB |
+| as três | refino | o botão de download **ganha hover**. Medido, o CTA principal da página não mudava nada com o mouse em cima |
+| as três | refino | o título do topo entra na escala: 32 → 40 px no celular (`--text-3xl`), com o extremo de 62 px do desktop preservado. Fim do salto na media query |
+| as três | refino | o índice e a galeria passam à `<Grade>` com container query. Some o `.row` e, com ele, o transbordo horizontal de 30 px no celular — as últimas 3 pendências da lista |
+| as três | refino | a linha sob o rótulo de seção deixa de ser `<hr>` e vira borda do próprio título. `<hr>` é quebra temática; aquilo é decoração de cabeçalho |
+| as três | refino | o vídeo perde o `height: 420px` e ganha `aspect-ratio: 16/9`, como as outras páginas desde a Etapa 8 |
+| as três | refino | o cabeçalho flutua por `position: absolute` no lugar de `margin-top: -80px` no `<main>`. Um número em vez de dois — o tema precisava de `-120px` quando havia topbar |
+| as três | refino | o logotipo duplicado (`.logo-default` + `.logo-dark`, **o mesmo arquivo** nos dois) vira um só |
+| catálogo | refino | `/design` ganha a variante `ebook` do botão com os cinco estados, a variante escura do `<CartaoMembro>` e as sete superfícies do `<SecaoEbook>` |
+
+### O que ficou como está, e por quê
+
+**O logotipo continua com pouco contraste sobre a foto.** O "25 ANOS" é navy
+sobre um fundo escuro. O tema tinha o mesmo problema — as duas `<img>` dele
+(`logo-default` e `logo-dark`) apontavam para o mesmo arquivo, então a variante
+escura nunca existiu. Corrigir exige um logotipo novo, que é trabalho de marca e
+não de migração.
+
+**O texto continua em português nas três páginas.** Ver a nota da Etapa 10 em
+[decisoes.md](decisoes.md): não há tradução no repositório para mover, e escrever
+uma é conteúdo novo. A costura ficou pronta — os campos já aceitam mapa por
+idioma.
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

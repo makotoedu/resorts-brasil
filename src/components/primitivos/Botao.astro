@@ -29,7 +29,7 @@ import type { HTMLAttributes } from 'astro/types';
 interface Props extends Omit<HTMLAttributes<'a'>, 'class' | 'href' | 'type'> {
   /** Presente: vira `<a>`. Ausente: vira `<button>`. */
   href?: string;
-  variante?: 'primaria' | 'contorno' | 'clara' | 'clara-solida' | 'destaque';
+  variante?: 'primaria' | 'contorno' | 'clara' | 'clara-solida' | 'destaque' | 'ebook';
   tamanho?: 'sm' | 'md' | 'lg';
   /** So no `<button>`. */
   tipo?: 'button' | 'submit' | 'reset';
@@ -215,6 +215,43 @@ const Tag = href ? 'a' : 'button';
   .v-destaque[data-estado='hover'] {
     background-color: var(--color-acao-destaque-hover);
     border-color: var(--color-acao-destaque-hover);
+  }
+
+  /*
+   * A QUINTA VARIANTE, e ela e do ebook — a unica pagina do site com paleta
+   * propria. Acrescentada na Etapa 10.
+   *
+   * MEDIDA (scripts/medir-ebook.mjs): gradiente de 164 graus do ciano ao coral,
+   * 13 -> 16px, caixa alta, 2px de espacamento — a mesma caixa do `t-lg`, que ja
+   * media 38 -> 56px de altura. So a superficie e nova.
+   *
+   * DUAS CORRECOES, e as duas vieram da medicao:
+   *
+   *   1. O ROTULO NAO E BRANCO. No tema era, e reprova nas duas pontas do
+   *      gradiente: 1,65:1 sobre o ciano e 3,74:1 sobre o coral. O carvao do
+   *      proprio ebook da 11,50:1 e 5,08:1 — passa nas duas, que e o que um
+   *      gradiente exige. Mesma classe de correcao da <FaixaDestaque> na
+   *      Etapa 3: mantem o fundo, troca o texto.
+   *   2. HOVER PASSA A EXISTIR. Medido com o mouse em cima, o botao do tema nao
+   *      mudava nada — e ele e o CTA principal da pagina, tres vezes por pagina.
+   *      O estado nao inventa cor nenhuma: `brightness` clareia as duas pontas
+   *      do proprio gradiente, o que ANIMA (as outras variantes trocam de cor,
+   *      e `background-image` nao interpola) e ainda melhora o contraste em vez
+   *      de piorar — 5,08 -> 6,06:1 no coral, que e o pior ponto.
+   */
+  .v-ebook {
+    background-image: linear-gradient(
+      164deg,
+      var(--color-ebook-acao-inicio) 0%,
+      var(--color-ebook-acao-fim) 100%
+    );
+    color: var(--color-ebook-acao-texto);
+    transition: filter 0.3s;
+  }
+
+  .v-ebook:hover,
+  .v-ebook[data-estado='hover'] {
+    filter: brightness(1.1);
   }
 
   /* ---------------- estados comuns ---------------- */

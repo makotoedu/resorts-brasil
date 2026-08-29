@@ -40,6 +40,23 @@ interface Props {
   /** Ausente: o cartao mantem o simbolo, sem link. Ver a nota abaixo. */
   linkedin?: string;
   /**
+   * A linha extra entre o nome e o cargo. Na Etapa 10 ela e o CAPITULO que a
+   * pessoa assina no e-book, e e o unico lugar do site que a usa — mas o eixo
+   * "uma linha de destaque acima do cargo" e do cartao, nao do ebook.
+   */
+  destaque?: string;
+  /**
+   * A superficie sob o cartao. `clara` e a diretoria; `inversa` sao os 41
+   * autores do e-book, medidos com o carvao do proprio ebook.
+   *
+   * Repare que isto e uma PROP e nao um componente novo: o `.team-member` do
+   * tema e o mesmo nos dois lugares, e sao 124 usos claros mais 41 escuros. Um
+   * <CartaoAutor> separado duplicaria a foto quadrada, o circulo do LinkedIn e
+   * os dois hovers — que e exatamente o que este componente existe para nao
+   * deixar acontecer.
+   */
+  superficie?: 'clara' | 'inversa';
+  /**
    * Nivel do heading do nome. E prop porque depende de onde a grade esta na
    * pagina, e nao do desenho do cartao — que e exatamente a separacao que o
    * <Titulo> existe para manter.
@@ -59,10 +76,14 @@ const {
   cargo,
   foto,
   linkedin,
+  destaque,
+  superficie = 'clara',
   nivel = 3,
   tamanhos = '(min-width: 64rem) 15rem, (min-width: 30rem) 33vw, 50vw',
   class: classe,
 } = Astro.props;
+
+const inversa = superficie === 'inversa';
 
 /*
  * Sem perfil, o simbolo continua no lugar mas deixa de ser link.
@@ -76,7 +97,7 @@ const {
 const Marca = linkedin ? 'a' : 'span';
 ---
 
-<div class:list={['cartao', classe]}>
+<div class:list={['cartao', inversa && 'inversa superficie-inversa', classe]}>
   <Imagem
     src={foto}
     alt={nome}
@@ -88,8 +109,15 @@ const Marca = linkedin ? 'a' : 'span';
     class="foto"
   />
   <div class="descricao">
-    <Titulo nivel={nivel} tamanho="md" peso="medio" class="nome">{nome}</Titulo>
-    <Texto tamanho="sm" cor="paragrafo" semMargem>{cargo}</Texto>
+    <Titulo
+      nivel={nivel}
+      tamanho="md"
+      peso="medio"
+      cor={inversa ? 'inverso' : 'padrao'}
+      class="nome">{nome}</Titulo
+    >
+    {destaque && <p class="destaque">{destaque}</p>}
+    <Texto tamanho="sm" cor={inversa ? 'sutil' : 'paragrafo'} semMargem>{cargo}</Texto>
     <Marca
       class="social"
       href={linkedin || undefined}
@@ -156,5 +184,56 @@ const Marca = linkedin ? 'a' : 'span';
   span.social {
     color: var(--color-texto-sutil);
     border-color: var(--color-borda);
+  }
+
+  /* ---------------- superficie inversa ---------------- */
+
+  /*
+   * O cartao dos 41 autores do e-book. MEDIDO (scripts/medir-ebook.mjs): fundo
+   * no carvao do proprio ebook, nome branco, cargo no cinza sutil (7,19:1 ali,
+   * medido) e o simbolo do LinkedIn em branco.
+   *
+   * A borda do circulo troca de origem: sobre fundo escuro o `--color-borda`
+   * (nevoa) sumiria, e quem serve e a `--color-borda-inversa`, que ja nasceu
+   * medida na topbar. Mesmo raciocinio do contorno de foco no base.css, e o
+   * `superficie-inversa` no elemento e o que aciona aquela regra aqui dentro.
+   */
+  .inversa {
+    background-color: var(--color-ebook-superficie);
+  }
+
+  .inversa .social {
+    border-color: var(--color-borda-inversa);
+    color: var(--color-texto-inverso);
+  }
+
+  .inversa a.social:hover {
+    /* O cinza claro do sistema sobre carvao apagaria o glifo; aqui quem preenche
+       e a propria borda translucida, e o glifo mantem o branco. */
+    background-color: var(--color-borda-inversa);
+    color: var(--color-texto-inverso);
+  }
+
+  .inversa span.social {
+    color: var(--color-texto-sutil);
+  }
+
+  /*
+   * A linha de destaque — o capitulo, no e-book. MEDIDA: 13px / 400, entrelinha
+   * de 18px, sem margem propria (o cargo abaixo ja traz 10px de folga).
+   *
+   * A COR NAO E A MEDIDA. O tema usa #0c71c3, que sobre este carvao da 3,77:1
+   * em texto de 13px e reprova o criterio 1.4.3 da WCAG. O token aponta para o
+   * mesmo azul clareado 12%, que da 4,58:1 — ver a nota do --cor-azul-550 no
+   * tokens.css. Sao 123 ocorrencias, a cor mais repetida da pagina.
+   */
+  .destaque {
+    color: var(--color-ebook-capitulo);
+    font-size: var(--text-sm);
+    line-height: 1.3846; /* os 18px medidos sobre 13px */
+    /* Os 10px medidos ate o cargo. No tema eles eram `margin-top` do proprio
+       cargo, e ele nao pode carrega-los: sem destaque o cargo vem logo apos o
+       nome, e ali a folga medida e outra. */
+    margin: 0 0 0.625rem;
   }
 </style>

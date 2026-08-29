@@ -20,7 +20,8 @@
   "familias": [
     {
       "origem": "fa-brands-400.woff2",
-      "saida": "fa-brands-400.woff2",
+      "saida": null,
+      "_saida": "NULA DESDE A ETAPA 10. As tres paginas do ebook eram as ultimas a emitir <i class=\"fab fa-linkedin\">, e com elas migradas nenhum CSS publicado pede um codepoint do Font Awesome. A familia CONTINUA AQUI porque `familias` nao e a lista do que se publica: e a lista de onde cada CONTORNO vem. scripts/glifos-para-svg.py le exatamente esta entrada para desenhar os cinco SVG de src/icones/glifos.ts, e tests/verify-icones.mjs compara cada desenho com esta fonte. Apagar a entrada apagaria os cinco icones no proximo `python scripts/glifos-para-svg.py`, sem erro nenhum.",
       "familia_css": "Font Awesome 5 Brands",
       "glifos": {
         "U+F08C": "linkedin",
@@ -32,10 +33,11 @@
     },
     {
       "origem": "fa-solid-900.woff2",
-      "saida": "fa-solid-900.woff2",
+      "saida": null,
+      "_saida": "NULA DESDE A ETAPA 10, pelo mesmo motivo da familia acima.",
       "familia_css": "Font Awesome 5 Free (peso 900)",
       "glifos": {
-        "U+F05A": "info-circle — <i class=\"fa fa-info-circle\"> da faixa de cookies, 40 paginas",
+        "U+F05A": "info-circle — era o <i class=\"fa fa-info-circle\"> da faixa de cookies do BaseLayout",
         "U+F054": "chevron-right — .list-icon.list-icon-arrow li:before, SEM classe no HTML",
         "U+F192": "dot-circle — .list-icon.list-icon-circle li:before, SEM classe no HTML"
       }
@@ -58,7 +60,7 @@
   ],
 
   "remover": {
-    "fa-regular-400.woff2": "nenhum icone .far em qualquer uma das 40 paginas"
+    "fa-regular-400.woff2": "nenhum icone .far em qualquer uma das 41 paginas"
   },
 
   "ignorar": {

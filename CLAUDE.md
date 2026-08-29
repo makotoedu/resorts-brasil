@@ -1,6 +1,6 @@
 # Orientação para o Claude Code
 
-Site institucional estático da Associação Brasileira de Resorts: 40 páginas em
+Site institucional estático da Associação Brasileira de Resorts: 41 páginas em
 3 idiomas, Astro, hospedado na Vercel. Sem backend, formulário ou banco.
 
 Leia o [README.md](README.md) para comandos e estrutura, e
@@ -28,12 +28,17 @@ O plano completo, com etapas e critérios, está em
 | 7 — publicações e estatísticas e estudos | concluída |
 | 8 — associados, associe-se, apoie, resorts-brasil | concluída |
 | 9 — home (`index` / `home` / `inicio`) | concluída |
-| 10 — ebook (`ebook` × 3) | **próxima** |
-| 11 — demolição | não iniciada |
+| 10 — ebook (`ebook` × 3) | concluída |
+| 11 — demolição | **próxima** |
 
-**Páginas migradas: 38 de 41.** Confira sempre com
+**Páginas migradas: 41 de 41 — a migração acabou.** Confira sempre com
 `node scripts/verifica-sistema.mjs`, que mede no `dist/` em vez de acreditar
 nesta tabela.
+
+**Nenhuma página carrega mais `plugins.css`, `style.css` ou `ajustes.css`**, e
+nenhuma baixa webfont de ícone. O tema ainda existe em arquivo — `BaseLayout`,
+`Header`, `Footer`, `SocialIcons`, `public/css/` — e não é importado por página
+nenhuma. Removê-lo é a Etapa 11 inteira.
 
 ### As quatro regras que não podem ser quebradas
 
@@ -48,11 +53,17 @@ nesta tabela.
    <LayoutSistema lang="pt-br" route="history">
    ```
 
+   **Desde a Etapa 10 o `BaseLayout` não é usado por página nenhuma**, e a regra
+   vira uma só: toda página usa o `LayoutSistema`. A parte de baixo desta nota
+   fica registrada porque explica por que os dois arquivos existem, e porque o
+   mecanismo — CSS empacotado pelo grafo de módulos — continua valendo para
+   qualquer folha que alguém venha a importar.
+
    **Não importe nada do design system dentro do `BaseLayout`** — nem a folha,
    nem um componente com `<style>`, nem dentro de um `if` que nunca executa. O
    Astro empacota CSS pelo **grafo de módulos**, não pelo que a página renderiza,
    então o `import` sozinho já põe o CSS nas páginas do tema — eram 40 quando
-   isto foi escrito, hoje são 3. Importar a folha no layout já fez 22 delas
+   isto foi escrito, hoje são zero. Importar a folha no layout já fez 22 delas
    divergirem: o Preflight do Tailwind vaza para onde o tema não declara a mesma
    propriedade, e `@layer` não protege disso.
 
@@ -85,6 +96,17 @@ nesta tabela.
    e as 141 do `#0c101b` são todas do ebook também — a superfície escura da
    chamada de ação é o navy, medido.
 
+   O sexto da família é `node scripts/medir-ebook.mjs`, e ele existe por um
+   motivo que vale como regra: **a paleta do ebook não estava no `style.css`.**
+   As sete superfícies, o gradiente da chamada e o do botão vinham todos de
+   `style=` inline. Ler o CSS daria zero resposta; só o `background-image`
+   **computado** devolve os stops resolvidos em rgb.
+
+   **E medir contraste é parte de medir cor.** Aquela mesma medição encontrou
+   cinco falhas de WCAG na página do ebook, uma delas a 1,23:1 — texto navy sobre
+   quase-preto, invisível em produção há anos. Num **gradiente**, a cor do texto
+   tem de passar nas *duas* pontas; quando nenhuma passa, quem cede é o fundo.
+
 4. **Componente novo em `primitivos/`, `layout/`, `padroes/` ou `cromo/` entra no
    catálogo `/design` no mesmo commit.** Não é convenção: `verifica-sistema.mjs`
    reprova o build se o `/design` não importar o componente.
@@ -97,10 +119,10 @@ nesta tabela.
    [`site.js`](src/scripts/site.js) só serve as duas camadas enquanto elas
    convivem.
 
-### Três armadilhas do Astro que a Etapa 8 encontrou
+### Quatro armadilhas do Astro, e as quatro custam a mesma coisa
 
-As três custam a mesma coisa: **nenhum erro**. O build passa, o tipo passa, e o
-defeito só aparece olhando.
+**Nenhum erro.** O build passa, o tipo passa, e o defeito só aparece olhando. As
+três primeiras vieram da Etapa 8; a quarta, da Etapa 10.
 
 1. **Classe escopada passada a um componente não vale.**
 
@@ -132,6 +154,33 @@ defeito só aparece olhando.
    home ainda o usavam, e o `<style>` dele iria para o bundle delas pelo grafo de
    módulos. Ele foi apagado na Etapa 9, junto com o `<CarrosselAssociados>`,
    quando as homes migraram.
+
+### E uma quarta, da Etapa 10: cor que depende do que está embaixo
+
+**Componente transparente herda o fundo de quem o contém — e o contraste também.**
+
+O cabeçalho do site é transparente e o texto dele é escuro; nas 38 páginas claras
+isso funciona porque o `<body>` também é claro, e ninguém precisa saber que a
+dependência existe. A variação escura do ebook inverte o texto para branco, e aí
+a dependência vira requisito: **sem a foto atrás dele, o menu inteiro fica branco
+sobre branco.** Foi o que a primeira versão daquela etapa entregou.
+
+O mesmo par apareceu mais duas vezes na mesma sessão, e sempre por mudança de
+contexto, nunca de cor:
+
+- o painel do menu **mobile**, quando o cabeçalho passa a flutuar: ele deixa de
+  empurrar a página e passa a se sobrepor a ela;
+- o **submenu**, que acima de 992px é um painel branco e abaixo herda o fundo do
+  cabeçalho — então o cinza dele está certo numa faixa e reprova na outra.
+
+Nenhum dos três reprova portão nenhum: a geometria mede caixas, e as caixas estão
+certas; o checador de contraste compara pares de **token**, e "token contra a
+superfície que calhou de estar embaixo" não é um par que ele conheça. Os três só
+apareceram abrindo o menu e olhando.
+
+A regra prática: ao dar a um componente de cromo uma variação de cor, **liste os
+fundos sobre os quais ele pode aparecer** — inclusive os estados abertos, e
+inclusive em cada faixa —, e meça cada combinação.
 
 ### Onde ficam as decisões
 
@@ -168,8 +217,10 @@ comparações de tablet ficaram reprovadas sem sintoma óbvio.
 
 Desde a Etapa 9 **nenhum JavaScript deste projeto lê essas faixas**: o carrossel
 de logos era o último a fazê-lo, e a contagem de colunas dele virou container
-query. As faixas continuam valendo para o `ajustes.css`, que serve as três
-páginas de ebook até a Etapa 11.
+query. E desde a Etapa 10 **nenhuma página carrega o `ajustes.css`** — as três do
+ebook eram as últimas. A tabela fica registrada até a Etapa 11 apagar o arquivo,
+e porque o erro que ela documenta (ler o array errado, acertar nos extremos e
+esconder o defeito no meio da escala) é geral.
 
 Consequências práticas:
 
@@ -245,24 +296,35 @@ A lista vive em [`scripts/glifos.json`](scripts/glifos.json) e
 [`scripts/check-glifos.mjs`](scripts/check-glifos.mjs) aborta o build se o CSS
 purgado pedir um codepoint fora dela. Não desative essa guarda.
 
-**As páginas migradas já não usam webfont de ícone.** O
+**Nenhuma página usa webfont de ícone desde a Etapa 10.** O
 [`<Icone>`](src/components/primitivos/Icone.astro) desenha SVG inline a partir de
 [`src/icones/glifos.ts`](src/icones/glifos.ts), que é **gerado** — rode
 `python scripts/glifos-para-svg.py` depois de mexer no `glifos.json`, nunca edite
 o arquivo à mão. [`tests/verify-icones.mjs`](tests/verify-icones.mjs) compara
-cada desenho com a webfont de origem e reprova codepoint trocado, contorno vazio
-ou eixo espelhado. As três webfonts continuam servindo as 3 páginas do tema até
-a Etapa 11 — e por isso o teste de glifos da suíte comportamental roda numa
-página do TEMA: numa migrada ele mediria tofu contra tofu e passaria sempre.
+cada desenho com a fonte de origem e reprova codepoint trocado, contorno vazio ou
+eixo espelhado. A checagem de tofu da suíte comportamental, que só fazia sentido
+numa página do tema, virou a afirmação inversa: **nenhuma página pode voltar a
+baixar webfont de ícone.**
 
-`public/webfonts/` é **gerado** a partir de `vendor/webfonts/`; nunca edite o
-primeiro à mão. E os `src:` dos `@font-face` carregam `?v=` porque `/webfonts/`
-é servido com `immutable` de um ano e os nomes não têm hash — trocar a fonte sem
-trocar a query entrega a antiga por 12 meses.
+**`familias`, no `glifos.json`, NÃO é a lista do que se publica — é a lista de
+onde cada contorno vem.** As duas famílias do Font Awesome ficaram órfãs na Etapa
+10 e o caminho óbvio seria apagá-las dali; seria o erro. O
+`glifos-para-svg.py` lê aquelas entradas para desenhar 8 dos 16 ícones, e o
+`verify-icones.mjs` as usa como referência — apagar a entrada apagaria os
+desenhos na próxima regeneração, **sem erro nenhum**. Quem despublica é
+`"saida": null`.
+
+Pelo mesmo motivo, **`vendor/webfonts/` não é lixo**: é a origem dos contornos e
+a referência do portão de ícones. `public/webfonts/` é que é **gerado** a partir
+dele; nunca edite o segundo à mão. E os `src:` dos `@font-face` carregam `?v=`
+porque `/webfonts/` é servido com `immutable` de um ano e os nomes não têm hash —
+trocar a fonte sem trocar a query entrega a antiga por 12 meses.
 
 **Terceiros: nada carrega antes do consentimento.** O GTM, e qualquer script de
-terceiro que venha a existir, é injetado pelo bloco inline do `<head>` do
-[`BaseLayout`](src/layouts/BaseLayout.astro), que expõe `window.rbConsent`. Não
+terceiro que venha a existir, é injetado pelo bloco inline do `<head>` de
+[`Cabeca.astro`](src/layouts/Cabeca.astro) — o `<head>` compartilhado pelos dois
+layouts —, que expõe `window.rbConsent`. Esta nota dizia `BaseLayout` e estava
+errada desde a Etapa 5, quando o `<head>` foi extraído. Não
 acrescente `<script src>` de outro domínio fora dele, nem um `<iframe>` de
 terceiro sem fachada de clique-para-carregar. Se a lista de cookies mudar,
 atualize [`src/data/cookies.ts`](src/data/cookies.ts) — a tabela da política nos
@@ -321,13 +383,17 @@ imagem quebrada, transbordo horizontal e **texto vazando da própria caixa**. Es
 sem que nenhum dos quatro portões visse: as caixas estavam certas, quem vazava
 era o conteúdo dentro delas.
 
-Enquanto as duas camadas convivem, **o que é cromo é testado nas duas**. A suíte
-comportamental tem `PAGINA_TEMA` e `PAGINA_SISTEMA` no topo e roda menu, seletor
-de idioma, cookies e voltar-ao-topo em cada uma — os dois cabeçalhos são
-dirigidos pelo mesmo `site.js`, e é essa aposta que a suíte protege. Ao migrar
-uma página, **confira se ela não era a página de referência de algum teste**:
-`/historia.html` era a de quase todos, e metade das checagens passou a testar a
-camada nova achando que testava a antiga.
+**O que é cromo é testado nas DUAS VARIAÇÕES.** A suíte comportamental tem
+`PAGINA_SISTEMA` e `PAGINA_EBOOK` no topo e roda menu, seletor de idioma, cookies
+e voltar-ao-topo em cada uma — o cromo claro que 38 páginas usam e o escuro que
+as 3 do ebook usam, dirigidos pelo mesmo `site.js` e pelos mesmos nomes de
+estado. Até a Etapa 10 o par era `tema`/`sistema`; a última página do tema migrou
+e o par mudou de significado, não de valor.
+
+Ao migrar ou reformar uma página, **confira se ela não era a página de referência
+de algum teste**. Já custou três vezes: `/historia.html` era a de quase todos até
+a Etapa 5, `/resorts-brasil.html` até a 8, e `/ebook.html` — escolhida por ser a
+última do plano — até a 10.
 
 **Ela lê o código de saída, e zero bloqueios é o critério.** A lista "PENDENTE"
 é dívida herdada do tema e não reprova; ela vira bloqueante sozinha conforme

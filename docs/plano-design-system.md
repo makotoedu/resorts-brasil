@@ -780,7 +780,65 @@ as três páginas de ebook.
 Detalhes em [docs/decisoes.md](docs/decisoes.md), "Etapa 9", e a lista completa
 em [docs/deltas-visuais.md](docs/deltas-visuais.md).
 
-### Etapa 10 — Ebook
+### Etapa 10 — Ebook ✅ CONCLUÍDA
+
+As três entregues. **41 de 41 páginas migradas, medido no `dist/`** — a migração
+acabou, e a Etapa 11 é só demolição.
+
+**A premissa da especificação estava errada, e descobri-lo mudou a solução.** Ela
+dizia "o título do capítulo traduz e vai para `ui.ts`". Não traduz: `diff` entre
+os três arquivos, normalizando só o `lang=`, devolve **uma** diferença — uma
+quebra de linha. **A página do e-book nunca foi traduzida.** Os 24 títulos, os 41
+cargos e a prosa das seções estão em português nas três versões.
+
+Por isso o corpo virou **um** componente, [`<PaginaEbook>`](src/components/PaginaEbook.astro),
+e as três páginas viraram três linhas cada: 3.258 linhas e 420 `style=` inline
+passam a 21 linhas e nenhum. Só duas coisas foram traduzidas, e as duas já
+**tinham** tradução — o título e o rótulo do botão, que o cartão da home promete
+nos três idiomas desde sempre enquanto a página entregava português.
+
+**São 41 autores, não 43.** Contado no markup dava 43; medido dá 40 na galeria
+mais 1 no prefácio. Mesmo erro de método que já transformou 7 publicações em 5.
+
+**A paleta escura entrou como token, e o critério é o que importa:** se o papel já
+existe no site, reusa; se só existe aqui, ganha `--color-ebook-*`. O que **não**
+ganhou nome novo é a metade que prova a tese — texto branco, cargo em
+`--color-texto-sutil`, acento em `--color-destaque`, cartão na superfície
+inversa. Sobraram sete superfícies e dois gradientes. Os valores saem de
+[`medir-ebook.mjs`](scripts/medir-ebook.mjs), o **sexto da família**, e ele
+precisou existir porque a paleta não está em lugar nenhum do `style.css`: vinha
+toda de `style=` inline, e só o `background-image` computado a revela.
+
+**O pior conjunto de contraste do site estava aqui**, em produção há anos, e
+nenhum dos quatro portões via — o checador compara pares de *token*, e nada disso
+era token. Cinco falhas de WCAG 1.4.3, sendo a grave a faixa de copyright: o tema
+nunca declarou cor de texto ali, ela herdou o navy do `<body>` e ficou a
+**1,23:1** sobre quase-preto. A frase de copyright e **o botão que revoga o
+consentimento de cookies** estavam invisíveis nas três páginas.
+
+**Três defeitos só apareceram abrindo o menu**, e nenhum reprova portão: o
+cabeçalho escuro é transparente, e sem a foto atrás dele o menu fica branco sobre
+branco; flutuando, o painel mobile se sobrepõe ao hero; e o submenu muda de fundo
+conforme a faixa, então o cinza dele reprova abaixo de 992px.
+
+**Três portões precisaram mudar.** O `PAGINA_TEMA` da suíte comportamental morreu
+aqui, e não na 11: a última página do tema era justamente `/ebook.html`, escolhida
+como referência por ser a última a migrar. O par `tema`/`sistema` virou
+`claro`/`escuro` — as duas variações de cromo do sistema. A checagem de glifos
+virou a afirmação inversa ("nenhuma página baixa webfont de ícone"), e o
+`verify-icones.mjs` passou a comparar contra `vendor/` em vez do subset
+publicado, que é o que ele sempre quis dizer.
+
+Peso: `ebook` cai de **1156 para 315 KB** no mobile e o conjunto de 24,4 para
+19,8 MB. **O transbordo horizontal chega a zero** — eram 72 na Etapa 0.5.
+`style=` inline vai de 424 para 4, cor literal de 413 para 2, headings irregulares
+de 3 para 0 — e os restantes estão todos no `Header`/`Footer` do tema, que
+nenhuma página usa mais.
+
+Detalhes em [docs/decisoes.md](docs/decisoes.md), "Etapa 10", e a lista completa
+em [docs/deltas-visuais.md](docs/deltas-visuais.md).
+
+<details><summary>Especificação original</summary>
 
 1.086 linhas × 3. Os 43 cartões de autor são 700 dessas linhas e 129 dos 140
 estilos inline. Extrair para `src/data/autores-ebook.ts` seguindo a regra já
@@ -791,15 +849,32 @@ para ~350 linhas.
 A paleta escura própria do ebook entra como **variantes de token**, não como
 cores literais — é o teste real de que a camada semântica funciona.
 
+</details>
+
 ### Etapa 11 — Demolição
+
+**Ela ficou menor: a Etapa 10 já removeu duas coisas da lista.** O `PAGINA_TEMA`
+morreu junto com a última página do tema, e as duas webfontes do Font Awesome
+deixaram de ser publicadas — `public/webfonts/` guarda um arquivo só, e nenhuma
+página o baixa. O que sobra é remoção pura: **nenhuma página carrega mais
+`plugins.css`, `style.css` ou `ajustes.css`**, e a purga corta os três a 27 KB de
+CSS que ninguém pede.
 
 Remover `public/css/`, `public/webfonts/`, [purge-css.mjs](scripts/purge-css.mjs),
 [check-glifos.mjs](scripts/check-glifos.mjs), [subset-fonts.py](scripts/subset-fonts.py),
 o [`BaseLayout`](src/layouts/BaseLayout.astro) inteiro (com `Header`, `Footer` e
-`SocialIcons`), o `PAGINA_TEMA` da suíte comportamental, e as dependências
-`purgecss` e `lightningcss`. Some junto a
-dependência de Python do projeto — o `README` deixa de pedir `fonttools` e
-`brotli`.
+`SocialIcons`) e as dependências `purgecss` e `lightningcss`.
+
+**Um cuidado que a Etapa 10 deixou anotado:** `vendor/webfonts/` **não** é lixo.
+Ele é a origem dos 16 contornos de `src/icones/glifos.ts` e a referência do
+[verify-icones.mjs](tests/verify-icones.mjs), que compara desenho a desenho.
+Apagar aquela pasta junto com `public/webfonts/` derrubaria o portão de ícones
+sem nenhum erro de build — a mesma forma da armadilha que o `glifos.json` já
+documenta. Se o `subset-fonts.py` sair, o `glifos.json` fica: ele deixa de ser
+lista de subset e passa a ser só o inventário de contornos.
+
+Some junto a dependência de `brotli` — o `README` continua pedindo `fonttools`
+enquanto o `glifos-para-svg.py` existir.
 
 Reescrever a seção "Antes de mexer em CSS" do [CLAUDE.md](CLAUDE.md): as três
 armadilhas documentadas são todas do tema e deixam de existir. No lugar entram as

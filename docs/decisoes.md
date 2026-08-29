@@ -2523,3 +2523,236 @@ home, "Responsible Traveller Guide" na `description` de `/publicacoes`, e
 Unificar mexeria em duas páginas fora desta etapa, e a regra do projeto é que
 cada etapa responde pelo que migra. Fica registrado aqui para a Etapa 11, que é
 quando a revisão do conjunto acontece.
+
+# Design system — Etapa 10
+
+A landing page do e-book, nos três idiomas. **41 de 41 páginas migradas** — a
+etapa fecha a migração e deixa a Etapa 11 sendo só demolição.
+
+Era o arquivo que o plano cita como a evidência do problema que ele existe para
+resolver: *"quando o projeto encontrou uma landing page, o resultado foi
+`ebook.astro` com 1.086 linhas e 140 `style=` inline"*. As três páginas somavam
+3.258 linhas e 420 estilos inline; hoje somam **21 linhas** e nenhum.
+
+## As três páginas eram byte a byte idênticas
+
+O primeiro achado da etapa, e ele muda a forma da solução: `diff` entre os três
+arquivos, normalizando só o `lang=`, devolve **uma** diferença — uma quebra de
+linha no `alt` de uma foto. **A página do e-book nunca foi traduzida.**
+
+Isso desmonta a premissa do plano para esta etapa, que dizia "o título do
+capítulo traduz e vai para `ui.ts`". Não há tradução para mover: os 24 títulos de
+capítulo, os 41 cargos e a prosa das seções estão em português nas três versões.
+
+A consequência prática é que **o corpo virou UM componente**,
+[`<PaginaEbook>`](../src/components/PaginaEbook.astro), e as três páginas viraram
+três linhas cada. Escrever o mesmo markup três vezes reproduziria a triplicação
+que este projeto já pagou caro em toda etapa que mexeu em texto — e sem ganho
+nenhum, porque não há uma palavra diferente entre as versões.
+
+### O que foi traduzido, e por que só isso
+
+Duas coisas, e as duas já **tinham** tradução no repositório: o título da página
+e o rótulo do botão de download. O cartão do e-book na home usa
+`homeHighlights.ebook` nos três idiomas desde sempre — quem clicava em
+*"Managing the Traveller's Journey → Download the e-book"* caía numa página cujo
+`<h1>` dizia *"A Gestão da Jornada do Viajante"* e cujo botão dizia *"Baixe nosso
+ebook"*. Usar o que já existe corrige a descontinuidade sem inventar conteúdo.
+
+O resto **não** foi traduzido, e isso é deliberado: traduzir 24 títulos de
+capítulo de uma publicação em português, 41 cargos e a prosa das seções é
+escrever conteúdo novo, não migrar o que existe — e o PDF que os três botões
+baixam é o mesmo arquivo em português. O que a etapa entrega é a **costura**:
+`Traduzivel = string | Record<Locale, string>` em
+[`src/data/ebook.ts`](../src/data/ebook.ts) e
+[`autores-ebook.ts`](../src/data/autores-ebook.ts), o mesmo tipo que o `cargo` da
+diretoria usa desde a Etapa 5. Quando a tradução existir, é uma edição de campo.
+
+### Uma divergência de tradução que fica anotada
+
+O `ui.ts` tem **duas traduções espanholas do mesmo título**, e elas discordam:
+
+| onde | texto |
+|---|---|
+| `meta.ebook['es-es'].title` | La Gestión **del Viaje del Viajero** |
+| `homeHighlights.ebook` (es) | La Gestión **de la Jornada del Viajante** |
+
+A segunda é a que a página passou a exibir no `<h1>`, porque é a que o cartão da
+home promete — mas "Jornada" em espanhol é *jornada de trabalho* e "Viajante" é
+português. A primeira é o espanhol correto. Escolher entre as duas é decisão
+editorial, e não de migração; fica para quem edita o conteúdo.
+
+## São 41 autores, não 43
+
+O plano dizia 43, contando no markup. A medição conta **40 cartões na grade de
+autores mais 1 no prefácio**. É o mesmo erro de método que já transformou 7
+publicações em 5 e duas cores em decisões que não existiam — contar no HTML em
+vez de medir no navegador.
+
+## O índice e a galeria de autores não batem, e não foram reconciliados
+
+As duas listas são mantidas separadamente no conteúdo original, e discordam:
+
+| discordância | detalhe |
+|---|---|
+| um autor com dois nomes | "Carolina Sass" assina um capítulo no índice; a galeria tem "Carolina Haro" |
+| um autor sem cartão | "Clarissa Santiago" assina "A experiência do viajante digital na era da assistência" e não tem cartão |
+| um cartão sem capítulo | "Marcelo Picka Van Roey" tem cartão ("Reflexão Final") e não assina capítulo no índice |
+| seis títulos divergentes | "Qualidade de gestão como fator de competitividade…" no índice é "Práticas de gestão como fonte de desempenho superior" nos cartões |
+
+**Não há guarda cruzada entre os dois arquivos**, e a ausência é deliberada — ao
+contrário do `<DestaquesHome>` e do `<BlocoEixo>`, que abortam o build quando os
+dois lados divergem. Aqui os dois lados já divergem, e uma guarda só conseguiria
+reprovar o build de uma página que está no ar há anos. Reconciliar é decidir qual
+das duas versões é a certa, e isso é do editor.
+
+## A paleta escura entrou como token, e o teste passou
+
+O plano dizia que esta etapa é *"o teste real de que a camada semântica
+funciona"*. O critério aplicado: **se o papel já existe no site, reusa o token;
+se o papel só existe aqui, ganha um `--color-ebook-*`.**
+
+O que **não** ganhou nome novo é a metade que importa — o texto é branco, o cargo
+é `--color-texto-sutil`, o acento das seções é `--color-destaque` e o cartão de
+autor é a superfície inversa. São os mesmos papéis do resto do site, pintados
+pelos mesmos tokens. Sobraram sete superfícies e dois gradientes, que são desenho
+desta página e de mais nada.
+
+Os valores saem de [`scripts/medir-ebook.mjs`](../scripts/medir-ebook.mjs), o
+**sexto da família**, e ele existe por um motivo específico: a paleta do e-book
+não está em lugar nenhum do `style.css`. Os sete fundos vinham todos de `style=`
+inline, então ler o CSS daria zero resposta. O script lê o `background-image`
+computado, que é o único lugar onde os stops aparecem resolvidos em rgb.
+
+Duas primitivas já existiam e foram confirmadas pela medição: o `--cor-carvao-900`
+(`#0c101b`) é a base de tudo, e o `--cor-carvao-800` (`#0e121d`) é a faixa da
+iniciativa **e** o fundo do rodapé invertido — medidos iguais.
+
+## O pior conjunto de contraste do site estava aqui
+
+A medição encontrou cinco falhas de WCAG 1.4.3, todas em produção há anos, e
+nenhum dos quatro portões via nenhuma delas — o checador de contraste do
+`verifica-sistema.mjs` compara pares de **token**, e nada disso era token.
+
+| elemento | tema | correção | agora |
+|---|---|---|---|
+| título de capítulo (**123 ocorrências**) | 3,77:1 | `#0c71c3` clareado 12% → `#0d7fda` | 4,58:1 |
+| rótulo do botão de download (3× por página) | **1,65:1** no ciano, 3,74:1 no coral | texto passa de branco para o carvão | 11,50:1 e 5,08:1 |
+| título e texto da chamada de ação | 2,73:1 | o verde do gradiente escurece 25% → `#517e72` | 4,59:1 |
+| os 12 links do rodapé invertido | 2,86:1 | cinza sutil no lugar do cinza de parágrafo | 7,08:1 |
+| a linha de copyright e **o botão que revoga o consentimento de cookies** | **1,23:1** | cor declarada, no cinza sutil | 7,0:1 |
+
+A última linha é a grave, e não é só contraste ruim: o tema **nunca declarou cor
+de texto** naquela faixa, então ela herdou o navy do `<body>` e ficou navy sobre
+quase-preto. A frase de copyright e o botão de preferências de cookies estavam
+**invisíveis** nas três páginas.
+
+O botão de download é o caso mais instrutivo, porque a correção teve de ser
+diferente das anteriores: num **gradiente**, uma cor de texto tem de passar nas
+duas pontas. O branco reprova nas duas (1,65 e 3,74); o navy passa no ciano e
+reprova no coral (9,06 e 4,00). Só o carvão passa nos dois extremos. E na chamada
+de ação nem isso resolveu — branco dá 2,73:1 numa ponta e o navy dá 1,51:1 na
+outra, então **quem cedeu foi o fundo**.
+
+O botão também **ganhou hover**, que o tema não tinha: medido com o mouse em
+cima, o CTA principal da página não mudava nada. O estado não inventa cor —
+`brightness(1.1)` clareia as duas pontas do próprio gradiente, o que anima (uma
+troca de `background-image` não interpola) e ainda melhora o contraste em vez de
+piorar.
+
+## Duas coisas que só apareceram abrindo o menu
+
+O cabeçalho do e-book é **transparente e escuro** — os dois ao mesmo tempo. Nas
+38 páginas claras a transparência não aparece, porque o fundo do `<body>` também
+é claro. Aqui o texto é branco, e a primeira versão desta etapa entregou **o menu
+inteiro branco sobre branco**: o cabeçalho ficou no fluxo, acima da foto em vez
+de sobre ela.
+
+O tema resolvia com `margin-top: -80px` no `<main>` (e `-120px` quando havia
+topbar — dois números para manter sincronizados). Aqui quem sai do fluxo é o
+cabeçalho, que é o elemento que de fato flutua. Um número, e ele não depende de
+quem vem depois.
+
+**E flutuar tem um preço no mobile.** Abaixo de 992px o menu é um painel que
+ocupa a segunda linha da barra. No cromo claro o cabeçalho está no fluxo e o
+painel *empurra* a página; aqui ele se sobrepõe ao hero, e os seis itens do menu
+ficaram impressos por cima do título. Some com um fundo que só existe enquanto
+`.mainMenu-open` está no `<body>` — o mesmo nome de estado que o `site.js` já
+escreve nas duas variações.
+
+Junto veio a terceira: **o submenu muda de fundo conforme a faixa.** Acima de
+992px ele é um painel branco e o cinza de parágrafo está certo; abaixo, ele
+herda o fundo do cabeçalho, e no escuro isso é cinza sobre carvão — 2,86:1, o
+mesmo número do rodapé.
+
+**Nenhuma das três aparece em captura de página parada, e nenhuma reprova um
+portão.** A geometria mede caixas, e as caixas estavam certas.
+
+## Três portões precisaram mudar, e um estava errado antes desta etapa
+
+**1. A suíte comportamental perdeu o `PAGINA_TEMA`.** A última página do tema era
+justamente `/ebook.html`, escolhida na Etapa 8 como referência *por ser a última
+a migrar*. Não existe mais página do tema para apontar, e a escolha era entre
+perder a segunda camada de teste ou lhe dar outro sentido.
+
+O segundo sentido é melhor que o primeiro: as duas páginas continuam sendo duas,
+mas agora o que se compara são as duas **variações de cromo do sistema** — o
+claro, que 38 páginas usam, e o escuro do e-book, que três usam e que nasceu
+aqui. As duas são dirigidas pelo mesmo `site.js`, pelos mesmos nomes de estado.
+A aposta é a mesma; mudou entre o quê.
+
+**2. A checagem de glifos virou o contrário dela mesma.** Ela pintava cada
+codepoint num canvas e o comparava com um ausente, para pegar subset incompleto —
+e rodava numa página do TEMA de propósito, porque numa migrada mediria tofu
+contra tofu e passaria sempre. Sem página do tema, não há onde medir nem o que
+medir: as duas famílias do Font Awesome deixaram de ser publicadas.
+
+No lugar entra a afirmação inversa, e ela é barata: **nenhuma página pode voltar
+a baixar webfont de ícone.** É a mesma classe de vigilância do isolamento de
+folhas — afirmar a *ausência*, porque é a ausência que a migração conquistou.
+
+**3. O `verify-icones.mjs` comparava contra a fonte errada, e isso é anterior à
+Etapa 10.** Ele carregava a webfont de `/webfonts/`, que é o **subset gerado** —
+mas a pergunta que ele faz é "o SVG desenha o mesmo contorno que a fonte
+original?". Comparar com o subset deixaria passar um erro introduzido pelo
+próprio `pyftsubset`. Agora a fonte vem de `vendor/webfonts/`, embutida como
+`data:`, e as divergências medidas **caíram** — os cinco ícones de marca foram de
+34–85% para 0,0%.
+
+### Uma armadilha que quase se repetiu no `glifos.json`
+
+As duas famílias do Font Awesome ficaram órfãs, e o caminho óbvio era tirá-las de
+`familias`. Seria o erro: `familias` **não** é a lista do que se publica, é a
+lista de onde cada **contorno** vem. O `glifos-para-svg.py` lê exatamente aquelas
+entradas para desenhar 8 dos 16 SVG de `src/icones/glifos.ts`, e o
+`verify-icones.mjs` as usa como referência. Apagar a entrada apagaria os oito
+desenhos na próxima regeneração, **sem erro nenhum** — a forma exata da armadilha
+que aquele arquivo já documenta no próprio `_leia`.
+
+A separação entrou como `"saida": null`: a família continua sendo origem de
+contorno e deixa de ser webfont publicada.
+
+## O que a etapa mediu, e o que ela cortou
+
+- **`/ebook.html` cai de 1.156 KB para 315 KB** no mobile, nos três idiomas — os
+  41 retratos passavam sem `srcset` e sem `loading`;
+- o conjunto medido cai de **24,4 MB para 19,8 MB**;
+- **a dívida de transbordo horizontal chega a zero.** Eram 72 na Etapa 0.5;
+- `style=` inline no projeto: **424 → 4**, e os quatro restantes estão no
+  `Header`/`Footer` do tema, que nenhuma página usa mais;
+- cor literal fora do `tokens.css`: **413 → 2**, mesma origem;
+- páginas com heading irregular: **3 → 0**. Eram 39 de 40 na auditoria;
+- as três páginas saem com **864 elementos, idênticos tag a tag e classe a
+  classe**.
+
+O CSS compartilhado subiu de 35 para 39 KB, e o orçamento reprovou `/404.html` e
+`/design.html` por causa disso — a catraca funcionando. É o custo de a folha ser
+uma só: a landing page inteira agora tem estilo de verdade em vez de 140
+atributos `style=` que só pesavam na própria página. Registrado e rebaseado.
+
+## O que a etapa deixou pronto para a demolição
+
+Nenhuma página carrega mais `plugins.css`, `style.css` ou `ajustes.css` — a
+purga corta os três a 27 KB de CSS que **ninguém baixa**. O `BaseLayout`, o
+`Header`, o `Footer` e o `SocialIcons` não são importados por página nenhuma. A
+Etapa 11 é remoção, e não migração.

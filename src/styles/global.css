@@ -101,6 +101,12 @@
 @source '../pages/en-us/home.astro';
 @source '../pages/es-es/inicio.astro';
 
+/* Etapa 10: o ebook, nos tres idiomas. As paginas sao tres linhas cada — o
+   corpo mora no <PaginaEbook>, logo abaixo. */
+@source '../pages/ebook.astro';
+@source '../pages/en-us/ebook.astro';
+@source '../pages/es-es/ebook.astro';
+
 /*
  * Os componentes de montagem de conteudo, fora dos quatro diretorios
  * varridos — mesma situacao da <SecaoCookies>.
@@ -118,6 +124,12 @@
 /* Etapa 9: os dois blocos da home que se repetiam nos tres idiomas. */
 @source '../components/DestaquesHome.astro';
 @source '../components/FaixaAssociados.astro';
+/*
+ * Etapa 10: a landing page do ebook inteira. Ela e o caso extremo desta lista —
+ * as tres paginas eram identicas entre si, entao o corpo e UM componente e as
+ * paginas viraram tres linhas cada.
+ */
+@source '../components/PaginaEbook.astro';
 
 @import './tokens.css';
 @import './base.css';

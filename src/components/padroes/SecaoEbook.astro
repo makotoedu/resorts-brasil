@@ -1,0 +1,216 @@
+---
+/**
+ * SecaoEbook — as sete superficies da landing page do e-book.
+ *
+ * A pagina do e-book pinta cada `<section>` de um jeito: cinco gradientes que
+ * partem sempre do mesmo carvao, e duas faixas chapadas com textura. No tema
+ * isso eram sete `style="background:linear-gradient(...)"` inline, com
+ * `!important` em cinco deles, repetidos nas tres paginas de idioma.
+ *
+ *   <SecaoEbook superficie="sobre" id="sobre">...</SecaoEbook>
+ *
+ * MEDIDO (scripts/medir-ebook.mjs): os stops saem do `background-image`
+ * computado, resolvidos em rgb. Nao ha como le-los no `style.css` — eles nunca
+ * estiveram la.
+ *
+ * POR QUE UM COMPONENTE, E NAO UMA PROP NA <Secao>. Duas razoes, e a segunda e
+ * mecanica:
+ *
+ *   1. estas superficies sao desenho DESTA pagina. Uma primitiva de layout que
+ *      conhecesse "o gradiente do sobre" deixaria de ser primitiva.
+ *   2. classe escopada passada pela prop `class` de um componente NAO VALE — a
+ *      classe chega ao HTML sem o atributo de escopo, e o seletor compilado nao
+ *      casa. E a primeira das tres armadilhas da Etapa 8, e ela deixou quatro
+ *      regras inertes sem erro nenhum. Aqui o elemento e do proprio template,
+ *      entao o `<style>` alcanca.
+ *
+ * O ritmo vertical e o mesmo do resto do site: 80px em cima e embaixo, os
+ * mesmos `--spacing-secao-*` que a <Secao> usa. So a superficie e propria.
+ */
+import type { HTMLAttributes } from 'astro/types';
+import Imagem from '../primitivos/Imagem.astro';
+
+interface Props extends Omit<HTMLAttributes<'section'>, 'class'> {
+  /**
+   * Qual das sete. Os nomes sao os `id` que a pagina sempre teve — `sobre`,
+   * `iniciativa`, `video`, `estrutura`, `secoes`, `autores`, `creditos` —
+   * porque e assim que o conteudo se refere a eles.
+   *
+   * `iniciativa` e `creditos` sao a MESMA superficie, medida identica nas duas:
+   * carvao-800 com a textura por cima. Duas entradas para um valor so seria uma
+   * distincao sem diferenca, entao existe `faixa`, e as duas a usam.
+   */
+  superficie: 'topo' | 'sobre' | 'faixa' | 'video' | 'estrutura' | 'secoes' | 'autores';
+  /**
+   * A foto por tras da superficie, se houver — caminho publico (`/images/...`).
+   *
+   * ELA E UM <Imagem>, E NAO UM `background-image`. Tres motivos, e os tres sao
+   * o mesmo motivo visto de angulos diferentes:
+   *
+   *   1. `background-image` em `style=` inline e o que a Etapa 10 existe para
+   *      apagar — 140 por pagina;
+   *   2. fundo em CSS nao tem `srcset` nem `loading`, e sao 3 fotos de ate
+   *      2560px de largura. E o mesmo argumento que tirou os heros do `style=`
+   *      inline na Etapa 2;
+   *   3. o <Hero> ja resolve assim desde a Etapa 3, com a foto posicionada por
+   *      `inset: 0`. Repetir a solucao e melhor que inventar a segunda.
+   */
+  foto?: string;
+  /** A foto e decorativa por padrao; diga o alt so quando ela informar algo. */
+  fotoAlt?: string;
+  /** A primeira secao da pagina nao pode carregar a foto com lazy. */
+  prioridade?: boolean;
+  espaco?: 'nenhum' | 'sm' | 'md' | 'lg' | 'xl';
+  /** Sobrepoe `espaco` so em cima. Medido: a secao de video tem 0. */
+  espacoTopo?: 'nenhum' | 'sm' | 'md' | 'lg' | 'xl';
+  /** Sobrepoe `espaco` so embaixo. Medido: a de video tem 200px no desktop. */
+  espacoBase?: 'nenhum' | 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+}
+
+const {
+  superficie,
+  foto,
+  fotoAlt = '',
+  prioridade = false,
+  espaco = 'md',
+  espacoTopo,
+  espacoBase,
+  class: classe,
+  ...resto
+} = Astro.props;
+
+/* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
+const TOPO = {
+  nenhum: 'pt-0',
+  sm: 'pt-secao-sm',
+  md: 'pt-secao-md',
+  lg: 'pt-secao-lg',
+  xl: 'pt-secao-xl',
+} as const;
+
+const BASE = {
+  nenhum: 'pb-0',
+  sm: 'pb-secao-sm',
+  md: 'pb-secao-md',
+  lg: 'pb-secao-lg',
+  xl: 'pb-secao-xl',
+} as const;
+---
+
+<!--
+  `superficie-inversa` marca a secao para o base.css trocar a cor do contorno de
+  foco: sobre estes fundos o azul do foco desaparece. E a mesma marca que a
+  <Secao fundo="inversa"> aplica.
+-->
+<section
+  class:list={[
+    'sup',
+    `s-${superficie}`,
+    'superficie-inversa',
+    TOPO[espacoTopo ?? espaco],
+    BASE[espacoBase ?? espaco],
+    classe,
+  ]}
+  {...resto}
+>
+  {
+    foto && (
+      <Imagem
+        src={foto}
+        alt={fotoAlt}
+        escala="largura-total"
+        tamanhos="100vw"
+        ajuste="cobrir"
+        prioridade={prioridade}
+        class="fundo"
+      />
+    )
+  }
+  <div class="corpo"><slot /></div>
+</section>
+
+<style>
+  /*
+   * O texto e branco em todas as sete. No tema cada bloco repetia `.text-light`
+   * — 61 vezes por pagina — porque o `<section>` nao dizia nada sobre a cor do
+   * que estava dentro dele.
+   */
+  .sup {
+    position: relative;
+    background-color: var(--color-ebook-superficie);
+    color: var(--color-texto-inverso);
+  }
+
+  /*
+   * A foto, quando ha. Filho posicionado na ordem do documento, sem `z-index`
+   * negativo — a mesma forma do <Hero>, e pelo mesmo motivo: `z-index: -1` foi o
+   * que fez o kenburns deste projeto desaparecer quando o flickity saiu, porque
+   * a camada dependia de o pai ser um contexto de empilhamento que ninguem
+   * criava mais.
+   */
+  .sup :global(.fundo) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* O conteudo sobe acima da foto sem que ela precise descer. */
+  .corpo {
+    position: relative;
+  }
+
+  /* O topo e a unica secao cuja foto e a propria imagem de abertura. */
+  .s-topo {
+    background-position: center;
+    background-size: cover;
+  }
+
+  /* Os cinco gradientes MEDIDOS. Todos partem do carvao; o que muda e a chegada,
+     e e isso que da a pagina a sensacao de descer por camadas. */
+  .s-sobre {
+    background-image: linear-gradient(
+      180deg,
+      var(--color-ebook-superficie) 0%,
+      var(--color-ebook-sobre-fim) 100%
+    );
+  }
+
+  .s-estrutura {
+    background-image: linear-gradient(
+      180deg,
+      var(--color-ebook-estrutura-inicio) 0%,
+      var(--color-ebook-superficie) 100%
+    );
+  }
+
+  .s-secoes {
+    background-image: linear-gradient(
+      180deg,
+      var(--color-ebook-superficie) 0%,
+      var(--color-ebook-secoes-fim) 100%
+    );
+  }
+
+  .s-autores {
+    background-image: linear-gradient(
+      180deg,
+      var(--color-ebook-superficie) 0%,
+      var(--color-ebook-autores-fim) 100%
+    );
+  }
+
+  /*
+   * As duas superficies chapadas. A cor fica aqui e a textura vem pela `foto`:
+   * e a cor que aparece enquanto a imagem carrega, e a que sobra se ela falhar.
+   */
+  .s-faixa {
+    background-color: var(--color-ebook-superficie-faixa);
+  }
+
+  .s-video {
+    background-color: var(--color-ebook-superficie-video);
+  }
+</style>

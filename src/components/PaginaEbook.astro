@@ -1,0 +1,506 @@
+---
+import Container from './layout/Container.astro';
+import Grade from './layout/Grade.astro';
+import Titulo from './primitivos/Titulo.astro';
+import Texto from './primitivos/Texto.astro';
+import Botao from './primitivos/Botao.astro';
+import Imagem from './primitivos/Imagem.astro';
+import SecaoEbook from './padroes/SecaoEbook.astro';
+import CartaoMembro from './padroes/CartaoMembro.astro';
+import Video from './padroes/Video.astro';
+import { ui, type Locale } from '../i18n/ui';
+import {
+  downloadEbook,
+  videoEbook,
+  imagensEbook,
+  secoesEbook,
+  estruturaEbook,
+  textoEm,
+} from '../data/ebook';
+import { prefacioEbook, autoresEbook } from '../data/autores-ebook';
+
+/**
+ * O corpo da landing page do e-book, uma vez so para os tres idiomas.
+ *
+ * ERAM 1.086 LINHAS x 3, com 140 `style=` inline cada — o arquivo que o plano do
+ * design system cita como a evidencia do problema que ele existe para resolver:
+ * "quando o projeto encontrou uma landing page, o resultado foi ebook.astro com
+ * 1.086 linhas e 140 `style=` inline".
+ *
+ * POR QUE UM COMPONENTE, E NAO TRES PAGINAS COM O MESMO MARKUP. Porque as tres
+ * paginas eram BYTE A BYTE identicas fora o `lang=` do <html> — a pagina nunca
+ * foi traduzida. Escrever o corpo tres vezes reproduziria a triplicacao que este
+ * projeto ja pagou caro em toda etapa que mexeu em texto, e reproduziria sem
+ * ganho nenhum: nao ha uma palavra diferente entre as versoes.
+ *
+ * Mesma forma do <DestaquesHome> e do <ConviteAssociese>, e pelo mesmo motivo.
+ *
+ * O QUE ESTA EM PORTUGUES CONTINUA EM PORTUGUES, e isso e deliberado. Traduzir
+ * 24 titulos de capitulo, 41 cargos e a prosa das secoes seria escrever conteudo
+ * novo, e nao migrar o que existe — e o conteudo do e-book em si e portugues, o
+ * PDF que os tres botoes baixam e o mesmo. O que a etapa entrega e a COSTURA:
+ * `src/data/ebook.ts` e `autores-ebook.ts` ja aceitam mapa por idioma no lugar
+ * de string, entao traduzir vira uma edicao de campo. Ver docs/decisoes.md,
+ * "Etapa 10", que registra tambem o que ja tem traducao e diverge.
+ */
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
+/* O titulo e o rotulo do botao JA TEM traducao — o cartao da home usa os tres
+   idiomas desde sempre, e so esta pagina insistia no portugues. Vem de la. */
+const cartao = t.homeHighlights.ebook;
+---
+
+<!-- ==================== topo ==================== -->
+<SecaoEbook superficie="topo" foto={imagensEbook.fundo} prioridade espaco="lg">
+  <Container>
+    <!--
+      Duas colunas: texto a esquerda, ilustracao a direita. Nao e o <Hero>, que
+      centraliza legenda sobre foto — e a razao de a Etapa 10 nao reusar aquele
+      componente apesar de os dois serem "a abertura da pagina".
+    -->
+    <div class="topo">
+      <div class="topo-texto">
+        <Titulo nivel={1} tamanho="3xl" cor="inverso" class="topo-titulo">
+          {cartao.titulo}
+        </Titulo>
+        <!--
+          `<p>` e nao `<h4>`. No tema era um h4 logo abaixo do h1, sem h2 e sem
+          h3 entre eles — parte dos 39 sumarios quebrados que a migracao existe
+          para consertar. E um subtitulo, e subtitulo nao e cabecalho.
+        -->
+        <Texto tamanho="lg" cor="inverso" peso="semibold" class="topo-subtitulo">
+          Novo contexto, transformações nos negócios e soluções digitais.
+        </Texto>
+        <Botao href={downloadEbook} variante="ebook" tamanho="lg" target="_blank" rel="noopener noreferrer">
+          {cartao.rotulo}
+        </Botao>
+      </div>
+      <div class="topo-ilustracao">
+        <Imagem
+          src={imagensEbook.ilustracao}
+          alt=""
+          largura={540}
+          altura={540}
+          tamanhos="(min-width: 62rem) 540px, 90vw"
+          prioridade
+        />
+      </div>
+    </div>
+  </Container>
+</SecaoEbook>
+
+<!-- ==================== sobre ==================== -->
+<SecaoEbook superficie="sobre" id="sobre">
+  <Container>
+    <div class="sobre">
+      <div class="sobre-capa">
+        <Imagem
+          src={imagensEbook.capa}
+          alt=""
+          largura={500}
+          altura={687}
+          tamanhos="(min-width: 62rem) 500px, 90vw"
+        />
+      </div>
+      <!--
+        A chamada de acao com o gradiente proprio. Nao e a <ChamadaAcao> da
+        Etapa 3: aquela e a faixa navy de largura inteira da home, e esta e uma
+        caixa dentro de uma coluna, com a paleta do e-book. Duas superficies com
+        papeis diferentes, como o tokens.css ja registrava.
+      -->
+      <div class="chamada">
+        <Titulo nivel={2} tamanho="xl" cor="inverso" peso="medio">
+          E-book organizado pela Resorts Brasil e pelo Centro de Estudos de Marketing Digital da
+          FGV-EAESP.
+        </Titulo>
+        <Texto cor="inverso">
+          Com a participação de grandes especialistas do mercado, o e-book busca promover uma
+          reflexão sobre como podemos (re) pensar o futuro do setor de Turismo no Brasil. Queremos
+          ajudar a transformar o turismo no Brasil e você, leitor, é parte essencial desse
+          movimento! Venha refletir sobre os desafios e transformações de nosso setor.
+        </Texto>
+        <Botao href={downloadEbook} variante="ebook" tamanho="lg" target="_blank" rel="noopener noreferrer">
+          {cartao.rotulo}
+        </Botao>
+      </div>
+    </div>
+  </Container>
+</SecaoEbook>
+
+<!-- ==================== iniciativa ==================== -->
+<SecaoEbook superficie="faixa" foto={imagensEbook.textura} id="iniciativa">
+  <Container>
+    <div class="creditos">
+      <Titulo nivel={2} tamanho="lg" cor="inverso" peso="medio" alinhamento="centro">
+        O e-book é uma iniciativa:
+      </Titulo>
+      <Imagem
+        src={imagensEbook.logos}
+        alt="FGV e Resorts Brasil"
+        largura={426}
+        altura={90}
+        tamanhos="(min-width: 30rem) 426px, 90vw"
+        ajuste="conter"
+        class="logos"
+      />
+    </div>
+  </Container>
+</SecaoEbook>
+
+<!-- ==================== video ==================== -->
+<SecaoEbook
+  superficie="video"
+  foto={imagensEbook.fundoVideo}
+  espacoTopo="nenhum"
+  espacoBase="xl"
+  id="video"
+>
+  <Container largura="media">
+    <div class="video">
+      <Video lang={lang} id={videoEbook} titulo={t.videoEbook} params="controls=0" />
+      <Titulo nivel={2} tamanho="2xl" cor="inverso" peso="extrabold" alinhamento="centro">
+        Você já parou para pensar nas transformações que o turismo passou nos últimos tempos?
+      </Titulo>
+      <Texto tamanho="lg" cor="inverso" peso="semibold" alinhamento="centro">
+        E que podemos construir juntos o futuro do nosso setor?
+      </Texto>
+    </div>
+  </Container>
+</SecaoEbook>
+
+<!-- ==================== estrutura ==================== -->
+<SecaoEbook superficie="estrutura" id="estrutura">
+  <Container>
+    <div class="cabeca">
+      <Titulo nivel={2} tamanho="2xl" cor="inverso" peso="medio" alinhamento="centro">
+        Como o e-book está estruturado?
+      </Titulo>
+    </div>
+    <Grade colunas={3} espaco="lg" piso={1}>
+      {
+        estruturaEbook.map((bloco) => (
+          <div class="bloco">
+            <Titulo nivel={3} tamanho="lg" cor="inverso" peso="medio" alinhamento="centro">
+              {textoEm(bloco.titulo, lang)}
+            </Titulo>
+            <Texto cor="inverso" alinhamento="centro" semMargem>
+              {textoEm(bloco.texto, lang)}
+            </Texto>
+          </div>
+        ))
+      }
+    </Grade>
+  </Container>
+</SecaoEbook>
+
+<!-- ==================== indice ==================== -->
+<SecaoEbook superficie="secoes" id="secoes">
+  <Container>
+    <div class="cabeca">
+      <Titulo nivel={2} tamanho="2xl" cor="inverso" peso="medio" alinhamento="centro">
+        Seções do e-book
+      </Titulo>
+    </div>
+    {
+      secoesEbook.map((secao) => (
+        <div class="indice">
+          {/*
+            `<h3>` e nao `<h4>`: no tema os tres rotulos de secao eram h4 sob um
+            h2, pulando o h3. E a mesma correcao de sumario do subtitulo do topo.
+          */}
+          <Titulo nivel={3} tamanho="lg" peso="semibold" class="indice-titulo">
+            Seção {secao.numero}: {textoEm(secao.nome, lang)}
+          </Titulo>
+          <Grade colunas={4} espaco="md" alinhamento="inicio">
+            {secao.capitulos.map((capitulo) => (
+              <div>
+                <Texto cor="inverso" class="capitulo-titulo">
+                  {textoEm(capitulo.titulo, lang)}
+                </Texto>
+                <Texto cor="inverso" peso="semibold" semMargem>
+                  {capitulo.autores.join(' & ')}
+                </Texto>
+              </div>
+            ))}
+          </Grade>
+        </div>
+      ))
+    }
+  </Container>
+</SecaoEbook>
+
+<!-- ==================== autores ==================== -->
+<SecaoEbook superficie="autores" id="autores">
+  <Container>
+    <div class="cabeca-medalha">
+      <Imagem src={imagensEbook.medalha} alt="" largura={96} altura={96} />
+      <Titulo nivel={2} tamanho="3xl" cor="inverso" peso="medio" alinhamento="centro">
+        Prefácio
+      </Titulo>
+    </div>
+
+    <!-- O prefacio tem um cartao so, centralizado na largura de uma coluna. -->
+    <div class="prefacio">
+      <CartaoMembro
+        nome={prefacioEbook.nome}
+        cargo={textoEm(prefacioEbook.cargo, lang)}
+        destaque={textoEm(prefacioEbook.capitulo, lang)}
+        foto={prefacioEbook.foto}
+        linkedin={prefacioEbook.linkedin}
+        superficie="inversa"
+        tamanhos="(min-width: 62rem) 16rem, 90vw"
+      />
+    </div>
+
+    <div class="cabeca-medalha">
+      <Imagem src={imagensEbook.medalha} alt="" largura={96} altura={96} />
+      <Titulo nivel={2} tamanho="3xl" cor="inverso" peso="medio" alinhamento="centro">
+        Autores
+      </Titulo>
+    </div>
+
+    <Grade colunas={4} espaco="md" alinhamento="inicio">
+      {
+        autoresEbook.map((autor) => (
+          <CartaoMembro
+            nome={autor.nome}
+            cargo={textoEm(autor.cargo, lang)}
+            destaque={textoEm(autor.capitulo, lang)}
+            foto={autor.foto}
+            linkedin={autor.linkedin}
+            superficie="inversa"
+            tamanhos="(min-width: 62rem) 16rem, (min-width: 30rem) 45vw, 90vw"
+          />
+        ))
+      }
+    </Grade>
+  </Container>
+</SecaoEbook>
+
+<!-- ==================== creditos ==================== -->
+<SecaoEbook superficie="faixa" foto={imagensEbook.textura} id="creditos">
+  <Container>
+    <div class="creditos">
+      <Titulo nivel={2} tamanho="lg" cor="inverso" peso="medio" alinhamento="centro">
+        O e-book é uma iniciativa:
+      </Titulo>
+      <Imagem
+        src={imagensEbook.logos}
+        alt="FGV e Resorts Brasil"
+        largura={426}
+        altura={90}
+        tamanhos="(min-width: 30rem) 426px, 90vw"
+        ajuste="conter"
+        class="logos"
+      />
+      <Botao href={downloadEbook} variante="ebook" tamanho="lg" target="_blank" rel="noopener noreferrer">
+        {cartao.rotulo}
+      </Botao>
+    </div>
+  </Container>
+</SecaoEbook>
+
+<style>
+  /* ---------------- topo ---------------- */
+
+  /*
+   * MEDIDO: no desktop a coluna de texto ocupa 571px e a ilustracao 540px, lado
+   * a lado; abaixo de 992px eles empilham. E um `col-lg-6` + `col-lg-6` do tema,
+   * escrito como flex em vez de duas metades de doze.
+   *
+   * A faixa e 62rem (992px) e ela e a MESMA do cromo — a do Bootstrap, nao uma
+   * das cinco do site. Ver a nota no <style> do Cabecalho.astro.
+   */
+  .topo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.875rem;
+  }
+
+  @media (min-width: 62rem) {
+    .topo {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 2.5rem;
+    }
+
+    .topo-texto,
+    .topo-ilustracao {
+      flex: 1 1 0;
+    }
+  }
+
+  /* MEDIDO: 16px do titulo ao subtitulo no mobile, 30px no desktop. */
+  .topo :global(.topo-titulo) {
+    margin-block: 0 clamp(1rem, 0.5843rem + 1.7048vw, 1.875rem);
+  }
+
+  /* MEDIDO: 400px de largura maxima no desktop — o `col-lg-9` do tema. */
+  .topo :global(.topo-subtitulo) {
+    max-width: 25rem;
+    margin-block: 0 1.875rem;
+  }
+
+  .topo-ilustracao {
+    max-width: 33.75rem; /* os 540px do arquivo; nao ampliar */
+  }
+
+  /* ---------------- sobre ---------------- */
+
+  .sobre {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 62rem) {
+    .sobre {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 2.5rem;
+    }
+
+    .sobre > * {
+      flex: 1 1 0;
+    }
+  }
+
+  .sobre-capa {
+    max-width: 31.25rem; /* os 500px do arquivo */
+  }
+
+  /*
+   * A caixa da chamada. MEDIDO: cantos de 11,48px (o `--radius-md`), recuo de
+   * 26px no mobile e 46/50px no desktop, gradiente de 160 graus.
+   *
+   * O VERDE E O MEDIDO ESCURECIDO 25%. Ver a nota do --cor-verde-800 no
+   * tokens.css: com o #6ca898 original, o titulo branco no topo desta caixa da
+   * 2,73:1 — e trocar a cor do texto nao resolve, porque no outro extremo do
+   * mesmo gradiente o navy da 1,51:1. Nenhuma cor de texto passa nas duas
+   * pontas, entao quem cede e o fundo.
+   */
+  .chamada {
+    padding: clamp(1.625rem, 1.1281rem + 2.0381vw, 2.875rem)
+      clamp(1.625rem, 1.0286rem + 2.4457vw, 3.125rem);
+    background-image: linear-gradient(
+      160deg,
+      var(--color-ebook-chamada-inicio) 0%,
+      var(--color-ebook-chamada-fim) 100%
+    );
+    border-radius: var(--radius-md);
+  }
+
+  /* ---------------- faixas de credito ---------------- */
+
+  .creditos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* MEDIDO: 90px de altura, largura pela proporcao do arquivo. */
+  .creditos :global(.logos) {
+    width: auto;
+    height: 5.625rem;
+  }
+
+  /* MEDIDO: 30px entre o logotipo e o botao, na faixa de creditos. */
+  .creditos :global(.botao) {
+    margin-top: 1.125rem;
+  }
+
+  /* ---------------- video ---------------- */
+
+  /* MEDIDO: 30px acima do video e 30px dele ate o titulo. */
+  .video {
+    display: flex;
+    flex-direction: column;
+    gap: 1.875rem;
+    padding-top: 1.875rem;
+  }
+
+  /* ---------------- estrutura e indice ---------------- */
+
+  /*
+   * MEDIDO: 30px do cabecalho de secao ate o conteudo.
+   *
+   * E UM `<div>` EM VOLTA, e nao `class="cabeca"` no proprio <Titulo>. Classe
+   * escopada passada pela prop `class` de um COMPONENTE nao casa com nada: ela
+   * chega ao HTML sem o atributo de escopo, e o seletor compilado vira
+   * `.cabeca[data-astro-cid-x]`. E a primeira das tres armadilhas da Etapa 8, e
+   * o sintoma dela e zero — a regra fica inerte e o build passa.
+   *
+   * A saida e sempre uma das duas: utilitaria (que e global) ou um elemento do
+   * proprio template. Aqui, o elemento.
+   */
+  .cabeca {
+    margin-bottom: 1.875rem;
+  }
+
+  /* O <h2> dentro dele nao pode somar a propria margem ao vao acima. */
+  .cabeca :global(h2) {
+    margin-bottom: 0;
+  }
+
+  .bloco {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* MEDIDO: 50px entre uma secao do indice e a seguinte. */
+  .indice + .indice {
+    margin-top: 3.125rem;
+  }
+
+  /*
+   * O rotulo coral com o risco embaixo. MEDIDO: 19px / 600, 0,5px de
+   * espacamento, e uma linha de 2px na mesma cor, 10px abaixo, com 0,9 de
+   * opacidade.
+   *
+   * A linha e uma borda deste titulo e nao um `<hr>` como no tema: `<hr>` e uma
+   * quebra tematica, e o que ha ali e a decoracao de um cabecalho. Um a menos no
+   * fluxo, e a cor deixa de precisar de `style=` inline.
+   *
+   * O coral da 6,03:1 sobre o carvao e 4,39:1 na ponta mais clara do gradiente
+   * desta secao — passa nas duas, entao ele fica como esta.
+   */
+  .indice :global(.indice-titulo) {
+    color: var(--color-destaque);
+    letter-spacing: 0.5px;
+    margin-block: 0 3.125rem;
+    padding-bottom: 0.625rem;
+    border-bottom: 2px solid color-mix(in srgb, var(--color-destaque) 90%, transparent);
+  }
+
+  /* MEDIDO: 5px do titulo do capitulo ate a linha de autores. */
+  .indice :global(.capitulo-titulo) {
+    margin-block: 0 0.3125rem;
+  }
+
+  /* ---------------- autores ---------------- */
+
+  /* MEDIDO: a medalha tem 96px e fica acima do titulo, os dois centralizados. */
+  .cabeca-medalha {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: clamp(1.875rem, 0.9505rem + 3.7924vw, 3.75rem);
+  }
+
+  /* O cartao unico do prefacio, na largura de uma coluna da grade abaixo. */
+  .prefacio {
+    max-width: 16rem;
+    margin-inline: auto;
+    margin-bottom: 2.5rem;
+  }
+</style>
