@@ -93,9 +93,12 @@ O que **traduz** continua em [`src/i18n/ui.ts`](../src/i18n/ui.ts): rótulo de
 aba, título de seção, `title` e `description` de cada página. O que **não
 traduz** — nome de resort, URL, foto, cargo — está em `src/data/`.
 
-A divergência de `/en-us/join-us` foi preservada de propósito, num
-`parceirosJoinUsEn` separado, porque não dá para saber daqui se os dois logos a
-mais são erro ou intenção. Está anotada no arquivo para decisão do cliente.
+A divergência de `/en-us/join-us` chegou a ser preservada num
+`parceirosJoinUsEn` separado, enquanto não se sabia se os dois logos a mais eram
+erro ou intenção. **Eram erro**: os dois já apareciam na faixa de *mantenedores*
+da mesma página. A página inglesa passou a usar a mesma constante `parceiros` das
+outras duas, e a constante separada deixou de existir — ver
+[decisoes.md](decisoes.md), "A lista de parceiros correta é a portuguesa".
 
 ---
 
