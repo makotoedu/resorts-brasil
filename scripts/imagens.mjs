@@ -264,6 +264,22 @@ for (const entrada of await readdir(join(DIST, '_astro'), { withFileTypes: true 
  * lado do relatório: sem ele, as duas fotos com acento apareciam como "sem
  * nenhuma referência" — o script acusando de peso morto exatamente as imagens
  * que a página pede.
+ *
+ * AS 17 QUE SOBRAM NÃO SÃO LIXO, E NÃO FORAM APAGADAS DE PROPÓSITO. Elas não
+ * pesam em produção — nada disso entra no `dist/` —, e a decisão sobre cada uma
+ * é editorial, não técnica:
+ *
+ *   logo.png, logo.svg          o logotipo sem o selo de 25 anos. Volta a ser o
+ *                               logotipo quando a data passar.
+ *   2 capas de publicação       `impacto-ibs-cbs-2023` e
+ *                               `importancia-socioeconomica-do-turismo-2023`.
+ *                               Não estão em publicacoes.yaml. Ou nunca foram
+ *                               publicadas, ou faltam — e só o cliente sabe.
+ *   9 logos de parceiro         entre eles o Ministério do Turismo. Mesma
+ *   4 logos de associado        pergunta: saíram, ou faltam?
+ *
+ * Apagar seria destruir a única pista de um conteúdo que talvez devesse estar no
+ * ar. O número fica no relatório justamente para não ser esquecido.
  */
 const basesEmUso = new Set([...otimizadasEmUso.keys()].map((n) => n.split('.')[0]));
 
