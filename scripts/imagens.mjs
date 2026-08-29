@@ -58,9 +58,58 @@ const EXTENSOES = /\.(?:png|jpe?g|svg|webp|avif|gif)$/i;
  * ebook, têm acento no NOME DO ARQUIVO. As duas referências não eram vistas,
  * então não eram copiadas e não entravam na lista de faltantes: dois 404 em
  * produção, sem nenhum aviso. Foi o relatório de imagens ociosas que denunciou.
+ *
+ * OS MESMOS DOIS ARQUIVOS MORDERAM DE NOVO, pelo outro lado, e ficaram 404 em
+ * produção desde a Etapa 10 — ver `nomeDeArquivo()` logo abaixo.
  */
 const REF_ANTIGA = /\/images\/[^"'\s)\\<>]+\.(?:png|jpe?g|svg|webp|avif|gif)/gi;
 const REF_ASTRO = /\/_astro\/[^"'\s)\\<>]+\.(?:png|jpe?g|svg|webp|avif|gif)/gi;
+
+/**
+ * O nome de arquivo de uma referência, como o SISTEMA DE ARQUIVOS o escreve.
+ *
+ * ESTA FUNÇÃO EXISTE POR UM DEFEITO QUE ESTEVE EM PRODUÇÃO POR UMA ETAPA INTEIRA,
+ * e é a segunda vez que os mesmos dois arquivos causam um — as fotos de
+ * `Patrícia-Azevedo.jpg` e `Paulo-Mélega.jpg`, no e-book.
+ *
+ * O que acontecia: quando o caminho tem caractere não-ASCII, o Astro emite o
+ * arquivo com o nome LITERAL em UTF-8 e escreve o `src` **percent-encoded**:
+ *
+ *     no disco   dist/_astro/Patrícia-Azevedo.DZjdYVpn_1RuI4i.webp
+ *     no HTML    /_astro/Patr%C3%ADcia-Azevedo.DZjdYVpn_1RuI4i.webp
+ *
+ * A purga abaixo compara os dois. Sem decodificar, o nome do HTML nunca casava o
+ * do disco, o arquivo caía na lista de "emitidas sem uso" e **era apagado** —
+ * deixando no HTML uma referência para um arquivo que a própria purga acabara de
+ * remover. Duas das 41 fotos de autor davam 404, e a mesma comparação errada
+ * ainda declarava as duas "sem nenhuma referência" no relatório.
+ *
+ * Nenhum portão via. A varredura de geometria ignora imagem que ainda não
+ * carregou, senão acusaria toda imagem `lazy` abaixo da dobra; e uma foto de
+ * 120px que não aparece não muda caixa, nem peso de forma perceptível.
+ *
+ * Duas normalizações, e as duas são necessárias:
+ *
+ *   decodeURIComponent  desfaz o percent-encoding do HTML;
+ *   normalize('NFC')    põe os dois lados na mesma forma Unicode. O macOS
+ *                       devolve nome de arquivo em NFD (i + acento combinante),
+ *                       e "í" em NFD nunca é igual a "í" em NFC — mesmo texto,
+ *                       bytes diferentes. Aqui no Windows os dois já são NFC, o
+ *                       que quer dizer que esta metade só falharia em OUTRA
+ *                       máquina, que é a pior forma de falhar.
+ */
+function comoNoDisco(referencia) {
+  let decodificada = referencia;
+  try {
+    decodificada = decodeURIComponent(referencia);
+  } catch {
+    /* `%` literal no nome do arquivo: não é escape, fica como está. */
+  }
+  return decodificada.normalize('NFC');
+}
+
+/** O basename de uma referência, já na forma do disco. */
+const nomeDeArquivo = (referencia) => comoNoDisco(referencia).split('/').pop();
 
 /**
  * Onde uma referência pode aparecer: HTML, e também o CSS e o JS gerados.
@@ -91,17 +140,20 @@ if (paginas.length === 0) {
 
 /** caminho público -> arquivos gerados que o pedem */
 const pedidas = new Map();
-/** nomes de arquivo em /_astro/ que alguma página referencia */
-const otimizadasEmUso = new Set();
+/** nome em /_astro/ (como no disco) -> arquivos gerados que o referenciam */
+const otimizadasEmUso = new Map();
 
 for (const doc of documentos) {
   const texto = await readFile(join(DIST, doc), 'utf8');
   for (const achado of texto.match(REF_ANTIGA) ?? []) {
-    if (!pedidas.has(achado)) pedidas.set(achado, []);
-    pedidas.get(achado).push(doc);
+    const caminho = comoNoDisco(achado);
+    if (!pedidas.has(caminho)) pedidas.set(caminho, []);
+    pedidas.get(caminho).push(doc);
   }
   for (const achado of texto.match(REF_ASTRO) ?? []) {
-    otimizadasEmUso.add(achado.split('/').pop());
+    const nome = nomeDeArquivo(achado);
+    if (!otimizadasEmUso.has(nome)) otimizadasEmUso.set(nome, []);
+    otimizadasEmUso.get(nome).push(doc);
   }
 }
 
@@ -143,7 +195,46 @@ if (foraDoPipeline.length) {
 }
 
 /* ---------------------------------------------------------------- *
- * 2. Purga do que o Vite emitiu e ninguém usa
+ * 2. Toda referência a /_astro/ tem arquivo — CONFERIDA ANTES DE APAGAR
+ * ---------------------------------------------------------------- *
+ * A guarda que faltava, e a ordem é o ponto: ela roda ANTES da purga, contra o
+ * que o Astro acabou de emitir. Depois da purga, um nome comparado errado já
+ * teria virado um arquivo apagado, e a checagem confirmaria alegremente a
+ * ausência que ela mesma causou.
+ *
+ * É o que teria pego, na hora, as duas fotos de autor com acento: o HTML pedia
+ * `Patr%C3%ADcia-Azevedo…webp`, o disco tinha `Patrícia-Azevedo…webp`, e a purga
+ * apagava o arquivo por não reconhecer o próprio nome dele. Ver `comoNoDisco()`.
+ *
+ * Mais geral que aquele defeito: aqui reprova QUALQUER referência sem arquivo em
+ * `/_astro/`, seja a causa um encoding, um caminho escrito à mão ou um asset que
+ * o Vite deixou de emitir.
+ */
+const semArquivo = [];
+for (const [nome, quem] of otimizadasEmUso) {
+  try {
+    await stat(join(DIST, '_astro', nome));
+  } catch {
+    semArquivo.push(`${nome}  pedido por ${quem.length} arquivo(s), ex.: ${quem[0]}`);
+  }
+}
+
+if (semArquivo.length) {
+  console.error(
+    `\nimagens: abortado, ${semArquivo.length} referência(s) a /_astro/ sem arquivo em dist/:`
+  );
+  for (const f of semArquivo) console.error(`  ${f}`);
+  console.error(
+    `\nO HTML aponta para um arquivo que o build não emitiu — 404 garantido em produção.\n` +
+      `Se o nome tem caractere não-ASCII, confira comoNoDisco(): o Astro grava o arquivo\n` +
+      `com o nome literal e escreve o src percent-encoded, e comparar os dois sem\n` +
+      `decodificar faz a purga apagar exatamente o que a página pede.`
+  );
+  process.exit(1);
+}
+
+/* ---------------------------------------------------------------- *
+ * 3. Purga do que o Vite emitiu e ninguém usa
  * ---------------------------------------------------------------- */
 
 let removidos = 0;
@@ -151,7 +242,7 @@ let bytesRemovidos = 0;
 
 for (const entrada of await readdir(join(DIST, '_astro'), { withFileTypes: true })) {
   if (!entrada.isFile() || !EXTENSOES.test(entrada.name)) continue;
-  if (otimizadasEmUso.has(entrada.name)) continue;
+  if (otimizadasEmUso.has(entrada.name.normalize('NFC'))) continue;
   const alvo = join(DIST, '_astro', entrada.name);
   bytesRemovidos += (await stat(alvo)).size;
   await unlink(alvo);
@@ -159,7 +250,7 @@ for (const entrada of await readdir(join(DIST, '_astro'), { withFileTypes: true 
 }
 
 /* ---------------------------------------------------------------- *
- * 3. Relatório
+ * 4. Relatório
  * ---------------------------------------------------------------- *
  * O que do acervo ninguém pede — nem pelo pipeline, nem de jeito nenhum. É peso
  * morto no repositório, e a distinção sai do nome: o Astro mantém o basename
@@ -168,14 +259,19 @@ for (const entrada of await readdir(join(DIST, '_astro'), { withFileTypes: true 
  * ATÉ A ETAPA 11 ESTA CONTA TINHA TRÊS CATEGORIAS — pedida pelo tema, otimizada
  * pelo pipeline, ociosa —, e a do meio era o progresso da migração medido em
  * arquivo. Com uma camada só sobraram duas, e o número que importa é o segundo.
+ *
+ * O `normalize('NFC')` no nome do acervo fecha o mesmo buraco da purga, pelo
+ * lado do relatório: sem ele, as duas fotos com acento apareciam como "sem
+ * nenhuma referência" — o script acusando de peso morto exatamente as imagens
+ * que a página pede.
  */
-const basesEmUso = new Set([...otimizadasEmUso].map((n) => n.split('.')[0]));
+const basesEmUso = new Set([...otimizadasEmUso.keys()].map((n) => n.split('.')[0]));
 
 const noAcervo = [];
 for (const entrada of await readdir(ACERVO, { recursive: true, withFileTypes: true })) {
   if (!entrada.isFile()) continue;
   const caminho = relative(ACERVO, join(entrada.parentPath ?? entrada.path, entrada.name));
-  noAcervo.push('/images/' + caminho.replace(/\\/g, '/'));
+  noAcervo.push('/images/' + caminho.replace(/\\/g, '/').normalize('NFC'));
 }
 
 const ociosas = noAcervo.filter(
