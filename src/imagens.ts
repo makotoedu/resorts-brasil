@@ -15,9 +15,16 @@ import type { ImageMetadata } from 'astro';
  * todo lugar, e o `<Imagem>` resolve para o modulo otimizado. Os arquivos de
  * dados nao mudaram uma linha na migracao para o pipeline.
  *
- * A chave e o caminho ANTIGO de proposito: ela e a mesma coisa que as 40
- * paginas do tema ainda pedem por HTTP (ver scripts/imagens-do-tema.mjs), entao
- * as duas camadas continuam falando a mesma lingua ate a ultima migrar.
+ * A CHAVE E O CAMINHO ANTIGO, e continua sendo depois que o tema saiu. Enquanto
+ * as duas camadas conviviam, era o que as fazia falar a mesma lingua: as paginas
+ * do tema pediam `/images/...` por HTTP e a ponte do scripts/imagens.mjs
+ * atendia. Hoje o motivo e outro e mais simples — e a forma que os 183 caminhos
+ * de `src/data/` ja tinham, e trocar todos por outra convencao seria uma
+ * varredura sem ganho nenhum.
+ *
+ * O caminho so tem sentido AQUI DENTRO. Escrito num `<img src>` a mao ele vira
+ * 404: `dist/images/` guarda favicon e og-image, e nada mais. O
+ * scripts/imagens.mjs aborta o build se algum aparecer.
  */
 const modulos = import.meta.glob<{ default: ImageMetadata }>(
   './assets/imagens/**/*.{jpg,jpeg,png,svg,webp,avif}',

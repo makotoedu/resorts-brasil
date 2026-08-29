@@ -8,8 +8,8 @@ import { ui, url, type Locale } from '../../i18n/ui';
  * FaixaCookies — a pergunta, as tres respostas e o painel de categorias.
  *
  * O COMPORTAMENTO NAO ESTA AQUI, e nao pode estar. Quem grava o cookie, fala
- * Consent Mode e decide carregar o GTM e o bloco inline do `<head>` do
- * BaseLayout: aquilo precisa rodar antes de qualquer rede. A interface vive no
+ * Consent Mode e decide carregar o GTM e o bloco inline do `<head>`, em
+ * src/layouts/Cabeca.astro: aquilo precisa rodar antes de qualquer rede. A interface vive no
  * src/scripts/site.js e so conversa com `window.rbConsent`.
  *
  * POR ISSO OS NOMES DE ESTADO SAO OS DO TEMA: `.cookie-notify`, `.modal-strip`,

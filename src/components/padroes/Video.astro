@@ -1,12 +1,13 @@
 ---
 import { ui, type Locale } from '../../i18n/ui';
+import Imagem from '../primitivos/Imagem.astro';
 
 /**
  * Video — a fachada de clique-para-carregar, no design system.
  *
- * ELE EXISTE POR UMA ARMADILHA QUE QUASE PASSOU. O <YouTube> ao lado emite o
- * mesmo markup, mas o CSS dele mora em `public/css/ajustes.css` — a folha do
- * TEMA. Pagina migrada nao carrega aquele arquivo, entao migrar
+ * ELE NASCEU DE UMA ARMADILHA QUE QUASE PASSOU. O <YouTube> do tema emitia o
+ * mesmo markup, mas o CSS dele morava em `public/css/ajustes.css` — a folha do
+ * TEMA. Pagina migrada nao carregava aquele arquivo, entao migrar
  * /resorts-brasil com o componente antigo entregaria a fachada sem estilo
  * nenhum: sem caixa, sem botao de play, e com o rotulo "Assistir ao video",
  * que deve ficar fora da tela, impresso por cima da miniatura.
@@ -16,27 +17,24 @@ import { ui, type Locale } from '../../i18n/ui';
  * portoes veria com clareza: nao ha caixa zerada, nao ha imagem quebrada, e o
  * texto vazando so apareceria se calhasse de cruzar a borda.
  *
- * O <YouTube> CONTINUA EXISTINDO ate a Etapa 10: as tres paginas de ebook ainda
- * o usam, e converte-lo no lugar poria este `<style>` no bundle das paginas do
- * tema pelo grafo de modulos. Mesma convivencia do <GradeLogos> com a
- * <FaixaLogos>.
+ * O <YouTube> foi apagado na Etapa 11, com o resto do tema.
  *
  *   <Video lang={lang} id={videos.institucional} titulo={t.videoInstitucional} />
  *
- * O QUE MUDA em relacao ao <YouTube>: a caixa. Aquele fixava `height: 420px` num
- * `style=` inline — o numero que o `<iframe>` original rendia —, e aqui e
+ * O QUE MUDOU em relacao ao <YouTube>: a caixa. Aquele fixava `height: 420px`
+ * num `style=` inline — o numero que o `<iframe>` original rendia —, e aqui e
  * `aspect-ratio: 16/9`, que e a proporcao real do video. Some a tarja preta em
  * cima e embaixo, e a caixa passa a acompanhar a largura em vez de recortar mais
  * onde ha menos tela. Delta deliberado, em docs/deltas-visuais.md.
  *
  * O QUE NAO MUDA: os nomes de classe. `.yt-facade`, `.yt-facade-btn`,
  * `.yt-facade-play` e `.yt-facade-label` sao os mesmos do tema de proposito,
- * porque um `site.js` so serve as duas camadas — a mesma aposta que o cromo faz
+ * porque um `site.js` so servia as duas camadas — a mesma aposta que o cromo faz
  * com `#mainMenu` e `.toggle-active`.
  */
 interface Props {
   lang: Locale;
-  /** ID do video no YouTube. Precisa existir public/images/video/<id>.jpg. */
+  /** ID do video no YouTube. Precisa existir src/assets/imagens/video/<id>.jpg. */
   id: string;
   /** Titulo real do video, usado no nome acessivel e no title do iframe. */
   titulo: string;
@@ -66,12 +64,23 @@ const t = ui[lang];
     data-yt-titulo={titulo}
   >
     {/*
-      A miniatura e LOCAL (public/images/video/<id>.jpg). Puxa-la de i.ytimg.com
-      faria a fachada chamar a CDN do Google, que e o problema que ela existe
-      para resolver — e por isso ela NAO passa pelo <Imagem>: aquele resolve
-      caminhos de `src/assets/`, e esta imagem e servida crua de `public/`.
+      A miniatura e LOCAL. Puxa-la de i.ytimg.com faria a fachada chamar a CDN do
+      Google, que e o problema que ela existe para resolver.
+
+      ELA PASSAVA CRUA ATE A ETAPA 11, e o comentario que estava aqui dizia que
+      vinha de `public/`. Nao vinha: a Etapa 2 levou o acervo inteiro para
+      `src/assets/imagens/`, e o que a servia era a PONTE do scripts/imagens.mjs
+      — o mecanismo que existia para as paginas do tema. Com o tema removido a
+      ponte sai, e as duas unicas referencias que ainda dependiam dela eram esta
+      e a do logotipo no JSON-LD. Passando pelo pipeline, as duas miniaturas
+      caem de 176 KB para 26 KB e ganham AVIF, WebP e `srcset`.
     */}
-    <img src={`/images/video/${id}.jpg`} alt="" width="1280" height="720" loading="lazy" />
+    <Imagem
+      src={`/images/video/${id}.jpg`}
+      alt=""
+      escala="largura-total"
+      tamanhos="(min-width: 1024px) 740px, 100vw"
+    />
     <span class="yt-facade-play" aria-hidden="true"></span>
     <!-- Texto de verdade, so visualmente escondido: o nome acessivel do link. -->
     <span class="yt-facade-label">{t.videoPlay}: {titulo}</span>
@@ -100,9 +109,9 @@ const t = ui[lang];
    * nada, e o video entraria com a altura padrao de 150px do iframe — depois do
    * clique, que e onde nenhum teste de carregamento olha.
    *
-   * Mesma familia da nota de `runtimeClasses` no purge-css.mjs: o que o
-   * JavaScript cria em tempo de execucao precisa ser declarado para as
-   * ferramentas que so leem o codigo.
+   * O que o JavaScript cria em tempo de execucao precisa ser declarado para as
+   * ferramentas que so leem o codigo — foi assim tambem com a safelist do script
+   * de purga do tema, que a Etapa 11 removeu.
    */
   .yt-facade :global(iframe) {
     width: 100%;
@@ -128,8 +137,22 @@ const t = ui[lang];
    * duas capturas mostram a imagem sangrando ate as bordas da caixa, sem tarja.
    * Chegou a ser `contain` por suposicao — e a suposicao piorou o enquadramento
    * sem melhorar o diff.
+   *
+   * `:global`, E PELO MESMO MOTIVO DA REGRA DO IFRAME LOGO ACIMA — outra forma
+   * de "o elemento nao esta neste arquivo". A miniatura passou a vir do
+   * <Imagem> na Etapa 11, e o Astro carimba o atributo de escopo so no markup
+   * do PROPRIO template: o `<picture>` e o `<img>` emitidos pelo componente
+   * filho nao o recebem, entao `.yt-facade-btn img` deixaria de casar. E a
+   * armadilha 1 do CLAUDE.md pelo avesso — la a classe escopada nao alcanca o
+   * componente, aqui o seletor escopado nao alcanca o que ele renderiza.
+   *
+   * O `<picture>` entra na regra porque ele e que fica entre o botao e a
+   * imagem: sem `display: block` e sem altura, ele e uma caixa inline de altura
+   * automatica, e o `height: 100%` do `<img>` passaria a se resolver contra ela
+   * em vez de contra a caixa 16/9.
    */
-  .yt-facade-btn img {
+  .yt-facade-btn :global(picture),
+  .yt-facade-btn :global(img) {
     display: block;
     width: 100%;
     height: 100%;

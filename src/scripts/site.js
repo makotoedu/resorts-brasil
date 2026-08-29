@@ -199,7 +199,7 @@ function navDropdowns() {
 /* Consentimento de cookies ----------------------------------------------- */
 /*
  * So a interface. Quem grava o cookie, fala Consent Mode e decide carregar (ou
- * nao) o GTM e o window.rbConsent, no bloco inline do <head> do BaseLayout —
+ * nao) o GTM e o window.rbConsent, no bloco inline do <head> (Cabeca.astro) —
  * aquilo precisa rodar antes de qualquer rede, e este arquivo so roda no
  * DOMContentLoaded.
  *

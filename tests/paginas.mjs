@@ -1,5 +1,5 @@
 /**
- * As 40 paginas do site e os 3 viewports, em um lugar so.
+ * As 40 paginas de conteudo e os 3 viewports, em um lugar so.
  *
  * A lista estava embutida no visual-diff.mjs. Com a suite de geometria
  * precisando da mesma varredura, duplicar seria criar exatamente o problema que
@@ -58,20 +58,24 @@ export const PAGINAS = [
  *
  * Fica fora da lista acima porque nao e pagina de conteudo — o diff visual nao
  * tem contra o que compara-lo, ja que ele nao existe no site original. Mas a
- * varredura de GEOMETRIA precisa dele, e por um motivo pratico: hoje ele e a
- * unica pagina que roda so sobre o sistema novo, entao um primitivo quebrado
- * aparece ali antes de aparecer em qualquer outro lugar. Aconteceu na Etapa 1 —
- * a escala tipografica transbordava 25px no mobile e nenhum outro portao viu.
+ * varredura de GEOMETRIA precisa dele: e a unica pagina que mostra cada
+ * componente sozinho, em todas as variantes, sem conteudo em volta — entao um
+ * primitivo quebrado aparece ali antes de aparecer em qualquer outro lugar.
+ * Aconteceu na Etapa 1: a escala tipografica transbordava 25px no mobile e
+ * nenhum outro portao viu.
  */
 export const CATALOGO = '/design.html';
 
 /**
- * As larguras sao uma por faixa do site, nao as do Tailwind:
+ * As larguras sao uma por faixa do TEMA, que nao sao as do Tailwind:
  * xs 0-575 | sm 576-767 | md 768-1024 | lg 1025-1199 | xl 1200+
  *
- * 390 cai em xs, 768 na borda inferior de md e 1440 em xl. Ler o array errado
- * ja custou 22 comparacoes de tablet reprovadas neste projeto — o erro acerta
- * nos extremos e se esconde no meio da escala.
+ * 390 cai em xs, 768 na borda inferior de md e 1440 em xl. As faixas sairam com
+ * o tema na Etapa 11, e os tres numeros ficam: eles sao uma amostragem razoavel
+ * de celular, tablet e desktop, e mudar de amostra invalidaria a comparacao com
+ * tudo o que ja foi medido. Ler o array errado ja custou 22 comparacoes de
+ * tablet reprovadas neste projeto — o erro acerta nos extremos e se esconde no
+ * meio da escala, que e a licao que sobrevive as faixas.
  */
 export const VIEWPORTS = [
   { nome: 'mobile', width: 390, height: 844 },

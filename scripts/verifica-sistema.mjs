@@ -1,16 +1,20 @@
 /**
  * Invariantes do design system.
  *
- * A ideia, no mesmo espirito do purge-css.mjs e do check-glifos.mjs: nao basta
- * o sistema existir, o build precisa FALHAR quando alguem sai dele. Convencao
- * documentada e convencao que se perde na primeira urgencia — foi assim que
- * nasceu o ebook.astro com 140 estilos inline.
+ * A ideia: nao basta o sistema existir, o build precisa FALHAR quando alguem sai
+ * dele. Convencao documentada e convencao que se perde na primeira urgencia —
+ * foi assim que nasceu o ebook.astro com 140 estilos inline.
  *
- * Durante a migracao, uma checagem so pode ABORTAR se ja for verdadeira. As que
- * ainda nao sao (porque dependem de paginas nao migradas) rodam em modo
- * relatorio e viram bloqueantes quando o escopo delas fecha. O estado de cada
- * uma esta na tabela CHECAGENS abaixo — mova para `bloqueia: true` conforme a
- * migracao avanca.
+ * DURANTE A MIGRACAO ELE FOI MEIO PORTAO. Uma checagem so pode abortar se ja for
+ * verdadeira, e nenhuma destas era enquanto 40 paginas rodavam sobre o tema:
+ * elas contavam a divida numa lista "PENDENTE" e bloqueavam so no que ja tinha
+ * migrado, arquivo por arquivo, numa lista MIGRADAS que crescia a cada etapa.
+ *
+ * A ETAPA 11 APAGOU AQUELA LISTA, e e a mudanca mais importante deste arquivo: o
+ * escopo das checagens deixou de ser um conjunto de nomes e passou a ser `src/`
+ * inteiro. Nao ha mais "ainda nao migrou" — arquivo novo nasce dentro do escopo
+ * sem ninguem lembrar de inscreve-lo, que era exatamente a falha que uma lista
+ * manual tem. As tres linhas de PENDENTE viraram uma so, e ela agora diz zero.
  *
  *   node scripts/verifica-sistema.mjs
  */
@@ -19,112 +23,11 @@ import { join, relative } from 'node:path';
 
 const RAIZ = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 
-/** Arquivos do sistema novo. O tema em public/css/ esta fora de escopo. */
+/** Todo o codigo do site. Nao ha mais nada fora do escopo. */
 const FONTES = ['src'];
 
 /** Onde cor literal e permitida: e o arquivo que existe para declara-la. */
 const ARQUIVO_DE_TOKENS = 'src/styles/tokens.css';
-
-/**
- * Paginas ja migradas para o design system. Enquanto a lista nao cobrir as 40,
- * as checagens de escopo de pagina so valem para o que esta aqui.
- *
- * Os componentes do sistema novo entram junto: eles nao sao pagina, mas estao
- * dentro do escopo desde o primeiro commit — cor literal ou `style=` inline num
- * primitivo contamina toda pagina que o usar.
- */
-const MIGRADAS = [
-  'src/pages/design.astro',
-  /* Etapa 5 — as quatro paginas pequenas, nos tres idiomas. */
-  'src/pages/404.astro',
-  'src/pages/historia.astro',
-  'src/pages/fale-conosco.astro',
-  'src/pages/diretoria.astro',
-  'src/pages/en-us/history.astro',
-  'src/pages/en-us/contact-us.astro',
-  'src/pages/en-us/board.astro',
-  'src/pages/es-es/historia.astro',
-  'src/pages/es-es/contactenos.astro',
-  'src/pages/es-es/directorio.astro',
-  /* Etapa 6 — os dois documentos juridicos, nos tres idiomas. */
-  'src/pages/termos-de-uso.astro',
-  'src/pages/politica-de-privacidade.astro',
-  'src/pages/en-us/terms-of-use.astro',
-  'src/pages/en-us/privacy-policy.astro',
-  'src/pages/es-es/terminos-de-uso.astro',
-  'src/pages/es-es/politica-de-privacidad.astro',
-  /* A secao de cookies passou a emitir markup do sistema junto com elas. */
-  'src/components/SecaoCookies.astro',
-  /* Etapa 7 — publicacoes e estatisticas e estudos, nos tres idiomas. */
-  'src/pages/publicacoes.astro',
-  'src/pages/estatisticas-e-estudos.astro',
-  'src/pages/en-us/publications.astro',
-  'src/pages/en-us/statistics-and-studies.astro',
-  'src/pages/es-es/publicaciones.astro',
-  'src/pages/es-es/estadisticas-y-estudios.astro',
-  'src/components/ConviteAssociese.astro',
-  /* Etapa 8 — associados, associe-se, apoie e resorts-brasil, nos tres idiomas. */
-  'src/pages/associados.astro',
-  'src/pages/associe-se.astro',
-  'src/pages/apoie.astro',
-  'src/pages/resorts-brasil.astro',
-  'src/pages/en-us/associates.astro',
-  'src/pages/en-us/join-us.astro',
-  'src/pages/en-us/support-tourism.astro',
-  'src/pages/en-us/resorts-brasil.astro',
-  'src/pages/es-es/asociados.astro',
-  'src/pages/es-es/asociese.astro',
-  'src/pages/es-es/apoye.astro',
-  'src/pages/es-es/resorts-brasil.astro',
-  /* A faixa de parceiros e as abas de associados passaram a emitir markup do
-     sistema junto com elas. */
-  'src/components/FaixaParceiros.astro',
-  'src/components/AssociadosTabs.astro',
-  'src/components/PainelRegiao.astro',
-  'src/components/BlocoEixo.astro',
-  /* Etapa 9 — a home, nos tres idiomas, e os dois blocos que ela repetia. O
-     <GradeLogos> e o <CarrosselAssociados> nao aparecem aqui porque deixaram de
-     existir: eram os dois ultimos componentes de transicao do tema, e so as tres
-     homes os usavam. */
-  'src/pages/index.astro',
-  'src/pages/en-us/home.astro',
-  'src/pages/es-es/inicio.astro',
-  'src/components/DestaquesHome.astro',
-  'src/components/FaixaAssociados.astro',
-  /* O layout do sistema e o <head> compartilhado. */
-  'src/layouts/LayoutSistema.astro',
-  'src/layouts/Cabeca.astro',
-  'src/components/primitivos/Titulo.astro',
-  'src/components/primitivos/Texto.astro',
-  'src/components/primitivos/Botao.astro',
-  'src/components/primitivos/Icone.astro',
-  'src/components/primitivos/Imagem.astro',
-  'src/components/layout/Secao.astro',
-  'src/components/layout/Container.astro',
-  'src/components/layout/Grade.astro',
-  'src/components/padroes/CartaoMembro.astro',
-  'src/components/padroes/ChamadaAcao.astro',
-  'src/components/padroes/CaixaIcone.astro',
-  'src/components/padroes/CartaoPublicacao.astro',
-  'src/components/padroes/LinkAcao.astro',
-  'src/components/padroes/ListaIcones.astro',
-  'src/components/padroes/Hero.astro',
-  'src/components/padroes/FaixaDestaque.astro',
-  'src/components/padroes/Contador.astro',
-  'src/components/padroes/Abas.astro',
-  'src/components/padroes/Prosa.astro',
-  'src/components/padroes/Tabela.astro',
-  'src/components/padroes/TituloSecao.astro',
-  'src/components/padroes/FaixaLogos.astro',
-  'src/components/padroes/CartaoModalidade.astro',
-  'src/components/padroes/Video.astro',
-  'src/components/padroes/CarrosselLogos.astro',
-  'src/components/cromo/Cabecalho.astro',
-  'src/components/cromo/Rodape.astro',
-  'src/components/cromo/FaixaCookies.astro',
-  'src/components/cromo/IconesSociais.astro',
-  'src/components/cromo/VoltarAoTopo.astro',
-];
 
 /** Onde vivem os componentes do sistema novo, e o catalogo que os documenta. */
 const DIRETORIOS_DE_COMPONENTE = [
@@ -252,14 +155,14 @@ async function semCorLiteral(fontes) {
       const semComentario = linha.replace(/<code>.*?<\/code>/g, '');
       if (HEX.test(semComentario) || RGB.test(semComentario)) {
         /*
-         * So bloqueia no que ja migrou. Header e Footer ainda sao componentes
-         * do tema e tem cor literal de proposito — inclui-los aqui reprovaria o
-         * build por uma divida que a etapa deles vai pagar. Acrescente o
-         * arquivo em MIGRADAS quando ele passar para o sistema novo.
+         * BLOQUEIA EM TUDO desde a Etapa 11. Antes so valia para os arquivos de
+         * MIGRADAS: Header e Footer eram componentes do tema e tinham cor
+         * literal de proposito, e inclui-los reprovaria o build por uma divida
+         * que a etapa deles pagaria. As duas ultimas do projeto sairam com eles.
          */
-        const alvo = MIGRADAS.includes(f) || f.startsWith('src/styles/');
-        const msg = `${f}:${i + 1}  cor literal — use um token semantico  › ${semComentario.trim().slice(0, 70)}`;
-        (alvo ? falhas : avisos).push(msg);
+        falhas.push(
+          `${f}:${i + 1}  cor literal — use um token semantico  › ${semComentario.trim().slice(0, 70)}`
+        );
       }
     });
   }
@@ -268,9 +171,10 @@ async function semCorLiteral(fontes) {
 /* ------------------------------------------------------------------ *
  * 3. Nenhum style= inline
  * ------------------------------------------------------------------ *
- * 549 no site hoje, 420 deles nas tres paginas de ebook. A checagem so bloqueia
- * nas paginas ja migradas; nas demais conta, para o numero cair visivelmente a
- * cada etapa.
+ * Eram 549 no comeco do projeto, 420 deles nas tres paginas de ebook. Ate a
+ * Etapa 11 a checagem bloqueava so nas paginas ja migradas e CONTAVA o resto,
+ * para o numero cair visivelmente a cada etapa. Chegou a zero fora da allowlist,
+ * e o contador virou o que ele sempre quis ser: uma afirmacao.
  *
  * ELA SO VIA `style="` ATE A ETAPA 9, e portanto nao via NADA do que importa num
  * arquivo `.astro`: o estilo calculado se escreve `style={...}`, com chaves. O
@@ -320,10 +224,8 @@ async function semEstiloInline(fontes) {
     const permitido = ESTILO_INLINE_PERMITIDO[f];
     total += quantos - (permitido ? Math.min(quantos, permitido.quantos) : 0);
 
-    if (!MIGRADAS.includes(f)) continue;
-
     if (!permitido) {
-      if (quantos) falhas.push(`${f}  ${quantos} style= inline em pagina migrada`);
+      if (quantos) falhas.push(`${f}  ${quantos} style= inline fora da allowlist`);
     } else if (quantos > permitido.quantos) {
       falhas.push(
         `${f}  ${quantos} style= inline, e a allowlist permite ${permitido.quantos} ` +
@@ -344,9 +246,11 @@ async function semEstiloInline(fontes) {
 /* ------------------------------------------------------------------ *
  * 4. Hierarquia de headings — MEDIDA NO dist/
  * ------------------------------------------------------------------ *
- * Um h1, primeiro, sem salto de nivel. Hoje 39 das 40 paginas reprovam — e por
- * isso a checagem ainda nao bloqueia fora das migradas. O componente <Titulo>
- * separa nivel semantico de tamanho visual, que e a causa raiz.
+ * Um h1, primeiro, sem salto de nivel. A auditoria encontrou 39 das 40 paginas
+ * reprovadas — so a 404 passava —, e por isso a checagem passou a maior parte da
+ * migracao contando em vez de bloquear. Hoje bloqueia nas 41. O componente
+ * <Titulo> separa nivel semantico de tamanho visual, que e a causa raiz: enquanto
+ * a tag carregar o estilo, alguem escolhe `<h1>` porque queria o tamanho.
  *
  * ELA LIA O FONTE, E ISSO PAROU DE FUNCIONAR NA ETAPA 5 — nos dois sentidos, e
  * os dois sao instrutivos:
@@ -382,8 +286,7 @@ function headingsDoHtml(html) {
 async function hierarquiaHeadings(paginasDoDist) {
   if (!paginasDoDist) return null;
 
-  const reprovadas = [];
-  for (const { caminho, html, migrada } of paginasDoDist) {
+  for (const { caminho, html } of paginasDoDist) {
     const niveis = headingsDoHtml(html);
     if (!niveis.length) continue;
 
@@ -399,13 +302,9 @@ async function hierarquiaHeadings(paginasDoDist) {
       }
     }
 
-    if (problemas.length) {
-      const msg = `dist/${caminho}  ${problemas.join('; ')}`;
-      if (migrada) falhas.push(msg);
-      else reprovadas.push(msg);
-    }
+    if (problemas.length) falhas.push(`dist/${caminho}  ${problemas.join('; ')}`);
   }
-  return reprovadas;
+  return paginasDoDist.length;
 }
 
 /* ------------------------------------------------------------------ *
@@ -437,30 +336,30 @@ async function catalogoCobrePrimitivos(fontes) {
 }
 
 /* ------------------------------------------------------------------ *
- * 6. Isolamento das duas camadas no HTML gerado
+ * 6. Toda pagina tem a folha do sistema, e nenhuma tem a do tema
  * ------------------------------------------------------------------ *
  * A invariante que custou mais caro para descobrir. Instalar o Tailwind e
- * importar a folha no BaseLayout fez 22 das 40 paginas divergirem do site
+ * importar a folha no layout do tema fez 22 das 40 paginas divergirem do site
  * original — o Preflight vaza para onde o tema nao declara a mesma propriedade
  * (border-style none->solid em ~2200 elementos, display inline->block em
  * img/svg, max-width none->100%, list-style-type circle->none), e a varredura
- * automatica do Tailwind ainda gera utilitarias que colidem com nomes de classe
- * do proprio tema (.container, .border, .table, .card, .row).
+ * automatica do Tailwind ainda gerava utilitarias que colidiam com nomes de
+ * classe do proprio tema (.container, .border, .table, .card, .row).
  *
- * A solucao foi isolamento por AUSENCIA: a folha entra pelo frontmatter da
- * pagina migrada, nunca pelo layout. Esta checagem afirma isso no artefato, e
- * nao na intencao — pagina do tema nao pode ter bundle do Astro, pagina migrada
- * nao pode ter CSS do tema.
+ * A solucao foi isolamento por AUSENCIA, e a checagem afirmava isso no artefato
+ * em vez de na intencao: pagina do tema nao podia ter bundle do Astro, pagina
+ * migrada nao podia ter CSS do tema.
+ *
+ * COM O TEMA REMOVIDO ELA FICOU MAIS SIMPLES E MAIS DURA. Um lado virou
+ * incondicional — toda pagina precisa da folha do sistema — e o outro virou uma
+ * afirmacao de ausencia: nenhuma pagina pode carregar `/css/`, que nao existe
+ * mais. Vigiar o que ja nao existe parece redundante e nao e; e a mesma classe
+ * do "nenhuma pagina baixa webfont de icone" no verify-behaviors.mjs. O que ela
+ * pega e a volta: um `<link>` copiado de um exemplo antigo, uma folha global
+ * reintroduzida "so para uma landing page". Sem a guarda, isso passa em silencio
+ * — e a primeira vez que passou custou 22 paginas.
  *
  * Roda so quando existe dist/. Nao vale a pena buildar para conferir.
- */
-/**
- * Le o dist/ uma vez e marca cada pagina como do tema ou migrada.
- *
- * `migrada` sai do ARTEFATO — carrega bundle do Astro e nao carrega o CSS do
- * tema —, e nao da lista MIGRADAS acima. E a mesma disciplina do resto do
- * arquivo: a lista diz a intencao, o `dist/` diz o que foi entregue. Uma pagina
- * que alguem esqueceu de acrescentar a lista nao escapa das checagens por isso.
  */
 async function lerDist() {
   let caminhos;
@@ -480,40 +379,44 @@ async function lerDist() {
      *
      * A versao anterior procurava a string solta, e reprovou o /design assim que
      * o catalogo passou a EXPLICAR por que existe um <Video> proprio: aquele
-     * texto cita `public/css/ajustes.css` dentro de um `<code>`, e a checagem
-     * leu a mencao como se fosse uma folha carregada.
+     * texto citava a folha do tema dentro de um `<code>`, e a checagem leu a
+     * mencao como se fosse uma folha carregada.
      *
-     * E a terceira vez que um portao deste projeto confunde documentacao com
-     * markup — as duas primeiras foram o checador de headings na Etapa 5 e o de
-     * `style=` na Etapa 6, e as duas se resolveram do mesmo jeito: olhar o
-     * artefato pelo que ele FAZ, e nao pelo que ele contem. Aqui, o que faz uma
-     * folha ser carregada e o atributo.
+     * E a terceira das QUATRO vezes que um portao deste projeto confundiu
+     * documentacao com markup — headings na Etapa 5, `style=` na Etapa 6, esta
+     * na 8, e a purga na 11, que vinha rodando contra aquele mesmo `<code>` e
+     * ninguem tinha achado. As tres primeiras se resolveram do mesmo jeito:
+     * olhar o artefato pelo que ele FAZ, e nao pelo que ele contem. Aqui, o que
+     * faz uma folha ser carregada e o atributo.
+     *
+     * A regra vale mesmo agora que nao ha folha de `/css/` para carregar: e
+     * exatamente quando a mencao vira mais provavel que o carregamento.
      */
     const href = (padrao) => new RegExp(`<link[^>]+href="[^"]*${padrao}"`, 'i').test(html);
-    const temTema = href('/css/(?:plugins|style|ajustes)\\.css');
+    const temTema = href('/css/[^"]+\\.css');
     const temSistema = href('/_astro/[^"]+\\.css');
-    paginas.push({ caminho, html, temTema, temSistema, migrada: temSistema && !temTema });
+    paginas.push({ caminho, html, temTema, temSistema });
   }
   return paginas;
 }
 
-function isolamentoNoBuild(paginas) {
+function folhasNoBuild(paginas) {
   if (!paginas) return null;
 
-  let migradas = 0;
   for (const { caminho, temTema, temSistema } of paginas) {
-    if (temTema && temSistema) {
+    if (temTema) {
       falhas.push(
-        `dist/${caminho}  carrega o CSS do tema E o bundle do design system — ` +
-          `o Preflight vaza para o tema. Pagina migrada usa o LayoutSistema, pagina do tema usa o BaseLayout.`
+        `dist/${caminho}  carrega uma folha de /css/ — aquela pasta era o tema Inspiro e foi ` +
+          `removida na Etapa 11. Folha global fora do grafo de modulos volta a vazar entre paginas.`
       );
     }
-    if (!temTema && !temSistema) {
-      falhas.push(`dist/${caminho}  sem nenhuma folha de estilo`);
+    if (!temSistema) {
+      falhas.push(
+        `dist/${caminho}  sem a folha do design system — a pagina precisa usar o LayoutSistema`
+      );
     }
-    if (temSistema) migradas += 1;
   }
-  return { total: paginas.length, migradas };
+  return paginas.length;
 }
 
 /* ------------------------------------------------------------------ */
@@ -526,39 +429,40 @@ const estilosInline = await semEstiloInline(fontes);
 const componentes = await catalogoCobrePrimitivos(fontes);
 
 const paginasDoDist = await lerDist();
-const isolamento = isolamentoNoBuild(paginasDoDist);
-const headingsReprovados = await hierarquiaHeadings(paginasDoDist);
+const comFolha = folhasNoBuild(paginasDoDist);
+const comHeadings = await hierarquiaHeadings(paginasDoDist);
 
 console.log(`verifica-sistema: ${fontes.length} arquivos em src/\n`);
 
 console.log('BLOQUEIAM O BUILD');
 if (falhas.length === 0) {
-  console.log(`  ok — nenhuma violacao no escopo ja migrado (${componentes} componentes, todos no catalogo)\n`);
+  console.log(`  ok — nenhuma violacao (${componentes} componentes, todos no catalogo)\n`);
 } else {
   for (const f of falhas) console.log(`  FALHA  ${f}`);
   console.log('');
 }
 
-console.log('PENDENTE (vira bloqueante conforme a migracao avanca)');
-console.log(`  style= inline no projeto ......... ${estilosInline}`);
-console.log(
-  `  paginas com heading irregular .... ${
-    headingsReprovados ? headingsReprovados.length : 'dist/ ausente — nao verificado'
-  }`
-);
+/*
+ * O QUE JA ESTA GARANTIDO, e nao o que falta.
+ *
+ * Ate a Etapa 11 este bloco se chamava PENDENTE e listava a divida do tema — o
+ * numero caia a cada etapa e virava bloqueante sozinho quando chegava a zero.
+ * Chegou. Trocar a lista pelo resumo do que o portao cobre e o que impede a
+ * proxima pessoa de ler zero como "esta checagem nao roda".
+ */
+const semDist = 'dist/ ausente — nao verificado';
+console.log('COBERTURA');
+console.log(`  style= inline fora da allowlist .. ${estilosInline}`);
 console.log(`  cor literal fora de tokens.css ... ${avisos.length}`);
-console.log(
-  `  paginas migradas ................. ${
-    isolamento ? `${isolamento.migradas} de ${isolamento.total} (medido em dist/)` : `${MIGRADAS.length} de 41 (dist/ ausente)`
-  }`
-);
+console.log(`  paginas com heading conferido .... ${comHeadings ?? semDist}`);
+console.log(`  paginas com a folha do sistema ... ${comFolha ?? semDist}`);
 
-if (process.env.DETALHE) {
+if (avisos.length && process.env.DETALHE) {
   console.log('\nDETALHE');
-  for (const a of [...(headingsReprovados ?? []), ...avisos]) console.log(`  ${a}`);
+  for (const a of avisos) console.log(`  ${a}`);
 }
 
 if (falhas.length) {
-  console.error(`\nverifica-sistema abortou: ${falhas.length} violacao(oes) no escopo ja migrado.`);
+  console.error(`\nverifica-sistema abortou: ${falhas.length} violacao(oes).`);
   process.exit(1);
 }

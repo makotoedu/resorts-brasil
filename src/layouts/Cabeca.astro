@@ -11,31 +11,33 @@ import {
   type RouteKey,
 } from '../i18n/ui';
 import { contato } from '../data/contato';
+import { imagem } from '../imagens';
 
 /**
- * O `<head>` inteiro, compartilhado pelas duas camadas.
+ * O `<head>` inteiro — meta, canonical, hreflang, Open Graph, dado estruturado,
+ * fonte e consentimento.
  *
- * POR QUE ELE FOI EXTRAIDO. Ate a Etapa 5 havia um BaseLayout so, com uma prop
- * `legado` que escolhia entre carregar o CSS do tema ou nao. A prop nunca foi
- * usada por pagina nenhuma — e nao podia ser: o proprio layout trazia Header e
- * Footer do tema, entao `legado={false}` entregaria uma pagina sem cabecalho e
- * sem rodape.
+ * POR QUE ELE E UM ARQUIVO SEPARADO DO LAYOUT. Ate a Etapa 5 havia um layout so,
+ * com uma prop `legado` que escolhia entre carregar o CSS do tema ou nao. A prop
+ * nunca foi usada por pagina nenhuma — e nao podia ser: o proprio layout trazia
+ * Header e Footer do tema, entao `legado={false}` entregaria uma pagina sem
+ * cabecalho e sem rodape.
  *
- * Trocar aquilo por um `if` no layout tambem nao serve, e o motivo e o mesmo que
- * derrubou a primeira tentativa da Etapa 0: o Astro empacota CSS pelo GRAFO DE
- * MODULOS, nao pelo que a pagina renderiza. Bastaria o BaseLayout IMPORTAR os
- * componentes novos para o `<style>` deles entrar no bundle das 40 paginas do
- * tema — e a invariante de isolamento (nenhuma pagina com as duas folhas)
- * reprovaria o build, com razao.
+ * Trocar aquilo por um `if` no layout tambem nao servia, e o motivo e o mesmo
+ * que derrubou a primeira tentativa da Etapa 0: o Astro empacota CSS pelo GRAFO
+ * DE MODULOS, nao pelo que a pagina renderiza. Bastaria o layout do tema
+ * IMPORTAR os componentes novos para o `<style>` deles entrar no bundle das 40
+ * paginas do tema — e a invariante de isolamento (nenhuma pagina com as duas
+ * folhas) reprovaria o build, com razao.
  *
- * Entao a escolha subiu um nivel: em vez de uma prop dentro de um layout, sao
- * dois layouts. `BaseLayout` e o do tema, `LayoutSistema` e o do design system,
- * e este arquivo e o que os dois tem em comum — meta, canonical, hreflang, Open
- * Graph, dado estruturado, fonte e consentimento.
+ * Entao a escolha subiu um nivel: em vez de uma prop dentro de um layout, dois
+ * layouts, e este arquivo com o que os dois tinham em comum. O do tema morreu na
+ * Etapa 11 e sobrou um so, mas a separacao fica: o `<head>` e um assunto
+ * proprio, e o mecanismo que a exigiu — CSS empacotado pelo grafo de modulos —
+ * continua valendo para qualquer folha que alguem venha a importar.
  *
- * ELE NAO TEM `<style>`, e isso e requisito e nao acaso: um bloco de estilo aqui
- * voltaria a atravessar as duas camadas, que e o problema que a separacao acaba
- * de resolver.
+ * ELE NAO TEM `<style>`, e isso continua sendo requisito: um bloco de estilo
+ * aqui alcancaria toda pagina do site por um caminho que ninguem le.
  */
 interface Props {
   lang: Locale;
@@ -73,6 +75,23 @@ const alts = route ? alternates(route) : [];
 /** Paginas sem traducao e sem valor de busca (a 404) saem do indice. */
 const noindex = !route;
 
+/*
+ * O LOGOTIPO DO DADO ESTRUTURADO SAI DO PIPELINE, e nao de um caminho escrito a
+ * mao.
+ *
+ * Ele era `/images/logo-25anos.png`, um caminho que so existia em producao
+ * porque a PONTE do scripts/imagens.mjs copiava o arquivo do acervo para
+ * `dist/images/` — mecanismo que existia para as paginas do tema. Com a Etapa 11
+ * a ponte saiu, e esta URL viraria 404: o Google buscaria o logo da associacao e
+ * nao acharia, sem quebrar build nem teste nenhum.
+ *
+ * Resolvendo pelo `src/imagens.ts`, o endereco passa a ser o do arquivo emitido,
+ * com hash — que e o que o `/_astro/` serve com `immutable` de um ano. Cabe aqui
+ * porque JSON-LD e a UNICA referencia externa que nao precisa de caminho estavel:
+ * o favicon e o og-image precisam, e por isso continuam em `public/images/`.
+ */
+const logoUrl = new URL(imagem('/images/logo-25anos.png').src, site).href;
+
 /**
  * Dado estruturado da associacao. Uma vez por pagina, com os mesmos valores que
  * a pagina de contato exibe — ver src/data/contato.ts.
@@ -83,7 +102,7 @@ const orgJsonLd = {
   name: 'Resorts Brasil',
   alternateName: 'Associação Brasileira de Resorts',
   url: site.href,
-  logo: new URL('/images/logo-25anos.png', site).href,
+  logo: logoUrl,
   email: contato.email,
   address: {
     '@type': 'PostalAddress',

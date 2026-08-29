@@ -1,35 +1,43 @@
 /**
- * Ponte e purga de imagens, depois do build.
+ * Purga e vigilância de imagens, depois do build.
  *
- * Duas tarefas, uma varredura só — porque as duas dependem exatamente da mesma
- * pergunta: **quais imagens o site gerado realmente pede?**
+ * ELE TINHA DUAS TAREFAS E FICOU COM UMA E MEIA. A que saiu na Etapa 11 é a
+ * PONTE: o `astro:assets` só otimiza o que está em `src/`, então a Etapa 2 levou
+ * o acervo de `public/images/` para `src/assets/imagens/` — mas as 40 páginas do
+ * tema continuavam pedindo `/images/...` por HTTP, em 162 `<img src>` e 42
+ * `background-image` inline. Este script copiava para `dist/images/` só o que
+ * ainda era pedido, e a cada página migrada copiava menos.
  *
- * 1. PONTE. O `astro:assets` só otimiza o que está em `src/`, então o acervo saiu
- *    de `public/images/` para `src/assets/imagens/`. Mas as 40 páginas do tema
- *    pedem `/images/...` por HTTP, em 162 `<img src>` e 42 `background-image`
- *    inline. Sem a ponte, o acervo inteiro quebraria nelas.
+ * **Ela nunca chegou a copiar zero.** Quando a última página migrou ainda
+ * restavam três referências, e as três estavam em código MIGRADO: as duas
+ * miniaturas de vídeo do `<Video>` e o logotipo do JSON-LD. Nenhuma delas era
+ * dívida do tema; era o hábito do caminho antigo sobrevivendo à camada que o
+ * justificava. As duas primeiras passaram pelo `<Imagem>`, a terceira passou a
+ * resolver pelo `src/imagens.ts`, e aí sim a ponte pôde sair.
  *
- *    Ela copia só o que ainda é pedido, e é de propósito: **cada página migrada
- *    leva junto as imagens que só ela pedia**, então o peso do `dist/` cai a
- *    cada etapa em vez de esperar a Etapa 11. Quando a última migrar, este
- *    script copia zero e some — mesmo mecanismo do `purge-css.mjs`.
+ * O QUE SOBROU:
  *
- * 2. PURGA. O `src/imagens.ts` resolve caminho público para módulo com um
+ * 1. PURGA. O `src/imagens.ts` resolve caminho público para módulo com um
  *    `import.meta.glob` eager, e é o que permite os 183 caminhos de `src/data/`
  *    continuarem strings. O preço: **o Vite emite todo arquivo importado**, use-se
- *    ou não. Medido na primeira execução: 198 originais em `dist/_astro/`, 8,5 MB
- *    duplicados ao lado da ponte. Aqui eles saem, pelo mesmo critério do CSS —
- *    o que nenhum HTML referencia não vai para produção.
+ *    ou não — 8,5 MB duplicados no `dist/` na primeira medição. Aqui eles saem,
+ *    pelo mesmo critério do CSS: o que nenhum HTML referencia não vai para
+ *    produção.
  *
- * E uma guarda que não existia: referência sem arquivo **aborta o build**. Antes,
- * caminho errado atravessava tudo e virava 404 no navegador.
+ * 2. A GUARDA, que virou o contrário do que era. Era "referência sem arquivo
+ *    aborta o build", e agora é a afirmação de uma AUSÊNCIA: nenhuma página pode
+ *    voltar a pedir `/images/...` fora dos dois arquivos que moram em `public/`
+ *    de propósito. É a mesma classe de vigilância do isolamento de folhas no
+ *    verifica-sistema.mjs e da webfont no verify-behaviors.mjs — sem ela, o
+ *    primeiro `<img src="/images/...">` escrito à mão voltaria a ser um 404 que
+ *    só o navegador vê.
  *
  *   node scripts/imagens.mjs        # já embutido no npm run build
  *   DETALHE=1 node scripts/imagens.mjs
  */
-import { readFile, mkdir, copyFile, stat, readdir, unlink } from 'node:fs/promises';
+import { readFile, stat, readdir, unlink } from 'node:fs/promises';
 import { glob } from 'node:fs/promises';
-import { dirname, join, relative } from 'node:path';
+import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const RAIZ = new URL('..', import.meta.url);
@@ -40,10 +48,9 @@ const PUBLICO = fileURLToPath(new URL('public/', RAIZ));
 const EXTENSOES = /\.(?:png|jpe?g|svg|webp|avif|gif)$/i;
 
 /*
- * Pega `src=`, `srcset=`, `url()` de style inline e também a URL absoluta do
- * logotipo no JSON-LD. Por isso o casamento é no texto do arquivo, e não num
- * atributo específico: um seletor de atributo teria deixado o JSON-LD de fora, e
- * o logo sumiria do dado estruturado sem ninguém ver.
+ * Pega `src=`, `srcset=`, `url()` de style inline e também URL absoluta dentro
+ * do JSON-LD. Por isso o casamento é no texto do arquivo, e não num atributo
+ * específico: um seletor de atributo teria deixado o dado estruturado de fora.
  *
  * A CLASSE É "TUDO MENOS DELIMITADOR", e não uma lista de caracteres válidos. A
  * primeira versão usava `[A-Za-z0-9._%\-/]+`, que parece cobrir nome de arquivo
@@ -58,12 +65,14 @@ const REF_ASTRO = /\/_astro\/[^"'\s)\\<>]+\.(?:png|jpe?g|svg|webp|avif|gif)/gi;
 /**
  * Onde uma referência pode aparecer: HTML, e também o CSS e o JS gerados.
  *
- * ESTE SCRIPT RODA DEPOIS DO purge-css.mjs, e não antes. Rodando antes, ele lê o
- * `style.css` inteiro do tema — que referencia oito imagens que nunca existiram
- * neste projeto (`expand.png`, `triangle-divider-top.png`, os quatro
- * `overlay-pattern/`…), sobras de um tema comprado. A guarda de referência sem
- * arquivo abortava o build por causa de regras que a purga apaga em seguida.
- * Depois da purga, o CSS lido é o que de fato vai para produção.
+ * ATÉ A ETAPA 11 ESTE SCRIPT PRECISAVA RODAR DEPOIS DO purge-css.mjs. Rodando
+ * antes, ele lia o `style.css` inteiro do tema — que referencia oito imagens que
+ * nunca existiram neste projeto (`expand.png`, `triangle-divider-top.png`, os
+ * quatro `overlay-pattern/`…), sobras de um tema comprado — e a guarda abortava
+ * o build por causa de regras que a purga apagava em seguida. Com o tema
+ * removido não há mais CSS de terceiro em `dist/`, e a ordem deixou de importar;
+ * a nota fica porque o mecanismo — guarda que lê o artefato lendo TAMBÉM o que
+ * outra etapa ainda vai apagar — é geral.
  */
 const ARQUIVOS_QUE_REFERENCIAM = ['**/*.html', '**/*.css', '**/*.js'];
 
@@ -80,7 +89,7 @@ if (paginas.length === 0) {
   );
 }
 
-/** caminho público -> páginas que o pedem */
+/** caminho público -> arquivos gerados que o pedem */
 const pedidas = new Map();
 /** nomes de arquivo em /_astro/ que alguma página referencia */
 const otimizadasEmUso = new Set();
@@ -97,44 +106,38 @@ for (const doc of documentos) {
 }
 
 /* ---------------------------------------------------------------- *
- * 1. Ponte
- * ---------------------------------------------------------------- */
-
-const faltando = [];
-let copiados = 0;
-let bytesCopiados = 0;
-let jaNoPublico = 0;
+ * 1. Nenhum caminho `/images/` fora dos dois arquivos de public/
+ * ---------------------------------------------------------------- *
+ * `favicon.png` e `og-image.png` continuam em `public/` porque são pedidos DE
+ * FORA do site — pela barra do navegador e pelo scraper de rede social —, e um
+ * endereço com hash não serve para isso. Todo o resto do acervo vive em
+ * `src/assets/imagens/` e chega à página pelo `<Imagem>`.
+ *
+ * Qualquer outro `/images/...` no HTML gerado é um 404 esperando o visitante:
+ * não existe mais nada em `dist/images/` além do que o Astro copia de `public/`.
+ */
+const foraDoPipeline = [];
+let dePublico = 0;
 
 for (const [caminho, quem] of pedidas) {
-  // favicon.png e og-image.png continuam em public/: são referenciados de fora
-  // do site (índice, redes sociais) e não passam pelo pipeline.
   try {
     await stat(join(PUBLICO, caminho.slice(1)));
-    jaNoPublico += 1;
-    continue;
+    dePublico += 1;
   } catch {
-    /* não está em public/ — segue para o acervo */
-  }
-
-  const relativo = caminho.replace(/^\/images\//, '');
-  try {
-    const info = await stat(join(ACERVO, relativo));
-    const destino = join(DIST, 'images', relativo);
-    await mkdir(dirname(destino), { recursive: true });
-    await copyFile(join(ACERVO, relativo), destino);
-    copiados += 1;
-    bytesCopiados += info.size;
-  } catch {
-    faltando.push(`${caminho}  pedida por ${quem.length} arquivo(s), ex.: ${quem[0]}`);
+    foraDoPipeline.push(`${caminho}  em ${quem.length} arquivo(s), ex.: ${quem[0]}`);
   }
 }
 
-if (faltando.length) {
-  console.error(`\nimagens: abortado, ${faltando.length} referência(s) sem arquivo:`);
-  for (const f of faltando) console.error(`  ${f}`);
+if (foraDoPipeline.length) {
   console.error(
-    `\nO acervo vive em src/assets/imagens/. Se o arquivo existe com outro nome, ` +
-      `corrija a referência; se ele não existe mais, tire a referência.`
+    `\nimagens: abortado, ${foraDoPipeline.length} referência(s) a /images/ que não existem em public/:`
+  );
+  for (const f of foraDoPipeline) console.error(`  ${f}`);
+  console.error(
+    `\nO acervo vive em src/assets/imagens/ e chega à página pelo <Imagem src="/images/...">,\n` +
+      `que resolve o caminho para o arquivo otimizado em /_astro/. Escrito direto num\n` +
+      `<img src>, o mesmo caminho vira 404: só favicon.png e og-image.png são servidos\n` +
+      `crus, porque são referenciados de fora do site.`
   );
   process.exit(1);
 }
@@ -158,15 +161,13 @@ for (const entrada of await readdir(join(DIST, '_astro'), { withFileTypes: true 
 /* ---------------------------------------------------------------- *
  * 3. Relatório
  * ---------------------------------------------------------------- *
- * O que sobra do acervo, separado em duas coisas que não se confundem:
+ * O que do acervo ninguém pede — nem pelo pipeline, nem de jeito nenhum. É peso
+ * morto no repositório, e a distinção sai do nome: o Astro mantém o basename
+ * original no arquivo otimizado (`pexels-1134176.Dy5C9mi__1xxPct.jpg`).
  *
- *   OTIMIZADA  ninguém pede por /images/ porque alguma página migrada já a usa
- *              pelo pipeline. É o progresso da migração, medido em arquivo.
- *   OCIOSA     ninguém pede, ponto. Nem pelo caminho antigo, nem otimizada.
- *              É peso morto no repositório.
- *
- * A distinção sai do nome: o Astro mantém o basename original no arquivo
- * otimizado (`pexels-1134176.Dy5C9mi__1xxPct.jpg`).
+ * ATÉ A ETAPA 11 ESTA CONTA TINHA TRÊS CATEGORIAS — pedida pelo tema, otimizada
+ * pelo pipeline, ociosa —, e a do meio era o progresso da migração medido em
+ * arquivo. Com uma camada só sobraram duas, e o número que importa é o segundo.
  */
 const basesEmUso = new Set([...otimizadasEmUso].map((n) => n.split('.')[0]));
 
@@ -177,20 +178,19 @@ for (const entrada of await readdir(ACERVO, { recursive: true, withFileTypes: tr
   noAcervo.push('/images/' + caminho.replace(/\\/g, '/'));
 }
 
-const sobrando = noAcervo.filter((c) => !pedidas.has(c));
-const ociosas = sobrando.filter((c) => !basesEmUso.has(c.split('/').pop().replace(EXTENSOES, '')));
-const pipeline = sobrando.length - ociosas.length;
+const ociosas = noAcervo.filter(
+  (c) => !basesEmUso.has(c.split('/').pop().replace(EXTENSOES, ''))
+);
+const pelasPaginas = noAcervo.length - ociosas.length;
 
 const mb = (n) => `${(n / 1024 / 1024).toFixed(1)} MB`;
 console.log(
-  `  imagens       ${copiados} para o tema (${mb(bytesCopiados)})` +
-    (jaNoPublico ? `, ${jaNoPublico} de public/` : '') +
-    `, ${pipeline} pelo pipeline; ` +
+  `  imagens       ${pelasPaginas} pelo pipeline, ${dePublico} cruas de public/; ` +
     `${removidos} emitidas sem uso removidas (${mb(bytesRemovidos)})` +
     (ociosas.length ? `; ${ociosas.length} sem nenhuma referência` : '')
 );
 
 if (ociosas.length && process.env.DETALHE) {
-  console.log('\n  SEM NENHUMA REFERÊNCIA (nem antiga, nem otimizada):');
+  console.log('\n  SEM NENHUMA REFERÊNCIA:');
   for (const c of ociosas) console.log(`    ${c}`);
 }

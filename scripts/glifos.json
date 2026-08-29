@@ -1,27 +1,38 @@
 {
   "_leia": [
-    "Os glifos de icone que o site realmente usa, e a unica fonte de verdade do",
-    "assunto: scripts/subset-fonts.py gera os subsets a partir daqui, e",
-    "scripts/check-glifos.mjs falha o build se o CSS purgado pedir um codepoint",
-    "que nao esteja nesta lista.",
+    "De onde vem o contorno de cada um dos 16 icones do site.",
     "",
-    "A lista NAO sai do inventario de <i class> do HTML. Dois glifos vem de",
+    "ELE MUDOU DE PAPEL NA ETAPA 11, e a distincao e a coisa importante deste",
+    "arquivo. Ate ali ele era a lista do que se PUBLICA: scripts/subset-fonts.py",
+    "gerava os subsets a partir daqui e scripts/check-glifos.mjs reprovava o build",
+    "se o CSS purgado pedisse um codepoint de fora da lista. Os dois scripts",
+    "sairam com o tema — nenhuma pagina baixa webfont de icone desde a Etapa 10, e",
+    "public/webfonts/ deixou de existir.",
+    "",
+    "O QUE SOBROU E A PROCEDENCIA. scripts/glifos-para-svg.py le `origem` e",
+    "`glifos` para desenhar src/icones/glifos.ts a partir das fontes de",
+    "vendor/webfonts/, e tests/verify-icones.mjs compara desenho a desenho contra",
+    "as mesmas fontes. Apagar uma familia daqui apagaria os icones dela na proxima",
+    "regeneracao, SEM ERRO NENHUM — e por isso as duas do Font Awesome continuam",
+    "listadas mesmo sem nada ser publicado a partir delas.",
+    "",
+    "Pelo mesmo motivo, vendor/webfonts/ nao e lixo: e a origem dos contornos e a",
+    "referencia do portao de icones. Ele tem QUATRO arquivos e esta lista cita",
+    "tres — fa-regular-400.woff2 nunca desenhou nada aqui (nenhum icone .far em",
+    "nenhuma das 41 paginas) e fica so como copia do tema original.",
+    "",
+    "A lista NAO saiu do inventario de <i class> do HTML. Dois glifos vinham de",
     "pseudo-elementos sem classe fa-* (U+F054 e U+F192) e ficaram de fora da",
     "primeira versao do subset; rodar aquele script apagava as setas e bolinhas",
     "das listas de 6 paginas, sem erro de build. Ver docs/decisoes.md.",
     "",
-    "Para atualizar: rode o build, leia o que o check-glifos reclamar, e",
-    "acrescente aqui — em `glifos` se o icone e usado mesmo, em `ignorar` se for",
-    "falso positivo do extrator do PurgeCSS."
+    "Depois de mexer aqui, rode `python scripts/glifos-para-svg.py` e",
+    "`node tests/verify-icones.mjs`. Nunca edite src/icones/glifos.ts a mao."
   ],
-
-  "versao": "2026-08",
 
   "familias": [
     {
       "origem": "fa-brands-400.woff2",
-      "saida": null,
-      "_saida": "NULA DESDE A ETAPA 10. As tres paginas do ebook eram as ultimas a emitir <i class=\"fab fa-linkedin\">, e com elas migradas nenhum CSS publicado pede um codepoint do Font Awesome. A familia CONTINUA AQUI porque `familias` nao e a lista do que se publica: e a lista de onde cada CONTORNO vem. scripts/glifos-para-svg.py le exatamente esta entrada para desenhar os cinco SVG de src/icones/glifos.ts, e tests/verify-icones.mjs compara cada desenho com esta fonte. Apagar a entrada apagaria os cinco icones no proximo `python scripts/glifos-para-svg.py`, sem erro nenhum.",
       "familia_css": "Font Awesome 5 Brands",
       "glifos": {
         "U+F08C": "linkedin",
@@ -33,23 +44,20 @@
     },
     {
       "origem": "fa-solid-900.woff2",
-      "saida": null,
-      "_saida": "NULA DESDE A ETAPA 10, pelo mesmo motivo da familia acima.",
       "familia_css": "Font Awesome 5 Free (peso 900)",
       "glifos": {
-        "U+F05A": "info-circle — era o <i class=\"fa fa-info-circle\"> da faixa de cookies do BaseLayout",
-        "U+F054": "chevron-right — .list-icon.list-icon-arrow li:before, SEM classe no HTML",
-        "U+F192": "dot-circle — .list-icon.list-icon-circle li:before, SEM classe no HTML"
+        "U+F05A": "info-circle — era o <i class=\"fa fa-info-circle\"> da faixa de cookies do tema",
+        "U+F054": "chevron-right — era .list-icon.list-icon-arrow li:before, SEM classe no HTML",
+        "U+F192": "dot-circle — era .list-icon.list-icon-circle li:before, SEM classe no HTML"
       }
     },
     {
       "origem": "inspiro-icons.woff",
-      "saida": "inspiro-icons.woff2",
       "familia_css": "inspiro-icons",
       "glifos": {
         "U+E925": "box",
         "U+E92B": "check-circle",
-        "U+E930": "chevron-right — tambem #mainMenu nav>ul>li.dropdown:before, 40 paginas",
+        "U+E930": "chevron-right",
         "U+E931": "chevron-up",
         "U+E978": "globe",
         "U+E992": "mail",
@@ -57,13 +65,5 @@
         "U+E99A": "message-square"
       }
     }
-  ],
-
-  "remover": {
-    "fa-regular-400.woff2": "nenhum icone .far em qualquer uma das 41 paginas"
-  },
-
-  "ignorar": {
-    "U+E919": ".icon-award sobrevive a purga por causa do caminho /images/ebook/icon-award.png — o extrator do PurgeCSS casa a substring. Nao existe <i class=\"icon-award\"> no site."
-  }
+  ]
 }

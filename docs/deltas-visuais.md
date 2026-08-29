@@ -555,6 +555,39 @@ não de migração.
 uma é conteúdo novo. A costura ficou pronta — os campos já aceitam mapa por
 idioma.
 
+## Etapa 11 — a demolição, e o único pixel que ela move
+
+A remoção do tema não muda pixel nenhum: nenhuma página carregava aquelas folhas
+desde a Etapa 10, e o CSS gerado pela troca dos 60 `@source` por quatro
+diretórios saiu **byte a byte idêntico** — 40.005 bytes, mesmo hash.
+
+**Uma coisa muda, em seis páginas:** as miniaturas dos dois vídeos passaram pelo
+`<Imagem>`, então deixam de ser o JPG original e passam a AVIF com reserva em
+WebP, em `srcset`.
+
+| onde | classificação | o quê |
+|---|---|---|
+| `/resorts-brasil` × 3 e `/ebook` × 3 | **refino** | miniatura de vídeo recomprimida pelo pipeline: 176 KB → 26 KB nas duas, com `srcset` e `sizes`. Enquadramento, caixa e proporção iguais |
+
+A recompressão é a mesma que as outras 179 imagens do site já sofrem, com a mesma
+qualidade 50 — o piso medido por [`medir-imagens.mjs`](../scripts/medir-imagens.mjs),
+abaixo do qual aparece diferença perceptível e acima do qual só aumenta o
+arquivo. Nas três amostras daquela medição (foto, retrato e logo chapado), q50 em
+AVIF dá **0,00% de pixels percebidos diferentes** contra o original.
+
+### O que quase virou regressão, e não foi por medição
+
+Passar a miniatura para o `<Imagem>` põe um `<picture>` entre o botão da fachada
+e o `<img>`, e os dois vêm de um componente **filho** — que não recebe o atributo
+de escopo do Astro. A regra `.yt-facade-btn img` ficaria inerte, e o `<picture>`,
+sendo caixa inline de altura automática, faria o `height: 100%` do `<img>` se
+resolver contra ele em vez de contra a caixa 16/9.
+
+Nenhum dos quatro portões veria: a geometria mede a caixa da fachada, que
+continua 16/9 esteja a miniatura onde estiver. Resolvido com `:global(picture)` e
+`:global(img)`, e registrado no [CLAUDE.md](../CLAUDE.md) como o avesso da
+armadilha 1.
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

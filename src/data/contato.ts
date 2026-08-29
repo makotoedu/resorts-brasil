@@ -3,7 +3,7 @@
  *
  * Estavam escritos a mao nas tres paginas de contato, identicos nos tres
  * idiomas (so o texto ao redor muda). Ficam aqui porque alimentam tambem o
- * JSON-LD do BaseLayout — endereco e telefone precisam bater com o que a
+ * JSON-LD do <head> (Cabeca.astro) — endereco e telefone precisam bater com o que a
  * pagina exibe, senao o dado estruturado contradiz o visivel.
  */
 export const contato = {

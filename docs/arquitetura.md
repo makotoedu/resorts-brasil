@@ -22,47 +22,51 @@ src/
     diretoria.ts          diretoria e conselho consultivo
     contato.ts            endereço, e-mails e telefones
     cookies.ts            os cookies que o site grava, levantados por medição
+  content/                publicações e estudos (Content Collections, YAML)
   layouts/
-    Cabeca.astro          o <head> das duas camadas: meta, hreflang, og, JSON-LD,
-                          fonte e consentimento. Sem <style>, e isso é requisito
-    BaseLayout.astro      o layout do TEMA — <body>, header, <main>, rodapé
-    LayoutSistema.astro   o layout do DESIGN SYSTEM; é quem importa global.css
+    Cabeca.astro          o <head>: meta, hreflang, og, JSON-LD, fonte e
+                          consentimento. Sem <style>, e isso é requisito
+    LayoutSistema.astro   o layout único; é quem importa global.css
   components/
-    Header.astro          (tema) topbar, logo, seletor de idioma, navegação
-    Footer.astro          (tema) widgets do rodapé, copyright e revogar cookies
-    SocialIcons.astro     (tema) os 4 links de rede social, com nome acessível
     AssociadosTabs.astro  as abas por região da página de associados
     ConviteAssociese.astro  o convite de associação, em quatro páginas
     DestaquesHome.astro   os seis cartões de destaque da home
     FaixaAssociados.astro   o título e o carrossel de logos da home
     FaixaParceiros.astro  mantenedores, parceiros e descontos
+    PaginaEbook.astro     o corpo da landing page, um só para os três idiomas
     SecaoCookies.astro    a seção de cookies da política de privacidade
-    YouTube.astro         (tema) vídeo com fachada de clique-para-carregar
     primitivos/           Titulo, Texto, Botao, Icone, Imagem
     layout/               Secao, Container, Grade
     padroes/              CartaoMembro, ChamadaAcao, CaixaIcone, Hero, Abas…
     cromo/                Cabecalho, Rodape, FaixaCookies, IconesSociais,
-                          VoltarAoTopo — o que embrulha toda página migrada
+                          VoltarAoTopo — o que embrulha toda página
+  styles/                 tokens.css, base.css e global.css
+  icones/glifos.ts        os 16 ícones em SVG — GERADO, não edite
+  imagens.ts              resolve /images/… para o módulo otimizado
+  assets/imagens/         o acervo
   pages/                  40 páginas + o catálogo /design
   scripts/site.js         os comportamentos de interface
 
 public/                   servido como está, na raiz do site
-  css/                    plugins.css, style.css e ajustes.css
-  images/                 198 arquivos
-  webfonts/               fontes de ícone, geradas pelo subset (2,9 KB)
+  images/                 favicon.png e og-image.png, e nada mais
   robots.txt              aponta para o sitemap
 
 vendor/
-  webfonts/               as fontes originais do tema; public/webfonts/ é gerado
+  webfonts/               as fontes de origem dos 16 contornos; não publicadas
 
 scripts/
-  purge-css.mjs           purga e minifica o CSS depois do build
-  subset-fonts.py         gera public/webfonts/ a partir de vendor/ e glifos.json
-  glifos.json             os 16 glifos em uso — fonte única do subset e da guarda
-  check-glifos.mjs        aborta o build se o CSS pedir um glifo fora do subset
+  glifos.json             a procedência de cada um dos 16 contornos
+  glifos-para-svg.py      gera src/icones/glifos.ts a partir de vendor/
+  imagens.mjs             purga o que o Vite emitiu sem uso; aborta se algum
+                          /images/ escapar do pipeline
+  verifica-sistema.mjs    as invariantes do design system, no build
+  medir-*.mjs             os seis medidores, no navegador
 
 tests/
   verify-behaviors.mjs    os comportamentos num navegador real
+  verify-geometria.mjs    41 páginas × 3 viewports, procurando layout colapsado
+  verify-icones.mjs       cada ícone SVG contra a webfont de origem
+  verify-orcamento.mjs    peso por página, como catraca
   visual-diff.mjs         40 páginas × 3 viewports contra o site original
 ```
 
@@ -126,29 +130,32 @@ com os três slugs e os rótulos em `ui`. Só depois crie os arquivos `.astro`.
 
 ---
 
-## As props do layout, e por que existem
+## As props do layout, e por que são só duas
 
-As 30 páginas que ainda não migraram compartilham um layout, mas o site original
-não era uniforme. Em vez de "corrigir" essas diferenças — o que mudaria a
-aparência de páginas que estão no ar —, o
-[`BaseLayout`](../src/layouts/BaseLayout.astro) as reproduz por prop.
-
-O [`LayoutSistema`](../src/layouts/LayoutSistema.astro) reproduz **menos**: o que
-era acidente do conteúdo original some na migração (o `bodyClass`, que existia em
-33 páginas e faltava em 7), e o que é decisão continua (o rodapé mínimo da 404):
+O site original não era uniforme, e o layout do tema reproduzia cada diferença
+por prop — eram quatro. O
+[`LayoutSistema`](../src/layouts/LayoutSistema.astro) reproduz **menos**, e o
+critério é o que separa acidente de decisão:
 
 | prop | páginas | o que reproduz |
 |---|---|---|
 | `rodapeMinimo` | 404 | rodapé só com a faixa de copyright |
-| `bodyClass` | 7 | `<body>` sem `class="modern"` |
-| `mainClass` | 4 | `hero-fullscreen`, o deslocamento sob o cabeçalho |
-| `variacaoEbook` | 3 | cabeçalho sem topbar e com `.dark`, rodapé `.inverted` |
+| `variacaoEbook` | 3 | cabeçalho sem topbar e escuro, rodapé invertido |
 
-Cada uma dessas apareceu como uma página reprovada no diff visual, não como uma
-decisão de projeto. Antes de acrescentar uma prop nova, vale confirmar no
-original (`git show 74fc1fd:pagina.html`) que a diferença é mesmo do conteúdo, e
-registrar o porquê em [decisoes.md](decisoes.md) — sem isso, elas parecem
-arbitrariedade.
+As duas que sumiram eram acidente. O `bodyClass` existia em 33 páginas e faltava
+em 7, mudando o layout de quem não o tinha — uma inconsistência do conteúdo
+original, resolvida por **remoção** em vez de padronização. O `mainClass` levava
+`hero-fullscreen`, que fazia o `ajustes.css` puxar o hero para trás do cabeçalho
+transparente; no sistema o cabeçalho está no fluxo, e o deslocamento negativo
+deixou de existir.
+
+O `variacaoEbook` é uma prop só para três traços — sem topbar, cabeçalho escuro,
+rodapé invertido — porque no site eles nunca apareceram separados. Três booleanos
+permitiriam oito combinações, das quais uma existe.
+
+Antes de acrescentar uma prop nova, vale confirmar no original
+(`git show 74fc1fd:pagina.html`) que a diferença é mesmo do conteúdo, e registrar
+o porquê em [decisoes.md](decisoes.md) — sem isso, elas parecem arbitrariedade.
 
 ---
 
@@ -171,63 +178,54 @@ No desenvolvimento, o `astro preview` aceita as duas formas — `/historia` e
 
 ## CSS
 
-Três folhas, carregadas nesta ordem pelo [`BaseLayout`](../src/layouts/BaseLayout.astro)
-— e **só por ele**, ou seja, só nas páginas que ainda não migraram:
+Uma folha, [`src/styles/global.css`](../src/styles/global.css), importada pelo
+`LayoutSistema` e portanto presente nas 41 páginas. Ela importa três coisas nesta
+ordem, e a ordem é o ponto:
 
-1. `plugins.css` — Bootstrap, FontAwesome e animate.css do tema
-2. `style.css` — o tema Inspiro
-3. `ajustes.css` — **o que o tema resolvia em jQuery**
+1. `tailwindcss` — o Preflight (o reset) e as camadas theme/base/utilities
+2. `tokens.css` — o `@theme`, que alimenta as utilitárias
+3. `base.css` — a base tipográfica que o Preflight zera, **restaurada a partir de
+   valores medidos no navegador**
 
-A ordem importa: `ajustes.css` precisa vir depois de `style.css` para vencer na
-cascata. As quatro primeiras seções reparam algo que a remoção do jQuery deixou
-inerte; as quatro seguintes acrescentam o que o tema não previa:
+Não há `@apply`, não há cor literal fora do `tokens.css`, e CSS de verdade vai em
+`<style>` com escopo dentro do componente que precisa dele. As três regras são
+verificadas por [`verifica-sistema.mjs`](../scripts/verifica-sistema.mjs), que
+**aborta o build** — o que separa um design system de um conjunto de componentes
+é o build falhar quando alguém sai dele.
 
-| seção | repara / acrescenta |
-|---|---|
-| 1 | o deslocamento sob o cabeçalho transparente, que o `<main>` ativou por engano |
-| 2 | a visibilidade e as calhas das grades `.grid-layout` (Isotope) |
-| 3 | as 15 regras responsivas presas a `body.breakpoint-*` |
-| 4 | o contexto de empilhamento do slide, sem o qual o Ken Burns some |
-| 5 | foco visível por `:focus-visible`, que o tema apagava do site inteiro |
-| 6 | submenus da navegação abrindo também no foco, e não só no `:hover` |
-| 7 | o painel de categorias do consentimento, e o `[hidden]` da faixa |
-| 8 | a fachada dos vídeos do YouTube |
+A varredura do Tailwind é declarada por diretório: `components`, `layouts`,
+`pages`, `styles`. `src/data/`, `src/i18n/` e `src/content/` guardam dado e prosa,
+e `src/scripts/` só aplica nomes de estado escritos à mão.
 
-Cada seção traz o porquê em comentário, com o trecho do tema que a originou.
-[decisoes.md](decisoes.md#a-armadilha-bodybreakpoint-) conta a história — é a
-leitura mais importante antes de mexer em CSS aqui.
-
-O CSS do tema fica em `public/`, servido como está, e é processado **depois** do
-build por [`scripts/purge-css.mjs`](../scripts/purge-css.mjs), que roda contra o
-HTML gerado em `dist/` e minifica com lightningcss. Isso está encadeado no
-script `build` do `package.json`, então `npm run build` já faz tudo.
-
-Ao adicionar uma classe que só aparece via JavaScript, inclua-a na lista
-`runtimeClasses` do script de purga — o PurgeCSS não tem como enxergá-la no
-HTML estático. Isso vale para **seletor**, não só para classe: `iframe` está lá
-porque, depois da fachada dos vídeos, não existe um único `<iframe>` no HTML
-gerado — ele nasce no clique.
+Até a Etapa 11 o site carregava três folhas do tema Inspiro de `public/css/`,
+purgadas depois do build contra o HTML gerado. Nenhuma delas existe mais, nem o
+script que as purgava. A história — inclusive as três armadilhas que aquele CSS
+escondia — está em [decisoes.md](decisoes.md), e o padrão que ela ensina, no
+[CLAUDE.md](../CLAUDE.md).
 
 ---
 
 ## JavaScript
 
-[`src/scripts/site.js`](../src/scripts/site.js) tem 10 comportamentos e ~10 KB
+[`src/scripts/site.js`](../src/scripts/site.js) tem seis comportamentos e ~4 KB
 minificados, no lugar dos 504 KB de jQuery e do engine do tema.
 
-Menu mobile, seletor de idioma, hero (Ken Burns e legendas em cascata),
-carrossel de logos, grades masonry (.grid-layout), contadores, abas, faixa de
-cookies, fachada dos vídeos e voltar ao topo.
+Menu mobile, seletor de idioma, submenus, faixa de cookies, voltar ao topo e a
+fachada dos vídeos. Eram dez: hero, carrossel, masonry, contadores e abas saíram
+conforme o design system substituiu cada um por CSS — container query, animação
+declarada, valor renderizado no servidor. **Não há mais nenhum `setInterval` nem
+nenhum listener persistente de `resize`.**
 
 A faixa de cookies aqui é **só a interface**. Quem grava o cookie, fala Consent
 Mode e decide carregar (ou não) o GTM é o bloco inline do `<head>` do
 `Cabeca.astro`, que expõe `window.rbConsent` — aquilo precisa rodar antes de
 qualquer rede, e este arquivo só roda no `DOMContentLoaded`.
 
-O módulo aplica **as mesmas classes de estado que o tema aplicava**
-(`.toggle-active`, `.mainMenu-open`, `.menu-animate`, `.dropdown-active`,
-`.kenburns-bg-animate`, `.modal-active`, `.active`), de modo que o CSS do tema
-continua valendo sem alteração. Ao mexer nele, preserve os nomes de classe.
+O módulo usa **nomes de estado herdados do tema** (`.toggle-active`,
+`.mainMenu-open`, `.menu-animate`, `.dropdown-active`, `.modal-active`,
+`#mainMenu`, `#scrollTop`). Foi isso que deixou um script só servir as duas
+camadas durante a migração inteira; hoje quem os declara é o `<style>` do cromo.
+Ao mexer nele, preserve os nomes.
 
 O Astro processa esse script pelo Vite, então ele é minificado e recebe hash no
 build.

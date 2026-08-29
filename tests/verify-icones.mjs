@@ -38,14 +38,17 @@ const inventario = JSON.parse(await readFile(new URL('../scripts/glifos.json', i
  * `/webfonts/` pela rede. A diferenca importa duas vezes:
  *
  *   1. e o que o teste sempre quis dizer. A pergunta e "o SVG desenha o mesmo
- *      contorno que a fonte ORIGINAL?", e `public/webfonts/` guarda o subset
+ *      contorno que a fonte ORIGINAL?", e `public/webfonts/` guardava o subset
  *      gerado — comparar com ele deixaria passar um erro introduzido pelo
  *      proprio pyftsubset;
- *   2. desde a Etapa 10 as duas familias do Font Awesome nao sao mais
- *      publicadas (`saida: null` em glifos.json), porque nenhuma pagina baixa
- *      webfont de icone. Pela rede, `/webfonts/<null>` daria 404, a fonte nao
- *      carregaria e os oito icones dali reprovariam por TOFU — o teste
- *      acusando o desenho quando o defeito seria dele mesmo.
+ *   2. `public/webfonts/` NAO EXISTE MAIS. Nenhuma pagina baixa webfont de icone
+ *      desde a Etapa 10, e a Etapa 11 apagou a pasta junto com o subset que a
+ *      enchia. Pela rede este teste daria 404 nas tres familias, as fontes nao
+ *      carregariam e os 16 icones reprovariam por TOFU — o teste acusando o
+ *      desenho quando o defeito seria dele mesmo.
+ *
+ * O caminho ate `vendor/` e o que segura o portao de pe: sem ele, a unica
+ * referencia do desenho seria o proprio desenho.
  */
 const VENDOR = new URL('../vendor/webfonts/', import.meta.url);
 const FORMATO = { woff2: 'woff2', woff: 'woff', ttf: 'truetype', otf: 'opentype' };

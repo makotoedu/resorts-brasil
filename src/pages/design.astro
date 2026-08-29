@@ -2,17 +2,19 @@
 /**
  * Catalogo vivo do design system.
  *
- * Nao usa o BaseLayout de proposito: aquele traz Header e Footer, que ainda
- * dependem do tema. Este e o unico lugar do site que roda exclusivamente sobre
- * o sistema novo, entao serve tambem como deteccao precoce — se o base.css
- * estiver errado, aparece aqui antes de qualquer pagina de conteudo migrar.
+ * MONTA O PROPRIO DOCUMENTO em vez de usar o layout do site, e isso e anterior
+ * ao design system ter layout: ate a Etapa 5 o unico que existia trazia Header e
+ * Footer do tema, e o catalogo teria nascido com cromo de outra camada. Ele
+ * continua assim porque a vitrine e o unico lugar onde os componentes aparecem
+ * sem nada em volta — se o base.css estiver errado, aparece aqui primeiro.
  *
  * As cores sao renderizadas com `var(--token)`, nunca com o valor literal: o
  * swatch nao tem como divergir do tokens.css, e um nome de token que deixe de
  * existir aparece como quadro sem cor em vez de passar despercebido.
  *
- * Fora do indice e fora do sitemap (ver o `filter` em astro.config.mjs).
- * Conta para o PAGINAS_ESPERADAS do scripts/purge-css.mjs.
+ * Fora do indice e fora do sitemap (ver o `filter` em astro.config.mjs), mas
+ * DENTRO dos portoes: ele entra na varredura de geometria e no orcamento como
+ * qualquer pagina, e ja reprovou os dois antes de qualquer conteudo migrar.
  */
 import '../styles/global.css';
 
@@ -1255,12 +1257,19 @@ const faixas = [
         <div class="demo">
           <Video lang="pt-br" id="LJ_9oUeE4e8" titulo="Vídeo institucional da Resorts Brasil" />
           <p class="legenda">
-            <strong>Ele existe por uma armadilha que quase passou.</strong> O
-            <code>&lt;YouTube&gt;</code> que as páginas de ebook ainda usam emite o mesmo markup,
-            mas o CSS dele mora em <code>public/css/ajustes.css</code> — a folha do
-            <em>tema</em>. Página migrada não carrega aquele arquivo, então migrar
+            <strong>Ele nasceu de uma armadilha que quase passou.</strong> O
+            <code>&lt;YouTube&gt;</code> do tema emitia o mesmo markup, mas o CSS dele morava na
+            folha do <em>tema</em> — que página migrada não carregava. Migrar
             <code>/resorts-brasil</code> com o componente antigo entregaria a fachada sem caixa,
             sem botão de play e com o rótulo "Assistir ao vídeo" impresso por cima da miniatura.
+            Nenhum dos quatro portões veria: não há caixa zerada nem imagem quebrada.
+          </p>
+          <p class="legenda">
+            <strong>A miniatura passou pelo pipeline na Etapa 11</strong>, e com ela veio a segunda
+            regra <code>:global</code> deste componente. O <code>&lt;picture&gt;</code> e o
+            <code>&lt;img&gt;</code> são emitidos pelo <code>&lt;Imagem&gt;</code>, e o Astro
+            carimba o atributo de escopo só no markup do próprio template — um seletor escopado não
+            alcança o que um componente filho renderiza.
           </p>
           <p class="legenda">
             <strong>A regra do <code>iframe</code> é <code>:global</code>, e essa linha é o ponto
@@ -1361,17 +1370,17 @@ const faixas = [
         <p class="legenda">
           Cabeçalho, rodapé, faixa de cookies e o botão de voltar ao topo — o que embrulha toda
           página. É a quarta camada do sistema, e ela nasceu na Etapa 5 por uma razão prática:
-          <strong>não havia como migrar uma página sem ela</strong>. Este catálogo não usa o
-          <code>BaseLayout</code> justamente porque o cabeçalho e o rodapé eram do tema; a primeira
-          página de conteúdo a trocar de camada ficaria sem os dois.
+          <strong>não havia como migrar uma página sem ela</strong>. O único layout que existia até
+          ali trazia cabeçalho e rodapé do tema, então a primeira página de conteúdo a trocar de
+          camada ficaria sem os dois — e foi por isso que este catálogo montou o próprio documento.
         </p>
-        <p class="legenda pendente">
+        <p class="legenda">
           <strong>Os nomes de estado são os do tema, de propósito.</strong>
           <code>#mainMenu</code>, <code>#mainMenu-trigger</code>, <code>.p-dropdown</code>,
-          <code>.toggle-active</code>, <code>.modal-active</code>, <code>#scrollTop</code> — um
-          <code>src/scripts/site.js</code> só serve as duas camadas durante a migração. Trocar um
-          nome aqui quebraria o menu das 40 páginas do tema, ou obrigaria a manter dois scripts que
-          divergiriam na primeira correção.
+          <code>.toggle-active</code>, <code>.modal-active</code>, <code>#scrollTop</code> — foi
+          isso que deixou um <code>src/scripts/site.js</code> só servir as duas camadas durante a
+          migração inteira, em vez de dois que divergiriam na primeira correção. Sobrou uma camada
+          e os nomes ficam: é o CSS do cromo que os declara agora.
         </p>
         <p class="legenda">
           As demonstrações abaixo são estáticas: o catálogo não carrega o <code>site.js</code>, então

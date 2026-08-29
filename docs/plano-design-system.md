@@ -851,34 +851,83 @@ cores literais — é o teste real de que a camada semântica funciona.
 
 </details>
 
-### Etapa 11 — Demolição
+### Etapa 11 — Demolição ✅ CONCLUÍDA
 
-**Ela ficou menor: a Etapa 10 já removeu duas coisas da lista.** O `PAGINA_TEMA`
-morreu junto com a última página do tema, e as duas webfontes do Font Awesome
-deixaram de ser publicadas — `public/webfonts/` guarda um arquivo só, e nenhuma
-página o baixa. O que sobra é remoção pura: **nenhuma página carrega mais
-`plugins.css`, `style.css` ou `ajustes.css`**, e a purga corta os três a 27 KB de
-CSS que ninguém pede.
+O tema saiu inteiro: `public/css/` (815 KB de fonte, 27 KB depois da purga),
+`public/webfonts/`, o `BaseLayout` com `Header`, `Footer` e `SocialIcons`, o
+`YouTube` que a Etapa 8 já havia substituído, e os três scripts que existiam só
+para conter aquilo — `purge-css.mjs`, `check-glifos.mjs` e `subset-fonts.py` —
+com as dependências `purgecss` e `lightningcss`.
 
-Remover `public/css/`, `public/webfonts/`, [purge-css.mjs](scripts/purge-css.mjs),
-[check-glifos.mjs](scripts/check-glifos.mjs), [subset-fonts.py](scripts/subset-fonts.py),
-o [`BaseLayout`](src/layouts/BaseLayout.astro) inteiro (com `Header`, `Footer` e
-`SocialIcons`) e as dependências `purgecss` e `lightningcss`.
+**A parte de apagar foi a menor da etapa.** O que ela realmente encontrou foram
+**quatro listas manuais que só existiam para descrever a fronteira entre as duas
+camadas**, e que a fronteira levou embora:
 
-**Um cuidado que a Etapa 10 deixou anotado:** `vendor/webfonts/` **não** é lixo.
-Ele é a origem dos 16 contornos de `src/icones/glifos.ts` e a referência do
-[verify-icones.mjs](tests/verify-icones.mjs), que compara desenho a desenho.
-Apagar aquela pasta junto com `public/webfonts/` derrubaria o portão de ícones
-sem nenhum erro de build — a mesma forma da armadilha que o `glifos.json` já
-documenta. Se o `subset-fonts.py` sair, o `glifos.json` fica: ele deixa de ser
-lista de subset e passa a ser só o inventário de contornos.
+| lista | o que era | o que virou |
+|---|---|---|
+| `MIGRADAS` no `verifica-sistema.mjs` | 76 caminhos; checagem só bloqueava neles | `src/` inteiro |
+| os `@source` do `global.css` | 60 linhas, uma por arquivo migrado | quatro diretórios |
+| a segunda lista do `verify-geometria.mjs` | pendência do tema, que não reprovava | uma lista só, tudo reprova |
+| `PENDENTE` no `verifica-sistema.mjs` | a dívida caindo a cada etapa | `COBERTURA`, o que já é garantido |
 
-Some junto a dependência de `brotli` — o `README` continua pedindo `fonttools`
-enquanto o `glifos-para-svg.py` existir.
+A do `@source` é a mais instrutiva, porque era a que tinha um **modo de falha
+silencioso**: esquecer a linha não quebrava o build — a utilitária simplesmente
+não era gerada e o estilo sumia. Trocada por quatro diretórios, **o CSS gerado
+saiu byte a byte idêntico** (40.005 bytes, mesmo hash). A lista nunca esteve
+protegendo nada além da convivência.
 
-Reescrever a seção "Antes de mexer em CSS" do [CLAUDE.md](CLAUDE.md): as três
-armadilhas documentadas são todas do tema e deixam de existir. No lugar entram as
-regras do sistema novo — as quatro disciplinas e as invariantes.
+**A ponte de imagens nunca chegou a copiar zero, e isso era um defeito
+escondido.** O [`imagens.mjs`](scripts/imagens.mjs) copiava para `dist/images/` o
+que as páginas do tema pediam por `/images/…`, e o comentário dele previa que
+copiaria zero quando a última migrasse. Copiava três — e as três estavam em
+código **já migrado**: as duas miniaturas do `<Video>` e o logotipo do JSON-LD no
+`<head>`. Não era dívida do tema; era o hábito do caminho antigo sobrevivendo à
+camada que o justificava. Removida a ponte sem olhar, seriam três 404 em
+produção, um deles o logo que o Google lê no dado estruturado.
+
+As duas miniaturas passaram pelo `<Imagem>` (176 KB → 26 KB, com AVIF e
+`srcset`), o logotipo passou a resolver pelo `src/imagens.ts`, e a ponte virou o
+inverso dela mesma: **uma guarda que aborta o build se qualquer `/images/…`
+aparecer fora dos dois arquivos que moram em `public/` de propósito.** É a mesma
+classe do "nenhuma página baixa webfont de ícone" — afirmar a ausência, porque é
+a volta que ninguém vigia.
+
+**Uma armadilha do Astro apareceu pelo avesso.** Passar a miniatura para o
+`<Imagem>` quebraria a regra `.yt-facade-btn img`: o Astro carimba o atributo de
+escopo só no markup do próprio template, então **um seletor escopado não alcança
+o que um componente filho renderiza** — o espelho da armadilha 1, em que a classe
+escopada não alcança o componente. E o `<picture>` que o `<Picture>` emite é uma
+caixa inline: sem `display: block`, o `height: 100%` do `<img>` passaria a se
+resolver contra ela em vez de contra a caixa 16/9.
+
+Nada disso reprovaria portão. O vídeo ficaria com a miniatura fora de lugar, e a
+geometria mede a caixa da fachada, que continuaria certa.
+
+**A purga rodava contra uma página só, e ninguém sabia.** O `purge-css.mjs` tinha
+um ramo "purga dispensada: nenhuma página carrega mais o CSS do tema" que nunca
+disparou, porque o teste procurava a string `/css/style.css` em qualquer lugar do
+HTML — e o catálogo `/design` a cita dentro de um `<code>`, explicando por que
+existe um `<Video>` próprio. Desde a Etapa 10 o purge purgava as três folhas do
+tema contra o texto de uma página que não as usa. **É a quarta vez que um portão
+deste projeto confunde documentação com markup**, e a terceira que o conserto é o
+mesmo: olhar o artefato pelo que ele *faz* — aqui, o atributo `href` — e não pelo
+que ele contém. O `verifica-sistema.mjs` já tinha aprendido isso; o `purge-css`
+não, e morreu antes de precisar.
+
+`vendor/webfonts/` ficou, como a Etapa 10 pediu: é a origem dos 16 contornos e a
+referência do `verify-icones.mjs`. O `glifos.json` deixou de ser lista de subset
+— saíram `versao`, `saida`, `remover` e `ignorar`, todos lidos só pelos scripts
+apagados — e passou a ser o que sobrou dele: o inventário da **procedência** de
+cada desenho.
+
+Peso: `dist/` cai para 17 MB, as seis páginas com vídeo emagrecem ~70 KB cada, e
+o `vercel.json` perde os cabeçalhos de `/css/` e `/webfonts/`.
+
+O [CLAUDE.md](CLAUDE.md) foi reescrito. A seção "Antes de mexer em CSS" descrevia
+três armadilhas do tema; no lugar entrou **o padrão que as cinco ocorrências
+ensinam** — plugin removido, CSS que dependia dele silenciosamente inerte —, que
+é o que sobrevive ao tema e vale para a próxima biblioteca que alguém tirar
+daqui.
 
 ---
 

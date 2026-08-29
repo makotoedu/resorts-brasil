@@ -12,7 +12,7 @@ import tailwindcss from '@tailwindcss/vite';
  * em todos os idiomas (/about e /en/about) e pareia por prefixo de caminho.
  * Os slugs deste site sao traduzidos — /historia e /en-us/history sao a mesma
  * pagina — entao o pareamento tem de sair do mapa `routes`, que ja e a fonte
- * unica de verdade do canonical e das tags hreflang do BaseLayout.
+ * unica de verdade do canonical e das tags hreflang do <head>.
  */
 const SITE = 'https://www.resortsbrasil.com.br';
 /** @param {string} caminho */
@@ -22,7 +22,7 @@ const abs = (caminho) => new URL(caminho, SITE).href;
 const alternatesByUrl = new Map();
 for (const slugs of Object.values(routes)) {
   const links = locales.map((lang) => ({ lang: htmlLang[lang], url: abs(slugs[lang]) }));
-  // x-default aponta para o portugues, igual ao que o BaseLayout emite no HTML.
+  // x-default aponta para o portugues, igual ao que o Cabeca.astro emite no HTML.
   links.push({ lang: 'x-default', url: abs(slugs[defaultLocale]) });
   for (const lang of locales) alternatesByUrl.set(slugs[lang], links);
 }

@@ -2756,3 +2756,212 @@ Nenhuma página carrega mais `plugins.css`, `style.css` ou `ajustes.css` — a
 purga corta os três a 27 KB de CSS que **ninguém baixa**. O `BaseLayout`, o
 `Header`, o `Footer` e o `SocialIcons` não são importados por página nenhuma. A
 Etapa 11 é remoção, e não migração.
+
+---
+
+# Design system — Etapa 11
+
+A demolição. O tema Inspiro saiu do repositório, e com ele a última razão de
+existirem quatro listas manuais.
+
+## A parte de apagar foi a menor da etapa
+
+Saíram: `public/css/` (as três folhas, 815 KB de fonte), `public/webfonts/`, o
+`BaseLayout` com `Header`, `Footer` e `SocialIcons`, o `YouTube` que a Etapa 8
+substituiu, os scripts `purge-css.mjs`, `check-glifos.mjs` e `subset-fonts.py`, e
+as dependências `purgecss` e `lightningcss`. O `npm run build` perdeu dois passos.
+
+Nada disso era usado por página nenhuma desde a Etapa 10, então a remoção em si
+não muda um pixel. O que a etapa produziu de fato foi outra coisa.
+
+## Quatro listas manuais existiam para descrever uma fronteira que sumiu
+
+| lista | o que era | o que virou |
+|---|---|---|
+| `MIGRADAS` no `verifica-sistema.mjs` | 76 caminhos; as checagens só bloqueavam neles | `src/` inteiro |
+| os `@source` do `global.css` | 60 linhas, uma por arquivo migrado | quatro diretórios |
+| a segunda lista do `verify-geometria.mjs` | pendência do tema, que não reprovava | uma lista só |
+| `PENDENTE` no `verifica-sistema.mjs` | a dívida caindo a cada etapa | `COBERTURA` |
+
+Todas as quatro tinham a mesma forma e o mesmo defeito latente: **um arquivo novo
+nasce fora do escopo até alguém lembrar de inscrevê-lo.** Enquanto as camadas
+conviviam isso era o preço de o portão poder rodar; com uma camada só, é só o
+preço.
+
+`MIGRADAS` já estava demonstrando o problema: **as três páginas de ebook, o
+`<PaginaEbook>` e o `<SecaoEbook>` nunca foram acrescentados à lista na Etapa
+10.** As checagens de cor literal e de `style=` inline não valeram para nenhum
+deles. Não houve consequência — a etapa foi cuidadosa, e a de headings lê o
+`dist/` em vez da lista —, mas o portão que se supunha fechado estava aberto para
+1.086 linhas de landing page. É exatamente o que uma lista manual faz.
+
+## O `@source` era a mais perigosa, e a troca foi medida
+
+`source(none)` mais 60 linhas de `@source` existia porque, varrendo o `src/`
+inteiro, o Tailwind gerava utilitárias para nomes de classe que o tema usava —
+`.container`, `.border`, `.table`, `.card`, `.row` — e elas colidiam com o CSS
+dele. O preço era um modo de falha silencioso: esquecer a linha não quebra o
+build, a utilitária simplesmente não é gerada e o estilo some.
+
+Sem tema com que colidir, sobraram quatro diretórios: `components`, `layouts`,
+`pages`, `styles`. `src/data/`, `src/i18n/` e `src/content/` guardam dado e prosa;
+`src/scripts/` só aplica nomes de estado escritos à mão, que o `<style>` do cromo
+declara e que não são utilitárias.
+
+**O CSS gerado saiu byte a byte idêntico: 40.005 bytes, mesmo hash de conteúdo.**
+A lista não estava protegendo nada além da convivência — e agora isso está
+medido, em vez de suposto.
+
+## A ponte de imagens nunca chegou a copiar zero
+
+O `imagens.mjs` tinha duas metades, e a primeira era a **ponte**: copiar para
+`dist/images/` o que as páginas do tema pediam por `/images/…`. O comentário dele
+previa, desde a Etapa 2, que ela copiaria zero quando a última página migrasse.
+
+Copiava três. E as três estavam em código **já migrado**:
+
+- as duas miniaturas do `<Video>`, cujo próprio comentário afirmava que vinham de
+  `public/` — não vinham: a Etapa 2 levou o acervo inteiro para `src/assets/`, e a
+  ponte é que as servia;
+- o logotipo do JSON-LD, `new URL('/images/logo-25anos.png', site)`, no `<head>`
+  compartilhado.
+
+Não era dívida do tema. Era **o hábito do caminho antigo sobrevivendo à camada
+que o justificava** — e é uma categoria que vale procurar em qualquer migração:
+não o que a camada velha deixou, mas o que a camada nova copiou dela sem motivo.
+
+Removida a ponte sem olhar, seriam três 404 em produção. Um deles é o logotipo
+que o Google lê no dado estruturado da associação: nenhum portão veria, porque
+nenhum busca URL dentro de JSON-LD.
+
+### O conserto, e por que o logotipo não foi para `public/`
+
+As miniaturas passaram pelo `<Imagem>`: **176 KB → 26 KB**, com AVIF, WebP e
+`srcset`, e as seis páginas com vídeo emagreceram ~70 KB cada.
+
+O logotipo poderia ter ido para `public/images/`, ao lado do favicon e do
+og-image. Não foi, e o critério é o que separa os dois casos: `public/` é para o
+que precisa de **caminho estável** porque é pedido de fora — a barra do navegador
+e o scraper de rede social não seguem hash. O JSON-LD não precisa: ele é lido por
+um crawler que segue a URL que o documento der. Então ele resolve pelo
+`src/imagens.ts` como qualquer outra imagem, e ganha o `immutable` de um ano do
+`/_astro/`. Pôr o arquivo em `public/` teria criado uma segunda cópia do mesmo
+PNG no repositório, livre para divergir da primeira.
+
+### A ponte virou o inverso dela mesma
+
+No lugar de copiar, o script agora **aborta o build** se qualquer `/images/…`
+aparecer no HTML gerado fora dos dois arquivos de `public/`. É a mesma classe do
+"nenhuma página baixa webfont de ícone" do `verify-behaviors.mjs` e do "nenhuma
+página carrega folha de `/css/`" do `verifica-sistema.mjs`: **afirmar a
+ausência**, porque a volta é o que ninguém vigia. Sem a guarda, o primeiro
+`<img src="/images/…">` escrito à mão seria um 404 que só o navegador vê.
+
+## Uma armadilha do Astro apareceu pelo avesso
+
+Passar a miniatura para o `<Imagem>` quebraria a regra `.yt-facade-btn img`, e o
+motivo é o espelho da armadilha 1 do CLAUDE.md:
+
+- **armadilha 1:** classe escopada passada a um componente não vale, porque a
+  classe chega ao HTML sem o atributo de escopo;
+- **o avesso:** seletor escopado não alcança o que um componente FILHO renderiza,
+  porque o markup do filho não recebe o atributo de escopo do pai.
+
+`.yt-facade-btn img` compila para `.yt-facade-btn[cid] img[cid]`, e o `<img>` que
+veio do `<Imagem>` não tem `[cid]`. A regra ficaria inerte — sem erro, sem aviso.
+
+Some a isso que o `<Picture>` emite um `<picture>`, que é caixa inline de altura
+automática: sem `display: block` nele, o `height: 100%` do `<img>` passaria a se
+resolver contra o `<picture>` em vez de contra a caixa 16/9 da fachada.
+
+Os dois se resolvem com `:global(picture), :global(img)` — a segunda regra
+`:global` do componente, ao lado da do `<iframe>`, que existe pelo mesmo tipo de
+razão: *o elemento não está neste arquivo*.
+
+Nenhum portão veria. A geometria mede a caixa da fachada, que continua 16/9
+esteja a miniatura onde estiver.
+
+## A purga rodava contra uma página só, e ninguém sabia
+
+O `purge-css.mjs` tinha, desde a Etapa 1, um ramo para o fim da migração: se
+nenhuma página carregasse mais o CSS do tema, ele imprimiria "purga dispensada" e
+sairia sem tocar em nada.
+
+**Ele nunca disparou.** O teste procurava a string `/css/style.css` em qualquer
+lugar do HTML, e o catálogo `/design` cita `public/css/ajustes.css` dentro de um
+`<code>`, explicando por que existe um `<Video>` próprio. Desde a Etapa 10 a purga
+vinha purgando as três folhas do tema contra o texto de **uma** página que não as
+carrega — e escrevendo o resultado por cima do `dist/`.
+
+Não teve consequência prática: as folhas não eram baixadas por ninguém. Mas é a
+**quarta vez** que um portão deste projeto confunde documentação com markup:
+
+| etapa | portão | o que ele leu como markup |
+|---|---|---|
+| 5 | headings | `<h1 class="text-md h2">` num comentário que explicava a correção |
+| 6 | `style=` inline | `<ul style="color: …">` num comentário que explicava a remoção |
+| 8 | isolamento de folhas | `public/css/ajustes.css` num `<code>` do catálogo |
+| 11 | purga | o mesmo `<code>`, e este ninguém tinha achado |
+
+O conserto foi o mesmo nas três primeiras: **olhar o artefato pelo que ele FAZ**,
+e não pelo que ele contém — no HTML, o atributo `href`; no fonte,
+`linhasSemComentario()`. O `purge-css.mjs` nunca aprendeu, e morreu antes de
+precisar. O `verifica-sistema.mjs` já lia `href`, e por isso continua correto
+depois de a checagem virar "nenhuma página carrega folha de `/css/`".
+
+A lição que sobra é de método: **um projeto que documenta o defeito ao lado da
+correção vai citar markup em comentário o tempo todo.** Quem precisa saber a
+diferença é a checagem.
+
+## O `glifos.json` mudou de papel, e as famílias órfãs ficaram
+
+Saíram `versao` (lida só pelo `check-glifos.mjs`, para conferir o `?v=`), `saida`
+e `remover` (lidos só pelo `subset-fonts.py`) e `ignorar` (falso positivo do
+extrator do PurgeCSS). O que sobrou — `origem`, `familia_css`, `glifos` — é o que
+o `glifos-para-svg.py` e o `verify-icones.mjs` leem.
+
+Ele deixou de ser a lista do que se **publica** e passou a ser a lista da
+**procedência** de cada contorno. As duas famílias do Font Awesome continuam
+listadas sem publicar nada, exatamente como a Etapa 10 avisou: apagá-las apagaria
+oito dos dezesseis desenhos na próxima regeneração, sem erro nenhum.
+
+`vendor/webfonts/` tem quatro arquivos e a lista cita três — o
+`fa-regular-400.woff2` nunca desenhou nada aqui, e a nota que registrava isso
+mudou de lugar em vez de sumir.
+
+## O que a etapa mediu
+
+| | antes | depois |
+|---|---|---|
+| `dist/` | 21 MB | **17 MB** |
+| CSS de terceiro publicado | 27 KB (não baixado) | **0** |
+| `dist/images/` | 5 arquivos | **2** — favicon e og-image |
+| `/resorts-brasil` no mobile | 298 KB | **226 KB** |
+| `/ebook` no mobile | 315 KB | **247 KB** |
+| arquivos em `src/` | 109 | **104** |
+| linhas de `@source` | 60 | **4** |
+| dependências de build | 8 | **6** |
+
+Os quatro portões: `astro check` limpo, `verifica-sistema` com zero violações e
+zero pendências, 63/63 comportamentais, 123 páginas × viewport sem geometria
+reprovada, 16 ícones conferidos contra a fonte de origem, e o orçamento com 12
+páginas mais leves — rebaseado, que é como a catraca prende o ganho.
+
+## O que fica registrado, e não apagado
+
+O CLAUDE.md descrevia três armadilhas do tema numa seção chamada "Antes de mexer
+em CSS". As três deixaram de existir com os arquivos, e apagá-las seria perder o
+que elas ensinam — que é a mesma coisa, cinco vezes:
+
+> **Plugin removido, CSS que dependia dele silenciosamente inerte.**
+
+A seção nova lista as cinco ocorrências numa tabela e a regra que sai delas
+(procure `z-index` negativo, `opacity: 0`, `visibility: hidden` e classes de
+estado antes de tirar qualquer script), mais as duas regras de portão que o
+carrossel invisível produziu: um seletor que não casa nada passa em silêncio, e
+uma exclusão de portão entra junto com quem cobre o buraco.
+
+Foi por essa segunda regra que `.team-members` e `.grid` saíram da lista de
+grades do `verify-geometria.mjs` nesta etapa. Manter as duas linhas não custaria
+nada em tempo de execução e custaria a coisa errada em leitura: a impressão de
+que aquelas grades estão sendo vigiadas.

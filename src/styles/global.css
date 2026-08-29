@@ -1,5 +1,5 @@
 /*
- * Folha unica do design system. Importada uma vez, pelo BaseLayout.
+ * Folha unica do design system. Importada pelo LayoutSistema, uma vez.
  *
  * A ordem importa:
  *
@@ -7,129 +7,41 @@
  *   2. tokens.css   declara o @theme, que alimenta as utilitarias
  *   3. base.css     restaura a base tipografica que o Preflight zera
  *
- * COMO ESTA FOLHA CHEGA NUMA PAGINA. Pelo frontmatter da propria pagina, nunca
- * pelo BaseLayout:
+ * POR QUE ELA ENTRA PELO LAYOUT, E POR QUE ISSO JA FOI PROIBIDO. A primeira
+ * tentativa, na Etapa 0, importou a folha no layout do tema contando com
+ * `@layer` para proteger as 40 paginas que rodavam sobre ele. Nao protegeu — 22
+ * divergiram do site original so pela PRESENCA da folha: camada garante que o
+ * tema vence onde ele DECLARA a mesma propriedade, e onde nao declara o
+ * Preflight vence o padrao do navegador. Dali ate a Etapa 10 a folha entrou pelo
+ * frontmatter de cada pagina migrada, uma a uma, e o isolamento foi por AUSENCIA
+ * — o Astro empacota CSS pelo grafo de modulos, entao quem nao importava nao
+ * recebia.
  *
- *   import '../styles/global.css';
- *   <BaseLayout legado={false} ...>
+ * Nao ha mais o que isolar: o tema saiu na Etapa 11 e as 41 paginas usam o mesmo
+ * layout. O que fica da historia e o mecanismo, que continua valendo para
+ * qualquer folha que alguem venha a importar — CSS chega pelo GRAFO DE MODULOS,
+ * e nao pelo que a pagina renderiza.
  *
- * A primeira tentativa importou no layout, contando com `@layer` para proteger
- * as paginas do tema. Nao protegeu — 22 das 40 divergiram do site original so
- * pela presenca da folha. Camada garante que o tema vence onde ele DECLARA a
- * mesma propriedade; onde nao declara, o Preflight vence o padrao do navegador.
- * O detalhe esta comentado em src/layouts/BaseLayout.astro.
- *
- * Por isso o isolamento agora e por AUSENCIA: o Astro empacota CSS pelo grafo
- * de modulos de cada pagina, entao quem nao importa nao recebe. Pagina do tema
- * fica literalmente sem o arquivo, e nenhuma vigilancia de cascata e
- * necessaria.
- *
- * `source(none)` mais os `@source` explicitos existem pelo mesmo motivo, do
- * outro lado: por padrao o Tailwind varre o `src/` inteiro e gera utilitarias
- * para nomes de classe que o TEMA usa — `.container`, `.border`, `.table`,
- * `.card`, `.row`, `.small`, `.active` — colidindo com o CSS dele. Registrando
- * as fontes uma a uma, so o que ja migrou entra na varredura.
- *
- * ACRESCENTE UM @source A CADA COMPONENTE OU PAGINA MIGRADA. Esquecer disso
- * nao quebra o build: a utilitaria simplesmente nao e gerada e o estilo some.
+ * A VARREDURA TAMBEM ERA UMA LISTA MANUAL, E DEIXOU DE SER. `source(none)`
+ * existia pelo mesmo motivo do outro lado: varrendo o `src/` inteiro, o Tailwind
+ * gerava utilitarias para nomes de classe que o TEMA usava — `.container`,
+ * `.border`, `.table`, `.card`, `.row` — colidindo com o CSS dele. Enquanto isso
+ * durou, cada componente e cada pagina precisava da propria linha `@source`, e
+ * esquecer nao quebrava o build: a utilitaria simplesmente nao era gerada e o
+ * estilo sumia. Eram 60 linhas e um pe-de-cabra. Sem tema com que colidir, os
+ * quatro diretorios de markup bastam.
  */
 @import 'tailwindcss' source(none);
 
+/*
+ * OS QUATRO DIRETORIOS QUE CONTEM MARKUP. Nada mais precisa ser varrido:
+ * src/data/, src/i18n/ e src/content/ guardam dado e prosa, e src/scripts/
+ * so aplica nomes de estado escritos a mao (toggle-active, dropdown-active,
+ * modal-active), que vivem no <style> do cromo e nao sao utilitarias.
+ */
+@source '../components';
+@source '../layouts';
+@source '../pages';
 @source '../styles';
-@source '../components/primitivos';
-@source '../components/layout';
-@source '../components/padroes';
-@source '../components/cromo';
-@source '../layouts/LayoutSistema.astro';
-
-/* O catalogo. */
-@source '../pages/design.astro';
-
-/* As paginas migradas, uma linha por arquivo. Etapa 5: 404, historia, contato e
-   diretoria, nos tres idiomas. */
-@source '../pages/404.astro';
-@source '../pages/historia.astro';
-@source '../pages/fale-conosco.astro';
-@source '../pages/diretoria.astro';
-@source '../pages/en-us/history.astro';
-@source '../pages/en-us/contact-us.astro';
-@source '../pages/en-us/board.astro';
-@source '../pages/es-es/historia.astro';
-@source '../pages/es-es/contactenos.astro';
-@source '../pages/es-es/directorio.astro';
-
-/* Etapa 6: os dois documentos juridicos, nos tres idiomas. */
-@source '../pages/termos-de-uso.astro';
-@source '../pages/politica-de-privacidade.astro';
-@source '../pages/en-us/terms-of-use.astro';
-@source '../pages/en-us/privacy-policy.astro';
-@source '../pages/es-es/terminos-de-uso.astro';
-@source '../pages/es-es/politica-de-privacidad.astro';
-
-/*
- * A secao de cookies da politica. Nao esta em nenhum dos quatro diretorios de
- * componente — e montagem de conteudo, e nao decisao de desenho —, entao precisa
- * da propria linha. Ela deixou de emitir markup do tema na Etapa 6, junto com as
- * tres paginas que a usam.
- */
-@source '../components/SecaoCookies.astro';
-
-/* Etapa 7: publicacoes e estatisticas e estudos, nos tres idiomas. */
-@source '../pages/publicacoes.astro';
-@source '../pages/estatisticas-e-estudos.astro';
-@source '../pages/en-us/publications.astro';
-@source '../pages/en-us/statistics-and-studies.astro';
-@source '../pages/es-es/publicaciones.astro';
-@source '../pages/es-es/estadisticas-y-estudios.astro';
-
-/* Etapa 8: associados, associe-se, apoie e resorts-brasil, nos tres idiomas. */
-@source '../pages/associados.astro';
-@source '../pages/associe-se.astro';
-@source '../pages/apoie.astro';
-@source '../pages/resorts-brasil.astro';
-@source '../pages/en-us/associates.astro';
-@source '../pages/en-us/join-us.astro';
-@source '../pages/en-us/support-tourism.astro';
-@source '../pages/en-us/resorts-brasil.astro';
-@source '../pages/es-es/asociados.astro';
-@source '../pages/es-es/asociese.astro';
-@source '../pages/es-es/apoye.astro';
-@source '../pages/es-es/resorts-brasil.astro';
-
-/* Etapa 9: a home, nos tres idiomas. */
-@source '../pages/index.astro';
-@source '../pages/en-us/home.astro';
-@source '../pages/es-es/inicio.astro';
-
-/* Etapa 10: o ebook, nos tres idiomas. As paginas sao tres linhas cada — o
-   corpo mora no <PaginaEbook>, logo abaixo. */
-@source '../pages/ebook.astro';
-@source '../pages/en-us/ebook.astro';
-@source '../pages/es-es/ebook.astro';
-
-/*
- * Os componentes de montagem de conteudo, fora dos quatro diretorios
- * varridos — mesma situacao da <SecaoCookies>.
- *
- * O <ConviteAssociese> fecha as QUATRO paginas que o repetiam; a
- * <FaixaParceiros> reune as faixas de logos que apareciam em quatro paginas por
- * idioma; e o <AssociadosTabs> passou inteiro para o design system na Etapa 8,
- * porque so as tres paginas de associados o usam e as tres migraram juntas.
- */
-@source '../components/ConviteAssociese.astro';
-@source '../components/FaixaParceiros.astro';
-@source '../components/AssociadosTabs.astro';
-@source '../components/PainelRegiao.astro';
-@source '../components/BlocoEixo.astro';
-/* Etapa 9: os dois blocos da home que se repetiam nos tres idiomas. */
-@source '../components/DestaquesHome.astro';
-@source '../components/FaixaAssociados.astro';
-/*
- * Etapa 10: a landing page do ebook inteira. Ela e o caso extremo desta lista —
- * as tres paginas eram identicas entre si, entao o corpo e UM componente e as
- * paginas viraram tres linhas cada.
- */
-@source '../components/PaginaEbook.astro';
-
 @import './tokens.css';
 @import './base.css';

@@ -34,15 +34,17 @@ const VIEWPORTS = viewportsSelecionados();
  * Contêineres cujos filhos formam uma grade. Sao os que ja quebraram neste
  * projeto ou que quebrariam sem aviso:
  *
- *   .grade         a <Grade> do design system, em 38 paginas migradas
+ *   .grade         a <Grade> do design system, nas 41 paginas
  *   .trilho        a fila do <CarrosselLogos>, na home
- *   .team-members  a grade de diretoria e conselho, no tema
- *   .grid          as grades de logos do tema (grid-5-columns etc.)
  *
  * O `.grade` ENTROU NA ETAPA 7, e a ausencia dele era um buraco: desde a Etapa 1
  * o design system tem grade propria, e por seis etapas esta varredura so olhou
  * as do tema. Se uma container query fosse escrita errada, a checagem de colunas
  * abaixo — a que teria pego a grade de logos quebrada — nao veria.
+ *
+ * `.team-members` e `.grid` SAIRAM NA ETAPA 11, com o tema. Ficar vigiando um
+ * seletor que nao existe mais nao e inocente: e exatamente a forma do
+ * `.polo-carousel` abaixo — uma linha que da a impressao de cobrir e nao cobre.
  *
  * O `.grid-layout` saiu na mesma etapa, e por ter deixado de existir: era o
  * masonry posicionado em JavaScript, onde nasceu o bug do `.grid-loaded` que
@@ -60,25 +62,24 @@ const VIEWPORTS = viewportsSelecionados();
  * para uma fila horizontal, mas as outras cinco servem — e a primeira delas, a de
  * caixa zerada, e exatamente a que teria visto o carrossel do tema.
  */
-const GRADES = ['.grade', '.trilho', '.team-members', '.grid'];
+const GRADES = ['.grade', '.trilho'];
 
 /*
- * Duas listas, nao uma.
+ * UMA LISTA SO, DESDE A ETAPA 11. Eram duas, e vale registrar por que.
  *
- * O tema chega com defeito de geometria proprio — o `.row` do Bootstrap tem
- * margem negativa e faz a pagina transbordar 30px no mobile e 12px no desktop,
+ * O tema chegava com defeito de geometria proprio — o `.row` do Bootstrap tem
+ * margem negativa e fazia a pagina transbordar 30px no mobile e 12px no desktop,
  * medido identico no site original. Bloquear nisso reprovaria as 40 paginas
- * desde o primeiro dia, e um portao que sempre falha nao e portao.
+ * desde o primeiro dia, e um portao que sempre falha nao e portao. Entao pagina
+ * migrada BLOQUEAVA e pagina do tema REPORTAVA, e a lista de pendencias virava
+ * lista de falhas sozinha conforme cada uma migrava: 72 na Etapa 0.5, 53 na 6,
+ * 33 na 8, 3 na 9, zero na 10.
  *
- * Entao: pagina migrada BLOQUEIA, pagina do tema REPORTA. O mesmo criterio do
- * scripts/verifica-sistema.mjs. Conforme a migracao avanca, a lista de
- * pendencias vira lista de falhas sozinha — e o transbordo do `.row` e uma das
- * coisas que o design system existe para consertar, nao para herdar.
+ * Chegou a zero e a segunda lista perdeu a razao de existir. Toda ocorrencia
+ * agora reprova.
  */
 const falhas = [];
-const pendencias = [];
-const registrar = (pagina, vp, o_que, detalhe, migrada) =>
-  (migrada ? falhas : pendencias).push({ pagina, vp, o_que, detalhe });
+const registrar = (pagina, vp, o_que, detalhe) => falhas.push({ pagina, vp, o_que, detalhe });
 
 const navegador = await chromium.launch();
 let comparacoes = 0;
@@ -136,12 +137,6 @@ for (const vp of VIEWPORTS) {
 
       const visivel = renderizado;
 
-      /*
-       * Pagina migrada carrega o bundle do design system; pagina do tema, nao.
-       * E o mesmo sinal que o scripts/verifica-sistema.mjs usa, lido aqui em
-       * runtime. Serve para separar defeito novo de divida herdada.
-       */
-      const migrada = !!document.querySelector('link[href*="/_astro/"]');
       const r = [];
 
       /* 1. Transbordo horizontal ------------------------------------- */
@@ -267,12 +262,10 @@ for (const vp of VIEWPORTS) {
         break; // um por pagina basta para acionar; o resto e ruido
       }
 
-      return { migrada, achados: r };
+      return r;
     }, GRADES);
 
-    for (const [o_que, detalhe] of achados.achados) {
-      registrar(caminho, vp.nome, o_que, detalhe, achados.migrada);
-    }
+    for (const [o_que, detalhe] of achados) registrar(caminho, vp.nome, o_que, detalhe);
     comparacoes += 1;
     await page.close();
   }
@@ -293,27 +286,20 @@ const agrupar = (lista) => {
   return [...m.entries()].sort((a, b) => b[1].length - a[1].length);
 };
 
-const imprimir = (lista, limite) => {
-  for (const [tipo, itens] of agrupar(lista)) {
-    console.log(`  ${tipo} — ${itens.length}`);
-    for (const f of itens.slice(0, limite)) {
-      console.log(`     ${f.vp.padEnd(8)} ${f.pagina.padEnd(38)} ${f.detalhe}`);
-    }
-    if (itens.length > limite) console.log(`     ... e mais ${itens.length - limite}`);
+const limite = process.env.DETALHE ? 999 : 12;
+for (const [tipo, itens] of agrupar(falhas)) {
+  console.log(`  ${tipo} — ${itens.length}`);
+  for (const f of itens.slice(0, limite)) {
+    console.log(`     ${f.vp.padEnd(8)} ${f.pagina.padEnd(38)} ${f.detalhe}`);
   }
-};
+  if (itens.length > limite) console.log(`     ... e mais ${itens.length - limite}`);
+}
 
-console.log('BLOQUEIAM (paginas ja migradas)');
-if (!falhas.length) console.log('  ok — nenhuma caixa zerada, sobreposta, colapsada ou transbordando\n');
-else { imprimir(falhas, 12); console.log(''); }
-
-console.log('PENDENTE (dividas do tema; viram bloqueantes quando a pagina migrar)');
-if (!pendencias.length) console.log('  nenhuma');
-else imprimir(pendencias, process.env.DETALHE ? 999 : 3);
-
-if (falhas.length) {
+if (!falhas.length) {
+  console.log('  ok — nenhuma caixa zerada, sobreposta, colapsada ou transbordando');
+} else {
   console.error(
-    `\ngeometria reprovou: ${falhas.length} ocorrencia(s) em ${new Set(falhas.map((f) => f.pagina)).size} pagina(s) migrada(s).`
+    `\ngeometria reprovou: ${falhas.length} ocorrencia(s) em ${new Set(falhas.map((f) => f.pagina)).size} pagina(s).`
   );
   process.exit(1);
 }

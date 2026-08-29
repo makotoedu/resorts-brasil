@@ -1,13 +1,13 @@
 # Resorts Brasil
 
 Site institucional da Associação Brasileira de Resorts, em português, inglês e
-espanhol. Estático, sem backend: 40 páginas geradas com [Astro](https://astro.build)
+espanhol. Estático, sem backend: 41 páginas geradas com [Astro](https://astro.build)
 e hospedadas na Vercel.
 
 ## Requisitos
 
 - Node.js 20 ou superior (desenvolvido com a 24)
-- Python 3 com `fonttools` e `brotli`, só para regerar o subset de fontes
+- Python 3 com `fonttools`, só para regerar os ícones em SVG
 
 ## Como rodar
 
@@ -26,7 +26,7 @@ aparecer, rode `npm approve-scripts sharp esbuild`.
 | comando | o que faz |
 |---|---|
 | `npm run dev` | servidor de desenvolvimento com recarga |
-| `npm run build` | checa os tipos, gera `dist/`, purga o CSS e confere os glifos |
+| `npm run build` | checa os tipos, gera `dist/`, confere as imagens e as invariantes |
 | `npm run check` | só a checagem de tipos (`astro check`) |
 | `npm run preview` | serve o `dist/` gerado |
 | `npm run verify` | comportamento, geometria, ícones e orçamento (precisa de um preview no ar) |
@@ -34,38 +34,39 @@ aparecer, rode `npm approve-scripts sharp esbuild`.
 Scripts auxiliares:
 
 ```bash
-node scripts/purge-css.mjs        # purga e minifica (já embutido no build)
-node scripts/check-glifos.mjs     # confere o subset de fontes (idem)
-node scripts/verifica-sistema.mjs # invariantes do design system (idem)
-#   DETALHE=1 ... lista o que ainda está pendente, arquivo a arquivo
-python scripts/subset-fonts.py    # regera public/webfonts/ a partir de vendor/
-python scripts/glifos-para-svg.py # regera src/icones/glifos.ts a partir das fontes
-node scripts/medir-base.mjs       # mede a base tipográfica do tema no navegador
+node scripts/verifica-sistema.mjs # invariantes do design system (já embutido no build)
+#   DETALHE=1 ... detalha os avisos
+node scripts/imagens.mjs          # guarda e purga de imagens (idem)
+#   DETALHE=1 ... lista as imagens do acervo que ninguém referencia
+python scripts/glifos-para-svg.py # regera src/icones/glifos.ts a partir de vendor/webfonts/
+node scripts/medir-base.mjs       # mede a base tipográfica no navegador
 node scripts/medir-primitivos.mjs # mede botão, seção, container, grade e ícone
-node scripts/medir-padroes.mjs    # mede as 9 composições do tema (cartão, hero, abas…)
+node scripts/medir-padroes.mjs    # mede as composições (cartão, hero, abas…)
+node scripts/medir-cromo.mjs      # mede cabeçalho, rodapé, cookies e voltar-ao-topo
+node scripts/medir-documento.mjs  # mede o texto corrido e a largura da linha
+node scripts/medir-ebook.mjs      # mede a paleta escura e o contraste do ebook
 node scripts/medir-imagens.mjs    # tamanho x fidelidade por formato e qualidade
-node scripts/imagens.mjs          # ponte e purga de imagens (já embutido no build)
 node tests/verify-geometria.mjs   # varredura de layout: 41 páginas × 3 viewports
 node tests/verify-icones.mjs      # compara cada ícone SVG com a webfont de origem
 node tests/verify-orcamento.mjs   # peso por página; ATUALIZAR=1 regrava a linha de base
 node tests/visual-diff.mjs        # compara o build com o site original
-#   PAGES=/index.html VIEWPORTS=desktop ... limita a rodada dos dois acima
+#   PAGES=/index.html VIEWPORTS=desktop ... limita a rodada dos três acima
 ```
 
 > No Git Bash, `PAGES=/index.html` vira `C:/Program Files/Git/index.html` —
 > a conversão automática de caminho do MSYS. Use
 > `MSYS_NO_PATHCONV=1 PAGES=/index.html node …`, ou rode pelo PowerShell.
 
-`npm run verify` roda os quatro; `verify:comportamento`, `verify:geometria`,
-`verify:icones` e `verify:orcamento` rodam um de cada vez.
+`npm run verify` roda os quatro portões; `verify:comportamento`,
+`verify:geometria`, `verify:icones` e `verify:orcamento` rodam um de cada vez.
 
-### Design system
+## Design system
 
-A migração para o design system próprio (Tailwind v4 + tokens) está em curso, e
-as duas camadas convivem: cada página carrega **uma** delas, nunca as duas.
+O site roda inteiro sobre um design system próprio — Tailwind v4, tokens
+semânticos, componentes com contrato e invariantes que **quebram o build**. O
+catálogo vivo fica em `/design`, fora do índice e fora do sitemap.
 
-A separação é por **layout**: página do tema usa o `BaseLayout`, página migrada
-usa o `LayoutSistema`, e os dois compartilham o `<head>` (`Cabeca.astro`).
+Toda página usa o `LayoutSistema`, que é quem importa a folha:
 
 ```astro
 ---
@@ -74,34 +75,28 @@ import LayoutSistema from '../layouts/LayoutSistema.astro';
 <LayoutSistema lang="pt-br" route="history">
 ```
 
-**Nada do design system pode ser importado dentro do `BaseLayout`** — nem a
-folha, nem um componente com `<style>`, nem num ramo que nunca executa. O Astro
-empacota CSS pelo grafo de módulos, então o `import` sozinho já leva o CSS às
-páginas do tema; a folha no layout alterou 22 das 40 na primeira tentativa. O
-motivo e a medição estão em [docs/decisoes.md](docs/decisoes.md), "A folha nova
-não pode entrar pelo layout" e "A prop `legado` não podia funcionar".
-
-Ao migrar um componente ou página, acrescente o `@source` correspondente em
-[`src/styles/global.css`](src/styles/global.css) — sem ele as utilitárias não são
-geradas e o estilo some, sem erro de build.
-
-O sistema tem três camadas de componente:
+Quatro camadas de componente:
 
 - `src/components/primitivos/` — `Titulo`, `Texto`, `Botao`, `Icone`, `Imagem`
 - `src/components/layout/` — `Secao`, `Container`, `Grade`
 - `src/components/padroes/` — `CartaoMembro`, `ChamadaAcao`, `CaixaIcone`,
   `CartaoPublicacao`, `LinkAcao`, `ListaIcones`, `Hero`, `FaixaDestaque`,
-  `Contador`, `Abas`
+  `Contador`, `Abas`, `Prosa`, `Tabela`, `Video`, `CarrosselLogos`, …
+- `src/components/cromo/` — `Cabecalho`, `Rodape`, `FaixaCookies`,
+  `IconesSociais`, `VoltarAoTopo`
 
-Componente novo nesses três diretórios **precisa** entrar no catálogo `/design`
+Componente novo nesses quatro diretórios **precisa** entrar no catálogo `/design`
 no mesmo commit: `scripts/verifica-sistema.mjs` reprova o build se ele não for
 importado por lá.
 
-Valor de componente é medido, nunca lido: `medir-primitivos.mjs` imprime botão,
-seção, container, grade e ícone; `medir-padroes.mjs` imprime as nove composições
-do tema. Os dois rodam nos três viewports, com o hover.
+**Valor de componente é medido, nunca lido.** Os seis scripts `medir-*` imprimem
+o valor computado no navegador, nos três viewports e com o hover. Ler o CSS já
+deu resposta errada cinco vezes neste projeto; contar ocorrências no markup, três.
 
-O catálogo vivo fica em `/design`.
+O que o build verifica e aborta: cor literal fora do `tokens.css`, `@apply`,
+`style=` inline fora da allowlist, hierarquia de headings nas 41 páginas,
+componente fora do catálogo, página sem a folha do sistema, e referência a
+`/images/` que não exista em `public/`.
 
 ### URLs no preview local
 
@@ -113,24 +108,22 @@ o `cleanUrls` da Vercel deixa `/historia` como a URL canônica.
 
 ```
 src/i18n/ui.ts            rotas, títulos e strings dos 3 idiomas — comece aqui
-src/data/                 associados, parceiros, diretoria, contato
+src/data/                 associados, parceiros, diretoria, contato, cookies
 src/content/              publicações e estudos (Content Collections, YAML)
 src/content.config.ts     o schema Zod das duas coleções
 src/conteudo.ts           lê as coleções e resolve idioma e ordem
-src/layouts/              o layout único de todas as páginas
-src/components/           header, rodapé e as grades de dados
-src/components/primitivos/  Titulo, Texto, Botao, Icone, Imagem
-src/components/layout/    Secao, Container, Grade
-src/components/padroes/   CartaoMembro, ChamadaAcao, Hero, Abas, …
+src/layouts/              LayoutSistema (o layout) e Cabeca (o <head>)
+src/components/           os quatro diretórios do sistema, mais a montagem de conteúdo
 src/styles/               tokens, base e a folha do design system
 src/icones/glifos.ts      os 16 ícones em SVG — GERADO, não edite
 src/imagens.ts            resolve /images/… para o módulo otimizado
 src/assets/imagens/       o acervo (public/images/ só tem favicon e og-image)
 src/pages/                as 40 páginas + o catálogo /design
 src/scripts/site.js       comportamentos de interface
-public/                   css, imagens, fontes e robots.txt
-scripts/                  purga, subset de fontes, medição e invariantes
-tests/                    comportamento, geometria, ícones e diff visual
+public/                   favicon, og-image e robots.txt
+vendor/webfonts/          as fontes de origem dos 16 contornos — não publicadas
+scripts/                  medição, imagens, ícones e invariantes
+tests/                    comportamento, geometria, ícones, orçamento e diff visual
 docs/                     documentação técnica
 ```
 
@@ -140,8 +133,8 @@ docs/                     documentação técnica
 nunca os componentes. As strings dos três idiomas ficam todas lá.
 
 **Mudar o título ou a descrição de uma página** — também em
-[`src/i18n/ui.ts`](src/i18n/ui.ts), no mapa `meta`. As páginas não passam mais
-`title`/`description`: o layout lê de lá pela chave da rota.
+[`src/i18n/ui.ts`](src/i18n/ui.ts), no mapa `meta`. As páginas não passam
+`title`/`description`: o `<head>` lê de lá pela chave da rota.
 
 **Acrescentar ou tirar um resort, parceiro ou membro da diretoria** — edite o
 arquivo correspondente em [`src/data/`](src/data/). Os três idiomas mudam juntos,
@@ -156,21 +149,18 @@ ficaram com dois cartões dizendo "Leia agora".
 
 **Adicionar uma página** — acrescente a chave em `routes`, o `title`/`description`
 em `meta` e os rótulos em `ui` no [`src/i18n/ui.ts`](src/i18n/ui.ts), depois crie
-os três arquivos `.astro` em `src/pages/`. O `hreflang`, o `canonical` e a
-entrada no `sitemap.xml` saem automaticamente.
+os três arquivos `.astro` em `src/pages/` com o `LayoutSistema`. O `hreflang`, o
+`canonical` e a entrada no `sitemap.xml` saem automaticamente.
 
-**Mexer em CSS** — leia antes o trecho sobre `body.breakpoint-*` em
-[docs/decisoes.md](docs/decisoes.md), e rode o diff visual depois. Há uma
-armadilha específica deste tema que não é óbvia.
+**Adicionar uma imagem** — ponha o arquivo em
+[`src/assets/imagens/`](src/assets/imagens/) e use
+`<Imagem src="/images/…" />`. Escrito à mão num `<img src>`, aquele caminho vira
+404 e o build aborta.
 
-**Adicionar uma classe aplicada via JavaScript** — inclua o nome na lista
-`runtimeClasses` de [`scripts/purge-css.mjs`](scripts/purge-css.mjs), senão a
-purga remove o estilo dela.
-
-**Acrescentar um ícone** — o glifo precisa entrar em
-[`scripts/glifos.json`](scripts/glifos.json) e o subset precisa ser regerado,
-senão ele renderiza como tofu. O build avisa: `check-glifos.mjs` aborta se o CSS
-pedir um codepoint que não esteja no subset.
+**Acrescentar um ícone** — acrescente o codepoint em
+[`scripts/glifos.json`](scripts/glifos.json), rode
+`python scripts/glifos-para-svg.py` e depois `node tests/verify-icones.mjs`, que
+compara o desenho novo com a fonte de origem. Não edite `src/icones/glifos.ts`.
 
 **Mexer em cookies, GTM ou qualquer script de terceiro** — o consentimento fica
 no bloco inline do `<head>` de [`src/layouts/Cabeca.astro`](src/layouts/Cabeca.astro),
@@ -179,107 +169,57 @@ lista de cookies mudar, atualize [`src/data/cookies.ts`](src/data/cookies.ts) �
 a tabela da política sai de lá, nos três idiomas — e suba a versão do cookie
 `rb_consent` para que a faixa volte a perguntar.
 
-## Estado da refatoração
+## De onde o projeto veio
 
-Feito e verificado:
+O site rodava sobre o tema Inspiro: 21 mil linhas de `style.css`, Bootstrap, 196
+cores, 110 `!important`, jQuery e uma dúzia de plugins. Duas passagens o
+transformaram, e as duas estão registradas em
+[docs/decisoes.md](docs/decisoes.md).
 
-- 40 páginas em um layout único, URLs preservadas, `hreflang` nos 3 idiomas
-- jQuery e o engine do tema trocados por ~9 KB de JS nativo — hoje **4,3 KB**, à
-  medida que o design system substitui cada comportamento por CSS
-- CSS de 805 KB para 64 KB (purga contra o HTML gerado + lightningcss)
-- **120/120 comparações visuais idênticas** ao site original — 40 páginas × 3
-  viewports, sem divergência aceita (20/08/2026)
+**A refatoração (2026).** jQuery e o engine do tema trocados por JS nativo, 40
+páginas num layout único, CSS purgado de 805 KB para 64 KB, `title` e
+`description` únicos, `sitemap` com `hreflang` de slug traduzido, foco visível e
+navegação por teclado, subset das fontes de ícone, consentimento de verdade com
+Consent Mode v2 e fachada de clique-para-carregar nos vídeos.
 
-Refino de agosto/2026, também com 120/120:
+**A reconstrução da camada de apresentação (11 etapas).** O tema saiu inteiro,
+substituído pelo design system. O
+[plano](docs/plano-design-system.md) tem etapa por etapa; o resultado medido:
 
-- 40 `title` e 40 `description` únicos, em `meta` no `src/i18n/ui.ts` — antes as
-  40 páginas dividiam três frases genéricas, uma por idioma
-- `sitemap.xml` com `hreflang` de slug traduzido, `robots.txt` e JSON-LD
-- foco visível, skip link, submenu pelo teclado, nomes acessíveis nos ícones
-- `astro check` no build, cabeçalhos de cache e segurança no `vercel.json`
-- guarda na purga de CSS contra a falha silenciosa descrita em `decisoes.md`
-- `src/data/`: `src/pages/` caiu de 12.629 para 8.858 linhas, e as divergências
-  entre idiomas que a duplicação escondia foram corrigidas
-- seletor de idioma leva à tradução **da página atual**, não mais à home
+| | antes | depois |
+|---|---|---|
+| páginas migradas | 0 de 41 | **41 de 41** |
+| `style=` inline | 549 | **0** (2 na allowlist, justificadas) |
+| cor literal fora dos tokens | 413 | **0** |
+| headings irregulares | 39 de 40 páginas | **0** |
+| transbordo horizontal | 72 ocorrências | **0** |
+| home no mobile | 4.405 KB | **451 KB** |
+| conjunto medido | 68 MB | **19 MB** |
+| webfont de ícone | 247 KB | **0** — 16 SVG inline |
 
-Correções de conteúdo confirmadas pelo cliente (20/08/2026), estas com
-divergência de layout registrada — o valor de referência do diff passou a ser
-**117/120**, ver [docs/verificacao.md](docs/verificacao.md):
-
-- Wyndham Gramado saiu do carrossel da home: não é mais associado
-- `/en-us/join-us` passou a listar os mesmos 8 parceiros de PT e ES, em vez de 10
-- os cargos da diretoria passaram a ser traduzidos nos três idiomas (a empresa
-  dos conselheiros **não** traduz — é nome próprio)
-- dois LinkedIn trocados na diretoria, corrigidos
-
-Terceira passagem, agosto/2026:
-
-- **Subset das fontes de ícone aplicado: 247 KB → 2,9 KB.** A lista de glifos do
-  script estava incompleta e teria apagado as setas e bolinhas de 6 páginas —
-  dois glifos entram por pseudo-elemento e não têm classe no HTML. Hoje
-  `scripts/check-glifos.mjs` aborta o build se o CSS pedir um glifo fora do
-  subset, e a suíte confere no navegador que os 16 renderizam.
-- **Google Fonts fora do caminho crítico** — o `@import` da linha 1 do CSS de
-  produção virou `<link>` com `preconnect` e `display=swap`; a Nunito saiu (5
-  pesos baixados sem uso) e a lista de pesos passou a ser a medida.
-- **Consentimento de verdade** — nada de Google é contatado antes da escolha,
-  com Consent Mode v2, três categorias, painel de preferências e revogação pelo
-  rodapé. Os vídeos do YouTube viraram fachada de clique-para-carregar.
-- **A tabela de cookies da política passou a descrever este site** — a anterior
-  listava uma plataforma de consentimento nunca instalada, cookies de WordPress
-  e de Poptin, com validades vencidas em 2021-2023.
-
-As três camadas passaram. O diff visual fechou **117/120 depois das fontes** —
-o valor de referência anterior, sem um pixel movido — e **93/120 no fim**, com as
-24 divergências novas todas explicadas em
-[docs/verificacao.md](docs/verificacao.md): o retângulo dos vídeos e a tabela de
-cookies, ambas mudanças pedidas. A suíte comportamental foi de 19 para 32
-verificações, todas passando.
-
-Peso final por pageview: **66,6 KB de CSS, 8,9 KB de JS e 2,9 KB de fonte de
-ícone** — contra 805 KB de CSS, 504 KB de JS e 247 KB de fonte no site original.
-
-Pendente:
-
-- **Otimização das imagens** — 198 arquivos, 7.7 MB, sem WebP. A home entrega
-  **4,3 MB de imagem** contra 64 KB de CSS. Medido: WebP q90 sem redimensionar
-  economiza 15%; q82 com teto de 1920px, 45%; AVIF q60, 54%. Recompressão muda
-  pixel por construção, então esta fase precisa de política de tolerância
-  própria — é a única que não fecha 120/120.
-- **Páginas do ebook em português nas três versões** — 1.089 linhas cada, é
-  trabalho de tradutor. Ver o fim de [docs/decisoes.md](docs/decisoes.md).
-- **O contador diz 83 resorts associados; a lista tem 78.**
-- **Conferência do cliente sobre cookies** — duas coisas que não se resolvem no
-  código: a tabela da política precisa do inventário de tags do console do
-  `GTM-PK7DG6MD`, e o texto é jurídico; e falta configurar no GTM as
-  *verificações de consentimento adicionais* por tag, sem as quais quem aceita
-  só "Desempenho" ainda dispararia tags de publicidade.
-- **Google Fonts continua no Google** — decisão registrada. O IP do visitante vai
-  para o Google em toda visita, antes de qualquer consentimento; auto-hospedar
-  resolveria.
-
-A otimização de imagens mexe em renderização, então pede um diff visual
-próprio.
+Cinco defeitos que estavam **em produção** apareceram no caminho, nenhum deles
+procurado: o carrossel de logos das três homes invisível havia meses, o texto do
+rodapé do ebook a 1,23:1 de contraste, um capítulo inteiro em espanhol na
+política de privacidade inglesa, três números diferentes para a mesma contagem de
+associados, e dois `alt` em português nas versões traduzidas.
 
 ## Documentação
 
 - [docs/arquitetura.md](docs/arquitetura.md) — como o projeto se organiza
-- [docs/decisoes.md](docs/decisoes.md) — por que cada escolha foi feita, e as
-  armadilhas do tema
-- [docs/verificacao.md](docs/verificacao.md) — as três camadas de verificação e
-  o que cada uma não cobre
+- [docs/decisoes.md](docs/decisoes.md) — por que cada escolha foi feita
+- [docs/verificacao.md](docs/verificacao.md) — os portões e o que cada um não cobre
+- [docs/plano-design-system.md](docs/plano-design-system.md) — as 11 etapas
+- [docs/deltas-visuais.md](docs/deltas-visuais.md) — o que mudou de pixel, e por quê
 
 ## Deploy
 
 Vercel. O [`vercel.json`](vercel.json) define `cleanUrls`, `trailingSlash: false`,
-o redirect 301 de `/arena-conexoes` para `/`, os cabeçalhos de cache
-(`/images`, `/webfonts` e `/_astro`) e os de segurança.
+o redirect 301 de `/arena-conexoes` para `/`, os cabeçalhos de cache (`/images` e
+`/_astro`) e os de segurança.
 
-O cache de `/images` é de uma semana, não de um ano: os nomes dos arquivos não
-têm hash, então um `immutable` longo prenderia uma imagem trocada no cache dos
-visitantes. `/_astro` e `/webfonts` podem ser `immutable` porque só mudam de
-nome quando mudam de conteúdo.
+O cache de `/images` é de uma semana, não de um ano: ali ficam `favicon.png` e
+`og-image.png`, cujos nomes não têm hash — um `immutable` longo prenderia uma
+imagem trocada no cache dos visitantes. `/_astro` pode ser `immutable` porque só
+muda de nome quando muda de conteúdo, e é por onde passa o acervo inteiro.
 
-Antes de promover para produção, rode as três camadas de verificação descritas
-em [docs/verificacao.md](docs/verificacao.md) — em especial o diff visual, que é
-a única que pega regressão de layout.
+Antes de promover para produção, rode `npm run build` e `npm run verify`.

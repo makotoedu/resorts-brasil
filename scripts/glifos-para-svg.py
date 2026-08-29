@@ -2,15 +2,20 @@
 """
 Converte os 16 glifos de icone em caminhos SVG.
 
-POR QUE. Hoje um icone custa tres webfonts subsetadas, um script Python de
-subset, uma guarda de build (check-glifos.mjs) e um FOIT — para 16 desenhos. Em
-SVG inline eles viram markup: nada para baixar, nada para versionar com `?v=`,
-nada que possa virar tofu porque o subset esqueceu um codepoint. E o que a
-Etapa 11 do plano remove depende de existir primeiro.
+POR QUE. Um icone custava tres webfonts subsetadas, um script Python de subset,
+uma guarda de build e um FOIT — para 16 desenhos. Em SVG inline eles viram
+markup: nada para baixar, nada para versionar com `?v=`, nada que possa virar
+tofu porque o subset esqueceu um codepoint. Este script foi a condicao para a
+Etapa 11 poder apagar os outros tres.
 
 A ENTRADA E scripts/glifos.json, nao o inventario de <i class> do HTML — pela
-mesma razao de sempre: dois glifos entram por pseudo-elemento e nao tem classe.
-O JSON continua sendo a fonte unica; este script apenas o materializa.
+mesma razao de sempre: dois glifos entravam por pseudo-elemento e nao tinham
+classe. O JSON continua sendo a fonte unica da PROCEDENCIA de cada contorno;
+este script apenas o materializa, lendo as fontes originais de vendor/webfonts/.
+
+RODE tests/verify-icones.mjs DEPOIS. Ele compara desenho a desenho contra as
+mesmas fontes, e e o unico portao que pega codepoint trocado, contorno vazio ou
+eixo espelhado — nada disso quebra build.
 
 A SAIDA E GERADA. Nao edite src/icones/glifos.ts a mao; rode:
 

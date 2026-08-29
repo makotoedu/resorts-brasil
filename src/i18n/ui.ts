@@ -87,7 +87,7 @@ export type RouteKey = keyof typeof routes;
  * Ficam aqui pelo mesmo motivo que `routes`: lado a lado, a divergencia entre
  * os idiomas fica visivel. Espalhadas pelas 40 paginas, as 40 descriptions
  * ficaram sendo a mesma frase generica por idioma — o Google descarta e inventa
- * o snippet. O BaseLayout le daqui quando a pagina passa `route`.
+ * o snippet. O Cabeca.astro le daqui quando a pagina passa `route`.
  *
  * Description entre 120 e 155 caracteres, escrita a partir do conteudo real da
  * pagina. Title no formato `Assunto - Resorts Brasil`, unico no site.

@@ -1,20 +1,19 @@
 ---
 /*
- * A FOLHA DO DESIGN SYSTEM ENTRA AQUI, e este e o unico layout que pode
- * importa-la.
+ * O layout das 41 paginas, e o unico. A folha do design system entra aqui.
  *
- * A regra do CLAUDE.md — "a folha entra pelo frontmatter da pagina, nunca pelo
- * BaseLayout" — continua valendo e continua tendo o mesmo motivo: o Astro
- * empacota CSS pelo grafo de modulos, entao a folha vai para o bundle de quem a
- * importa, e o `BaseLayout` e importado pelas 40 paginas do tema.
+ * ELE FOI METADE DE UM PAR DURANTE SEIS ETAPAS, e o motivo importa mais que a
+ * historia: o Astro empacota CSS pelo GRAFO DE MODULOS, nao pelo que a pagina
+ * renderiza, entao a folha vai para o bundle de quem a importa — e importa-la no
+ * layout do tema punha o Preflight do Tailwind nas 40 paginas que rodavam sobre
+ * ele. O isolamento era por ausencia: dois layouts, e este importado so pelas
+ * paginas migradas.
  *
- * Este arquivo nao e importado por nenhuma delas. Ele e o layout das paginas
- * MIGRADAS, e so delas — o isolamento por ausencia continua intacto, so que
- * agora a fronteira e um arquivo em vez de uma prop booleana. Que e mais forte:
- * uma prop da para esquecer, um layout errado entrega uma pagina sem cabecalho.
+ * A Etapa 11 apagou o outro. O que fica e o mecanismo, e ele vale para qualquer
+ * folha global que alguem venha a importar daqui.
  *
- * `scripts/verifica-sistema.mjs` afirma isso no `dist/`: nenhuma pagina pode
- * carregar as duas folhas, e nenhuma pode ficar sem folha nenhuma.
+ * `scripts/verifica-sistema.mjs` afirma o resultado no `dist/`: toda pagina tem
+ * a folha do sistema, e nenhuma carrega folha de fora do grafo de modulos.
  */
 import '../styles/global.css';
 
@@ -42,8 +41,7 @@ interface Props {
    * escuro, rodape invertido.
    *
    * E UMA PROP SO PARA OS TRES TRACOS, e nao tres props, porque no site eles
-   * nunca apareceram separados — a mesma decisao que o `variacaoEbook` do
-   * BaseLayout ja registrava. Tres booleanos permitiriam oito combinacoes, das
+   * nunca apareceram separados. Tres booleanos permitiriam oito combinacoes, das
    * quais uma existe.
    */
   variacaoEbook?: boolean;
@@ -85,8 +83,8 @@ const t = ui[lang];
     <Cabecalho lang={lang} route={route} semTopbar={variacaoEbook} escuro={variacaoEbook} />
 
     <!--
-      SEM `mainClass`. O BaseLayout precisa de `hero-fullscreen` no <main> para
-      o ajustes.css puxar o hero para tras do cabecalho transparente; aqui o
+      SEM CLASSE NO <main>. O layout do tema precisava de `hero-fullscreen` ali
+      para o ajustes.css puxar o hero para tras do cabecalho transparente; aqui o
       cabecalho e `position: relative` dentro do fluxo e a secao de topo comeca
       logo abaixo dele, sem deslocamento negativo nenhum. Um numero a menos para
       manter sincronizado com uma media query.
@@ -100,14 +98,12 @@ const t = ui[lang];
     <VoltarAoTopo lang={lang} />
 
     <!--
-      O MESMO script das paginas do tema, e nao um segundo.
-
-      Ele so age sobre ganchos que existem: `#mainMenu`, `#mainMenu-trigger`,
-      `.cookie-notify`, `#scrollTop` e `.cookie-manage` estao nos dois cromos com
-      os mesmos nomes, e os blocos de carrossel, masonry, abas, hero e video
-      simplesmente nao encontram nada nestas paginas e saem sem fazer nada.
-      Manter um script so e o que impede as duas camadas de divergirem em
-      comportamento enquanto divergem em aparencia.
+      UM SCRIPT SO, e os nomes de estado dele sao os do tema de proposito:
+      `#mainMenu`, `#mainMenu-trigger`, `.toggle-active`, `.modal-active`,
+      `#scrollTop`. Foi isso que deixou um `site.js` unico servir as duas camadas
+      durante a migracao inteira, em vez de dois que divergiriam em comportamento
+      enquanto divergiam em aparencia. Sobrou uma camada e os nomes ficam: o CSS
+      do cromo os declara, e renomear agora seria uma varredura sem ganho.
     -->
     <script src="../scripts/site.js"></script>
   </body>

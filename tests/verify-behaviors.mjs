@@ -625,19 +625,20 @@ for (const camada of CAMADAS) {
 
 /* 7f. Fachada dos videos ------------------------------------------------- */
 /*
- * NAS DUAS CAMADAS, e aqui a razao e mais forte que no cromo: sao dois
- * COMPONENTES diferentes, e nao um markup so dirigido pelo mesmo script.
+ * DOIS ALVOS, e eles ja significaram outra coisa.
  *
- * O <YouTube> do tema tem o CSS em `public/css/ajustes.css`, folha que pagina
- * migrada nao carrega — entao a Etapa 8 precisou de um <Video> proprio, com
- * `<style>` escopado. Duas implementacoes da mesma promessa de privacidade e da
- * mesma caixa; se uma quebrar, e aqui que tem de aparecer.
+ * Enquanto as camadas conviviam, eram um <Video> e um <YouTube>: o segundo tinha
+ * o CSS em `public/css/ajustes.css`, folha que pagina migrada nao carregava, e
+ * por isso a Etapa 8 precisou de um componente proprio com `<style>` escopado.
+ * Eram duas implementacoes da mesma promessa de privacidade, e o teste existia
+ * para nao deixar uma delas quebrar sozinha.
  *
- * A CAIXA E O UNICO EIXO EM QUE ELAS DIVERGEM DE PROPOSITO. O tema fixa
- * `height: 420px`, a altura que o `<iframe>` original rendia; o sistema usa
- * `aspect-ratio: 16/9`, que e a proporcao real do video e some com a tarja preta
- * em cima e embaixo. Por isso o alvo de altura e uma funcao da largura, e nao um
- * numero.
+ * HOJE E UM COMPONENTE SO, e os dois alvos medem a mesma regra em CONTEXTOS
+ * diferentes: um video ocupa o container inteiro e o outro vive numa coluna
+ * estreita (`largura="media"`). A conta de 16/9 tem de valer nos dois, e por
+ * isso a altura esperada e uma funcao da largura e nao um numero — o tema fixava
+ * `height: 420px`, a altura que o `<iframe>` original rendia, e era ali que
+ * nascia a tarja preta em cima e embaixo.
  */
 for (const alvo of [
   {
@@ -648,12 +649,9 @@ for (const alvo of [
     alturaEsperada: (w) => Math.round((w * 9) / 16),
   },
   /*
-   * O SEGUNDO ALVO ERA `[tema]`, com 420px fixos — a altura que o `<iframe>`
-   * original rendia e que o <YouTube> repetia num `style=` inline. A pagina do
-   * e-book migrou na Etapa 10 e passou ao <Video>, entao os dois alvos agora
-   * medem a MESMA regra de proporcao. Ele continua aqui, e nao vira redundancia:
-   * este e o unico video dentro de uma coluna estreita (`largura="media"`), e o
-   * outro ocupa o container inteiro. A conta de 16/9 tem de valer nos dois.
+   * ESTE ALVO CHAMAVA-SE `[tema]`, e media 420px fixos. A pagina do e-book
+   * migrou na Etapa 10 e passou ao <Video>; ele ficou porque a coluna estreita
+   * continua sendo um contexto que o outro alvo nao cobre.
    */
   {
     nome: 'ebook',

@@ -16,9 +16,9 @@ geometria (seção 2b) assumiu a proteção do layout. Ver
 npm run build
 ```
 
-Gera as 41 páginas (40 de conteúdo + o catálogo em `/design`), roda a purga de
-CSS, a ponte e a purga de imagens (`imagens.mjs`), confere o subset de fontes
-(`check-glifos.mjs`) e as invariantes do design system (`verifica-sistema.mjs`). As URLs geradas precisam ser
+Gera as 41 páginas (40 de conteúdo + o catálogo em `/design`), checa os tipos,
+confere as imagens (`imagens.mjs`) e as invariantes do design system
+(`verifica-sistema.mjs`). As URLs geradas precisam ser
 idênticas às do site original — o site tem histórico de indexação e qualquer
 mudança de caminho exigiria redirect 301 no [`vercel.json`](../vercel.json).
 
@@ -44,8 +44,8 @@ reimplementou depois da remoção do jQuery: menu mobile, seletor de idioma e
 voltar ao topo. O hero, o carrossel de logos, os contadores e as abas continuam
 verificados, mas já não são JavaScript — desde a Etapa 9 as quatro funções que os
 serviam saíram do `site.js`, e o que se verifica agora é o CSS que as substituiu.
-Mais duas famílias que não são do jQuery — o consentimento e os glifos do subset
-— descritas adiante. Também verifica ausência de erros de console em 6 páginas
+Mais duas famílias que não vêm do jQuery — o consentimento e a ausência de
+webfont de ícone — descritas adiante. Também verifica ausência de erros de console em 6 páginas
 dos 3 idiomas.
 
 **Montado não é funcionando.** A verificação do Ken Burns conferia que o `<div>`
@@ -110,11 +110,11 @@ npx astro preview --port 4330
 Se a porta pedida estiver ocupada, o Astro sobe em outra e avisa só no log — vale
 conferir antes de concluir que uma rota quebrou.
 
-**Uma armadilha já encontrada aqui:** o CSS do tema usa `transition: all 0.2s`
-em vários elementos. Medir `getComputedStyle` logo após um clique devolve o
-valor **interpolado no meio da transição**, não o estado final. Um teste do
-seletor de idioma falhou por isso e o código estava certo — a correção foi
-esperar 400 ms antes de medir.
+**Uma armadilha já encontrada aqui:** medir `getComputedStyle` logo após um
+clique devolve o valor **interpolado no meio da transição**, não o estado final.
+Um teste do seletor de idioma falhou por isso e o código estava certo — a
+correção foi esperar 400 ms antes de medir. Vale para qualquer elemento com
+`transition`, e o cromo tem vários.
 
 ---
 
@@ -130,8 +130,9 @@ diff visual como portão de layout.
 A 41ª é o catálogo `/design`, que fica fora da lista de
 [`tests/paginas.mjs`](../tests/paginas.mjs) — não é página de conteúdo e o diff
 visual não tem contra o que compará-lo. Na geometria ele entra, e por um motivo
-prático: é a única página que roda **só** sobre o sistema novo, então primitivo
-quebrado aparece ali antes de qualquer outro lugar. Valeu na primeira execução da
+prático: é a única que mostra cada componente sozinho, em todas as variantes e
+sem conteúdo em volta, então primitivo quebrado aparece ali antes de qualquer
+outro lugar. Valeu na primeira execução da
 Etapa 1 — a escala tipográfica do próprio catálogo transbordava 25px em 390px, e
 nenhum outro portão viu.
 
@@ -156,11 +157,14 @@ altura não é critério. Uma página pode encurtar 800px por ter menos conteúd
 que ela não pode é encurtar porque uma seção virou zero, e é isso que as
 checagens acima separam.
 
-**Duas listas, não uma.** Página migrada **bloqueia**; página do tema
-**reporta**. O tema chega com defeito próprio — o `.row` do Bootstrap tem margem
-negativa e transborda 30px no mobile e 12px no desktop, medido idêntico no site
-original. Um portão que sempre falha não é portão. `DETALHE=1` lista as
-pendências inteiras.
+**Uma lista só, desde a Etapa 11 — e eram duas.** Enquanto o tema existia, página
+migrada bloqueava e página do tema apenas reportava: o `.row` do Bootstrap tem
+margem negativa e transbordava 30px no mobile e 12px no desktop, medido idêntico
+no site original, e um portão que sempre falha não é portão. A lista de
+pendências virava lista de falhas sozinha conforme cada página migrava — 72 na
+Etapa 0.5, 53 na 6, 33 na 8, 3 na 9, **zero na 10**. Chegou a zero e a segunda
+lista perdeu a razão de existir. `DETALHE=1` imprime todas as ocorrências, em vez
+das 12 primeiras por tipo.
 
 **A distinção que a suíte depende de acertar** é entre elemento *não
 renderizado* (aba fechada — pular) e *renderizado com caixa zero* (colapso —
@@ -206,6 +210,17 @@ rota, e não com `setContent`: em `about:blank` o `@font-face` com URL relativa
 não resolve, a webfont não carrega e os 16 reprovam por tofu — o oposto do que a
 checagem quer dizer. Sem preview no ar, o `goto` falha com mensagem clara.
 
+**A fonte de referência vem de `vendor/webfonts/`, embutida como `data:`.** Não
+de `/webfonts/`, que deixou de existir na Etapa 11: pela rede seriam três 404, as
+fontes não carregariam e os 16 reprovariam por tofu — o teste acusando o desenho
+quando o defeito seria dele mesmo. É também o que ele sempre quis dizer, mesmo
+quando o subset ainda era publicado: a pergunta é se o SVG desenha o contorno
+**original**, e comparar com o subset deixaria passar um erro do próprio
+`pyftsubset`.
+
+Daí sai o cuidado que o `glifos.json` documenta: **`vendor/webfonts/` não é
+lixo.** Apagá-lo derrubaria este portão sem nenhum erro de build.
+
 
 ## 2d. Orçamento de performance — a catraca de peso
 
@@ -238,8 +253,9 @@ Dois cuidados que o script já resolve, e que custaram uma medição errada cada
 
 A linha de base inicial, com o tema ainda em 40 páginas: `index` 4,4 MB (4,3 MB
 de imagem), `ebook` 1,1 MB, `associe-se` 770 KB, `404` 100 KB, e o catálogo
-`/design` — a única migrada — em **78 KB**. Com 38 das 41 migradas, o conjunto
-medido está em **24,4 MB** contra os 47,9 MB de partida, e a `index` em 451 KB.
+`/design` — a única migrada — em **78 KB**. Com as 41 migradas e o tema removido,
+o conjunto medido está em **19,0 MB** contra os 47,9 MB de partida, a `index` em
+451 KB e o `ebook` em 247 KB.
 
 **Três decisões de medição, todas da Etapa 9, e todas pelo mesmo motivo:** o
 limiar de `loading="lazy"` do Chromium depende da conexão *estimada*, que não
@@ -511,7 +527,10 @@ com o navegador limpo:
 2. Conferência manual do que os números não mostram: abrir `/associados` a
    768 px e confirmar a grade em 3 colunas com os logos a ~124 px.
 3. A conferência de rede da camada 4.
-4. Conferir que `/webfonts/` está sendo servido com a query de versão em vigor —
-   o `immutable` é de um ano, e uma fonte trocada sem trocar a query fica presa
-   no cache de quem já visitou.
-5. Deploy de preview na Vercel antes de promover.
+4. Deploy de preview na Vercel antes de promover.
+
+> O item 4 era **conferir a query de versão em `/webfonts/`**, porque o
+> `immutable` de um ano prendia no cache uma fonte trocada sem trocar a query.
+> Saiu na Etapa 11 com a pasta: nenhum arquivo servido sem hash tem cache longo
+> hoje. Os dois que restam em `/images/` — favicon e og-image — têm uma semana
+> justamente por não terem hash.

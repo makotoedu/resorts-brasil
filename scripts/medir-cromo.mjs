@@ -6,11 +6,11 @@
  * que tem classe e e generico, medir-padroes.mjs as composicoes de conteudo, e
  * este cobre o que EMBRULHA toda pagina.
  *
- * POR QUE ELE EXISTE, e por que aparece so agora: o catalogo /design nao usa o
- * BaseLayout justamente porque Header e Footer ainda sao do tema. Qualquer
- * pagina de conteudo usa, entao a primeira delas a receber `legado={false}`
- * perde o estilo do cabecalho e do rodape inteiros — nao ha etapa de pagina
- * possivel antes desta medicao.
+ * POR QUE ELE EXISTE, e por que apareceu so na Etapa 5: o catalogo /design monta
+ * o proprio documento justamente porque o unico layout de entao trazia cabecalho
+ * e rodape do tema. Qualquer pagina de conteudo usava aquele layout, entao a
+ * primeira a trocar de camada perderia o estilo dos dois — nao havia etapa de
+ * pagina possivel antes desta medicao.
  *
  * O cromo tem tres coisas que nenhum dos anteriores tinha, e as tres so existem
  * medidas:
