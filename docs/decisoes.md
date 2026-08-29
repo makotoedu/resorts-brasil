@@ -1149,6 +1149,35 @@ os preenche como quer. O logo aparecia com 6% de diferença em toda qualidade de
 WebP, número que não mudava com `quality` justamente porque não era compressão.
 Achatar sobre branco compara o que o olho vê.
 
+### O libvips 8.18 recalibrou o AVIF, e o 50 mudou de base
+
+Na subida do `sharp` para 0.35.4 (libvips 8.17.3 → 8.18.6) a régua foi refeita, e
+o resultado separou os dois codecs de um jeito que nenhuma suposição teria
+previsto — **o WebP saiu idêntico célula por célula** e só o AVIF se moveu:
+
+| hero 1080px | libvips 8.17.3 | libvips 8.18.6 |
+|---|---|---|
+| AVIF q40 | 59 KB · 0,08% | 42 KB · **1,25%**, acima do limiar |
+| AVIF q50 | 87 KB · 0,00% | 66 KB · **0,25%** |
+| AVIF q60 | — | 100 KB · 0,01% |
+| AVIF q80 | 225 KB · 0,00% | 189 KB · 0,00% |
+| WebP q40 / q50 / q80 | 80 / 93 / 150 KB | **os mesmos 80 / 93 / 150 KB** |
+
+O mesmo `quality` passou a pedir menos fidelidade e a entregar arquivo menor. Que
+o WebP não tenha mudado um byte é justamente o que garante que isto é o encoder,
+e não ruído da medição.
+
+**O 50 fica, mas por dois motivos que não são o antigo.** O antigo era "o
+primeiro q com 0,00%", e aplicado ao 8.18.6 ele daria 60. Os que valem agora:
+
+1. os 0,25% ficam sob o `LIMIAR_PERCEPTIVO` de 1% do próprio script — pela régua
+   do projeto, invisível. E só a foto se move: retrato e logo chapado dão 0,00%
+   em toda qualidade, nos dois encoders;
+2. **em q60 o AVIF ficaria maior que o próprio fallback** — 100 KB contra os
+   93 KB do WebP q50, que não mudou. O motivo de a escada ter virado `['avif']`
+   mais WebP é o AVIF ser menor; em q60 ele deixa de ser, e o formato principal
+   perde a razão de existir.
+
 ### Um formato a menos
 
 `formats={['avif']}` com `fallbackFormat="webp"`, e não a escada de três que o
@@ -3121,3 +3150,107 @@ próprio npm classifica como breaking. Não entra numa tarefa cujo escopo é o
 Astro: o `sharp` é quem gera as 181 imagens do acervo, e trocá-lo pede a régua do
 `scripts/medir-imagens.mjs` — fidelidade contra o original, por codec — e não a
 suposição de que um major de biblioteca de imagem não mexe em pixel.
+
+> **Feito depois, e a desconfiança do último parágrafo estava certa: mexeu em
+> pixel.** Ver a seção seguinte.
+>
+> **Uma frase acima já era falsa quando foi escrita, e quem a invalidou foi o
+> próprio v7.** "O `sharp` é quem gera as 181 imagens" valia em 6.4.8. No v7 o
+> `astro` passou a declarar `sharp ^0.35.4` como dependência opcional própria e o
+> nosso `devDependencies` pedia `^0.34.4`: sem faixa comum, o npm instalou **duas
+> cópias**: quem gerava as imagens era a aninhada em
+> `node_modules/astro/node_modules/sharp`, já corrigida, e a 0.34.5 da raiz —
+> a que o `audit` acusava — não gerava imagem nenhuma.
+
+---
+
+# sharp 0.34.5 → 0.35.4
+
+Fecha o pendente da atualização do Astro. O que se procurava era a CVE; o que se
+achou foi uma **troca de encoder que já estava no repositório havia um commit**,
+esperando um build frio para aparecer.
+
+## A CVE era o argumento fraco, e vale registrar por quê
+
+`npm audit` acusava alta em `sharp < 0.35.0` — CVE-2026-33327, 33328, 35590 e
+35591, herdadas do libvips, todas de decode de imagem não confiável. Mas a cópia
+acusada era a da raiz, e ela servia exatamente dois consumidores:
+
+- [`scripts/medir-imagens.mjs`](../scripts/medir-imagens.mjs)
+- [`tests/verify-icones.mjs`](../tests/verify-icones.mjs)
+
+Os dois leem arquivos do próprio repositório, em máquina de desenvolvimento.
+Ninguém estava exposto. O que a subida compra pelo lado da segurança é um `audit`
+silencioso — o que importa não por higiene, mas porque um relatório
+permanentemente vermelho é como se deixa de ver o próximo.
+
+## O argumento forte: o instrumento tinha descolado do que ele mede
+
+```
+scripts/medir-imagens.mjs  → sharp 0.34.5 → libvips 8.17.3
+o build que gera as imagens → sharp 0.35.4 → libvips 8.18.6
+```
+
+O `qualidade: 50` do `<Imagem>` existe porque foi **medido**. Desde o v7, quem
+respondia "que qualidade é fiel o bastante" e quem de fato codificava as imagens
+do site eram dois libvips diferentes, e os codecs AVIF e WebP moram no libvips. A
+medição não estava errada: estava descrevendo um encoder que não rodava mais
+aqui.
+
+É o mesmo modo de falha que este projeto já catalogou noutra forma — um portão
+que passa porque não casa mais com nada. Aqui era um instrumento que continuava
+respondendo, só que sobre outra coisa.
+
+Depois da subida sobrou **uma** cópia, 0.35.4 / libvips 8.18.6, e a árvore caiu
+de 437 para 290 pacotes: as duas árvores de binários `@img/sharp-*` viraram uma.
+O `allowScripts` precisou de retoque de novo, pelo mesmo motivo da atualização
+anterior — a chave fixa a versão exata, e `sharp@0.34.5` deixaria de casar sem
+avisar.
+
+## O cache escondia a troca, e ela estava latente
+
+Este é o achado que muda o quadro. Depois da subida, o build reusou as **566**
+entradas de `node_modules/.astro/assets`, e aquele cache era de 21 a 28 de agosto
+— **anterior** ao commit do Astro 7 (29/08 15:48). Ou seja: as imagens em `dist/`
+continuavam codificadas pelo libvips 8.17, um commit depois de o 8.18 ter
+entrado na árvore.
+
+A troca de encoder não estava *feita*; estava **armada**. O primeiro build sem
+cache — CI limpo, ou uma invalidação qualquer — recodificaria as 566 sozinho,
+sem ninguém pedir e sem nada acusar. Por isso o cache foi purgado de propósito
+aqui, para que a mudança acontecesse sob medição em vez de num deploy:
+
+| | com cache | recodificado |
+|---|---|---|
+| etapa de imagens do build | 150 ms | **40,4 s** |
+| `dist/` | 15.728.223 B | **15.359.190 B** (−369 KB, −2,3%) |
+
+WebP e PNG não mudaram nem em contagem nem em tamanho, então a redução inteira é
+do AVIF: 4,51 MB agora, cerca de −7,6%. A tabela por qualidade e a decisão de
+manter o 50 estão em [`quality: 80` fazia o AVIF ser 50% maior que o
+WebP](#quality-80-fazia-o-avif-ser-50-maior-que-o-webp).
+
+**O nome do arquivo não muda com o encoder.** As 207 capas AVIF e as 359 WebP
+saíram com os mesmos nomes e bytes diferentes — o hash do Astro deriva da origem
+e dos parâmetros da transformação, não da versão do libvips. Num deploy
+imutável por versão isso é inofensivo, mas não se deve contar com o nome para
+saber se o conteúdo mudou.
+
+## O que os quatro portões disseram
+
+Todos passaram. Dois merecem nota:
+
+- **ícones**: 16/16, com `map-pin` no topo em 5,1% — exatamente a calibração
+  registrada em [verificacao.md](verificacao.md), "os 16 ficam entre 0% e 5,1%".
+  Era o risco real da subida, porque é comparação de pixel contra a webfont de
+  origem, e o libvips novo não mexeu nele.
+- **orçamento**: total de 20.370 → 20.075 KB, −1,4%. **Nenhuma página caiu os 5%
+  que disparam o `EMAGRECERAM`**, então a linha de base *não* foi regravada: a
+  economia é difusa demais para a catraca enxergar, e a folga que sobra está
+  dentro dos 5% que ela já tolera por desenho. Regravar aqui seria apertar a base
+  por fora do critério do próprio script.
+
+O `visual-diff.mjs` não entrou. Ele compara contra o site original em `:4340`,
+que saiu do repositório na Etapa 11 — e, para esta pergunta, o
+`medir-imagens.mjs` é o instrumento melhor: ele compara contra o **original de
+origem**, não contra um screenshot de página.

@@ -19,10 +19,12 @@ npm run dev          # http://localhost:4321
 Requer **Node ≥ 22.12**, que é o mínimo do Astro 7 e está declarado em `engines`.
 
 O `npm install` pode avisar que os install scripts de `sharp` e `esbuild` estão
-bloqueados — o npm 11 faz isso por padrão. Ambos são dependências do próprio
-Astro e já estão aprovados no campo `allowScripts` do `package.json`; se o aviso
-aparecer, rode `npm approve-scripts sharp esbuild`. **A entrada do `allowScripts`
-guarda a versão**, então uma atualização que mova o `esbuild` faz o aviso voltar:
+bloqueados — o npm 11 faz isso por padrão. Os dois entram pela árvore do Astro (o
+`sharp` também é declarado em `devDependencies`, que é o que o `medir-imagens.mjs`
+e o `verify-icones.mjs` usam) e já estão aprovados no campo `allowScripts` do
+`package.json`; se o aviso aparecer, rode `npm approve-scripts sharp esbuild`.
+**A entrada do `allowScripts` guarda a versão**, então uma atualização que mova o
+`esbuild` ou o `sharp` faz o aviso voltar:
 atualize a chave junto, senão a allowlist passa a autorizar uma versão que não
 está mais na árvore.
 
