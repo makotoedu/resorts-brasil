@@ -628,6 +628,58 @@ nenhum — dez cópias fazem o mesmo que uma. Quem vê é a contagem de listener
 CDP, em `tests/verify-behaviors.mjs`: com o defeito plantado ela acusa
 `window.resize 1→5`, `window.scroll 1→5`, `document.click 3→7`.
 
+## Atualização do Astro 7 — 120/120, e o que quase entrou como delta
+
+Medido em 29/08/2026. Diferente de todas as entradas acima, **esta comparação não
+é contra o site original**: é entre a build 6.4.8 e a 7.2.9 do mesmo código. Para
+uma troca de motor o alvo é zero, e foi zero.
+
+| viewport | resultado |
+|---|---|
+| mobile | 40/40 idênticas |
+| tablet | 40/40 idênticas |
+| desktop | 40/40 idênticas |
+
+Nenhum diagnóstico escrito — o `visual-diff.mjs` só grava PNG acima de 0,5%, e
+nenhuma combinação chegou lá.
+
+### O delta que existia e foi consertado antes de virar pixel
+
+O `compressHTML` mudou de padrão no v7 e passou a **remover** — em vez de
+colapsar num espaço — a quebra de linha entre um texto e uma tag inline vizinha.
+Eram **340 ocorrências**: `e-mailcontato@resortsbrasil.com.br` nas três políticas
+de privacidade, `Cloudbe·` no rodapé de todas as páginas, e o catálogo `/design`
+inteiro com prosa colada em `<code>`.
+
+Não aparece nesta tabela porque foi corrigido antes da medição, com 82 `{' '}`
+em cinco arquivos. **Aparecia se não fosse** — e é a única coisa nesta
+atualização que teria chegado à produção sem portão nenhum reclamar. O motivo
+está registrado em [decisoes.md](decisoes.md), "Atualização do Astro".
+
+### As 18 divergências que não existiam
+
+A primeira rodada acusou **18 combinações página/viewport acima de 0,5%**, com
+deslocamento vertical acumulado nas páginas cheias de imagem. Nenhuma era real.
+
+O que denunciou foi medir os dois lados em vez de olhar o PNG: mesma altura de
+página, mesmas posições de `header`, `main` e `footer`, 18 imagens carregadas de
+cada lado. A causa era o `python -m http.server` servindo a linha de base —
+single-thread e HTTP/1.0, ele enfileira as requisições, o `networkidle` dispara
+entre uma e a seguinte, e o screenshot sai antes da troca de webfont. Com um
+servidor concorrente as mesmas páginas saíram idênticas.
+
+**Fica como regra, e vale para qualquer rodada futura:** antes de classificar uma
+divergência, confira se o aparelho que a mediu está certo. Um diff visual que
+compara duas builds servidas por servidores diferentes mede a diferença entre os
+servidores. O procedimento está em [verificacao.md](verificacao.md), seção 3.
+
+### Peso
+
+O HTML ficou **1,43% menor no cru e 0,87% no brotli** — 113 bytes por página. O
+orçamento saiu de 20422 KB para 20370 KB e foi rebaseado, que é como a catraca
+prende o ganho. É pouco, e a decisão de adotar o `'jsx'` foi tomada com esse
+número na mesa, não apesar dele.
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

@@ -3,6 +3,9 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build && node scripts/imagens.mjs && node scripts/verifica-sistema.mjs",
@@ -17,7 +20,7 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^6.3.1",
+    "astro": "^7.2.9",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
@@ -29,7 +32,7 @@
     "typescript": "^6.0.3"
   },
   "allowScripts": {
-    "esbuild@0.27.7": true,
+    "esbuild@0.28.2": true,
     "sharp@0.34.5": true
   }
 }

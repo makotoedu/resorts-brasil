@@ -2965,3 +2965,159 @@ Foi por essa segunda regra que `.team-members` e `.grid` saíram da lista de
 grades do `verify-geometria.mjs` nesta etapa. Manter as duas linhas não custaria
 nada em tempo de execução e custaria a coisa errada em leitura: a impressão de
 que aquelas grades estão sendo vigiadas.
+
+---
+
+# Atualização do Astro — 6.4.8 → 7.2.9
+
+## O que de fato se moveu, e o que já estava pronto
+
+Um único pacote mudou de versão por decisão: o `astro`. Todo o resto veio junto
+ou já estava no lugar, e vale registrar porque a suposição contrária custaria
+uma tarde:
+
+| pacote | situação |
+|---|---|
+| `astro` | 6.4.8 → **7.2.9** |
+| `vite` | 7.3.6 → **8.2.2**, com Rolldown no lugar de esbuild+Rollup |
+| `@astrojs/compiler` (Go) | substituído por `@astrojs/compiler-rs` 0.4.0 |
+| `@astrojs/markdown-remark` | **saiu da árvore** — no v7 é peer opcional, e o site não tem `.md` nem `.mdx` |
+| `@astrojs/sitemap` | 3.7.3 **já era a última**; não declara peer de astro e não mudou |
+| `@astrojs/check` | 0.9.10 **já era a última**; peer `typescript ^5 \|\| ^6`, satisfeito |
+| `@tailwindcss/vite` | 4.3.3 **já declarava** `vite ^5 \|\| ^6 \|\| ^7 \|\| ^8` |
+
+O v7 exige **Node ≥ 22.12**, e o `package.json` não tinha `engines`. Passou a
+ter: é o campo que a Vercel lê para escolher o runtime, e sem ele a versão do
+build fica sendo a que a plataforma resolver dar.
+
+O `allowScripts` também precisou de retoque — o `esbuild` foi de 0.27.7 para
+0.28.2 e a entrada antiga deixou de casar. O binário de plataforma vem por
+`optionalDependencies`, então nada quebrou; o que havia era um aviso e uma
+allowlist mentindo sobre o que autoriza.
+
+## Quatro mudanças anunciadas do v7 que não tocam este site
+
+Conferidas uma a uma antes de subir, porque cada uma teria sido cara de
+descobrir depois:
+
+- **`src/fetch.ts` virou nome reservado** — o arquivo não existe.
+- **`@astrojs/db` removido** — nunca foi dependência.
+- **APIs de `astro:transitions` removidas** (`TRANSITION_*`,
+  `createAnimationScope`) — o [`site.js`](../src/scripts/site.js) usa só os nomes
+  em string, `astro:page-load` e `astro:before-swap`, que continuam.
+- **Flags experimentais estabilizadas** — o `astro.config.mjs` não tinha bloco
+  `experimental` nenhum.
+
+E os quatro entrypoints que o projeto importa seguem exportados: `astro/config`,
+`astro/zod` (ver "O `z` mudou de porta no Astro 6", acima), `astro/loaders` e
+`astro/types`.
+
+**O compilador Rust não recusou nada.** Ele é mais estrito que o Go com tag sem
+fechamento e aninhamento inválido, e essa era a preocupação real das 41 páginas
+escritas à mão — a migração já tinha engolido `</div>` uma vez. Passou de
+primeira, o que é um atestado do markup e não do compilador.
+
+## `compressHTML` passou a ser `'jsx'`, e essa foi a decisão cara
+
+No v7 o padrão mudou de `true` para `'jsx'`. A diferença: o HTML colapsa a quebra
+de linha entre um texto e uma tag vizinha num **espaço**; o JSX a **remove**.
+
+Os dois lados, medidos:
+
+| | |
+|---|---|
+| ganho | **113 bytes por página** depois do brotli (0,87%); 1,43% no cru |
+| custo | **340 espaços removidos** que colavam palavra a ícone ou a link |
+
+Os 340 apareciam em menu, CTAs nos três idiomas (`Leia agora`, `Read now`, `Lea
+ahora`, `Baixe o e-book`, `Acesse a cartilha`, `Saiba mais`), rodapé, faixa de
+cookies, as três políticas de privacidade e o catálogo `/design` inteiro. É a
+mesma família da armadilha que o CLAUDE.md já registrava — `{t.leiaAgora}{' '}` —
+agora disparada pelo compressor em vez de pelo aparador de expressão.
+
+**A decisão foi adotar o `'jsx'` e consertar os 340**, com o número na mesa. A
+alternativa era uma linha (`compressHTML: true`) e HTML byte a byte igual ao de
+hoje. Quem vier depois precisa saber que a troca foi escolhida sabendo o preço:
+todo markup novo que puser texto e tag inline em linhas separadas perde o espaço
+de novo, sem erro e sem portão que veja.
+
+O conserto são **82 `{' '}`** em cinco arquivos — `design.astro` (77), as três
+políticas (4) e o [`Rodape.astro`](../src/components/cromo/Rodape.astro) (1).
+
+## Três armadilhas de MEDIÇÃO, e as três quase viraram trabalho inútil
+
+Esta etapa gastou mais tempo consertando o instrumento que o site, e as três
+valem como método.
+
+**1. Espaço consecutivo colapsa, e o comparador não sabia disso.** A primeira
+varredura acusou 340 perdas; boa parte era do rodapé e da faixa de cookies, que
+**já tinham `{' '}`**. O comparador andava um caractere de cada lado por vez,
+então via "a base tem dois espaços, a nova tem um" e chamava de perda — quando o
+olho lê o mesmo. Consumindo a corrida inteira dos dois lados, 340 viraram 70.
+
+**2. Em container flex, espaço de markup não separa nada — o `gap` separa.** Os
+70 restantes eram todos `<LinkAcao>`, que é `inline-flex` com `gap: 0.375rem`.
+Ler o CSS já sugeria que não apareceriam; o projeto não aceita valor lido, então
+mediu-se a folga entre o fim do rótulo e o início do chevron nos 18 links de
+quatro páginas: **idêntica nos dois builds**, e a largura do link também.
+
+**3. O servidor da linha de base falseou o diff visual.** A primeira rodada
+acusou **18 divergências acima de 0,5%**, com deslocamento vertical acumulado em
+páginas cheias de imagem. A geometria dos dois lados media exatamente igual —
+mesma altura, mesmas posições de `header`, `main` e `footer`, 18 imagens
+carregadas de cada lado. O culpado era o `python -m http.server`: single-thread e
+HTTP/1.0, ele serializa as requisições e o `networkidle` do `visual-diff` dispara
+entre uma e a seguinte, com o screenshot saindo antes da troca de webfont.
+Trocado por um servidor concorrente com keep-alive, as mesmas páginas saíram
+idênticas.
+
+> A regra geral das três: **antes de acreditar numa divergência, confira se o
+> aparelho que a mediu está certo.** Duas delas teriam produzido centenas de
+> correções inúteis, e a terceira teria mandado caçar um defeito de layout que
+> não existia.
+
+## Um codemod que precisou de três tentativas, e por quê
+
+A correção dos 340 foi automatizada, e as duas primeiras versões erraram:
+
+- **estreita demais (65 inserções)**: tratava vírgula como sintaxe de expressão,
+  e prosa termina em vírgula o tempo todo;
+- **larga demais (1245 inserções, frontmatter corrompido)**: aceitava
+  **texto→texto**. O `'jsx'` não come a quebra entre duas linhas de texto — ali
+  ele junta com um espaço, como o HTML fazia. Todo parágrafo quebrado em cinco
+  linhas tem quatro dessas fronteiras, e nenhuma precisava de nada.
+
+A regra que ficou: **pelo menos um dos lados tem de ser tag, e a tag tem de ser
+elemento HTML inline em minúsculas.** Componente de maiúscula fica de fora de
+propósito — `<Titulo>`, `<Texto>` e `<Botao>` rendem bloco, e marcá-los como
+inline enchia 43 arquivos de `{' '}` inerte, diluindo um idioma que neste projeto
+significa uma coisa só. Os 340 casos medidos envolviam `<a>`, `<code>`,
+`<strong>`, `<em>` e `<small>`, e mais nada.
+
+**Quem conferiu não foi o codemod.** Foram duas métricas contra a build 6.4.8:
+perdas visíveis em zero, e **espaços inventados em zero** — a segunda é a que
+pega aplicação demais, e sem ela as versões erradas teriam passado.
+
+E o juiz final foi o navegador: `innerText` das 41 páginas, que respeita o CSS e
+portanto separa o que o layout separa. **41/41 idênticas.**
+
+## Duas mudanças de comportamento do `astro preview`
+
+Não são do site, mas mordem quem for rodar a verificação:
+
+1. **Ele agora roda como daemon.** O comando imprime o pid e sai com código 0 —
+   quem o sobe em segundo plano esperando o processo viver se engana. Para-se com
+   `astro preview stop`.
+2. **Ele escuta em `localhost`, que resolve para `::1` antes do IPv4.** Ferramenta
+   apontada para `127.0.0.1:4330` leva `ERR_CONNECTION_REFUSED` com o servidor no
+   ar.
+
+## O que ficou de fora, de propósito
+
+`npm audit` acusa **1 vulnerabilidade alta** no `sharp < 0.35.0` — CVE-2026-33327,
+33328, 35590 e 35591, herdadas do libvips. Ela é **anterior a esta atualização**
+(o `sharp` estava e continua em 0.34.5) e o conserto é `sharp@0.35.4`, que o
+próprio npm classifica como breaking. Não entra numa tarefa cujo escopo é o
+Astro: o `sharp` é quem gera as 181 imagens do acervo, e trocá-lo pede a régua do
+`scripts/medir-imagens.mjs` — fidelidade contra o original, por codec — e não a
+suposição de que um major de biblioteca de imagem não mexe em pixel.

@@ -245,7 +245,7 @@ const faixas = [
       <header class="cabecalho">
         <h1>Design system</h1>
         <p>
-          Catálogo vivo. Todos os valores vêm de <code>src/styles/tokens.css</code>, medidos com
+          Catálogo vivo. Todos os valores vêm de <code>src/styles/tokens.css</code>, medidos com{' '}
           <code>scripts/medir-base.mjs</code> — nenhum foi redesenhado.
         </p>
       </header>
@@ -296,7 +296,7 @@ const faixas = [
               <li>
                 <span class="rotulo">
                   <code>{e.token}</code> <small>{e.nota}</small>
-                </span>
+                </span>{' '}
                 <span class="exemplo" style={`font-size: var(${e.token})`}>
                   Resorts Brasil
                 </span>
@@ -325,7 +325,7 @@ const faixas = [
             setor junto ao poder público, à imprensa e ao mercado.
           </p>
           <p>
-            Texto com <strong>destaque forte</strong>, um <a href="#">link</a> e um
+            Texto com <strong>destaque forte</strong>, um <a href="#">link</a> e um{' '}
             <small>texto reduzido</small>.
           </p>
           <ul>
@@ -356,7 +356,7 @@ const faixas = [
         <h2>Primitivos</h2>
         <p class="legenda">
           Oito componentes: cinco de conteúdo e três de layout. Todos entram aqui com as
-          variantes e os estados no mesmo commit em que nascem —
+          variantes e os estados no mesmo commit em que nascem —{' '}
           <code>scripts/verifica-sistema.mjs</code> falha o build se um deles ficar de fora desta
           página, porque catálogo escrito depois nunca é escrito.
         </p>
@@ -390,7 +390,7 @@ const faixas = [
       <section>
         <h3>Texto</h3>
         <p class="legenda">
-          Sem props, é o parágrafo do <code>base.css</code> — <code>14px</code> e
+          Sem props, é o parágrafo do <code>base.css</code> — <code>14px</code> e{' '}
           <code>#525e75</code>, os valores medidos.
           As props existem para os desvios, não para o caso comum.
         </p>
@@ -409,10 +409,10 @@ const faixas = [
       <section>
         <h3>Botão</h3>
         <p class="legenda">
-          Cinco variantes × três tamanhos × cinco estados. Os valores são medidos com
+          Cinco variantes × três tamanhos × cinco estados. Os valores são medidos com{' '}
           <code>scripts/medir-primitivos.mjs</code>, <strong>hover incluído</strong> — ele não
-          aparece no HTML nem no diff visual, então seria a parte mais fácil de inventar.
-          <code>href</code> decide a tag: com ele sai <code>&lt;a&gt;</code>, sem ele
+          aparece no HTML nem no diff visual, então seria a parte mais fácil de inventar.{' '}
+          <code>href</code> decide a tag: com ele sai <code>&lt;a&gt;</code>, sem ele{' '}
           <code>&lt;button&gt;</code>.
         </p>
         <p class="legenda">
@@ -454,12 +454,12 @@ const faixas = [
         <div class="demo demo-botoes">
           <p class="rotulo-demo"><code>tamanho</code> <small>sm · md · lg</small></p>
           <div class="estados">
-            <span class="estado"><Botao tamanho="sm">Salvar</Botao><small>sm</small></span>
-            <span class="estado"><Botao tamanho="md">Associe-se</Botao><small>md (padrão)</small></span>
+            <span class="estado"><Botao tamanho="sm">Salvar</Botao><small>sm</small></span>{' '}
+            <span class="estado"><Botao tamanho="md">Associe-se</Botao><small>md (padrão)</small></span>{' '}
             <span class="estado"><Botao tamanho="lg">Conheça os resorts</Botao><small>lg</small></span>
           </div>
           <p class="legenda">
-            O <code>lg</code> interpola fonte (13 → 16px) e recuo (24 → 40px) por
+            O <code>lg</code> interpola fonte (13 → 16px) e recuo (24 → 40px) por{' '}
             <code>clamp()</code>, com as pontas medidas — no tema isso saltava na media query.
             Redimensione a janela.
           </p>
@@ -469,8 +469,8 @@ const faixas = [
       <section>
         <h3>Ícone</h3>
         <p class="legenda">
-          Os 16 símbolos do site, em SVG inline, extraídos das próprias webfonts do tema por
-          <code>python scripts/glifos-para-svg.py</code>.
+          Os 16 símbolos do site, em SVG inline, extraídos das próprias webfonts do tema por{' '}
+          <code>python scripts/glifos-para-svg.py</code>.{' '}
           <code>tests/verify-icones.mjs</code> compara cada desenho com a fonte de origem, então
           codepoint trocado ou eixo espelhado reprova — a checagem que faltava quando o subset
           apagou as setas de 6 páginas sem erro de build.
@@ -480,7 +480,7 @@ const faixas = [
             nomesDeIcone.map((nome) => (
               <li>
                 <Icone nome={nome} tamanho="lg" />
-                <code>{nome}</code>
+                <code>{nome}</code>{' '}
                 <small>{glifos[nome].codepoint}</small>
               </li>
             ))
@@ -504,15 +504,15 @@ const faixas = [
       <section>
         <h3>Imagem</h3>
         <p class="legenda">
-          AVIF e WebP com <em>fallback</em> no formato original, <code>srcset</code> e
+          AVIF e WebP com <em>fallback</em> no formato original, <code>srcset</code> e{' '}
           <code>sizes</code> derivados da escala, <code>width</code>/<code>height</code> sempre
           presentes e <code>loading="lazy"</code> por padrão — nada disso é decisão de quem usa.
           Hoje 1 dos 193 <code>&lt;img&gt;</code> do site tem <code>loading</code>, e os heros
           são de 2250×1500 exibidos a 360px.
         </p>
         <p class="legenda">
-          <code>src</code> aceita o caminho público antigo (<code>/images/…</code>), resolvido por
-          <code>src/imagens.ts</code>. É o que deixa os 183 caminhos de <code>src/data/</code>
+          <code>src</code> aceita o caminho público antigo (<code>/images/…</code>), resolvido por{' '}
+          <code>src/imagens.ts</code>. É o que deixa os 183 caminhos de <code>src/data/</code>{' '}
           intactos — dado não vira <code>import</code>. Caminho inexistente aborta o build em vez
           de virar 404.
         </p>
@@ -535,7 +535,7 @@ const faixas = [
             justamente onde há menos tela.
           </p>
           <p class="legenda">
-            <strong>O <code>tamanhos</code> não é opcional de fato.</strong> Sem ele,
+            <strong>O <code>tamanhos</code> não é opcional de fato.</strong> Sem ele,{' '}
             <code>largura-total</code> assume <code>100vw</code> — e esta imagem vive dentro de um
             catálogo de 60rem, então o navegador baixava a variante de 1440px para uma caixa de
             862px. A regra: se a imagem não ocupa a largura da janela, diga a largura que ela ocupa.
@@ -563,7 +563,7 @@ const faixas = [
       <section>
         <h3>Seção, Container e Grade</h3>
         <p class="legenda">
-          Os três de layout. <code>Secao</code> dá ritmo vertical e superfície,
+          Os três de layout. <code>Secao</code> dá ritmo vertical e superfície,{' '}
           <code>Container</code> dá largura, <code>Grade</code> dá colunas. Ortogonais de
           propósito: cada um resolve um eixo.
         </p>
@@ -573,7 +573,7 @@ const faixas = [
             <Container>
               <Titulo nivel={4} tamanho="lg">Seção clara, espaço sm</Titulo>
               <Texto semMargem>
-                <code>fundo="clara"</code> é o <code>#f7f9fc</code> medido no
+                <code>fundo="clara"</code> é o <code>#f7f9fc</code> medido no{' '}
                 <code>.background-grey</code>. O container para em 1500px — o valor medido, não os
                 1140px do Bootstrap.
               </Texto>
@@ -585,7 +585,7 @@ const faixas = [
               <Titulo nivel={4} tamanho="lg">Seção inversa</Titulo>
               <Texto semMargem>
                 Aqui o parágrafo herda a cor da seção: o cinza padrão daria 2,1:1 de contraste
-                sobre este fundo. A mesma marca troca a cor do contorno de foco —
+                sobre este fundo. A mesma marca troca a cor do contorno de foco —{' '}
                 <a href="#foco-invertido" id="foco-invertido">navegue com Tab até este link</a>.
               </Texto>
             </Container>
@@ -594,7 +594,7 @@ const faixas = [
 
         <div class="demo">
           <p class="rotulo-demo">
-            <code>&lt;Grade colunas={6}&gt;</code>
+            <code>&lt;Grade colunas={6}&gt;</code>{' '}
             <small>2 → 3 → 6 colunas, por largura do pai</small>
           </p>
           <Grade colunas={6} espaco="sm">
@@ -620,22 +620,22 @@ const faixas = [
           </p>
 
           <p class="rotulo-demo">
-            <code>&lt;Grade colunas={4} piso={1}&gt;</code>
+            <code>&lt;Grade colunas={4} piso={1}&gt;</code>{' '}
             <small>1 → 2 → 4, para células de texto</small>
           </p>
           <Grade colunas={4} piso={1} espaco="sm">
             {[1, 2, 3, 4].map((n) => <div class="celula">{n}</div>)}
           </Grade>
           <p class="legenda">
-            <strong>Quatro colunas de cartão e quatro colunas de texto não querem o mesmo mínimo.</strong>
+            <strong>Quatro colunas de cartão e quatro colunas de texto não querem o mesmo mínimo.</strong>{' '}
             O piso padrão de duas existe porque cartão de associado e logo de parceiro ficam pequenos
             demais empilhados um por linha — mas na página de contato ele pôs e-mails de 28
-            caracteres em células de 150px, e eles vazaram por cima da coluna vizinha. A
+            caracteres em células de 150px, e eles vazaram por cima da coluna vizinha. A{' '}
             <code>&lt;Grade&gt;</code> não tem como saber o que há dentro da célula; quem usa, sim.
           </p>
 
           <p class="rotulo-demo">
-            <code>&lt;Grade colunas={5} piso={1}&gt;</code>
+            <code>&lt;Grade colunas={5} piso={1}&gt;</code>{' '}
             <small>1 → 3 → 5, a grade de publicações</small>
           </p>
           <Grade colunas={5} piso={1} espaco="sm">
@@ -646,7 +646,7 @@ const faixas = [
             divide doze e não casa com nada — mas o <code>.grid-layout.post-5-columns</code> do tema
             põe as cinco publicações numa fileira só no desktop, e quatro colunas deixariam a quinta
             sozinha numa segunda linha. As demais contagens saem de <code>col-lg-*</code>; esta
-            saiu de contar as posições horizontais que os itens ocupam de fato, porque numa grade
+            saiu de contar as posições horizontais que os itens ocupam de fato, porque numa grade{' '}
             <em>masonry</em> posicionada em absoluto o número não está em lugar nenhum do CSS.
           </p>
         </div>
@@ -657,7 +657,7 @@ const faixas = [
         <p class="legenda">
           Dez composições, feitas com os primitivos acima. A diferença entre as duas camadas não é
           de tamanho: primitivo é vocabulário, padrão é <strong>uma decisão de desenho já tomada</strong> —
-          onde fica a foto, qual é a hierarquia, o que acontece no hover. Os números saem de
+          onde fica a foto, qual é a hierarquia, o que acontece no hover. Os números saem de{' '}
           <code>scripts/medir-padroes.mjs</code>, que mede as nove composições do tema no navegador.
         </p>
         <p class="legenda">
@@ -689,7 +689,7 @@ const faixas = [
             }
           </Grade>
           <p class="legenda">
-            <strong>Sem perfil, o símbolo fica e o link some.</strong> O markup original usava
+            <strong>Sem perfil, o símbolo fica e o link some.</strong> O markup original usava{' '}
             <code>href="#"</code>: um link visível, focável e sem destino. Some-lo por completo
             também não serve — mudaria a altura de um cartão no meio da grade.
           </p>
@@ -698,7 +698,7 @@ const faixas = [
         <p class="legenda">
           <code>superficie="inversa"</code> são os 41 autores do e-book, e <code>destaque</code> é
           a linha extra entre o nome e o cargo — ali, o capítulo que a pessoa assina. É uma prop e
-          não um componente novo: são os mesmos 124 usos claros mais 41 escuros, e um
+          não um componente novo: são os mesmos 124 usos claros mais 41 escuros, e um{' '}
           <code>&lt;CartaoAutor&gt;</code> separado duplicaria a foto quadrada, o círculo do
           LinkedIn e os dois hovers.
         </p>
@@ -730,14 +730,14 @@ const faixas = [
         <h3>SecaoEbook</h3>
         <p class="legenda">
           As sete superfícies da landing page do e-book — cinco gradientes que partem sempre do
-          mesmo carvão e duas faixas com textura. No tema eram sete
+          mesmo carvão e duas faixas com textura. No tema eram sete{' '}
           <code>style="background:linear-gradient(…)"</code> inline, com <code>!important</code> em
-          cinco deles, repetidos nas três páginas de idioma. Os stops saem de
+          cinco deles, repetidos nas três páginas de idioma. Os stops saem de{' '}
           <code>scripts/medir-ebook.mjs</code>, que lê o <code>background-image</code> computado:
           eles nunca estiveram no <code>style.css</code>.
         </p>
         <p class="legenda">
-          A foto de fundo, quando há, é um <code>&lt;Imagem&gt;</code> posicionado por
+          A foto de fundo, quando há, é um <code>&lt;Imagem&gt;</code> posicionado por{' '}
           <code>inset: 0</code> — a mesma forma do <code>&lt;Hero&gt;</code>, e pelo mesmo motivo:
           fundo em CSS não tem <code>srcset</code> nem <code>loading</code>, e são três fotos de
           até 2560px de largura.
@@ -786,7 +786,7 @@ const faixas = [
               Quer ajudar a transformar o turismo brasileiro?
             </Titulo>
             <Texto semMargem>
-              A cor de fundo é <code>--color-superficie-marca</code>, medida em
+              A cor de fundo é <code>--color-superficie-marca</code>, medida em{' '}
               <code>.call-to-action.background-dark</code>.
             </Texto>
           </ChamadaAcao>
@@ -836,7 +836,7 @@ const faixas = [
           </Grade>
           <p class="legenda">
             A foto passa pelo pipeline da Etapa 2 — no tema eram seis originais inteiros baixados
-            por <code>background-image</code> em <code>style=</code> inline, sem
+            por <code>background-image</code> em <code>style=</code> inline, sem{' '}
             <code>srcset</code> e sem <em>lazy</em>. O véu é uma cor com transparência
             (<code>--color-veu</code>) e não uma camada com <code>opacity</code>: opacidade de
             camada esmaeceria também o texto dentro dela.
@@ -849,13 +849,13 @@ const faixas = [
         <p class="legenda">
           O <code>.item-link</code> do tema, e o único padrão que não estava na lista da Etapa 3.
           Ele entrou porque aparece dentro de três outros — chamada, cartão de publicação e cartão
-          de modalidade — e sem ele os três repetiriam a mesma marcação e o
+          de modalidade — e sem ele os três repetiriam a mesma marcação e o{' '}
           <strong>mesmo hover</strong>, que é a parte que este projeto aprendeu a não inventar.
         </p>
         <div class="demo demo-botoes">
           <div class="estados">
-            <span class="estado"><LinkAcao href="#link-repouso">Saiba mais</LinkAcao><small>repouso</small></span>
-            <span class="estado"><LinkAcao href="#link-sem-seta" seta={false}>Leia agora</LinkAcao><small>sem seta</small></span>
+            <span class="estado"><LinkAcao href="#link-repouso">Saiba mais</LinkAcao><small>repouso</small></span>{' '}
+            <span class="estado"><LinkAcao href="#link-sem-seta" seta={false}>Leia agora</LinkAcao><small>sem seta</small></span>{' '}
             <span class="estado"><LinkAcao href="https://exemplo.org" externo>Acesse o guia</LinkAcao><small>externo</small></span>
           </div>
           <p class="legenda">
@@ -892,7 +892,7 @@ const faixas = [
             </CaixaIcone>
           </Grade>
           <p class="legenda">
-            <strong>O ícone deixou de ser link.</strong> No tema ele vinha dentro de
+            <strong>O ícone deixou de ser link.</strong> No tema ele vinha dentro de{' '}
             <code>&lt;a href="#"&gt;</code> — repetido 36 vezes, focável, sem destino.
           </p>
         </div>
@@ -1003,11 +1003,11 @@ const faixas = [
         </div>
         <p class="legenda pendente">
           <strong>As três armadilhas do tema morrem aqui, e são a mesma:</strong> plugin removido,
-          CSS que dependia dele silenciosamente inerte. O <code>.kenburns-bg</code> tinha
+          CSS que dependia dele silenciosamente inerte. O <code>.kenburns-bg</code> tinha{' '}
           <code>z-index: -1</code> e dependia de um contexto de empilhamento que o flickity criava —
           sem ele o zoom parou de acontecer, sem mudar altura e sem quebrar teste nenhum. As
-          legendas nasciam com <code>opacity: 0</code> e só o JavaScript devolvia
-          <code>opacity: 1</code>. Aqui a cascata é CSS com
+          legendas nasciam com <code>opacity: 0</code> e só o JavaScript devolvia{' '}
+          <code>opacity: 1</code>. Aqui a cascata é CSS com{' '}
           <code>animation-fill-mode: both</code>: <strong>se a animação não rodar, o texto
           aparece</strong>. A falha aponta para o lado seguro por escolha, não por acaso.
         </p>
@@ -1062,16 +1062,16 @@ const faixas = [
           por slot, e só o tom vir como dado.
         </p>
         <p class="legenda">
-          <strong>A cor do texto não é escolha de quem usa.</strong> Cada tom traz o próprio par no
+          <strong>A cor do texto não é escolha de quem usa.</strong> Cada tom traz o próprio par no{' '}
           <code>tokens.css</code>, e é aí que está a correção: o tema escrevia branco sobre os
           cinco fundos, e sobre o âmbar isso dá 1,6:1 e sobre o verde 2,9:1 — os dois reprovando o
           critério 1.4.3 da WCAG. Com o navy do site nos dois, são 9,1:1 e 5,2:1.
         </p>
         <p class="legenda">
-          Não há truque de sangria no componente. O <code>.section-fullwidth</code> do tema somava
+          Não há truque de sangria no componente. O <code>.section-fullwidth</code> do tema somava{' '}
           <code>width: 100vw</code> a uma margem negativa, e <code>100vw</code> inclui a barra de
           rolagem — toda página com aquela classe transbordava na horizontal. Para ir de borda a
-          borda, basta pôr a faixa dentro de <code>&lt;Secao&gt;</code> sem
+          borda, basta pôr a faixa dentro de <code>&lt;Secao&gt;</code> sem{' '}
           <code>&lt;Container&gt;</code>.
         </p>
       </section>
@@ -1087,7 +1087,7 @@ const faixas = [
             {indicadores.map((i) => <Contador ate={i.ate} de={1} sufixo={i.sufixo} rotulo={i.rotulo} />)}
           </Grade>
           <p class="legenda">
-            <strong>O número está no HTML.</strong> No tema o elemento vinha vazio —
+            <strong>O número está no HTML.</strong> No tema o elemento vinha vazio —{' '}
             <code>&lt;span data-to="83"&gt;&lt;/span&gt;</code> — e quem escrevia o valor era o
             JavaScript: sem script, a seção mostrava cinco rótulos sem número nenhum. O dado, que é
             a única coisa que ela existe para dizer, dependia de uma animação.
@@ -1098,8 +1098,8 @@ const faixas = [
       <section>
         <h3>Abas</h3>
         <p class="legenda">
-          As cinco regiões da página de associados. Substitui o
-          <code>data-bs-toggle="tab"</code> do Bootstrap e o bloco <code>tabs()</code> do
+          As cinco regiões da página de associados. Substitui o{' '}
+          <code>data-bs-toggle="tab"</code> do Bootstrap e o bloco <code>tabs()</code> do{' '}
           <code>site.js</code>. Navegue pelas setas: só a aba selecionada fica na ordem de
           tabulação, e as outras se alcançam pelo teclado — é o que o padrão ARIA pede.
         </p>
@@ -1143,9 +1143,9 @@ const faixas = [
           <TituloSecao nivel={4}>Benefícios de ser um associado</TituloSecao>
           <TituloSecao nivel={4} alinhamento="inicio">Conheça nossos associados:</TituloSecao>
           <p class="legenda">
-            <strong>O risco precisou do CSS, e não só da medição.</strong> Medido, o
+            <strong>O risco precisou do CSS, e não só da medição.</strong> Medido, o{' '}
             <code>:before</code> devolveu <code>left: 0</code> num título centralizado — o que
-            sugeria uma barra encostada na margem esquerda. Não é: a regra do tema é
+            sugeria uma barra encostada na margem esquerda. Não é: a regra do tema é{' '}
             <code>left: 0; right: 0; width: 30px</code> mais <code>margin: 0 auto</code>, e o
             conjunto centraliza. É o caso simétrico do que o CLAUDE.md avisa: ler o seletor sem
             medir engana, e medir sem ler o seletor também.
@@ -1171,7 +1171,7 @@ const faixas = [
           <p class="legenda">
             <strong>O recuo fica na célula</strong>, e é a única vez neste projeto em que isso é o
             certo: os 40px medidos estão nos quatro lados, então são o respiro do logotipo dentro
-            da própria célula, e não o vão até o vizinho. Daí o <code>espaco="nenhum"</code> — com
+            da própria célula, e não o vão até o vizinho. Daí o <code>espaco="nenhum"</code> — com{' '}
             <code>gap</code> somado ao recuo, o corredor daria 96px onde o medido são 80.
           </p>
         </div>
@@ -1180,10 +1180,10 @@ const faixas = [
       <section>
         <h3>CarrosselLogos</h3>
         <p class="legenda">
-          A faixa de logotipos que anda sozinha — os resorts associados, na home. Substitui o
-          <code>&lt;CarrosselAssociados&gt;</code> de transição e, com ele, o
+          A faixa de logotipos que anda sozinha — os resorts associados, na home. Substitui o{' '}
+          <code>&lt;CarrosselAssociados&gt;</code> de transição e, com ele, o{' '}
           <code>logoCarousel()</code> do <code>site.js</code>: 105 linhas que reproduziam a
-          matemática de célula do flickity, mais o <strong>único</strong>
+          matemática de célula do flickity, mais o <strong>único</strong>{' '}
           <code>setInterval</code> que o projeto ainda tinha — o autoplay que a Etapa 0 registrou
           como obstáculo às View Transitions.
         </p>
@@ -1191,8 +1191,8 @@ const faixas = [
           <CarrosselLogos itens={carrosselDemo} />
         </div>
         <p class="legenda pendente">
-          <strong>Esta faixa estava invisível em produção.</strong> O <code>style.css</code> dá
-          <code>opacity: 0</code> e <code>visibility: hidden</code> a <code>.carousel</code>, e só
+          <strong>Esta faixa estava invisível em produção.</strong> O <code>style.css</code> dá{' '}
+          <code>opacity: 0</code> e <code>visibility: hidden</code> a <code>.carousel</code>, e só{' '}
           <code>.carousel-loaded</code> devolve as duas — classe que o init do flickity punha e que
           saiu com o jQuery. As três homes baixavam 70 logotipos em tamanho original para não
           mostrar nenhum. É a <strong>quarta</strong> vez que este projeto encontra a mesma forma:
@@ -1203,17 +1203,17 @@ const faixas = [
         <p class="legenda">
           <strong>A volta fecha sem emenda</strong> porque a fila é escrita duas vezes e a trilha
           anda <code>-50%</code>: com as duas metades iguais, a segunda para exatamente onde a
-          primeira começou. A duplicata custa DOM e não rede — são os mesmos endereços, com o mesmo
+          primeira começou. A duplicata custa DOM e não rede — são os mesmos endereços, com o mesmo{' '}
           <code>srcset</code> —, e vem com <code>aria-hidden</code> para o leitor de tela ouvir a
           lista uma vez só.
         </p>
         <p class="legenda">
-          <strong>Não há link nos logotipos, e isso é escolha.</strong> O site original punha
+          <strong>Não há link nos logotipos, e isso é escolha.</strong> O site original punha{' '}
           <code>&lt;a href="#"&gt;</code> nos 71; a refatoração trocou por URLs de verdade, que
           nunca funcionaram porque <code>visibility: hidden</code> tira o elemento da ordem de
           tabulação. Repô-las custaria caro: ao tabular, o navegador rola o recorte para revelar o
           link focado e <code>scrollLeft</code> não volta sozinho — a faixa fica deslocada e, na
-          volta seguinte, aparece o vazio depois do fim da fila. Os 78 resorts estão em
+          volta seguinte, aparece o vazio depois do fim da fila. Os 78 resorts estão em{' '}
           <code>/associados</code>, cada um com o seu link.
         </p>
       </section>
@@ -1257,23 +1257,23 @@ const faixas = [
         <div class="demo">
           <Video lang="pt-br" id="LJ_9oUeE4e8" titulo="Vídeo institucional da Resorts Brasil" />
           <p class="legenda">
-            <strong>Ele nasceu de uma armadilha que quase passou.</strong> O
+            <strong>Ele nasceu de uma armadilha que quase passou.</strong> O{' '}
             <code>&lt;YouTube&gt;</code> do tema emitia o mesmo markup, mas o CSS dele morava na
-            folha do <em>tema</em> — que página migrada não carregava. Migrar
+            folha do <em>tema</em> — que página migrada não carregava. Migrar{' '}
             <code>/resorts-brasil</code> com o componente antigo entregaria a fachada sem caixa,
             sem botão de play e com o rótulo "Assistir ao vídeo" impresso por cima da miniatura.
             Nenhum dos quatro portões veria: não há caixa zerada nem imagem quebrada.
           </p>
           <p class="legenda">
             <strong>A miniatura passou pelo pipeline na Etapa 11</strong>, e com ela veio a segunda
-            regra <code>:global</code> deste componente. O <code>&lt;picture&gt;</code> e o
+            regra <code>:global</code> deste componente. O <code>&lt;picture&gt;</code> e o{' '}
             <code>&lt;img&gt;</code> são emitidos pelo <code>&lt;Imagem&gt;</code>, e o Astro
             carimba o atributo de escopo só no markup do próprio template — um seletor escopado não
             alcança o que um componente filho renderiza.
           </p>
           <p class="legenda">
             <strong>A regra do <code>iframe</code> é <code>:global</code>, e essa linha é o ponto
-            inteiro.</strong> O <code>&lt;iframe&gt;</code> não está no arquivo: o
+            inteiro.</strong> O <code>&lt;iframe&gt;</code> não está no arquivo: o{' '}
             <code>site.js</code> o cria no clique, e elemento criado em tempo de execução não
             recebe o atributo de escopo do Astro. Sem o <code>:global</code>, o vídeo entraria com
             os 150px padrão do iframe — depois do clique, que é onde nenhum teste de carregamento
@@ -1314,16 +1314,16 @@ const faixas = [
               </ul>
               <Titulo nivel={4} tamanho="lg">2. Glossário</Titulo>
               <p>
-                O vão acima é a margem deste título, e não um elemento vazio. No tema era
+                O vão acima é a margem deste título, e não um elemento vazio. No tema era{' '}
                 <code>&lt;div class="space"&gt;</code> entre cada capítulo — 60px medidos, repetidos
                 à mão 22 vezes nas duas páginas.
               </p>
             </Prosa>
           </Container>
           <p class="legenda">
-            <strong>A linha tem 75 caracteres, e o número é o argumento.</strong> Naquelas páginas o
+            <strong>A linha tem 75 caracteres, e o número é o argumento.</strong> Naquelas páginas o{' '}
             <code>&lt;p&gt;</code> era filho direto do <code>.row</code> e herdava os 1500px do
-            container: <strong>127 caracteres por linha</strong> no desktop, medidos. O
+            container: <strong>127 caracteres por linha</strong> no desktop, medidos. O{' '}
             <code>--container-texto</code> é a caixa em que a própria página mede 75 — a largura que
             ela já entrega no tablet.
           </p>
@@ -1334,7 +1334,7 @@ const faixas = [
         <h3>Tabela</h3>
         <p class="legenda">
           Um uso, e é o mais delicado do site: as três tabelas de cookies da política de privacidade,
-          que são afirmação jurídica sobre tratamento de dados. Quem as monta é a
+          que são afirmação jurídica sobre tratamento de dados. Quem as monta é a{' '}
           <code>&lt;SecaoCookies&gt;</code>, a partir de <code>src/data/cookies.ts</code>.
         </p>
         <div class="demo">
@@ -1357,7 +1357,7 @@ const faixas = [
           </Tabela>
           <p class="legenda">
             <strong>Ela transbordava no mobile.</strong> Medida em 445px de largura dentro de uma
-            coluna de 358px, em 390px de janela: quatro colunas não cabem, e a
+            coluna de 358px, em 390px de janela: quatro colunas não cabem, e a{' '}
             <em>página inteira</em> ganhava barra horizontal. Agora a rolagem é da tabela, numa
             região com <code>tabindex="0"</code> — sem isso, quem navega por teclado não teria como
             rolá-la, e as colunas da direita ficariam inalcançáveis.
@@ -1369,14 +1369,14 @@ const faixas = [
         <h2>Cromo</h2>
         <p class="legenda">
           Cabeçalho, rodapé, faixa de cookies e o botão de voltar ao topo — o que embrulha toda
-          página. É a quarta camada do sistema, e ela nasceu na Etapa 5 por uma razão prática:
+          página. É a quarta camada do sistema, e ela nasceu na Etapa 5 por uma razão prática:{' '}
           <strong>não havia como migrar uma página sem ela</strong>. O único layout que existia até
           ali trazia cabeçalho e rodapé do tema, então a primeira página de conteúdo a trocar de
           camada ficaria sem os dois — e foi por isso que este catálogo montou o próprio documento.
         </p>
         <p class="legenda">
-          <strong>Os nomes de estado são os do tema, de propósito.</strong>
-          <code>#mainMenu</code>, <code>#mainMenu-trigger</code>, <code>.p-dropdown</code>,
+          <strong>Os nomes de estado são os do tema, de propósito.</strong>{' '}
+          <code>#mainMenu</code>, <code>#mainMenu-trigger</code>, <code>.p-dropdown</code>,{' '}
           <code>.toggle-active</code>, <code>.modal-active</code>, <code>#scrollTop</code> — foi
           isso que deixou um <code>src/scripts/site.js</code> só servir as duas camadas durante a
           migração inteira, em vez de dois que divergiriam na primeira correção. Sobrou uma camada
@@ -1392,7 +1392,7 @@ const faixas = [
       <section>
         <h3>Cabeçalho</h3>
         <p class="legenda">
-          Topbar, logotipo, navegação com submenus e seletor de idioma. Os itens do menu saem do mapa
+          Topbar, logotipo, navegação com submenus e seletor de idioma. Os itens do menu saem do mapa{' '}
           <code>routes</code> de <code>src/i18n/ui.ts</code> — no tema eram 14 linhas de markup com
           três <code>&lt;ul class="dropdown-menu"&gt;</code> escritos à mão.
         </p>
@@ -1400,15 +1400,15 @@ const faixas = [
           <Cabecalho lang="pt-br" route="board" />
         </div>
         <p class="legenda">
-          <strong>O item que abre submenu é <code>&lt;button&gt;</code>, não
+          <strong>O item que abre submenu é <code>&lt;button&gt;</code>, não{' '}
           <code>&lt;a href="#"&gt;</code>.</strong> Ele não navega — o <code>href="#"</code> do tema
           sujava o histórico e punha um destino falso na barra de status. Passe o mouse por "Sobre
           nós", ou chegue nele com Tab: o submenu abre nos dois casos, e no tema o teclado não
           alcançava os seis destinos que só existem lá dentro.
         </p>
         <p class="legenda">
-          <strong>O item destacado deixou de reprovar o contraste.</strong> "Fale conosco" era
-          <code>#d39e00</code> sobre branco (2,42:1) e "Seja um associado" era
+          <strong>O item destacado deixou de reprovar o contraste.</strong> "Fale conosco" era{' '}
+          <code>#d39e00</code> sobre branco (2,42:1) e "Seja um associado" era{' '}
           <code>rgb(211,180,4)</code> sobre o azul da topbar (2,84:1) — os dois abaixo dos 4,5:1 que
           o critério 1.4.3 da WCAG pede. Agora são o âmbar-800 (4,96:1) e o branco (5,80:1).
         </p>
@@ -1480,9 +1480,9 @@ const faixas = [
       <section>
         <h3>VoltarAoTopo</h3>
         <p class="legenda">
-          40×40 em círculo, preto a 25%. Quem o mostra é o <code>site.js</code>, escrevendo
+          40×40 em círculo, preto a 25%. Quem o mostra é o <code>site.js</code>, escrevendo{' '}
           <code>bottom</code>, <code>opacity</code> e <code>z-index</code> inline depois de 400px de
-          rolagem — mesmo mecanismo do tema. Os valores do componente são o estado
+          rolagem — mesmo mecanismo do tema. Os valores do componente são o estado{' '}
           <em>escondido</em>, que é o que vale sem JavaScript: o botão não aparece, em vez de ficar
           parado num canto sem função.
         </p>

@@ -110,6 +110,15 @@ npx astro preview --port 4330
 Se a porta pedida estiver ocupada, o Astro sobe em outra e avisa só no log — vale
 conferir antes de concluir que uma rota quebrou.
 
+**Desde o Astro 7 o preview roda como daemon**, e isso muda duas coisas na
+prática. O comando imprime o pid e **sai com código 0**, então ele não segura o
+terminal e quem o sobe em segundo plano esperando o processo viver se engana; é
+`astro preview stop` que o derruba, e `astro preview status` que diz se está no
+ar. E ele escuta em `localhost`, que aqui resolve para `::1` antes do IPv4 —
+ferramenta apontada para `127.0.0.1:4330` leva `ERR_CONNECTION_REFUSED` com o
+servidor perfeitamente no ar. Um `astro build` apaga o `dist/` debaixo dele:
+depois de rebuildar, confira o preview antes de culpar o teste.
+
 **Uma armadilha já encontrada aqui:** medir `getComputedStyle` logo após um
 clique devolve o valor **interpolado no meio da transição**, não o estado final.
 Um teste do seletor de idioma falhou por isso e o código estava certo — a
@@ -280,6 +289,19 @@ npx astro preview --port 4330
 # terminal 3
 node tests/visual-diff.mjs
 ```
+
+> **O `python -m http.server` do lado esquerdo é a parte frágil deste
+> procedimento, e já falsificou uma rodada inteira.** Ele é single-thread e
+> HTTP/1.0: numa página com muitas imagens as requisições saem em fila, o
+> `networkidle` do `visual-diff` dispara entre uma e a seguinte, e o screenshot
+> sai antes da troca de webfont. O resultado são **divergências de deslocamento
+> vertical que não existem no build** — na atualização do Astro 7 foram 18
+> combinações página/viewport, com a geometria dos dois lados medindo
+> exatamente igual. Ao comparar duas builds próprias (e não contra o site
+> original), sirva as duas com o mesmo tipo de servidor, concorrente e com
+> keep-alive. Antes de investigar uma divergência, **confira o aparelho**: meça a
+> altura da página e a posição de `header`/`main`/`footer` nos dois lados. Se
+> baterem, o problema é do instrumento.
 
 [`tests/visual-diff.mjs`](../tests/visual-diff.mjs) compara screenshots de
 página inteira das **40 páginas em 3 viewports** (390, 768 e 1440 px) entre o

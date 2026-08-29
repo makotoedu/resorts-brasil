@@ -138,6 +138,29 @@ defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
    `Leia agora<i>` e o ícone cola na palavra. Aconteceu nas seis páginas de
    publicações e estudos ao mesmo tempo. A correção é `{t.leiaAgora}{' '}`.
 
+   **Desde o Astro 7 isso é bem maior, e é permanente.** O `compressHTML` passou
+   a valer `'jsx'` por padrão, e o projeto adotou o padrão de propósito — o
+   `astro.config.mjs` não declara o campo. A diferença: o HTML colapsava num
+   espaço a quebra de linha entre um texto e uma tag vizinha, e o JSX a **remove**.
+   Então isto, que sempre foi natural de escrever, agora cola:
+
+   ```astro
+   entrando em contato conosco através do e-mail
+   <a href={`mailto:${contato.email}`}>{contato.email}</a>   <!-- e-mailcontato@… -->
+   ```
+
+   Foram **340 ocorrências** na adoção, e a correção é a mesma: `{' '}` no fim da
+   primeira linha. Duas coisas que poupam trabalho ao repetir a caçada:
+
+   - **Só conta se um dos lados for tag inline.** Duas linhas de texto puro
+     continuam sendo juntadas com um espaço; e em container flex quem separa é o
+     `gap`, então lá o espaço do markup nunca apareceu — foi medido nos 18
+     `<LinkAcao>`, e some sem mudar um pixel.
+   - **Nenhum dos quatro portões vê.** A geometria mede caixas e o texto está
+     dentro da caixa. Quem viu foi `innerText` das 41 páginas comparado contra a
+     build anterior, que é o que respeita o CSS. Ver
+     [docs/decisoes.md](docs/decisoes.md), "Atualização do Astro".
+
 ### E uma quinta: cor que depende do que está embaixo
 
 **Componente transparente herda o fundo de quem o contém — e o contraste também.**
