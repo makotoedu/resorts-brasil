@@ -1,740 +1,740 @@
 {
   "/index.html|mobile": {
-    "html": 139791,
+    "html": 141515,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 281958,
     "fonte": 0,
     "outro": 0,
-    "total": 466006
+    "total": 484439
   },
   "/resorts-brasil.html|mobile": {
-    "html": 56123,
+    "html": 57847,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 130656,
     "fonte": 0,
     "outro": 0,
-    "total": 231036
+    "total": 249469
   },
   "/diretoria.html|mobile": {
-    "html": 63530,
+    "html": 65254,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 179134,
     "fonte": 0,
     "outro": 0,
-    "total": 286921
+    "total": 305354
   },
   "/historia.html|mobile": {
-    "html": 45880,
+    "html": 47604,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 22286,
     "fonte": 0,
     "outro": 0,
-    "total": 112423
+    "total": 130856
   },
   "/associados.html|mobile": {
-    "html": 102473,
+    "html": 104197,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 233504,
     "fonte": 0,
     "outro": 0,
-    "total": 380234
+    "total": 398667
   },
   "/associe-se.html|mobile": {
-    "html": 66062,
+    "html": 67786,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 146573,
     "fonte": 0,
     "outro": 0,
-    "total": 256892
+    "total": 275325
   },
   "/publicacoes.html|mobile": {
-    "html": 46777,
+    "html": 48501,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 103303,
     "fonte": 0,
     "outro": 0,
-    "total": 194337
+    "total": 212770
   },
   "/estatisticas-e-estudos.html|mobile": {
-    "html": 43281,
+    "html": 45005,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 110069,
     "fonte": 0,
     "outro": 0,
-    "total": 197607
+    "total": 216040
   },
   "/apoie.html|mobile": {
-    "html": 56818,
+    "html": 58542,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 103432,
     "fonte": 0,
     "outro": 0,
-    "total": 204507
+    "total": 222940
   },
   "/fale-conosco.html|mobile": {
-    "html": 41682,
+    "html": 43406,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 92696
+    "total": 111129
   },
   "/ebook.html|mobile": {
-    "html": 132257,
+    "html": 133981,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 76653,
     "fonte": 0,
     "outro": 0,
-    "total": 253167
+    "total": 271600
   },
   "/politica-de-privacidade.html|mobile": {
-    "html": 72847,
+    "html": 74571,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 123861
+    "total": 142294
   },
   "/termos-de-uso.html|mobile": {
-    "html": 42323,
+    "html": 44047,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 93337
+    "total": 111770
   },
   "/404.html|mobile": {
-    "html": 27417,
+    "html": 29141,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 78431
+    "total": 96864
   },
   "/en-us/home.html|mobile": {
-    "html": 139826,
+    "html": 141550,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 287106,
     "fonte": 0,
     "outro": 0,
-    "total": 471189
+    "total": 489622
   },
   "/en-us/resorts-brasil.html|mobile": {
-    "html": 55968,
+    "html": 57692,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 144520,
     "fonte": 0,
     "outro": 0,
-    "total": 244745
+    "total": 263178
   },
   "/en-us/board.html|mobile": {
-    "html": 63526,
+    "html": 65250,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 179134,
     "fonte": 0,
     "outro": 0,
-    "total": 286917
+    "total": 305350
   },
   "/en-us/history.html|mobile": {
-    "html": 45842,
+    "html": 47566,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 22286,
     "fonte": 0,
     "outro": 0,
-    "total": 112385
+    "total": 130818
   },
   "/en-us/associates.html|mobile": {
-    "html": 102441,
+    "html": 104165,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 233504,
     "fonte": 0,
     "outro": 0,
-    "total": 380202
+    "total": 398635
   },
   "/en-us/join-us.html|mobile": {
-    "html": 66016,
+    "html": 67740,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 146573,
     "fonte": 0,
     "outro": 0,
-    "total": 256846
+    "total": 275279
   },
   "/en-us/publications.html|mobile": {
-    "html": 46752,
+    "html": 48476,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 103303,
     "fonte": 0,
     "outro": 0,
-    "total": 194312
+    "total": 212745
   },
   "/en-us/statistics-and-studies.html|mobile": {
-    "html": 43257,
+    "html": 44981,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 110069,
     "fonte": 0,
     "outro": 0,
-    "total": 197583
+    "total": 216016
   },
   "/en-us/support-tourism.html|mobile": {
-    "html": 56770,
+    "html": 58494,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 119716,
     "fonte": 0,
     "outro": 0,
-    "total": 220743
+    "total": 239176
   },
   "/en-us/contact-us.html|mobile": {
-    "html": 41606,
+    "html": 43330,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 92620
+    "total": 111053
   },
   "/en-us/ebook.html|mobile": {
-    "html": 132257,
+    "html": 133981,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 76653,
     "fonte": 0,
     "outro": 0,
-    "total": 253167
+    "total": 271600
   },
   "/en-us/privacy-policy.html|mobile": {
-    "html": 70198,
+    "html": 71922,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 121212
+    "total": 139645
   },
   "/en-us/terms-of-use.html|mobile": {
-    "html": 41721,
+    "html": 43445,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 92735
+    "total": 111168
   },
   "/es-es/inicio.html|mobile": {
-    "html": 140039,
+    "html": 141763,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 281958,
     "fonte": 0,
     "outro": 0,
-    "total": 466254
+    "total": 484687
   },
   "/es-es/resorts-brasil.html|mobile": {
-    "html": 56436,
+    "html": 58160,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 130656,
     "fonte": 0,
     "outro": 0,
-    "total": 231349
+    "total": 249782
   },
   "/es-es/directorio.html|mobile": {
-    "html": 63742,
+    "html": 65466,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 179134,
     "fonte": 0,
     "outro": 0,
-    "total": 287133
+    "total": 305566
   },
   "/es-es/historia.html|mobile": {
-    "html": 46085,
+    "html": 47809,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 22286,
     "fonte": 0,
     "outro": 0,
-    "total": 112628
+    "total": 131061
   },
   "/es-es/asociados.html|mobile": {
-    "html": 102644,
+    "html": 104368,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 233504,
     "fonte": 0,
     "outro": 0,
-    "total": 380405
+    "total": 398838
   },
   "/es-es/asociese.html|mobile": {
-    "html": 66323,
+    "html": 68047,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 146573,
     "fonte": 0,
     "outro": 0,
-    "total": 257153
+    "total": 275586
   },
   "/es-es/publicaciones.html|mobile": {
-    "html": 47038,
+    "html": 48762,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 103303,
     "fonte": 0,
     "outro": 0,
-    "total": 194598
+    "total": 213031
   },
   "/es-es/estadisticas-y-estudios.html|mobile": {
-    "html": 43505,
+    "html": 45229,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 110069,
     "fonte": 0,
     "outro": 0,
-    "total": 197831
+    "total": 216264
   },
   "/es-es/apoye.html|mobile": {
-    "html": 57093,
+    "html": 58817,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 103432,
     "fonte": 0,
     "outro": 0,
-    "total": 204782
+    "total": 223215
   },
   "/es-es/contactenos.html|mobile": {
-    "html": 41936,
+    "html": 43660,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 92950
+    "total": 111383
   },
   "/es-es/ebook.html|mobile": {
-    "html": 132455,
+    "html": 134179,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 76653,
     "fonte": 0,
     "outro": 0,
-    "total": 253365
+    "total": 271798
   },
   "/es-es/politica-de-privacidad.html|mobile": {
-    "html": 73414,
+    "html": 75138,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 124428
+    "total": 142861
   },
   "/es-es/terminos-de-uso.html|mobile": {
-    "html": 42638,
+    "html": 44362,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 93652
+    "total": 112085
   },
   "/design.html|mobile": {
-    "html": 218870,
+    "html": 219499,
     "css": 40005,
     "js": 0,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 265632
+    "total": 266261
   },
   "/index.html|desktop": {
-    "html": 139791,
+    "html": 141515,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 455865,
     "fonte": 0,
     "outro": 0,
-    "total": 639913
+    "total": 658346
   },
   "/resorts-brasil.html|desktop": {
-    "html": 56123,
+    "html": 57847,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 148597,
     "fonte": 0,
     "outro": 0,
-    "total": 248977
+    "total": 267410
   },
   "/diretoria.html|desktop": {
-    "html": 63530,
+    "html": 65254,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 179134,
     "fonte": 0,
     "outro": 0,
-    "total": 286921
+    "total": 305354
   },
   "/historia.html|desktop": {
-    "html": 45880,
+    "html": 47604,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 22286,
     "fonte": 0,
     "outro": 0,
-    "total": 112423
+    "total": 130856
   },
   "/associados.html|desktop": {
-    "html": 102473,
+    "html": 104197,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 340643,
     "fonte": 0,
     "outro": 0,
-    "total": 487373
+    "total": 505806
   },
   "/associe-se.html|desktop": {
-    "html": 66062,
+    "html": 67786,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 235962,
     "fonte": 0,
     "outro": 0,
-    "total": 346281
+    "total": 364714
   },
   "/publicacoes.html|desktop": {
-    "html": 46777,
+    "html": 48501,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 103303,
     "fonte": 0,
     "outro": 0,
-    "total": 194337
+    "total": 212770
   },
   "/estatisticas-e-estudos.html|desktop": {
-    "html": 43281,
+    "html": 45005,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 110069,
     "fonte": 0,
     "outro": 0,
-    "total": 197607
+    "total": 216040
   },
   "/apoie.html|desktop": {
-    "html": 56818,
+    "html": 58542,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 156099,
     "fonte": 0,
     "outro": 0,
-    "total": 257174
+    "total": 275607
   },
   "/fale-conosco.html|desktop": {
-    "html": 41682,
+    "html": 43406,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 92696
+    "total": 111129
   },
   "/ebook.html|desktop": {
-    "html": 132257,
+    "html": 133981,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 87291,
     "fonte": 0,
     "outro": 0,
-    "total": 263805
+    "total": 282238
   },
   "/politica-de-privacidade.html|desktop": {
-    "html": 72847,
+    "html": 74571,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 123861
+    "total": 142294
   },
   "/termos-de-uso.html|desktop": {
-    "html": 42323,
+    "html": 44047,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 93337
+    "total": 111770
   },
   "/404.html|desktop": {
-    "html": 27417,
+    "html": 29141,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 78431
+    "total": 96864
   },
   "/en-us/home.html|desktop": {
-    "html": 139826,
+    "html": 141550,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 455865,
     "fonte": 0,
     "outro": 0,
-    "total": 639948
+    "total": 658381
   },
   "/en-us/resorts-brasil.html|desktop": {
-    "html": 55968,
+    "html": 57692,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 148597,
     "fonte": 0,
     "outro": 0,
-    "total": 248822
+    "total": 267255
   },
   "/en-us/board.html|desktop": {
-    "html": 63526,
+    "html": 65250,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 179134,
     "fonte": 0,
     "outro": 0,
-    "total": 286917
+    "total": 305350
   },
   "/en-us/history.html|desktop": {
-    "html": 45842,
+    "html": 47566,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 22286,
     "fonte": 0,
     "outro": 0,
-    "total": 112385
+    "total": 130818
   },
   "/en-us/associates.html|desktop": {
-    "html": 102441,
+    "html": 104165,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 340643,
     "fonte": 0,
     "outro": 0,
-    "total": 487341
+    "total": 505774
   },
   "/en-us/join-us.html|desktop": {
-    "html": 66016,
+    "html": 67740,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 235962,
     "fonte": 0,
     "outro": 0,
-    "total": 346235
+    "total": 364668
   },
   "/en-us/publications.html|desktop": {
-    "html": 46752,
+    "html": 48476,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 103303,
     "fonte": 0,
     "outro": 0,
-    "total": 194312
+    "total": 212745
   },
   "/en-us/statistics-and-studies.html|desktop": {
-    "html": 43257,
+    "html": 44981,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 110069,
     "fonte": 0,
     "outro": 0,
-    "total": 197583
+    "total": 216016
   },
   "/en-us/support-tourism.html|desktop": {
-    "html": 56770,
+    "html": 58494,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 156099,
     "fonte": 0,
     "outro": 0,
-    "total": 257126
+    "total": 275559
   },
   "/en-us/contact-us.html|desktop": {
-    "html": 41606,
+    "html": 43330,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 92620
+    "total": 111053
   },
   "/en-us/ebook.html|desktop": {
-    "html": 132257,
+    "html": 133981,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 87291,
     "fonte": 0,
     "outro": 0,
-    "total": 263805
+    "total": 282238
   },
   "/en-us/privacy-policy.html|desktop": {
-    "html": 70198,
+    "html": 71922,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 121212
+    "total": 139645
   },
   "/en-us/terms-of-use.html|desktop": {
-    "html": 41721,
+    "html": 43445,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 92735
+    "total": 111168
   },
   "/es-es/inicio.html|desktop": {
-    "html": 140039,
+    "html": 141763,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 455865,
     "fonte": 0,
     "outro": 0,
-    "total": 640161
+    "total": 658594
   },
   "/es-es/resorts-brasil.html|desktop": {
-    "html": 56436,
+    "html": 58160,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 148597,
     "fonte": 0,
     "outro": 0,
-    "total": 249290
+    "total": 267723
   },
   "/es-es/directorio.html|desktop": {
-    "html": 63742,
+    "html": 65466,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 179134,
     "fonte": 0,
     "outro": 0,
-    "total": 287133
+    "total": 305566
   },
   "/es-es/historia.html|desktop": {
-    "html": 46085,
+    "html": 47809,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 22286,
     "fonte": 0,
     "outro": 0,
-    "total": 112628
+    "total": 131061
   },
   "/es-es/asociados.html|desktop": {
-    "html": 102644,
+    "html": 104368,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 340643,
     "fonte": 0,
     "outro": 0,
-    "total": 487544
+    "total": 505977
   },
   "/es-es/asociese.html|desktop": {
-    "html": 66323,
+    "html": 68047,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 235962,
     "fonte": 0,
     "outro": 0,
-    "total": 346542
+    "total": 364975
   },
   "/es-es/publicaciones.html|desktop": {
-    "html": 47038,
+    "html": 48762,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 103303,
     "fonte": 0,
     "outro": 0,
-    "total": 194598
+    "total": 213031
   },
   "/es-es/estadisticas-y-estudios.html|desktop": {
-    "html": 43505,
+    "html": 45229,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 110069,
     "fonte": 0,
     "outro": 0,
-    "total": 197831
+    "total": 216264
   },
   "/es-es/apoye.html|desktop": {
-    "html": 57093,
+    "html": 58817,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 156099,
     "fonte": 0,
     "outro": 0,
-    "total": 257449
+    "total": 275882
   },
   "/es-es/contactenos.html|desktop": {
-    "html": 41936,
+    "html": 43660,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 92950
+    "total": 111383
   },
   "/es-es/ebook.html|desktop": {
-    "html": 132455,
+    "html": 134179,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 87291,
     "fonte": 0,
     "outro": 0,
-    "total": 264003
+    "total": 282436
   },
   "/es-es/politica-de-privacidad.html|desktop": {
-    "html": 73414,
+    "html": 75138,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 124428
+    "total": 142861
   },
   "/es-es/terminos-de-uso.html|desktop": {
-    "html": 42638,
+    "html": 44362,
     "css": 40005,
-    "js": 4252,
+    "js": 20961,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 93652
+    "total": 112085
   },
   "/design.html|desktop": {
-    "html": 218870,
+    "html": 219499,
     "css": 40005,
     "js": 0,
     "imagem": 6757,
     "fonte": 0,
     "outro": 0,
-    "total": 265632
+    "total": 266261
   }
 }

@@ -816,6 +816,230 @@ for (const { nome, pagina } of [
   check('sem erros de JS no console', real.length === 0, real.slice(0, 3).join(' | ') || 'nenhum');
 }
 
+/* 11. Navegacao sem recarga -------------------------------------------- */
+/*
+ * O GRUPO MAIS IMPORTANTE DESTA SUITE, e o unico cujo defeito CRESCE.
+ *
+ * Com o <ClientRouter />, o documento nao recarrega entre paginas: o corpo e
+ * trocado e o site.js continua o mesmo, ja avaliado. Se o ciclo de vida estiver
+ * errado, o sintoma nao aparece na primeira navegacao — aparece na terceira,
+ * porque cada uma soma mais uma copia dos listeners presos a `document` e a
+ * `window`, e um clique passa a valer N.
+ *
+ * Por isso as checagens navegam VARIAS vezes antes de medir, e a de menu conta
+ * quantas vezes o estado muda num clique so. Testar depois de uma navegacao
+ * apenas deixaria passar o acumulo, que e justamente o modo de falha.
+ */
+{
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const navegacoes = [];
+  page.on('load', () => navegacoes.push('recarga'));
+  await page.goto(BASE + '/');
+  await page.waitForTimeout(600);
+
+  /* Tres navegacoes internas, clicando em links de verdade. */
+  const recargasAntes = navegacoes.length;
+  for (const destino of ['/historia', '/publicacoes', '/fale-conosco']) {
+    await page.evaluate((d) => {
+      const a = document.createElement('a');
+      a.href = d;
+      document.body.appendChild(a);
+      a.click();
+    }, destino);
+    await page.waitForTimeout(700);
+  }
+
+  const url = page.url();
+  check('[spa] tres navegacoes internas sem recarregar o documento',
+    navegacoes.length === recargasAntes && url.endsWith('/fale-conosco'),
+    `${navegacoes.length - recargasAntes} recarga(s), url final ${new URL(url).pathname}`);
+
+  /* O cromo continua respondendo depois da troca de corpo. */
+  const trocas = await page.evaluate(async () => {
+    let n = 0;
+    const obs = new MutationObserver(() => (n += 1));
+    obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    document.querySelector('#mainMenu-trigger a').click();
+    await new Promise((r) => setTimeout(r, 500));
+    obs.disconnect();
+    return { n, aberto: document.body.classList.contains('mainMenu-open') };
+  });
+  check('[spa] o menu continua respondendo depois de navegar',
+    trocas.n === 1 && trocas.aberto,
+    `${trocas.n} mudanca(s) de class no body, aberto=${trocas.aberto}`);
+
+  await page.close();
+}
+
+{
+  /*
+   * A CONTAGEM DE LISTENERS, e ela existe porque a checagem obvia NAO PEGA o
+   * defeito. A primeira versao deste bloco clicava no menu depois de navegar e
+   * contava as mudancas de estado — passou com o `desmontar()` deliberadamente
+   * quebrado, e a razao e instrutiva: o gatilho do menu e um ELEMENTO, e o
+   * elemento e trocado junto com o corpo. Os listeners dele morrem sozinhos.
+   *
+   * O que acumula e o que esta preso a `window` e a `document`, que atravessam a
+   * navegacao: o `resize` do menu, o `click` de fora do seletor de idioma e o
+   * `scroll` do voltar-ao-topo. Como os tres sao idempotentes, dez copias fazem
+   * a mesma coisa que uma — nao ha sintoma funcional nenhum, so um vazamento que
+   * cresce a cada pagina visitada e um punhado de closures presas a DOM
+   * destacado. Nenhum clique revela isso; so a contagem.
+   *
+   * Ela sai do CDP (`DOMDebugger.getEventListeners`), que e a unica forma de ver
+   * listener de dentro do navegador — `addEventListener` nao deixa rastro no DOM.
+   */
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const cdp = await page.context().newCDPSession(page);
+
+  const contar = async (alvo) => {
+    const { result } = await cdp.send('Runtime.evaluate', { expression: alvo });
+    const { listeners } = await cdp.send('DOMDebugger.getEventListeners', {
+      objectId: result.objectId,
+    });
+    const por = {};
+    for (const l of listeners) por[l.type] = (por[l.type] ?? 0) + 1;
+    return por;
+  };
+
+  await page.goto(BASE + '/');
+  await page.waitForTimeout(600);
+  const base = { window: await contar('window'), document: await contar('document') };
+
+  for (const destino of ['/historia', '/publicacoes', '/diretoria', '/apoie']) {
+    await page.evaluate((d) => {
+      const a = document.createElement('a');
+      a.href = d;
+      document.body.appendChild(a);
+      a.click();
+    }, destino);
+    await page.waitForTimeout(700);
+  }
+
+  const depois = { window: await contar('window'), document: await contar('document') };
+
+  const cresceram = [];
+  for (const alvo of ['window', 'document']) {
+    for (const tipo of new Set([...Object.keys(base[alvo]), ...Object.keys(depois[alvo])])) {
+      const a = base[alvo][tipo] ?? 0;
+      const b = depois[alvo][tipo] ?? 0;
+      if (b > a) cresceram.push(`${alvo}.${tipo} ${a}->${b}`);
+    }
+  }
+
+  check('[spa] quatro navegacoes nao acumulam listener em window nem em document',
+    cresceram.length === 0,
+    cresceram.join(', ') ||
+      `scroll=${depois.window.scroll ?? 0}, resize=${depois.window.resize ?? 0}, ` +
+        `click=${depois.document.click ?? 0} — estaveis`);
+
+  await page.close();
+}
+
+{
+  /*
+   * A FAIXA DE COOKIES ATRAVESSA A NAVEGACAO PELO `window.rbConsent`, que vive
+   * no <head> e nao e reexecutado. E o unico estado deste projeto que sobrevive
+   * a troca de corpo, e por isso o unico que o site.js precisa desfazer a mao:
+   * sem isso o botao do rodape reabriria a faixa da pagina ANTERIOR, ja
+   * destacada do documento — um clique que nao faz nada visivel.
+   */
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.goto(BASE + '/');
+  await page.waitForTimeout(600);
+  await page.click('[data-cookie="aceitar"]');
+  await page.waitForTimeout(900);
+
+  await page.evaluate(() => {
+    const a = document.createElement('a');
+    a.href = '/diretoria';
+    document.body.appendChild(a);
+    a.click();
+  });
+  await page.waitForTimeout(800);
+
+  await page.click('.cookie-manage-btn');
+  await page.waitForTimeout(600);
+  const estado = await page.evaluate(() => {
+    const faixa = document.querySelector('.cookie-notify');
+    return {
+      naPagina: document.body.contains(faixa),
+      visivel: !faixa.hidden && faixa.classList.contains('modal-active'),
+      painel: !document.querySelector('#cookiePrefs').hidden,
+    };
+  });
+  check('[spa] revogar cookies reabre a faixa DESTA pagina, nao a da anterior',
+    estado.naPagina && estado.visivel && estado.painel,
+    `no documento=${estado.naPagina}, visivel=${estado.visivel}, painel=${estado.painel}`);
+
+  await page.close();
+}
+
+{
+  /*
+   * O pageview das navegacoes internas. Sem carga de pagina o GTM nao conta a
+   * visita sozinho, e a perda seria invisivel aqui dentro — nenhum portao deste
+   * projeto olha para dado de terceiro. Esta checagem olha o `dataLayer`, que e
+   * a fronteira que o repositorio controla: o que o container faz com o evento
+   * depende de configuracao no console do GTM.
+   */
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.goto(BASE + '/');
+  await page.waitForTimeout(600);
+  await page.click('[data-cookie="aceitar"]');
+  await page.waitForTimeout(600);
+
+  const antes = await page.evaluate(
+    () => (window.dataLayer || []).filter((e) => e && e.event === 'pageview_spa').length);
+
+  for (const destino of ['/historia', '/publicacoes']) {
+    await page.evaluate((d) => {
+      const a = document.createElement('a');
+      a.href = d;
+      document.body.appendChild(a);
+      a.click();
+    }, destino);
+    await page.waitForTimeout(700);
+  }
+
+  const eventos = await page.evaluate(() =>
+    (window.dataLayer || []).filter((e) => e && e.event === 'pageview_spa'));
+  check('[spa] cada navegacao empurra um pageview, e a carga inicial nao',
+    antes === 0 && eventos.length === 2 && eventos[1].page_path === '/publicacoes',
+    `inicial=${antes}, depois=${eventos.length}, ultimo=${eventos.at(-1)?.page_path}`);
+
+  await page.close();
+}
+
+{
+  /*
+   * E o inverso, que e a metade que protege a privacidade: quem RECUSA nao tem
+   * container carregado, entao nao ha o que medir. Empurrar mesmo assim
+   * acumularia eventos num dataLayer que ninguem consome — e eles seriam
+   * reproduzidos de uma vez se a pessoa aceitasse depois, inventando visitas com
+   * a hora errada.
+   */
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.goto(BASE + '/');
+  await page.waitForTimeout(600);
+  await page.click('[data-cookie="rejeitar"]');
+  await page.waitForTimeout(600);
+
+  await page.evaluate(() => {
+    const a = document.createElement('a');
+    a.href = '/historia';
+    document.body.appendChild(a);
+    a.click();
+  });
+  await page.waitForTimeout(700);
+
+  const eventos = await page.evaluate(() =>
+    (window.dataLayer || []).filter((e) => e && e.event === 'pageview_spa').length);
+  check('[spa] quem recusou nao empurra pageview nenhum', eventos === 0, `${eventos} evento(s)`);
+
+  await page.close();
+}
+
 await browser.close();
 
 const failed = results.filter((r) => !r.pass);

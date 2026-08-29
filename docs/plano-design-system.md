@@ -232,7 +232,25 @@ Detalhes em [docs/decisoes.md](docs/decisoes.md), seção "Design system".
 
 </details>
 
-#### Nota de execução — View Transitions adiadas para depois da Etapa 3
+#### Nota de execução — View Transitions adiadas ✅ ENTREGUES DEPOIS DA ETAPA 11
+
+**O adiamento durou até o fim do plano, e o motivo dele desapareceu no caminho.**
+Dos oito obstáculos listados abaixo, seis foram removidos pelas próprias etapas:
+o `setInterval` do carrossel morreu na Etapa 9, o `IntersectionObserver` dos
+contadores também, e os listeners de `resize`/`load` do masonry na Etapa 7.
+Sobraram três listeners presos a `window`/`document`, e o ciclo de vida que eles
+exigem coube em vinte linhas — contra a refatoração inteira que teria sido
+necessária na Etapa 0.
+
+Entregue com `AbortController` por página, `signal` em todo listener, teardown no
+`astro:before-swap` e `pageview_spa` no `dataLayer`. **A parte de GTM não se
+resolve daqui:** o container precisa de um gatilho para aquele evento (ou para
+History Change), senão a navegação interna não aparece no relatório.
+
+O custo — 4,9 KB brotli em todas as páginas, e o orçamento rebaseado por decisão
+explícita — está em [docs/deltas-visuais.md](deltas-visuais.md).
+
+<details><summary>Por que foi adiado, em 2026</summary>
 
 O plano previa `<ClientRouter />` aqui. A leitura do [site.js](src/scripts/site.js)
 mostrou que o custo é maior do que uma troca de evento:
@@ -251,6 +269,8 @@ Fazer isso agora seria refatorar um `site.js` que a Etapa 3 vai encolher de novo
 — as container queries tiram dele a lógica de faixa. Ordem melhor: migrar as
 funções, deixar o arquivo no formato final, e só então instalar o ciclo de vida
 e o `<ClientRouter />` de uma vez. **Nada do refino se perde; muda a ordem.**
+
+</details>
 
 ### Etapa 0.5 — Mudar a rede de segurança de lugar ✅ CONCLUÍDA
 

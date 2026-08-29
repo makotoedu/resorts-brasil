@@ -2,13 +2,38 @@
  * Comportamentos do site em JS nativo, substituindo jquery.js + plugins.js +
  * functions.js (504 KB).
  *
- * Cada bloco replica o que o tema Inspiro fazia, usando as MESMAS classes de
- * estado, para que o CSS existente continue valendo sem alteracao.
+ * Os nomes de estado sao herdados do tema Inspiro (.toggle-active,
+ * .mainMenu-open, .modal-active, #mainMenu, #scrollTop) — foi isso que deixou um
+ * script so servir as duas camadas durante a migracao inteira. Hoje quem os
+ * declara e o <style> do cromo.
  *
  * Fora daqui de proposito, por nao existirem neste site: lightbox, filtro de
- * portfolio, parallax, contagem regressiva, graficos, sticky sidebar e o
- * cabecalho fixo no scroll (as 40 paginas usam .header-disable-fixed, que
- * desliga esse comportamento no proprio tema).
+ * portfolio, parallax, contagem regressiva, graficos, sticky sidebar e
+ * cabecalho fixo no scroll.
+ *
+ * ---------------------------------------------------------------------------
+ * O CICLO DE VIDA, E POR QUE ELE E A PARTE DIFICIL DESTE ARQUIVO
+ * ---------------------------------------------------------------------------
+ *
+ * Com o <ClientRouter />, o documento NAO recarrega entre paginas: o corpo e
+ * trocado e este modulo continua o mesmo, ja avaliado. Um `DOMContentLoaded`
+ * ingenuo deixaria de disparar, e — pior — todo listener preso a `document` ou
+ * a `window` ACUMULARIA a cada navegacao se alguem os registrasse de novo.
+ *
+ * Sao tres os presos assim: o `resize` do menu, o `click` de fora do seletor de
+ * idioma e o `scroll` do voltar-ao-topo. Depois de cinco navegacoes, cinco
+ * copias de cada — e o menu abriria e fecharia no mesmo clique, porque cinco
+ * `setOpen(!open)` rodariam em sequencia sobre closures diferentes.
+ *
+ * A Etapa 0 adiou as View Transitions exatamente por isso, quando a lista era
+ * bem maior: 6 listeners persistentes, 1 setInterval (o autoplay do carrossel,
+ * que aceleraria progressivamente) e 1 IntersectionObserver. As etapas 7 e 9
+ * levaram os tres ultimos embora ao trocar carrossel, masonry e contadores por
+ * CSS, e e por isso que o ciclo de vida cabe agora em vinte linhas.
+ *
+ * O contrato: TODO listener recebe o `signal`, e todo timer se cancela no
+ * `abort`. Nada de `removeEventListener` a mao — um esquecido nao aparece no
+ * primeiro clique depois da navegacao, aparece no quinto.
  */
 
 const ready = (fn) =>
@@ -21,7 +46,7 @@ const ready = (fn) =>
 // easeInOutQuart, marcando .toggle-active no gatilho, .mainMenu-open no body e
 // .menu-animate no menu 300ms depois. Os submenus nao precisam de toggle: abaixo
 // de 992px o CSS ja os deixa em display:block.
-function mobileMenu() {
+function mobileMenu(signal) {
   const trigger = document.querySelector('#mainMenu-trigger a, #mainMenu-trigger button');
   const menu = document.querySelector('#mainMenu');
   if (!trigger || !menu) return;
@@ -29,6 +54,7 @@ function mobileMenu() {
   const EASE = 'cubic-bezier(0.77, 0, 0.175, 1)';
   let open = false;
   let animateTimer;
+  signal.addEventListener('abort', () => clearTimeout(animateTimer), { once: true });
 
   const setOpen = (next) => {
     open = next;
@@ -49,7 +75,7 @@ function mobileMenu() {
   trigger.addEventListener('click', (e) => {
     e.preventDefault();
     setOpen(!open);
-  });
+  }, { signal });
 
   // O gatilho e um <a> sem href com role="button": o clique do mouse funciona
   // sozinho, mas Enter e Espaco precisam ser tratados a mao — sem isso o
@@ -58,17 +84,18 @@ function mobileMenu() {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     e.preventDefault();
     setOpen(!open);
-  });
+  }, { signal });
 
   // O tema fecha o menu ao redimensionar para o breakpoint de desktop.
+  // PRESO A `window`: sem o signal, uma copia por navegacao.
   window.addEventListener('resize', () => {
     if (open && window.innerWidth >= 992) setOpen(false);
-  });
+  }, { signal });
 }
 
 /* Seletor de idioma ------------------------------------------------------ */
 // No desktop o CSS abre por :hover; o clique existe para toque.
-function languageDropdown() {
+function languageDropdown(signal) {
   // Mantem aria-expanded junto da classe de estado: sao a mesma informacao,
   // uma para o CSS e outra para o leitor de tela.
   const sync = (drop) => {
@@ -83,23 +110,24 @@ function languageDropdown() {
       e.preventDefault();
       drop.classList.toggle('dropdown-active');
       sync(drop);
-    });
+    }, { signal });
     // Esc fecha e devolve o foco ao gatilho, como qualquer menu.
     drop.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape' || !drop.classList.contains('dropdown-active')) return;
       drop.classList.remove('dropdown-active');
       sync(drop);
       link.focus();
-    });
+    }, { signal });
   });
 
+  // PRESO A `document`: sem o signal, uma copia por navegacao.
   document.addEventListener('click', (e) => {
     document.querySelectorAll('.p-dropdown.dropdown-active').forEach((drop) => {
       if (drop.contains(e.target)) return;
       drop.classList.remove('dropdown-active');
       sync(drop);
     });
-  });
+  }, { signal });
 }
 
 /* Submenus da navegacao -------------------------------------------------- */
@@ -107,17 +135,17 @@ function languageDropdown() {
 // ajustes.css acrescentou :focus-within para o teclado. Falta so manter o
 // aria-expanded honesto: um atributo fixo em "false" enquanto o menu abre
 // engana mais o leitor de tela do que a ausencia dele.
-function navDropdowns() {
+function navDropdowns(signal) {
   document.querySelectorAll('#mainMenu nav > ul > li.dropdown').forEach((li) => {
     const link = li.querySelector(':scope > a');
     if (!link) return;
     const marcar = (aberto) => link.setAttribute('aria-expanded', String(aberto));
-    li.addEventListener('mouseenter', () => marcar(true));
-    li.addEventListener('mouseleave', () => marcar(false));
-    li.addEventListener('focusin', () => marcar(true));
+    li.addEventListener('mouseenter', () => marcar(true), { signal });
+    li.addEventListener('mouseleave', () => marcar(false), { signal });
+    li.addEventListener('focusin', () => marcar(true), { signal });
     li.addEventListener('focusout', (e) => {
       if (!li.contains(e.relatedTarget)) marcar(false);
-    });
+    }, { signal });
   });
 }
 
@@ -206,7 +234,7 @@ function navDropdowns() {
  * A faixa continua usando as classes de estado do tema (.modal-strip,
  * .modal-active), entao o CSS existente vale sem alteracao.
  */
-function cookieNotice() {
+function cookieNotice(signal) {
   const notice = document.querySelector('.cookie-notify');
   const api = window.rbConsent;
   if (!notice || !api) return;
@@ -218,6 +246,14 @@ function cookieNotice() {
   // O `hidden` so cai depois que a faixa termina de descer, e quem reabre pelo
   // rodape dentro desses 700ms cancelaria a si mesmo se o timer sobrevivesse.
   let timerEsconder = null;
+  signal.addEventListener('abort', () => {
+    clearTimeout(timerEsconder);
+    /* `rbConsent` vive no <head> e ATRAVESSA a navegacao — e o unico estado
+       deste arquivo que nao morre com o corpo da pagina. Deixar o callback
+       apontando para a faixa que acabou de ser trocada faria o botao do rodape
+       reabrir um elemento destacado do documento. */
+    if (api.aoAbrir === reabrir) api.aoAbrir = null;
+  }, { once: true });
 
   const mostrar = () => {
     clearTimeout(timerEsconder);
@@ -272,7 +308,7 @@ function cookieNotice() {
       });
       decidir(escolha);
     }
-  });
+  }, { signal });
 
   // Esc fecha o painel e volta para a faixa — nunca fecha a faixa inteira, o
   // que equivaleria a decidir por quem nao decidiu.
@@ -281,14 +317,15 @@ function cookieNotice() {
       e.stopPropagation();
       fecharPainel();
     }
-  });
+  }, { signal });
 
   // O botao do rodape entra por aqui. Reabrir ja mostra o painel: quem pediu
   // para rever a escolha quer as categorias, nao a faixa de novo.
-  api.aoAbrir = () => {
+  function reabrir() {
     mostrar();
     abrirPainel();
-  };
+  }
+  api.aoAbrir = reabrir;
 
   // Sem escolha registrada, a faixa aparece de imediato. O atraso de 2s do
   // original so fazia sentido quando ela era decorativa; agora nada e medido
@@ -299,13 +336,15 @@ function cookieNotice() {
   const revogar = document.querySelector('.cookie-manage');
   if (revogar) {
     revogar.hidden = false;
-    revogar.querySelector('.cookie-manage-btn').addEventListener('click', () => api.abrir());
+    revogar
+      .querySelector('.cookie-manage-btn')
+      .addEventListener('click', () => api.abrir(), { signal });
   }
 }
 
 /* Voltar ao topo --------------------------------------------------------- */
 // O tema mexe direto no style porque #scrollTop nasce com opacity 0 e z-index -1.
-function scrollTop() {
+function scrollTop(signal) {
   const button = document.querySelector('#scrollTop');
   if (!button) return;
 
@@ -318,13 +357,15 @@ function scrollTop() {
     button.style.zIndex = visible ? '199' : '-1';
   };
 
-  window.addEventListener('scroll', update, { passive: true });
+  // PRESO A `window`: sem o signal, uma copia por navegacao — e este dispara a
+  // cada quadro de rolagem, entao seria o mais caro dos tres.
+  window.addEventListener('scroll', update, { passive: true, signal });
   // preventDefault para o href="#top" nao sujar a URL quando ha JavaScript. Sem
   // JavaScript o href continua valendo e leva ao topo do documento.
   button.addEventListener('click', (e) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  }, { signal });
   update();
 }
 
@@ -337,7 +378,7 @@ function scrollTop() {
  * O destino e youtube-nocookie.com, que so grava cookie depois que o video
  * comeca a tocar.
  */
-function videoFacades() {
+function videoFacades(signal) {
   document.querySelectorAll('.yt-facade-btn').forEach((botao) => {
     botao.addEventListener('click', (e) => {
       // O href leva a pagina do video e e o caminho de quem esta sem JavaScript;
@@ -356,15 +397,93 @@ function videoFacades() {
       botao.parentElement.replaceChildren(iframe);
       // Quem chegou pelo teclado perderia o foco no <button> que acabou de sumir.
       iframe.focus();
-    });
+    }, { signal });
   });
 }
 
-ready(() => {
-  mobileMenu();
-  languageDropdown();
-  navDropdowns();
-  cookieNotice();
-  videoFacades();
-  scrollTop();
+/* Pageview das navegacoes sem recarga ------------------------------------- */
+/*
+ * SEM CARGA DE PAGINA, O GTM NAO CONTA A VISITA SOZINHO. O gtm.js dispara o
+ * pageview uma vez, quando entra no documento; da segunda pagina em diante o
+ * corpo e trocado e nenhuma rede acontece. Sem este empurrao, o Analytics
+ * passaria a ver uma sessao de uma pagina so — e a perda seria invisivel aqui
+ * dentro, porque nenhum portao deste projeto olha para dado de terceiro.
+ *
+ * SO EMPURRA SE O CONTAINER FOI CARREGADO, que e o que `api.medindo()` responde.
+ * Sem isso, quem recusou os cookies acumularia eventos num `dataLayer` que
+ * ninguem consome — e, pior, eles seriam REPRODUZIDOS de uma vez se a pessoa
+ * aceitasse depois, inventando um punhado de visitas com a hora errada.
+ *
+ * DEPENDE DE CONFIGURACAO NO CONSOLE DO GTM, e isso nao se resolve daqui: o
+ * container precisa de um gatilho para o evento `pageview_spa` (ou para History
+ * Change, que o router tambem provoca). Ate isso ser feito, a navegacao interna
+ * nao aparece no relatorio. Mesma familia da nota de src/data/cookies.ts.
+ */
+function pageviewSpa() {
+  const api = window.rbConsent;
+  if (!api || typeof api.medindo !== 'function' || !api.medindo()) return;
+  window.dataLayer.push({
+    event: 'pageview_spa',
+    page_location: location.href,
+    page_path: location.pathname + location.search,
+    page_title: document.title,
+  });
+}
+
+/* Montagem e desmontagem -------------------------------------------------- */
+
+let controlador = null;
+
+function montar() {
+  if (controlador) return;
+  controlador = new AbortController();
+  const { signal } = controlador;
+  mobileMenu(signal);
+  languageDropdown(signal);
+  navDropdowns(signal);
+  cookieNotice(signal);
+  videoFacades(signal);
+  scrollTop(signal);
+}
+
+function desmontar() {
+  controlador?.abort();
+  controlador = null;
+}
+
+/*
+ * DOIS GATILHOS PARA A MESMA MONTAGEM, e o segundo e uma rede de seguranca.
+ *
+ * `astro:page-load` dispara na carga inicial E depois de cada navegacao do
+ * router, entao sozinho ele bastaria — desde que o <ClientRouter /> esteja no
+ * layout. Se alguem o tirar, o evento simplesmente nunca acontece e ESTE ARQUIVO
+ * INTEIRO fica inerte: menu morto, faixa de cookies que nunca aparece, botao de
+ * voltar ao topo parado. Nenhum erro, nenhum aviso — a assinatura exata das
+ * armadilhas que este projeto ja documentou cinco vezes.
+ *
+ * O `ready()` fecha esse buraco. Na carga inicial com o router presente ele
+ * chega primeiro (DOMContentLoaded vem antes de `astro:page-load`), monta, e o
+ * `astro:page-load` seguinte encontra `controlador` preenchido e nao faz nada.
+ * Sem o router, ele e o unico a rodar, e o comportamento e o de antes.
+ */
+ready(montar);
+document.addEventListener('astro:before-swap', desmontar);
+
+/*
+ * A PRIMEIRA CARGA NAO EMPURRA PAGEVIEW, e o motivo e que ela ja tem um: o
+ * `astro:page-load` dispara tambem na entrada no site, e ali quem conta a visita
+ * e o proprio gtm.js ao ser injetado. Empurrar aqui tambem dobraria toda sessao.
+ *
+ * Vale igual para quem aceita os cookies no meio da navegacao: o container entra
+ * naquele momento e conta a pagina em que a pessoa esta; daí em diante as trocas
+ * de corpo passam por aqui.
+ */
+let primeiraCarga = true;
+document.addEventListener('astro:page-load', () => {
+  montar();
+  if (primeiraCarga) {
+    primeiraCarga = false;
+    return;
+  }
+  pageviewSpa();
 });

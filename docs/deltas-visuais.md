@@ -588,6 +588,46 @@ continua 16/9 esteja a miniatura onde estiver. Resolvido com `:global(picture)` 
 `:global(img)`, e registrado no [CLAUDE.md](../CLAUDE.md) como o avesso da
 armadilha 1.
 
+## View Transitions — o único delta que engorda de propósito
+
+A navegação passou a ser sem recarga (`<ClientRouter />`), o último refino da
+lista do plano. Ele não muda pixel em repouso: o que muda é a **transição** entre
+páginas — o fade que substitui o branco da recarga.
+
+**Ele engordou todas as 41 páginas, e essa é a parte que precisa estar escrita.**
+
+| | antes | depois |
+|---|---|---|
+| JS por página (cru) | 4 KB | **20 KB** |
+| na rede (brotli, uma vez) | — | **+4,9 KB** |
+| `/404`, o mais leve | 77 KB | 95 KB (+23%) |
+| `/index` | 451 KB | 469 KB (+4%) |
+| conjunto medido | 18,98 MB | 20,42 MB (+7,6%) |
+
+**O orçamento reprovou 68 das 82 medições, e foi rebaseado por decisão explícita**
+— que é exatamente para isso que a catraca existe. O número cru exagera o custo
+real: o `ClientRouter` é um arquivo com hash em `/_astro/`, servido com
+`immutable` de um ano, então são 4,9 KB baixados **uma vez** por visitante. Da
+segunda página em diante ele economiza trabalho, em vez de custar.
+
+Onde o cálculo é menos favorável: quem chega da busca, lê uma página e sai paga
+os 4,9 KB e não usa nenhuma transição. Num site institucional isso é uma fatia
+grande das visitas, e é o argumento honesto do outro lado.
+
+### O que veio junto, e não é peso
+
+O ciclo de vida do [`site.js`](../src/scripts/site.js) — `AbortController` por
+página, `signal` em todo listener, teardown no `astro:before-swap`. Sem ele, os
+três listeners presos a `window`/`document` acumulariam uma cópia por navegação.
+
+**A checagem óbvia disso não funciona**, e o teste negativo provou: clicar no
+menu depois de navegar passa mesmo com o teardown quebrado, porque o gatilho é um
+elemento e o elemento é trocado junto com o corpo. O que acumula são os três de
+`window`/`document`, e como os três são idempotentes não há sintoma funcional
+nenhum — dez cópias fazem o mesmo que uma. Quem vê é a contagem de listeners via
+CDP, em `tests/verify-behaviors.mjs`: com o defeito plantado ela acusa
+`window.resize 1→5`, `window.scroll 1→5`, `document.click 3→7`.
+
 ## Altura não é critério
 
 **Decisão do projeto: divergência de altura de página é aceita sem justificativa.**

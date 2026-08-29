@@ -230,8 +230,39 @@ O módulo usa **nomes de estado herdados do tema** (`.toggle-active`,
 camadas durante a migração inteira; hoje quem os declara é o `<style>` do cromo.
 Ao mexer nele, preserve os nomes.
 
+**Ele tem ciclo de vida**, e isso é requisito desde que o `<ClientRouter />`
+entrou: o documento não recarrega entre páginas, então tudo é montado no
+`astro:page-load` sobre um `AbortController` novo e desmontado no
+`astro:before-swap`. Todo listener recebe o `signal`; todo timer se cancela no
+`abort`. Sem isso, os três listeners presos a `window`/`document` — o `resize` do
+menu, o `click` de fora do seletor de idioma e o `scroll` do voltar-ao-topo —
+ganhariam uma cópia por navegação.
+
+O `ready()` continua ali como rede de segurança: se o `<ClientRouter />` sair do
+layout, `astro:page-load` nunca dispara e o arquivo inteiro ficaria inerte — menu
+morto, faixa de cookies que nunca aparece, sem erro nenhum.
+
 O Astro processa esse script pelo Vite, então ele é minificado e recebe hash no
 build.
+
+### Navegação sem recarga
+
+O [`<ClientRouter />`](../src/layouts/LayoutSistema.astro) é o último refino do
+plano, adiado desde a Etapa 0 porque o `site.js` de então tinha seis listeners
+persistentes, um `setInterval` e um `IntersectionObserver` — todos acumulariam. As
+etapas 7 e 9 levaram os piores embora ao trocar masonry, carrossel e contadores
+por CSS.
+
+O que ele custa: **4,9 KB brotli** por visitante, uma vez, com `immutable` de um
+ano. O orçamento reprovou 68 das 82 medições e foi rebaseado por decisão
+explícita — o registro está em [deltas-visuais.md](deltas-visuais.md).
+
+**A analítica depende de configuração fora daqui.** Sem carga de página o GTM não
+conta a visita sozinho, então o `site.js` empurra `pageview_spa` no `dataLayer` a
+cada navegação — mas só quando o container foi carregado (`rbConsent.medindo()`),
+para não acumular eventos no navegador de quem recusou. **O container precisa de
+um gatilho para aquele evento**, ou para History Change; até isso ser feito no
+console do GTM, a navegação interna não aparece no relatório.
 
 ---
 

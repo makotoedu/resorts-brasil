@@ -89,6 +89,13 @@ Componente novo nesses quatro diretórios **precisa** entrar no catálogo `/desi
 no mesmo commit: `scripts/verifica-sistema.mjs` reprova o build se ele não for
 importado por lá.
 
+**A navegação é sem recarga** (`<ClientRouter />`), então o `site.js` tem ciclo
+de vida: tudo é montado no `astro:page-load` sobre um `AbortController` e
+desmontado no `astro:before-swap`. **Todo listener novo recebe o `signal`** — sem
+ele, o que estiver preso a `window` ou a `document` ganha uma cópia por
+navegação, sem sintoma funcional nenhum. Quem vigia isso é a contagem de
+listeners via CDP em `tests/verify-behaviors.mjs`.
+
 **Valor de componente é medido, nunca lido.** Os seis scripts `medir-*` imprimem
 o valor computado no navegador, nos três viewports e com o hover. Ler o CSS já
 deu resposta errada cinco vezes neste projeto; contar ocorrências no markup, três.

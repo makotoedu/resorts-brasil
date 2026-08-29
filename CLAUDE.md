@@ -343,7 +343,37 @@ O procedimento completo está em [docs/verificacao.md](docs/verificacao.md).
   `#scrollTop`). Foi isso que deixou **um** script servir as duas camadas durante
   a migração inteira. Sobrou uma camada e os nomes ficam: é o CSS do cromo que os
   declara agora, e renomear seria uma varredura sem ganho.
+- **Todo listener novo no `site.js` recebe o `signal`, e todo timer se cancela no
+  `abort`.** Com o `<ClientRouter />` o documento não recarrega entre páginas, e
+  o que estiver preso a `window` ou a `document` sem `signal` ganha uma cópia por
+  navegação. Ver a seção seguinte.
 - Comentários e documentação em português, acompanhando o resto do projeto.
+
+## Antes de mexer no `site.js`
+
+**O documento não recarrega entre páginas.** O `<ClientRouter />` troca o corpo e
+este módulo continua o mesmo, já avaliado. Duas consequências, e as duas mordem:
+
+1. **Listener preso a `window` ou a `document` acumula.** Uma cópia por
+   navegação. Por isso todo listener recebe `{ signal }` do `AbortController` da
+   página, e todo timer se cancela no `abort`. Nada de `removeEventListener` à
+   mão — um esquecido não aparece no primeiro clique, aparece no quinto.
+2. **O `<head>` não reexecuta.** O bloco de consentimento roda uma vez e
+   `window.rbConsent` atravessa a navegação — é o **único** estado que sobrevive
+   à troca de corpo, e por isso o único que precisa ser desfeito à mão (o
+   `aoAbrir` da faixa de cookies).
+
+**A checagem óbvia disso não funciona, e vale saber por quê.** Clicar no menu
+depois de navegar passa mesmo com o teardown quebrado: o gatilho é um *elemento*,
+e o elemento é trocado junto com o corpo, então os listeners dele morrem
+sozinhos. O que acumula são os três de `window`/`document` — e como os três são
+idempotentes, dez cópias fazem o mesmo que uma. **Não há sintoma funcional
+nenhum**, só um vazamento que cresce a cada página visitada.
+
+Quem vê é a contagem de listeners via CDP (`DOMDebugger.getEventListeners`), em
+[`tests/verify-behaviors.mjs`](tests/verify-behaviors.mjs). Com o teardown
+quebrado de propósito ela acusa `window.resize 1→5`, `window.scroll 1→5`,
+`document.click 3→7`.
 
 ## O que não existe aqui
 

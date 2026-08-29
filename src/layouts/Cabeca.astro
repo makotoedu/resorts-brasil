@@ -273,6 +273,14 @@ const orgJsonLd = {
         gravar(escolha);
         aplicar(escolha);
       },
+      /* O container entrou no documento? Quem pergunta e o pageview das
+         navegacoes sem recarga, no site.js: sem GTM carregado nao ha o que
+         medir, e empurrar no dataLayer so acumularia eventos que seriam
+         reproduzidos de uma vez se a pessoa aceitasse depois. A resposta mora
+         aqui, e nao la, para a regra de "quando ha medicao" existir uma vez so. */
+      medindo: function () {
+        return carregado;
+      },
       /* A UI registra aqui como reabrir o painel. */
       aoAbrir: null,
       abrir: function () {

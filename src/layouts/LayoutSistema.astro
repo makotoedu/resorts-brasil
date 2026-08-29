@@ -17,6 +17,8 @@
  */
 import '../styles/global.css';
 
+import { ClientRouter } from 'astro:transitions';
+
 import Cabeca from './Cabeca.astro';
 import Cabecalho from '../components/cromo/Cabecalho.astro';
 import Rodape from '../components/cromo/Rodape.astro';
@@ -62,6 +64,25 @@ const t = ui[lang];
 <html lang={htmlLang[lang]}>
   <head>
     <Cabeca lang={lang} title={title} description={description} route={route} ogImage={ogImage} />
+
+    <!--
+      NAVEGACAO SEM RECARGA, o ultimo refino da lista do plano.
+
+      Ele foi adiado na Etapa 0 e nao por preferencia: o `site.js` de entao tinha
+      6 listeners presos a `document`/`window`, um `setInterval` e um
+      `IntersectionObserver`, e todos ACUMULARIAM a cada navegacao — o carrossel
+      de logos aceleraria progressivamente e nunca pararia. As etapas 7 e 9
+      levaram os tres piores embora ao trocar masonry, carrossel e contadores por
+      CSS, e sobraram tres listeners e dois timers, todos com ciclo de vida
+      explicito no `site.js` (AbortController por pagina, teardown no
+      `astro:before-swap`).
+
+      O `<head>` NAO reexecuta na troca, e isso e desejado: o bloco de
+      consentimento roda uma vez e `window.rbConsent` atravessa a navegacao. E
+      por atravessar que ele e o unico estado que o `site.js` precisa desfazer a
+      mao — ver a nota do `cookieNotice`.
+    -->
+    <ClientRouter />
   </head>
 
   <!--
