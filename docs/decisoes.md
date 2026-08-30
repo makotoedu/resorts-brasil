@@ -3342,3 +3342,95 @@ raster de `/associados` — com nomes de estado embutidos no PNG, em português 
 três versões — são trabalho de **conteúdo**, não de sistema. Nenhum tem critério
 objetivo que um portão possa afirmar. Ficam registrados em
 [deltas-visuais.md](deltas-visuais.md).
+
+## O que está em aberto, esperando decisão
+
+Três itens saíram da mesma auditoria e **não foram aplicados**, cada um porque
+depende de uma decisão que nenhuma medição toma. Estão aqui inteiros, e não como
+lembrete: quem retomar precisa poder executar sem procurar a conversa em que
+nasceram.
+
+### 1. A paleta: sete fundos de faixa viram um par
+
+**O argumento é do próprio conteúdo, e é o que torna isto mais que arrumação:**
+`RE` + `SO` + `RT` soletram **RESORT**. Os três eixos da associação são três
+sílabas da palavra que dá nome a ela, na ordem certa, e a ordem carrega o
+sentido. Hoje eles são âmbar, índigo e verde de borda a borda em
+`/resorts-brasil` — três matizes sem parentesco, que fazem o leitor ler *três
+coisas diferentes*. É o único lugar do site em que a cor trabalha **contra** o
+conteúdo.
+
+**O par que fica**, e os dois já existem, já foram medidos e são da família do
+navy da marca:
+
+| token | valor | texto branco |
+|---|---|---|
+| `--cor-navy-900` | `#001e6c` | 14,8:1 |
+| `--cor-indigo-900` | `#15184b` | 16,6:1 |
+
+Os três painéis passam a alternar os dois tons sobre uma superfície só, com
+filete entre eles; as siglas ganham peso e espacejamento e viram o elemento, em
+vez de rótulo sobre fundo colorido. Em `/apoie`, Parceiro e Mantenedor perdem
+roxo e magenta — dois roxos a poucos graus um do outro, que leem como erro de
+renderização antes de lerem como par — e a distinção entre os dois níveis passa a
+ser **dita** ("apoio pontual", "doze meses") em vez de codificada num matiz que
+ninguém decifra. Em `/historia`, a faixa navy/âmbar segue o mesmo par.
+
+**O ganho que não é óbvio: o âmbar passa a significar uma coisa só.** Hoje o
+mesmo amarelo pinta um eixo institucional, metade da tela de `/historia` e o
+botão principal da home. Tirado do papel de fundo, ele sobra como
+`--color-acao-destaque` e mais nada — âmbar quer dizer "aja aqui". É um
+significado que um site institucional tem uma chance de estabelecer, e estava
+sendo gasto em decoração.
+
+**Aposentar:** `--cor-verde-600`, `--cor-roxo-800`, `--cor-magenta-700`,
+`--cor-indigo-700` e `--cor-ambar-500`. O `--cor-ambar-400` do botão **fica** —
+é ele que vira a cor de ação.
+
+**Nenhuma das faixas de hoje reprova a WCAG:** a Etapa 3 já corrigira isso
+trocando o texto branco por navy no âmbar e no verde. O ganho aqui não é
+conformidade, é coerência — some o corpo de 13px em navy sobre saturado, que são
+as duas únicas superfícies do site a exigir texto escuro.
+
+**O custo é pequeno e verificável.** Os seis tokens de acento têm *exatamente
+dois consumidores* — [`FaixaDestaque`](../src/components/padroes/FaixaDestaque.astro)
+e [`CartaoModalidade`](../src/components/padroes/CartaoModalidade.astro) — e `Tom`
+é uma união TypeScript, então remover um tom faz o `astro check` listar cada
+`tons={[…]}` obsoleto: `/resorts-brasil`, `/apoie` e `/historia`, nos três
+idiomas. Não há como esquecer um. O catálogo `/design` entra junto, porque o
+build reprova componente fora da vitrine.
+
+A divergência entra em [deltas-visuais.md](deltas-visuais.md) como
+**redesenho** — categoria nova ao lado de refino, correção e regressão, porque é
+o primeiro pixel deste projeto que muda por decisão de marca e não por medição.
+
+### 2. A repetição do convite e da parede de parceiros
+
+O `<ConviteAssociese>` aparece em **cinco** páginas com o mesmo título e o mesmo
+texto (quinze instâncias somando os idiomas); a `<FaixaParceiros>`, em **quatro**
+(doze). Como engenharia isso é exemplar — um componente, dados em `src/data/`,
+nada duplicado. Como leitura é o inverso: no quarto encontro o leitor para de ver
+os dois.
+
+O que falta é **cópia**, e por isso não foi feito: o convite deveria variar com a
+origem — quem chega pelas publicações não está no mesmo ponto da jornada de quem
+chega pelos associados. Precisa de título e texto novos nos três idiomas, em
+[`src/i18n/ui.ts`](../src/i18n/ui.ts), e vale a regra do projeto: ler os três lado
+a lado faz parte da etapa.
+
+A parede completa cabe em uma página — `/apoie`, onde parceiros **são** o assunto
+— com as outras trazendo um recorte ou nada.
+
+### 3. Os emoji, que são um segundo sistema de ícones
+
+😍 💪 ❤️ vivem em [`src/i18n/ui.ts`](../src/i18n/ui.ts), nos três idiomas, e ✌️ 🤝 😍
+em [`apoie.astro`](../src/pages/apoie.astro). São glifos **raster do sistema
+operacional**, diferentes em cada plataforma, fora do
+[`verify-icones`](../tests/verify-icones.mjs) — e convivem com 16 SVGs gerados e
+conferidos contra a fonte de origem, que é um sistema construído exatamente para
+isso.
+
+A Etapa 8 já os tirou do sumário (eram `<h2>` e `<h3>` cujo texto era "😍"; viraram
+texto decorativo com `aria-hidden`). O que falta é decidir: **onde carregam
+significado, trocar por `<Icone>`; onde são decoração, remover.** Muda cópia nos
+três idiomas, e por isso parou aqui.

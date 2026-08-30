@@ -494,6 +494,25 @@ nem cabeçalho fixo no scroll. Também não há `<iframe>` no HTML gerado (os v�
 são fachada), nenhuma webfont de ícone, e nenhuma regra que use Nunito — a fonte
 era baixada e nunca aplicada.
 
+## O que está em aberto
+
+Três itens da auditoria de layout **não foram aplicados**, cada um porque depende
+de uma decisão que nenhuma medição toma. Estão descritos por inteiro — não como
+lembrete, mas de forma executável — em [docs/decisoes.md](docs/decisoes.md),
+seção "O que está em aberto, esperando decisão":
+
+1. **a paleta**, que reduz sete fundos de faixa a um par de navy. O argumento é
+   do conteúdo: `RE` + `SO` + `RT` soletram **RESORT**, e três matizes sem
+   parentesco escondem isso. De quebra, o âmbar sai do papel de fundo e passa a
+   significar uma coisa só — ação;
+2. **a cópia do convite**, repetido em cinco páginas com o mesmo texto (quinze
+   instâncias somando os idiomas). Falta texto novo, não código;
+3. **os emoji** (😍 💪 ❤️ ✌️ 🤝), que são um segundo sistema de ícones ao lado dos
+   16 SVGs conferidos contra a fonte de origem.
+
+**Os três mexem em conteúdo traduzido**, então vale a regra de sempre: ler os
+três idiomas lado a lado faz parte da etapa.
+
 ## Onde os dados moram
 
 **Dado não é markup.** Resorts associados, parceiros, diretoria e contato ficam
