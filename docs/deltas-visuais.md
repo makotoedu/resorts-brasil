@@ -696,6 +696,30 @@ encurtar porque uma seção virou zero.
 
 É o que a Etapa 0.5 constrói.
 
+## Consistência — os deltas da crítica de layout
+
+Todos deliberados, todos medidos, e nenhum deles é fidelidade ao tema: o site
+original tinha estes defeitos e a migração os preservou.
+
+| páginas | tipo | motivo |
+|---|---|---|
+| 3 homes | **correção** | o rótulo do CTA de destaque deixa de ser branco sobre âmbar (1,63:1) e passa ao navy (9,10:1). O `tokens.css` já documentava essa correção para a `<FaixaDestaque>`; o botão usava outro token e ficou de fora |
+| 4 páginas × 3 idiomas | **correção** | `--color-texto-sutil` escurece de `#9aa0a6` para `#6d7484` sobre fundo claro (2,64 → 4,69:1). O cinza claro fica como `-inverso`, para o rodapé e os cartões do e-book |
+| home, `/associe-se`, e todo `<Hero>` | **correção** | o véu sobre foto vira gradiente: leve no topo, `--color-veu-forte` (58%) onde o texto mora. Resolve onze reprovações de branco sobre foto clara sem escurecer as fotos que já funcionavam |
+| 3 páginas de e-book | **correção** | a `<SecaoEbook>` com foto ganha véu chapado. O `h2` de 50px da seção de vídeo caía sobre o facho ciano da própria imagem, a 1,64:1 |
+| 41 páginas | **refino** | `papel` substitui `tamanho` nos títulos. O `h2` de 62px da home cai para 34px (empatava com o `h1` do hero), o `h1` de `/diretoria` sobe de 34 para 62px (era o único menor que os das outras), as faixas de `/apoie` e `/historia` caem de 50 para 34px e as seções "Prefácio" e "Autores" do e-book, de 62 para 50px |
+| 5 páginas × 3 idiomas | **refino** | o CTA `<ConviteAssociese>` sobe de 25 para 34px, igualando os demais títulos de seção. Em `/publicacoes` e `/estatisticas-e-estudos` ele era tipograficamente maior que o conteúdo que nomeia a página |
+| 4 páginas × 3 idiomas | **refino** | a `<FaixaLogos>` deriva as colunas da contagem de itens. Sete mantenedores deixavam cinco células vazias em `/associe-se` e três nas demais; agora deixam uma |
+| `/associados` e as 4 com parceiros | **refino** | o rótulo de grupo alinha ao topo em vez do centro vertical — ele flutuava no meio de uma grade alta, longe da linha que nomeia |
+| `/design` | **correção** | os rótulos das demos escuras passam a `--color-texto-sutil-inverso`, e a amostra de `cor="destaque"` sai do papel branco para a superfície escura, que é onde o coral existe de verdade |
+
+| 6 páginas × 3 idiomas | **correção** | seis juntas entre seções mediam **160px** porque os dois recuos de 80 somavam. O site inteiro usa 80px entre seções; aquelas seis eram a exceção, não um ritmo diferente. Com elas corrigidas, o vão passa a significar: **40px dentro de um grupo, 80px entre seções**, e só o e-book mantém a escala própria dele |
+
+**Nenhum desses deltas foi verificado no `visual-diff`**, e vale dizer por quê: ele
+compara contra o site original, que carrega os mesmos defeitos. Quem afirma o
+resultado aqui são os dois portões novos — contraste e tipografia —, que medem o
+que a página entrega em vez de compará-la com o que ela era.
+
 ## Como classificar um delta novo
 
 Ao rodar o diff numa etapa, cada página acima do limiar entra aqui com captura,

@@ -3254,3 +3254,91 @@ O `visual-diff.mjs` não entrou. Ele compara contra o site original em `:4340`,
 que saiu do repositório na Etapa 11 — e, para esta pergunta, o
 `medir-imagens.mjs` é o instrumento melhor: ele compara contra o **original de
 origem**, não contra um screenshot de página.
+
+---
+
+# Consistência: o que a crítica de layout encontrou
+
+A auditoria mediu o `dist/` no navegador e achou **22 falhas reais de WCAG
+1.4.3**, uma hierarquia de títulos em que `h2` renderizava em cinco tamanhos e
+`h3` em um, sete fundos de faixa sem parentesco e grades com até cinco células
+vazias. Nada disso era descuido: é o que sobra quando a migração **mede tudo e
+decide nada**. Onde o valor antigo violava uma regra objetiva, o projeto corrigiu
+com rigor; onde era apenas arbitrário, atravessou intacto — agora com nome
+semântico e um comentário explicando por que é assim.
+
+## O par que não existia, e por que a correção não é a linha
+
+O `.botao` na variante destaque escrevia branco sobre âmbar: **1,63:1**, no CTA
+do `<Hero>` das três homes. O mais instrutivo é que o `tokens.css` já
+documentava essa exata correção — *"o tema escrevia texto branco sobre TODOS
+eles: sobre o âmbar isso dá 1,6:1 […] com o navy do site dão 9,1:1"* —, aplicada
+na Etapa 3 **à `<FaixaDestaque>`**, que consome o par `acento-ambar`/`-texto`.
+
+O botão usa o mesmo amarelo por outro token. E **dois tokens que ninguém declarou
+como par não têm par para conferir.**
+
+Por isso a correção não foi trocar `color` no componente: foi dar às **ações** a
+mesma forma que os acentos já tinham. `--color-acao-destaque-texto` e
+`--color-acao-primaria-texto` passam a viver ao lado do fundo, e a escolha deixa
+de poder divergir dele. A mesma mecânica explicava o `--color-texto-sutil`: ele
+tinha um par declarado (contra a superfície inversa, 7:1) e passava nele; o uso
+sobre branco era um segundo par que ninguém declarou, e dava 2,64:1 — reprovando
+até o limiar de 3:1 do texto grande. Virou dois tokens, um por fundo.
+
+## O véu constante não pode servir a fotografia
+
+Os 30% de preto foram medidos no tema e estão certos como valor médio. Só que
+eles são os mesmos em toda foto, e a foto não é a mesma: sobre a água turquesa da
+home o título dava 2,59:1, sobre a areia do hero 2,94:1, sobre o céu do cartão do
+e-book o link dava 2,24:1. Sobre as fotos escuras o mesmo 0,30 já bastava, e
+escurecer todas para resolver as claras apagaria aquelas.
+
+A correção é um **gradiente**: o topo fica no véu leve de sempre e a metade de
+baixo — onde o `<Hero>` centraliza e a `<ChamadaAcao conteudo="fim">` encosta o
+texto — vai para `--color-veu-forte`. O 0,58 não foi escolhido: é o menor degrau
+em que as 41 páginas × 3 viewports passam no portão novo.
+
+## `papel` no lugar de `tamanho`, e por que o eixo livre era o defeito
+
+Separar `nivel` de `tamanho` consertou os 39 sumários quebrados. E deixou a
+aparência sem regra nenhuma — `h2` em 18, 25, 34, 50 e 62px, `h3` em 18px nas 45
+ocorrências. Onde os dois se encontram em 18px, nível 2 e nível 3 são o mesmo
+objeto visual.
+
+`papel` fecha isso com quatro degraus. **Não é uma renomeação:** é a lista de
+valores que uma página pode usar, e ela não inclui o `2xl` justamente porque o
+2xl só existia nas faixas de `/apoie` e `/historia`, que eram a colisão. Duas
+conversões precisaram de julgamento e não de codemod — o `h2` de 62px da home,
+que empatava com o `h1` do hero, e o `h1` de 34px de `/diretoria`, que era menor
+que o de todas as outras páginas.
+
+`tamanho` sobrevive como escape em dois arquivos, com **contagem por arquivo** na
+allowlist do `verifica-sistema.mjs` — o mesmo mecanismo do `style=` inline, e
+pelo mesmo motivo.
+
+## Dois portões novos, e o que eles ensinaram sobre o método
+
+O de **contraste** mede o texto como ele sai na tela; o de **tipografia**, se o
+tamanho ainda diz o nível. Os dois estão em [verificacao.md](verificacao.md).
+
+Três coisas que valem mais que os portões em si:
+
+1. **Amostrar a captura normal dá número errado.** O pior pixel dentro da linha é
+   o anti-aliasing do próprio glifo. Some com o texto (`color: transparent`) e o
+   problema deixa de existir.
+2. **`fullPage` mente em página alta.** Faixas voltam em branco, sem erro, com o
+   PNG do tamanho certo. O catálogo produziu 920 reprovações fantasma.
+3. **Regra que sempre falha não é regra.** *"Irmãos do mesmo nível medem igual"*
+   achou o defeito de `/publicacoes` e, corrigido ele, continuou acusando 63
+   casos legítimos. Foi trocada por *"todo título cai num dos quatro degraus"*,
+   que é objetiva e chega a zero.
+
+## O que não foi feito, e por quê
+
+A fotografia genérica (uma arara ilustrando "Seja um associado"), as páginas ocas
+(`/fale-conosco` com 1184px de altura, `/historia` com um parágrafo) e o mapa
+raster de `/associados` — com nomes de estado embutidos no PNG, em português nas
+três versões — são trabalho de **conteúdo**, não de sistema. Nenhum tem critério
+objetivo que um portão possa afirmar. Ficam registrados em
+[deltas-visuais.md](deltas-visuais.md).

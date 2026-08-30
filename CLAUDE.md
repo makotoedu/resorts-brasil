@@ -18,7 +18,7 @@ O que sobrou daquilo é a **disciplina que a migração produziu**, e é ela que
 arquivo registra. Boa parte das regras abaixo parece exagerada até você ler o
 defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
 
-### As quatro regras que não podem ser quebradas
+### As cinco regras que não podem ser quebradas
 
 1. **Toda página usa o [`LayoutSistema`](src/layouts/LayoutSistema.astro)**, que
    é quem importa a folha do design system.
@@ -89,6 +89,33 @@ defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
    Quando precisar de CSS de verdade, escreva CSS de verdade em `<style>` com
    escopo. Utilitária para o que é único, componente para o que se repete.
 
+5. **Tamanho de título vem do `papel`, não do `tamanho`.** O
+   [`<Titulo>`](src/components/primitivos/Titulo.astro) tem dois eixos: `nivel`
+   escolhe a tag e `papel` escolhe a aparência, em quatro degraus.
+
+   ```astro
+   <Titulo nivel={2} papel="secao">Benefícios de ser um associado</Titulo>
+   ```
+
+   | `papel` | token | medido | uso |
+   |---|---|---|---|
+   | `pagina` | `text-3xl` | 40→62px | um por página |
+   | `secao` | `text-xl` | 24→34px | título de seção, e o das faixas |
+   | `bloco` | `text-lg` | 19→25px | sub-bloco, cartão sobre foto |
+   | `cartao` | `text-md` | 18px | cartão, rótulo de grupo |
+
+   **Separar tag de aparência consertou o sumário e criou o defeito seguinte.**
+   Com `tamanho` livre por página, `h2` passou a renderizar em **cinco** tamanhos
+   (18, 25, 34, 50 e 62px) e `h3` em **um** (18px, nas 45 ocorrências) — onde os
+   dois se encontram em 18px, nível 2 e nível 3 são o mesmo objeto visual. Na
+   home o `h1` e o `h2` seguinte mediam os mesmos 62px; em `/apoie` a palavra
+   "Parceiro" era `h3` de 18px e `h2` de 50px na mesma tela.
+
+   `tamanho` sobrevive como escape para os dois lugares onde a escala crua é o
+   assunto — `PaginaEbook.astro`, que tem escala própria como tem paleta própria,
+   e `design.astro`, que é a vitrine. **A allowlist de `verifica-sistema.mjs`
+   guarda o número por arquivo**, igual à do `style=`.
+
 > **Uma regra saiu na Etapa 11 e vale saber que existiu.** Todo componente e toda
 > página precisavam de uma linha `@source` em `src/styles/global.css`, porque
 > `source(none)` impedia o Tailwind de gerar utilitárias que colidiriam com as
@@ -97,7 +124,7 @@ defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
 > por diretório e a lista de 60 linhas morreu. **O CSS gerado ficou byte a byte
 > idêntico**, medido.
 
-### Quatro armadilhas do Astro, e as quatro custam a mesma coisa
+### Cinco armadilhas do Astro, e todas custam a mesma coisa
 
 **Nenhum erro.** O build passa, o tipo passa, e o defeito só aparece olhando.
 
@@ -156,12 +183,41 @@ defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
      continuam sendo juntadas com um espaço; e em container flex quem separa é o
      `gap`, então lá o espaço do markup nunca apareceu — foi medido nos 18
      `<LinkAcao>`, e some sem mudar um pixel.
-   - **Nenhum dos quatro portões vê.** A geometria mede caixas e o texto está
+   - **Nenhum dos portões de layout vê.** A geometria mede caixas e o texto está
      dentro da caixa. Quem viu foi `innerText` das 41 páginas comparado contra a
      build anterior, que é o que respeita o CSS. Ver
      [docs/decisoes.md](docs/decisoes.md), "Atualização do Astro".
 
-### E uma quinta: cor que depende do que está embaixo
+5. **Erro do `astro check` cascateia, e a linha apontada raramente é a culpada.**
+
+   O compilador transforma o frontmatter em TSX. Quando qualquer coisa ali
+   confunde esse parse, `Astro.props` vira `any` e o relatório enche de erros
+   *derivados*, todos longe da causa:
+
+   ```
+   Titulo.astro:53  'Props' is declared but never used
+   Titulo.astro:129 Component 'Tag' is not a valid component
+   Titulo.astro:131 expression of type 'any' can't be used to index type ...
+   ```
+
+   **`'Props' is declared but never used` é o sintoma a reconhecer.** Ele não diz
+   que a interface está errada: diz que o arquivo inteiro deixou de ser tipado. A
+   causa pode estar vinte linhas acima — ou ser um erro de tipo banal em outro
+   ponto. Nesta sessão um `Type 'number' is not assignable to '4|5|6'` apareceu
+   como *"`item` implicitly has an 'any' type"* noutro lugar do mesmo arquivo, e
+   só se revelou quando o resto foi simplificado.
+
+   **O caso que custou uma bissecção inteira:** um `->` dentro de um comentário
+   `/** */` do frontmatter que também citava markup **pareado** (`<Titulo …>texto
+   </Titulo>`). Trocar `40 -> 62px` por `40 ate 62px` levava de 6 erros a 0, ida e
+   volta, duas vezes. Uma seta sozinha é inofensiva — o `FaixaLogos.astro` tem
+   `2 -> 3 -> 5 colunas` no comentário dele e sempre passou —, e no `<style>` e em
+   `.css` ela nunca incomodou.
+
+   O procedimento que funciona: **restaure o arquivo do HEAD, confirme que passa,
+   e reaplique em três ou quatro pedaços.** Ler o erro não leva à causa.
+
+### E uma sexta: cor que depende do que está embaixo
 
 **Componente transparente herda o fundo de quem o contém — e o contraste também.**
 
@@ -317,7 +373,8 @@ Ao usar o [`<Imagem>`](src/components/primitivos/Imagem.astro):
 
 ```bash
 npm run build      # tipos, imagens, invariantes do design system
-npm run verify     # comportamento, geometria, ícones e orçamento (precisa do preview no ar)
+npm run verify     # comportamento, geometria, ícones, contraste, tipografia e orçamento
+                   # (precisa do preview no ar, em 4330)
 ```
 
 A suíte comportamental sozinha **não vê layout colapsar** — passou 14/14 durante
@@ -345,6 +402,38 @@ uma catraca, não um teto. Cada página tem a própria linha de base em
 `tests/orcamento.json`, e o que reprova é ela engordar mais de 5%. Página que
 emagrece pede `ATUALIZAR=1 node tests/verify-orcamento.mjs` para regravar a base
 mais apertada — é assim que o peso não volta.
+
+**O quinto é o contraste do que é RENDERIZADO**, `tests/verify-contraste.mjs`.
+Ele existe porque o checador de cor compara **pares de token**, e havia três
+coisas que um par não sabe dizer: token sobre token que ninguém declarou como par
+(era o CTA da home, branco sobre âmbar a 1,63:1), token sobre **fotografia** (onze
+títulos e links brancos, de 2,17 a 3,50:1) e token sobre o gradiente de uma foto
+(o h2 de 50px do e-book sobre o facho ciano, 1,65:1). Vinte e duas falhas reais,
+e nenhum dos quatro portões via uma.
+
+O método tem duas armadilhas, e as duas produzem número errado sem erro nenhum:
+
+- **amostre a chapa, não a captura normal.** A chapa é a página com todo o texto
+  em `color: transparent`. Amostrando a captura normal, o pior pixel dentro da
+  linha é quase sempre o **anti-aliasing do próprio glifo**, e a suíte acusa
+  texto perfeitamente legível;
+- **capture por banda de rolagem, nunca `fullPage`.** Em página muito alta o
+  Chromium monta a imagem por partes e **algumas voltam em branco** — o PNG tem a
+  altura certa e o conteúdo não está lá. O catálogo, com 28 mil px, produziu 920
+  reprovações fantasma de "branco sobre branco". Se um dia aparecer uma enxurrada
+  de 1,00:1, **suspeite da captura antes do CSS.**
+
+**O sexto é a hierarquia visual**, `tests/verify-tipografia.mjs`: nenhum título
+pode alcançar o tamanho do título que o contém, e todo título tem de cair num dos
+quatro degraus do `papel`. Ele cobre o que o checador de sumário não vê — aquele
+garante que não há salto de nível, este que o **tamanho** ainda significa alguma
+coisa. Nasceu com 33 ocorrências e chegou a zero na mesma sessão.
+
+Uma regra foi tentada e descartada, e vale saber: *"irmãos do mesmo nível medem
+igual"*. Ela achou o defeito que originou o portão e, depois de corrigido,
+continuou acusando 63 casos que não são defeito — grade de cartão e seção moram
+no mesmo `h2` quando não há título de seção acima, e isso é limite do HTML, não
+do desenho.
 
 O `node tests/visual-diff.mjs` continua existindo, mas **não é portão** — o pixel
 muda de propósito. Ele é changelog: cada divergência entra em

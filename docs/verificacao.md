@@ -275,6 +275,106 @@ descarta uma navegação de aquecimento, espera `networkidle` em vez de 300 ms, 
 mede com `prefers-reduced-motion` — sem congelar a faixa de logos, novas imagens
 entram na tela para sempre e a rede nunca silencia.
 
+## 2e. Contraste do que é renderizado — o quinto portão
+
+```bash
+npm run verify:contraste                        # precisa do preview no ar
+PAGES=/index.html VIEWPORTS=desktop node tests/verify-contraste.mjs
+DETALHE=1 node tests/verify-contraste.mjs       # lista todos os grupos
+```
+
+[`tests/verify-contraste.mjs`](../tests/verify-contraste.mjs) afirma o critério
+1.4.3 da WCAG sobre o texto **como ele sai na tela**, nas 41 páginas mais o
+catálogo, em três viewports.
+
+**Por que existe, se o projeto já cuidava de contraste.** Cuidava — mas por
+**pares de token**: cada acento carrega o próprio par de texto no `tokens.css`
+justamente para que a escolha não possa divergir do fundo. Há três coisas que um
+par de token não sabe dizer, e as três estavam em produção:
+
+| o que escapava | exemplo medido |
+|---|---|
+| dois tokens que ninguém declarou como par | o CTA das três homes, branco sobre âmbar, **1,63:1** |
+| token sobre **fotografia** | onze títulos e links brancos nos cartões e heros, **2,17 a 3,50:1** |
+| token sobre o gradiente de uma foto | o `h2` de 50px do e-book sobre o facho ciano, **1,65:1** |
+
+Vinte e duas falhas reais, nenhuma vista pelos quatro portões anteriores: a
+geometria mede caixas e as caixas estavam certas, o orçamento mede bytes, os
+ícones medem contornos, e o diff visual não é portão.
+
+### O método, e as duas armadilhas que ele contorna
+
+Uma captura por banda, com **todo o texto em `color: transparent`** — a *chapa de
+fundo*. É nela que se amostra, com as caixas vindo de `Range.getClientRects()`,
+que dá as linhas de texto e não o bloco.
+
+1. **Amostrar a captura normal dá número errado.** O pixel mais desfavorável
+   dentro da caixa de uma linha é quase sempre o **anti-aliasing do próprio
+   glifo** — texto branco sobre fundo escuro tem borda cinza, e a borda contra o
+   branco dá ~1,8:1. Filtrar "pixels parecidos com a cor do texto" não resolve: a
+   borda está no meio do caminho entre as duas cores.
+2. **`fullPage` mente em página alta.** O Chromium monta a imagem por partes e
+   **algumas voltam em branco**; o PNG tem a altura certa e o conteúdo não está
+   lá. O catálogo, com 28.192 px, produziu **920 reprovações fantasma** de
+   "branco sobre branco". Se aparecer uma enxurrada de 1,00:1, suspeite da
+   captura antes do CSS.
+
+Duas contaminações a mais, achadas na mesma sessão e já resolvidas no script:
+elemento `position: fixed` é pintado em **todas** as bandas (o voltar-ao-topo,
+com `rgb(0 0 0 / 0.25)`, virava um fundo de `rgb(191,191,191)` atrás de
+parágrafos da política de privacidade), e **emoji não obedece `color`** — o
+coração da hashtag sobrevivia à chapa e virava o "fundo" medido.
+
+### O que ele não mede, e o que ele isenta
+
+Não mede contraste de componente não textual (critério 1.4.11) nem estado de
+hover, porque a captura é do repouso — o menu e o submenu continuam sendo
+trabalho do `medir-cromo.mjs`. Isenta, com fundamento na própria norma, texto de
+**controle desabilitado** (1.4.3 exclui componente inativo) e texto sob
+`aria-hidden` (o algarismo gigante da 404, cujo papel é não ser lido). Texto
+recortado por `overflow` e texto fora da tela saem por regra geométrica: a caixa
+é intersectada com a de cada ancestral que corta, e o que sobra abaixo de 2px não
+existe na tela. É isso que descarta o menu mobile fechado — `#mainMenu` tem
+`height: 0` e os doze links continuam com `checkVisibility()` verdadeiro.
+
+**A faixa de cookies tem passada própria.** Ela é `position: fixed`, e a passada
+principal roda com o consentimento já gravado para que ela não contamine as
+bandas. Uma segunda passada curta roda sem consentimento, só na viewport. Sem
+ela, a faixa ficaria fora de qualquer verificação — que é exatamente o buraco que
+o `.polo-carousel` deixou registrado neste projeto.
+
+## 2f. Hierarquia visual dos títulos — o sexto portão
+
+```bash
+npm run verify:tipografia                       # precisa do preview no ar
+```
+
+[`tests/verify-tipografia.mjs`](../tests/verify-tipografia.mjs) cobre a metade
+que o checador de sumário não vê. Aquele garante que **não há salto de nível**;
+este, que o **tamanho ainda significa alguma coisa**.
+
+Duas regras, ambas nascidas de defeito medido:
+
+1. **Nenhum título alcança o tamanho do que o contém.** O "pai" é o título
+   anterior de nível mais alto — a árvore que o documento desenha. Na home, o
+   `h1` do hero media 62px e o `h2` seguinte media 62px.
+2. **Todo título cai num dos quatro degraus do `papel`.** A escala é lida do CSS
+   por quatro sondas, não escrita no script — assim um ajuste no `tokens.css` não
+   deixa o portão desatualizado em silêncio.
+
+Escopo: só o `<main>`. O rodapé tem títulos próprios que não fazem parte da
+árvore de leitura da página. O e-book é isento da **regra 2** e só dela: ele tem
+escala própria pelo mesmo motivo que tem paleta própria.
+
+**Uma regra foi tentada e descartada:** *"irmãos do mesmo nível medem igual"*.
+Ela achou o defeito que originou o portão — o CTA de `/publicacoes` em 25px sobre
+cartões de 18px — e, depois de corrigido, continuou acusando 63 casos que não são
+defeito. Grade de cartão e seção moram no mesmo `h2` quando não há título de
+seção acima; isso é limite do HTML, não do desenho.
+
+Nasceu contador, com 33 ocorrências em 27 páginas, e chegou a zero na mesma
+sessão. Hoje bloqueia.
+
 ## 3. Diff visual — hoje um changelog
 
 ```bash
