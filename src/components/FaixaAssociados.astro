@@ -33,7 +33,9 @@ const { lang } = Astro.props;
 const t = ui[lang];
 ---
 
-<Secao id="resorts-associados" espacoBase="nenhum">
+{/* Ver a nota do <ConviteAssociese>: na home esta secao segue os destaques,
+    que ja fecham com 80px, e os dois recuos somavam 160. */}
+<Secao id="resorts-associados" espacoTopo="nenhum" espacoBase="nenhum">
   <Container>
     <TituloSecao nivel={2}>{t.associatesTitle}</TituloSecao>
     <CarrosselLogos itens={carrosselHome} />

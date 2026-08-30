@@ -208,6 +208,72 @@ const ESTILO_INLINE_PERMITIDO = {
   },
 };
 
+/* ------------------------------------------------------------------ *
+ * 3b. `<Titulo tamanho=>` so onde a escala crua e o assunto
+ * ------------------------------------------------------------------ *
+ * O <Titulo> separa `nivel` (a tag) de `papel` (a aparencia), e o `papel` tem
+ * quatro degraus — pagina, secao, bloco, cartao. `tamanho` e o eixo ANTIGO, que
+ * aceitava qualquer degrau da escala crua, e foi ele que produziu o defeito que
+ * o tests/verify-tipografia.mjs passou a vigiar: `h2` renderizando em cinco
+ * tamanhos (18, 25, 34, 50 e 62px) e `h3` em um so.
+ *
+ * Ele nao foi removido porque duas coisas legitimamente precisam dele:
+ *
+ *   PaginaEbook.astro  a landing do e-book tem ESCALA propria (hero em 4xl,
+ *                      secoes em 2xl) pelo mesmo motivo que tem paleta propria.
+ *   design.astro       o catalogo existe para exibir a escala crua inteira lado
+ *                      a lado; pedir que ele use `papel` seria pedir que a
+ *                      vitrine escondesse a mercadoria.
+ *
+ * A allowlist guarda o NUMERO por arquivo, como a do `style=` inline e pelo
+ * mesmo motivo: um `tamanho` novo num arquivo ja excepcionado continua
+ * reprovando.
+ */
+const TAMANHO_DE_TITULO_PERMITIDO = {
+  'src/components/PaginaEbook.astro': {
+    quantos: 11,
+    porque: 'a landing do e-book tem escala propria, como tem paleta propria',
+  },
+  'src/pages/design.astro': {
+    quantos: 25,
+    porque: 'o catalogo demonstra a escala crua inteira',
+  },
+};
+
+async function tamanhoDeTituloRestrito(fontes) {
+  let total = 0;
+  for (const f of fontes) {
+    if (!f.endsWith('.astro')) continue;
+    const texto = await readFile(join(RAIZ, f), 'utf8');
+    /* O comentario que EXPLICA o `tamanho` nao pode reprovar o commit que o
+       removeu — ver a nota do linhasSemComentario. */
+    const semComentario = linhasSemComentario(texto).join('\n');
+    const quantos = [...semComentario.matchAll(/<Titulo\b[^>]*\stamanho="/gs)].length;
+    const permitido = TAMANHO_DE_TITULO_PERMITIDO[f];
+    total += quantos - (permitido ? Math.min(quantos, permitido.quantos) : 0);
+
+    if (!permitido) {
+      if (quantos) {
+        falhas.push(
+          `${f}  ${quantos} <Titulo tamanho=> fora da allowlist — use \`papel\` ` +
+            `(pagina/secao/bloco/cartao)`
+        );
+      }
+    } else if (quantos > permitido.quantos) {
+      falhas.push(
+        `${f}  ${quantos} <Titulo tamanho=>, e a allowlist permite ${permitido.quantos} ` +
+          `(${permitido.porque})`
+      );
+    } else if (quantos < permitido.quantos) {
+      avisos.push(
+        `${f}  a allowlist reserva ${permitido.quantos} <Titulo tamanho=> e o arquivo tem ` +
+          `${quantos} — baixe o numero em TAMANHO_DE_TITULO_PERMITIDO`
+      );
+    }
+  }
+  return total;
+}
+
 async function semEstiloInline(fontes) {
   let total = 0;
   for (const f of fontes) {
@@ -426,6 +492,7 @@ const fontes = await arquivos(FONTES[0], ['.astro', '.css', '.ts', '.js']);
 await semApply(fontes);
 await semCorLiteral(fontes);
 const estilosInline = await semEstiloInline(fontes);
+const tamanhosSoltos = await tamanhoDeTituloRestrito(fontes);
 const componentes = await catalogoCobrePrimitivos(fontes);
 
 const paginasDoDist = await lerDist();
@@ -453,6 +520,7 @@ if (falhas.length === 0) {
 const semDist = 'dist/ ausente — nao verificado';
 console.log('COBERTURA');
 console.log(`  style= inline fora da allowlist .. ${estilosInline}`);
+console.log(`  <Titulo tamanho=> fora da lista .. ${tamanhosSoltos}`);
 console.log(`  cor literal fora de tokens.css ... ${avisos.length}`);
 console.log(`  paginas com heading conferido .... ${comHeadings ?? semDist}`);
 console.log(`  paginas com a folha do sistema ... ${comFolha ?? semDist}`);

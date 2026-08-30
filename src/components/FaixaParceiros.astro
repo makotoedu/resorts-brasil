@@ -79,11 +79,17 @@ const faixas = [
           logos ocupa as outras tres, que e a proporcao do `col-lg-3` +
           `col-lg-9` do tema. No mobile o rotulo vai para cima da faixa, como
           ele ja ia.
+
+          `alinhamento="inicio"` e nao `centro`: centrado, o rotulo flutuava no
+          meio vertical de uma grade de duas linhas cuja segunda tem dois
+          logotipos — ficava longe do primeiro item que nomeia e no meio de um
+          espaco que nao e de ninguem. Alinhado ao topo, ele encosta na linha
+          que rotula, que e o que um rotulo faz.
         */
         <div class="faixa">
-          <Grade colunas={4} piso={1} espaco="md" alinhamento="centro">
+          <Grade colunas={4} piso={1} espaco="md" alinhamento="inicio">
             <div class="rotulo">
-              <Titulo nivel={3} tamanho="md" alinhamento="centro" class="nome">
+              <Titulo nivel={3} papel="cartao" alinhamento="centro" class="nome">
                 {faixa.rotulo}
               </Titulo>
               {faixa.nota && (

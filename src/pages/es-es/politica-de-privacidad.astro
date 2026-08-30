@@ -58,7 +58,7 @@ const compartilhamento = [
 <LayoutSistema lang={lang} route="privacy">
   <Secao id="titulo" espacoBase="nenhum">
     <Container largura="estreita">
-      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.privacyTitle}</Titulo>
+      <Titulo nivel={1} papel="pagina" peso="medio" alinhamento="centro">{t.privacyTitle}</Titulo>
       <Texto tamanho="xs" alinhamento="centro">{atualizacao}</Texto>
     </Container>
   </Secao>
@@ -85,7 +85,7 @@ const compartilhamento = [
           contáctenos a través del e-mail: <a href={`mailto:${contato.email}`}>{contato.email}</a>
         </p>
 
-        <Titulo nivel={2} tamanho="lg">
+        <Titulo nivel={2} papel="bloco">
           Informaciones que usted precisa saber antes de leer esta Política
         </Titulo>
         <p>
@@ -132,7 +132,7 @@ const compartilhamento = [
           nosotros.
         </p>
 
-        <Titulo nivel={2} tamanho="lg">¿Cómo colectamos sus datos personales?</Titulo>
+        <Titulo nivel={2} papel="bloco">¿Cómo colectamos sus datos personales?</Titulo>
         <p>
           Con el intuito de establecer una relación de confianza y transparencia, usted debe conocer
           las fuentes a través de las cuales colectamos informaciones. La manera que usted interactúa
@@ -142,10 +142,10 @@ const compartilhamento = [
         </p>
         <ListaIcones marcador="seta" cor="paragrafo" itens={fontesDeColeta} />
 
-        <Titulo nivel={2} tamanho="lg">¿Cómo y cuáles datos personales colectamos?</Titulo>
+        <Titulo nivel={2} papel="bloco">¿Cómo y cuáles datos personales colectamos?</Titulo>
         <ListaIcones marcador="seta" cor="paragrafo" itens={dadosColetados} />
 
-        <Titulo nivel={2} tamanho="lg">¿Para cuáles finalidades utilizamos sus datos personales?</Titulo>
+        <Titulo nivel={2} papel="bloco">¿Para cuáles finalidades utilizamos sus datos personales?</Titulo>
         <p>
           Resorts trata sus Datos Personales principalmente, para viabilizar nuestra relación
           institucional, cumplir algunas obligaciones contractuales y legales. Además de eso, podemos
@@ -153,7 +153,7 @@ const compartilhamento = [
         </p>
         <ListaIcones marcador="seta" cor="paragrafo" itens={finalidades} />
 
-        <Titulo nivel={2} tamanho="lg">
+        <Titulo nivel={2} papel="bloco">
           Para tratar sus datos nosotros utilizamos las siguientes bases legales:
         </Titulo>
         <p>
@@ -187,7 +187,7 @@ const compartilhamento = [
 
         <SecaoCookies lang={lang} />
 
-        <Titulo nivel={2} tamanho="lg">¿Cómo compartimos sus datos personales?</Titulo>
+        <Titulo nivel={2} papel="bloco">¿Cómo compartimos sus datos personales?</Titulo>
         <p>
           No vendemos ni comercializamos informaciones que identifiquen a los individuos que
           interactúan con nosotros. Tampoco compartimos o transferimos de cualquier forma sus
@@ -200,7 +200,7 @@ const compartilhamento = [
           Personales contra el uso no autorizado o que se compartan.
         </p>
 
-        <Titulo nivel={2} tamanho="lg">
+        <Titulo nivel={2} papel="bloco">
           ¿Sus Datos Personales pueden ser transferidos internacionalmente?
         </Titulo>
         <p>
@@ -219,7 +219,7 @@ const compartilhamento = [
           más riguroso que el previsto en legislación brasileña aplicable.
         </p>
 
-        <Titulo nivel={2} tamanho="lg">
+        <Titulo nivel={2} papel="bloco">
           ¿Durante cuánto tiempo sus datos personales son almacenados?
         </Titulo>
         <p>
@@ -228,7 +228,7 @@ const compartilhamento = [
           para que con el tratamiento de ellos no sea más posible identificarlo a usted.
         </p>
 
-        <Titulo nivel={2} tamanho="lg">¿Cómo garantizamos la seguridad de sus datos personales?</Titulo>
+        <Titulo nivel={2} papel="bloco">¿Cómo garantizamos la seguridad de sus datos personales?</Titulo>
         <p>
           La seguridad de sus datos personales es una de nuestras principales preocupaciones. Para
           protegerlos, utilizamos medidas técnicas y organizacionales de seguridad de la información
@@ -251,7 +251,7 @@ const compartilhamento = [
           sistemas, por favor, contáctenos de inmediato.
         </p>
 
-        <Titulo nivel={2} tamanho="lg">¿Cuáles son sus derechos?</Titulo>
+        <Titulo nivel={2} papel="bloco">¿Cuáles son sus derechos?</Titulo>
         <p>
           La Ley General de Protección de Datos Personales concede a Usted determinados derechos en
           lo que se refiere al tratamiento de sus datos personales. Son ellos:
@@ -305,7 +305,7 @@ const compartilhamento = [
           recibamos las confirmaciones prevista arriba.
         </p>
 
-        <Titulo nivel={2} tamanho="lg">Página Web de terceros</Titulo>
+        <Titulo nivel={2} papel="bloco">Página Web de terceros</Titulo>
         <p>
           Nuestra página web puede poner a disposición links para páginas web de terceros, pero que
           tienen sus propias políticas de privacidad, que pueden no ser compatibles con esta
@@ -319,7 +319,7 @@ const compartilhamento = [
           validado, ratificado o subscrito por nosotros.
         </p>
 
-        <Titulo nivel={2} tamanho="lg">Alteraciones de esta política</Titulo>
+        <Titulo nivel={2} papel="bloco">Alteraciones de esta política</Titulo>
         <p>
           Estamos siempre buscando ofrecerles servicios con la mayor eficiencia posible,
           actualizándonos constantemente para esto. Por ese motivo, esta Política podrá sufrir
@@ -327,14 +327,14 @@ const compartilhamento = [
           través de esta dirección electrónica.
         </p>
 
-        <Titulo nivel={2} tamanho="lg">Ley aplicable y jurisdicción</Titulo>
+        <Titulo nivel={2} papel="bloco">Ley aplicable y jurisdicción</Titulo>
         <p>
           En caso de cualquier controversia o diligencia relacionada a la interpretación, validad,
           celebración o conformidad de esta Política ella será resuelta teniendo en consideración la
           legislación brasileña y la jurisdicción del lugar de la sede de la empresa.
         </p>
 
-        <Titulo nivel={2} tamanho="lg">¿Cómo usted puede contactarnos?</Titulo>
+        <Titulo nivel={2} papel="bloco">¿Cómo usted puede contactarnos?</Titulo>
         <p>
           En caso de cualquier duda con relación a esta Política o solicitaciones para el
           cumplimiento de sus derechos. Usted o su representante legal podrá contactarnos

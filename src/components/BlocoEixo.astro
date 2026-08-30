@@ -40,7 +40,7 @@ const { eixo } = Astro.props;
     quebradas do site.
   */}
   <p class="sigla" aria-hidden="true">{eixo.sigla}</p>
-  <Titulo nivel={2} tamanho="lg">{eixo.titulo}</Titulo>
+  <Titulo nivel={2} papel="bloco">{eixo.titulo}</Titulo>
   {eixo.textos.map((texto) => <Texto>{texto}</Texto>)}
 </div>
 

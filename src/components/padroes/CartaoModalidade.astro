@@ -60,7 +60,7 @@ const { tom, titulo, nivel = 3, href, class: classe } = Astro.props;
 ---
 
 <div class:list={['cartao', TONS[tom], 'superficie-inversa', classe]}>
-  <Titulo nivel={nivel} tamanho="md" class="titulo">{titulo}</Titulo>
+  <Titulo nivel={nivel} papel="cartao" class="titulo">{titulo}</Titulo>
   {/*
     `cor="inverso"`: os seis tons sao superficies de cor cheia, e o navy do
     <LinkAcao> em repouso sumiria em tres deles. A marca `superficie-inversa`

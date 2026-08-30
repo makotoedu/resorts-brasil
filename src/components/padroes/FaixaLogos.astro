@@ -41,12 +41,55 @@ interface LogoItem {
 
 interface Props {
   itens: LogoItem[];
-  /** 5 nas paginas institucionais, 6 em associe-se e nas abas de associados. */
-  colunas?: 5 | 6;
+  /**
+   * O TETO de colunas, e nao o numero. Ver `colunasReais` abaixo — a contagem
+   * final sai do tamanho da lista, porque um teto fixo produz linha orfa.
+   */
+  colunas?: 4 | 5 | 6;
   class?: string;
 }
 
 const { itens, colunas = 5, class: classe } = Astro.props;
+
+/*
+ * A CONTAGEM DE COLUNAS SAI DA CONTAGEM DE ITENS, e nao de um numero por pagina.
+ *
+ * Com o teto fixo, a ultima linha ficava quase vazia e o buraco era visivel:
+ * sete mantenedores em seis colunas deixam CINCO celulas vazias em /associe-se,
+ * e os mesmos sete em cinco colunas deixam tres na home, em /apoie e em
+ * /resorts-brasil. A grade estava certa — o numero e que era escolhido sem olhar
+ * quantos logotipos ha.
+ *
+ * A regra e escolher, entre os degraus que a Grade conhece, o que deixa a
+ * ultima linha mais cheia; empate fica com o maior, que e o que preserva o
+ * desenho largo. Sete viram 4 (4+3, uma sobra) em vez de 6 (6+1, cinco sobras);
+ * oito viram 4 (4+4, nenhuma). Listas que dividem certo nao mudam de nada.
+ *
+ * `colunas` continua existindo como TETO: a pagina sabe a largura de que dispoe,
+ * o componente sabe quantos itens tem, e nenhum dos dois sabe as duas coisas.
+ */
+const DEGRAUS: (4 | 5 | 6)[] = [4, 5, 6];
+
+const escolherColunas = (total: number, teto: 4 | 5 | 6): 4 | 5 | 6 => {
+  /* Uma ou duas marcas nao formam grade: fica o teto, e a Grade ja centraliza. */
+  if (total <= 2) return teto;
+  let melhor: 4 | 5 | 6 = teto;
+  let melhorSobra = Infinity;
+  for (const c of DEGRAUS) {
+    if (c > teto) continue;
+    const resto = total % c;
+    const sobra = resto === 0 ? 0 : c - resto;
+    /* Empate fica com o maior: preserva o desenho largo quando dois degraus
+       deixam a mesma sobra. */
+    if (sobra < melhorSobra || (sobra === melhorSobra && c > melhor)) {
+      melhor = c;
+      melhorSobra = sobra;
+    }
+  }
+  return melhor;
+};
+
+const colunasReais = escolherColunas(itens.length, colunas);
 
 /*
  * O `sizes` da celula, para o pipeline nao baixar variante maior do que cabe.
@@ -58,7 +101,7 @@ const { itens, colunas = 5, class: classe } = Astro.props;
 const TAMANHOS = '(min-width: 64rem) 9rem, (min-width: 48rem) 10rem, 6rem';
 ---
 
-<Grade colunas={colunas} espaco="nenhum" como="ul" alinhamento="centro" class={classe}>
+<Grade colunas={colunasReais} espaco="nenhum" como="ul" alinhamento="centro" class={classe}>
   {
     itens.map((item) => (
       <li class="celula">

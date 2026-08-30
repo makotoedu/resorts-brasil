@@ -47,7 +47,7 @@ const tamanhosFoto = '(min-width: 48rem) 42vw, 92vw';
     <Container>
       {/* `mb-15` = 60px, que e o `<div class="space">` vazio do tema — um
           elemento sem conteudo cujo unico papel era abrir um vao. */}
-      <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro" class="mb-15">
+      <Titulo nivel={1} papel="pagina" peso="medio" alinhamento="centro" class="mb-15">
         {t.joinTitle}
       </Titulo>
 
@@ -61,7 +61,7 @@ const tamanhosFoto = '(min-width: 48rem) 42vw, 92vw';
         />
 
         <ChamadaAcao fundo="clara">
-          <Titulo nivel={2} tamanho="xl">{t.joinLead}</Titulo>
+          <Titulo nivel={2} papel="secao">{t.joinLead}</Titulo>
           <Texto>{t.joinText}</Texto>
           <div class="botoes">
             {/*
@@ -78,7 +78,9 @@ const tamanhosFoto = '(min-width: 48rem) 42vw, 92vw';
     </Container>
   </Secao>
 
-  <Secao id="beneficios" espacoTopo="nenhum">
+  {/* `espacoBase="nenhum"` pelo mesmo motivo do <ConviteAssociese>: a
+    <FaixaParceiros> logo abaixo ja abre com 80px, e os dois somavam 160. */}
+  <Secao id="beneficios" espacoTopo="nenhum" espacoBase="nenhum">
     <Container>
       <TituloSecao nivel={2}>{t.benefitsTitle}</TituloSecao>
       <Grade colunas={4} piso={1} espaco="md" alinhamento="inicio">
@@ -104,7 +106,7 @@ const tamanhosFoto = '(min-width: 48rem) 42vw, 92vw';
         alinhamento="centro"
         tamanhos="100vw"
       >
-        <Titulo nivel={2} tamanho="lg" cor="inverso">{t.joinCtaTitle}</Titulo>
+        <Titulo nivel={2} papel="secao" cor="inverso">{t.joinCtaTitle}</Titulo>
         <Texto cor="inverso">{t.joinInviteText}</Texto>
         <div class="botoes">
           <Botao href={routes.associates[lang]} variante="clara">{t.joinCtaAction}</Botao>

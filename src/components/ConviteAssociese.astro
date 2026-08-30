@@ -46,7 +46,14 @@ const { lang, secundario = true } = Astro.props;
 const t = ui[lang];
 ---
 
-<Secao id="convite" espacoBase="xl">
+{/*
+  `espacoTopo="nenhum"` porque a secao anterior ja traz os 80px de baixo dela.
+  Sem isto os dois recuos SOMAM: eram 160px de vao entre o conteudo e o convite
+  em /resorts-brasil, /associados, /publicacoes e /estatisticas-e-estudos —
+  contra os 80px que todas as outras juntas do site medem. Nao era ritmo
+  diferente, era a mesma junta contada duas vezes.
+*/}
+<Secao id="convite" espacoTopo="nenhum" espacoBase="xl">
   <Container>
     <div class="centro">
       {/*
@@ -54,7 +61,7 @@ const t = ui[lang];
         segundo nivel. No tema era `<h3>`, escolhido pelo tamanho — a causa raiz
         que o <Titulo> existe para separar.
       */}
-      <Titulo nivel={2} tamanho="lg" alinhamento="centro">{t.joinInviteTitle}</Titulo>
+      <Titulo nivel={2} papel="secao" alinhamento="centro">{t.joinInviteTitle}</Titulo>
       <Texto alinhamento="centro">{t.joinInviteText}</Texto>
       <div class="botoes">
         <Botao href={routes.joinUs[lang]}>{t.joinInviteAction}</Botao>

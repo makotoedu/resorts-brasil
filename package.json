@@ -11,10 +11,12 @@
     "build": "astro check && astro build && node scripts/imagens.mjs && node scripts/verifica-sistema.mjs",
     "check": "astro check",
     "preview": "astro preview",
-    "verify": "node tests/verify-behaviors.mjs && node tests/verify-geometria.mjs && node tests/verify-icones.mjs && node tests/verify-orcamento.mjs",
+    "verify": "node tests/verify-behaviors.mjs && node tests/verify-geometria.mjs && node tests/verify-icones.mjs && node tests/verify-contraste.mjs && node tests/verify-tipografia.mjs && node tests/verify-orcamento.mjs",
     "verify:comportamento": "node tests/verify-behaviors.mjs",
     "verify:geometria": "node tests/verify-geometria.mjs",
     "verify:icones": "node tests/verify-icones.mjs",
+    "verify:contraste": "node tests/verify-contraste.mjs",
+    "verify:tipografia": "node tests/verify-tipografia.mjs",
     "verify:orcamento": "node tests/verify-orcamento.mjs"
   },
   "dependencies": {

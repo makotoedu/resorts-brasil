@@ -42,7 +42,7 @@ const livro = await publicacaoEm('memorias-sustentabilidade-e-um-olhar-para-o-fu
   <Secao id="historia">
     <Container largura="media">
       <div class="abertura">
-        <Titulo nivel={1} tamanho="3xl" peso="medio" alinhamento="centro">{t.historyTitle}</Titulo>
+        <Titulo nivel={1} papel="pagina" peso="medio" alinhamento="centro">{t.historyTitle}</Titulo>
         <Texto tamanho="lg" cor="padrao" alinhamento="centro">{t.historyLead}</Texto>
         <Texto alinhamento="centro">{t.historyIntro}</Texto>
       </div>
@@ -59,7 +59,7 @@ const livro = await publicacaoEm('memorias-sustentabilidade-e-um-olhar-para-o-fu
     <FaixaDestaque tons={['indigo', 'ambar']}>
       <Fragment slot="1">
         <Texto peso="bold">{t.historyBookBadge}</Texto>
-        <Titulo nivel={2} tamanho="2xl">{t.historyBookTitle}</Titulo>
+        <Titulo nivel={2} papel="secao">{t.historyBookTitle}</Titulo>
         <Botao href={livro.url} variante="clara" tamanho="lg" target="_blank" rel="noopener noreferrer">
           {t.leiaAgora}
         </Botao>

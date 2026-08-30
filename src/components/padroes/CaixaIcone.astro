@@ -43,7 +43,7 @@ const { icone, titulo, nivel = 3, alinhamento = 'inicio', tom = 'padrao', class:
   {/* aria-hidden por omissao do `rotulo`: o titulo logo abaixo diz a mesma
       coisa, e anunciar os dois faria o leitor de tela repetir cada item. */}
   <Icone nome={icone} tamanho="lg" class="simbolo" />
-  <Titulo nivel={nivel} tamanho="md" class="titulo">{titulo}</Titulo>
+  <Titulo nivel={nivel} papel="cartao" class="titulo">{titulo}</Titulo>
   <div class="texto">
     <slot />
   </div>

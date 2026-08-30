@@ -33,14 +33,16 @@ const { regiao } = Astro.props;
 {
   regiao.estados.map((estado) => (
     <div id={estado.uf} class="estado">
-      <Grade colunas={4} piso={1} espaco="md" alinhamento="centro">
+      {/* Alinhado ao topo pelo mesmo motivo da <FaixaParceiros>: centrado, o
+          nome do estado flutuava no meio de quatro linhas de logotipos. */}
+      <Grade colunas={4} piso={1} espaco="md" alinhamento="inicio">
         <div>
           {/*
             `nivel={3}`: o h1 da pagina e o titulo, o h2 e "Conheca nossos
             associados" — o nome do estado e o terceiro nivel. No tema era `h4`,
             escolhido pelo tamanho.
           */}
-          <Titulo nivel={3} tamanho="md" alinhamento="centro">
+          <Titulo nivel={3} papel="cartao" alinhamento="centro">
             {estado.estado}
           </Titulo>
         </div>

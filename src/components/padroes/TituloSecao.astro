@@ -41,7 +41,7 @@ const { nivel, alinhamento = 'centro', class: classe } = Astro.props;
 ---
 
 <div class:list={['cabeca', alinhamento === 'centro' && 'centro', classe]}>
-  <Titulo nivel={nivel} tamanho="xl" class="titulo">
+  <Titulo nivel={nivel} papel="secao" class="titulo">
     <slot />
   </Titulo>
 </div>

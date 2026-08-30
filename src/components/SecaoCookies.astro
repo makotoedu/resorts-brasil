@@ -62,7 +62,7 @@ const rotulo: Record<CategoriaCookie, { nome: string; desc: string }> = {
 const colunas = [t.cookieColName, t.cookieColProvider, t.cookieColDuration, t.cookieColPurpose];
 ---
 
-<Titulo nivel={2} tamanho="lg">{t.cookiePolicyTitle}</Titulo>
+<Titulo nivel={2} papel="bloco">{t.cookiePolicyTitle}</Titulo>
 <p>{t.cookiePolicyIntro}</p>
 <p>{t.cookiePolicyManage}</p>
 <p>{t.cookiePolicyCategories}</p>
@@ -72,7 +72,7 @@ const colunas = [t.cookieColName, t.cookieColProvider, t.cookieColDuration, t.co
     const doGrupo = cookies.filter((c) => c.categoria === categoria);
     return (
       <>
-        <Titulo nivel={3} tamanho="md">
+        <Titulo nivel={3} papel="cartao">
           {rotulo[categoria].nome}
         </Titulo>
         <p>{rotulo[categoria].desc}</p>
