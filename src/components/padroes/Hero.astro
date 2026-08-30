@@ -100,7 +100,7 @@ const {
   <span class="veu" aria-hidden="true"></span>
   <div class="legendas">
     {sobretitulo && <p class="sobretitulo surge">{sobretitulo}</p>}
-    <Titulo nivel={nivel} tamanho="3xl" cor="inverso" alinhamento="centro" class="titulo surge">
+    <Titulo nivel={nivel} papel="pagina" cor="inverso" alinhamento="centro" class="titulo surge">
       {titulo}
     </Titulo>
     <div class="acao surge">
@@ -167,10 +167,23 @@ const {
     }
   }
 
+  /*
+   * Mesmo gradiente da <ChamadaAcao>, e pelo mesmo motivo — ver a nota de
+   * `--color-veu-forte` no tokens.css.
+   *
+   * Aqui o conteudo e centrado verticalmente, entao a transicao comeca antes:
+   * em 30% o sobretitulo, o titulo e o botao ja estao inteiros na parte forte.
+   * O topo fica leve, que e onde a foto tem de continuar sendo foto.
+   */
   .veu {
     position: absolute;
     inset: 0;
-    background-color: var(--color-veu);
+    background-image: linear-gradient(
+      to bottom,
+      var(--color-veu) 0%,
+      var(--color-veu-forte) 30%,
+      var(--color-veu-forte) 100%
+    );
   }
 
   .legendas {

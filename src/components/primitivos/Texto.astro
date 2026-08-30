@@ -16,7 +16,12 @@
 interface Props {
   como?: 'p' | 'span' | 'div' | 'li' | 'strong' | 'small';
   tamanho?: 'xs' | 'sm' | 'base' | 'md' | 'lg';
-  cor?: 'padrao' | 'paragrafo' | 'sutil' | 'inverso' | 'destaque';
+  /**
+   * `sutil` e `sutil-inverso` sao o MESMO papel em dois fundos, e sao dois
+   * tokens porque um cinza so nao serve aos dois: o claro da 2,64:1 sobre branco
+   * e o escuro daria 2,1:1 sobre carvao. Ver a nota de `--color-texto-sutil`.
+   */
+  cor?: 'padrao' | 'paragrafo' | 'sutil' | 'sutil-inverso' | 'inverso' | 'destaque';
   peso?: 'normal' | 'medio' | 'semibold' | 'bold';
   alinhamento?: 'inicio' | 'centro' | 'fim';
   /** Remove a margem inferior — util quando o container ja controla o ritmo. */
@@ -49,6 +54,7 @@ const CORES = {
   padrao: 'text-texto',
   paragrafo: 'text-texto-paragrafo',
   sutil: 'text-texto-sutil',
+  'sutil-inverso': 'text-texto-sutil-inverso',
   inverso: 'text-texto-inverso',
   destaque: 'text-destaque',
 } as const;

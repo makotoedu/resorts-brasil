@@ -75,6 +75,7 @@ const primitivas = [
   '--cor-navy-900',
   '--cor-ardosia-600',
   '--cor-cinza-500',
+  '--cor-cinza-600',
   '--cor-azul-600',
   '--cor-azul-500',
   '--cor-azul-700',
@@ -94,11 +95,14 @@ const semanticas = [
   '--color-texto',
   '--color-texto-paragrafo',
   '--color-texto-sutil',
+  '--color-texto-sutil-inverso',
   '--color-texto-inverso',
   '--color-acao-primaria',
   '--color-acao-primaria-hover',
+  '--color-acao-primaria-texto',
   '--color-acao-destaque',
   '--color-acao-destaque-hover',
+  '--color-acao-destaque-texto',
   '--color-link',
   '--color-superficie',
   '--color-superficie-clara',
@@ -401,8 +405,20 @@ const faixas = [
           </Texto>
           <Texto tamanho="lg" cor="padrao">Texto lg, cor padrão — abertura de seção.</Texto>
           <Texto tamanho="sm" cor="sutil">Texto sm, cor sutil — legenda e apoio.</Texto>
-          <Texto tamanho="xs" cor="destaque" peso="semibold">Texto xs, destaque, semibold.</Texto>
           <Texto como="span" tamanho="sm">Um <code>span</code>, para uso dentro de frase.</Texto>
+        </div>
+        {/*
+          O `destaque` e o `sutil-inverso` vivem numa demo ESCURA porque e onde
+          eles existem de verdade. O coral é o acento das seções do e-book, e
+          sobre branco em 12px ele dá 3,15:1 — reprova, e mostrá-lo aqui sobre
+          papel branco era oferecer uma combinação que o site não usa e que o
+          `tests/verify-contraste.mjs` reprova com razão.
+        */}
+        <p class="rotulo-demo">Sobre superfície escura</p>
+        <div class="demo demo-escura">
+          <Texto tamanho="xs" cor="destaque" peso="semibold">Texto xs, destaque, semibold.</Texto>
+          <Texto tamanho="sm" cor="sutil-inverso">Texto sm, cor sutil-inverso — o par escuro.</Texto>
+          <Texto tamanho="sm" cor="inverso">Texto sm, cor inversa.</Texto>
         </div>
       </section>
 
@@ -1615,6 +1631,23 @@ const faixas = [
   .rotulo-demo {
     margin-block: 1.5rem 0.75rem;
     color: var(--color-texto-sutil);
+  }
+
+  /*
+   * O CINZA DE APOIO TROCA DE LADO JUNTO COM A SUPERFICIE.
+   *
+   * `--color-texto-sutil` e o cinza para fundo CLARO; sobre o carvao do e-book
+   * ele da 3,4:1 e reprova. O par escuro e o `-inverso`, e aqui as duas unicas
+   * demos com fundo proprio precisam pedi-lo -- o catalogo e o lugar onde os
+   * dois convivem na mesma pagina, entao e onde a distincao aparece primeiro.
+   *
+   * Medido pelo tests/verify-contraste.mjs, que foi quem apontou.
+   */
+  .demo-superficie .rotulo-demo,
+  .demo-superficie .rotulo-demo code,
+  .demo-superficie .rotulo-demo small,
+  .demo-escura .estado small {
+    color: var(--color-texto-sutil-inverso);
   }
 
   .demo + .demo {

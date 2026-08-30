@@ -111,13 +111,13 @@ const Marca = linkedin ? 'a' : 'span';
   <div class="descricao">
     <Titulo
       nivel={nivel}
-      tamanho="md"
+      papel="cartao"
       peso="medio"
       cor={inversa ? 'inverso' : 'padrao'}
       class="nome">{nome}</Titulo
     >
     {destaque && <p class="destaque">{destaque}</p>}
-    <Texto tamanho="sm" cor={inversa ? 'sutil' : 'paragrafo'} semMargem>{cargo}</Texto>
+    <Texto tamanho="sm" cor={inversa ? 'sutil-inverso' : 'paragrafo'} semMargem>{cargo}</Texto>
     <Marca
       class="social"
       href={linkedin || undefined}
@@ -215,7 +215,7 @@ const Marca = linkedin ? 'a' : 'span';
   }
 
   .inversa span.social {
-    color: var(--color-texto-sutil);
+    color: var(--color-texto-sutil-inverso);
   }
 
   /*

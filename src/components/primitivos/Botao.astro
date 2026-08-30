@@ -141,7 +141,7 @@ const Tag = href ? 'a' : 'button';
   .v-primaria {
     background-color: var(--color-acao-primaria);
     border-color: var(--color-acao-primaria);
-    color: var(--color-texto-inverso);
+    color: var(--color-acao-primaria-texto);
   }
 
   .v-primaria:hover,
@@ -205,10 +205,24 @@ const Tag = href ? 'a' : 'button';
     color: var(--color-texto-paragrafo);
   }
 
+  /*
+   * O ROTULO NAO E BRANCO, e a correcao e a mesma que a <FaixaDestaque> fez na
+   * Etapa 3: mantem o fundo, troca o texto.
+   *
+   * Branco sobre o ambar da 1,63:1 — reprova o criterio 1.4.3 com folga, e este
+   * e o CTA do <Hero> das tres homes. O navy do site da 9,10:1 no repouso e
+   * 6,12:1 no hover, passando nos dois estados, que e o que uma variante exige.
+   *
+   * A cor vem de `--color-acao-destaque-texto` e nao de um literal pelo motivo
+   * de sempre — mas tambem por um motivo especifico deste defeito: enquanto o
+   * fundo e o texto morarem em tokens que ninguem declarou como par, nada
+   * impede a proxima variante de repetir o erro. O par vive no tokens.css ao
+   * lado do fundo, como os acentos ja viviam.
+   */
   .v-destaque {
     background-color: var(--color-acao-destaque);
     border-color: var(--color-acao-destaque);
-    color: var(--color-texto-inverso);
+    color: var(--color-acao-destaque-texto);
   }
 
   .v-destaque:hover,

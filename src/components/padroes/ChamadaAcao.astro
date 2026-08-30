@@ -163,10 +163,23 @@ const PROPORCOES = {
     object-fit: cover;
   }
 
+  /*
+   * O veu e um GRADIENTE, e a razao esta na nota de `--color-veu-forte`.
+   *
+   * O 40% e onde a transicao comeca, e ele serve as duas posicoes de conteudo
+   * que este componente tem: `centro` cai logo depois dela e `fim` encosta na
+   * base, que e o ponto mais escuro. O topo da foto continua no veu leve de
+   * sempre — que e o que impede a correcao de virar "escurecer tudo".
+   */
   .veu {
     position: absolute;
     inset: 0;
-    background-color: var(--color-veu);
+    background-image: linear-gradient(
+      to bottom,
+      var(--color-veu) 0%,
+      var(--color-veu-forte) 40%,
+      var(--color-veu-forte) 100%
+    );
   }
 
   .interior {

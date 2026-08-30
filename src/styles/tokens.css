@@ -27,7 +27,8 @@
    */
   --cor-navy-900: #001e6c; /* cor herdada do <body> (169 ocorrencias) */
   --cor-ardosia-600: #525e75; /* paragrafo (30); tambem o texto do botao claro em hover, medido #4c5667 e consolidado aqui */
-  --cor-cinza-500: #9aa0a6; /* .text-muted (42) */
+  --cor-cinza-500: #9aa0a6; /* .text-muted (42) — so sobre fundo escuro; ver --color-texto-sutil */
+  --cor-cinza-600: #6d7484; /* o mesmo papel sobre fundo CLARO: 4,69:1 medido contra os 2,64:1 do 500 */
   --cor-azul-600: #0c71c3; /* acento dos titulos do ebook — as 123 ocorrencias sao TODAS de ebook.astro */
   --cor-azul-500: #2250fc; /* link nu e fundo do botao primario, medido (332) */
   --cor-azul-700: #0333e8; /* medido: hover do botao primario */
@@ -158,8 +159,28 @@
    */
   --color-texto: var(--cor-navy-900);
   --color-texto-paragrafo: var(--cor-ardosia-600);
-  --color-texto-sutil: var(--cor-cinza-500);
   --color-texto-inverso: var(--cor-branco);
+
+  /*
+   * O CINZA DE APOIO, E ELE SAO DOIS.
+   *
+   * A `--cor-cinza-500` (#9aa0a6) foi medida no `.text-muted` do tema e passou a
+   * servir os dois fundos. Sobre o escuro ela da 7:1 e esta certa; sobre branco
+   * da 2,64:1 — reprova o criterio 1.4.3 da WCAG ate no limiar de 3:1 do texto
+   * grande, e os seis usos sobre claro sao todos de 25px.
+   *
+   * O token tinha UM par declarado (contra a superficie inversa) e passava nele.
+   * O uso sobre branco era um segundo par que ninguem tinha declarado — a mesma
+   * mecanica que deixou o botao de destaque com rotulo branco sobre ambar. Um
+   * papel, um fundo: quando o mesmo cinza serve claro e escuro, um dos dois nao
+   * foi verificado.
+   *
+   * O #6d7484 e o menor escurecimento que alcanca 4,5:1 sobre branco (medido
+   * 4,69:1) e continua lendo como cinza de apoio, e nao como texto de corpo — o
+   * paragrafo do site e o #525e75, mais escuro ainda.
+   */
+  --color-texto-sutil: var(--cor-cinza-600);
+  --color-texto-sutil-inverso: var(--cor-cinza-500);
 
   /*
    * A acao primaria e a azul-500, MEDIDA no `.btn` (rgb(34,80,252)). Esta linha
@@ -170,8 +191,31 @@
    */
   --color-acao-primaria: var(--cor-azul-500);
   --color-acao-primaria-hover: var(--cor-azul-700);
+  --color-acao-primaria-texto: var(--cor-branco); /* 5,80:1 medido */
+
+  /*
+   * A ACAO DE DESTAQUE VEM COM O PROPRIO TEXTO, e essa linha e a correcao.
+   *
+   * O `.botao` na variante destaque escrevia `--color-texto-inverso` sobre o
+   * ambar: BRANCO SOBRE AMARELO, 1,63:1 medido, no CTA do <Hero> das tres
+   * homes — o botao mais importante do site.
+   *
+   * O mais instrutivo e que este arquivo ja documentava a correcao. Veja a nota
+   * dos ACENTOS, quarenta linhas abaixo: "o tema escrevia texto branco sobre
+   * TODOS eles: sobre o ambar isso da 1,6:1 [...] Os mesmos fundos com o navy do
+   * site dao 9,1:1". Aquilo foi corrigido na Etapa 3 — para a <FaixaDestaque>,
+   * que consome o par `acento-ambar`/`-texto`. O botao usa o MESMO amarelo por
+   * outro token, e dois tokens que ninguem declarou como par nao tem par para
+   * conferir.
+   *
+   * Por isso a correcao nao e trocar a linha no componente: e dar as ACOES a
+   * mesma forma que os acentos ja tinham. Cor de fundo e cor de texto vivem
+   * juntas aqui, e a escolha deixa de poder divergir do fundo.
+   */
   --color-acao-destaque: var(--cor-ambar-400);
   --color-acao-destaque-hover: var(--cor-ambar-600);
+  --color-acao-destaque-texto: var(--cor-navy-900); /* 9,10:1 medido; sobre o hover, 6,12:1 */
+
   --color-link: var(--cor-azul-500);
 
   --color-superficie: var(--cor-branco);
@@ -354,6 +398,30 @@
    * ja se perdeu uma vez.
    */
   --color-veu: rgb(0 0 0 / 0.3);
+
+  /*
+   * A PONTA FORTE DO VEU, e ela existe porque um veu CONSTANTE nao pode servir a
+   * fotografia.
+   *
+   * O 0,30 acima foi medido no tema e esta certo como valor medio. So que ele e
+   * o mesmo em toda foto, e a foto nao e a mesma: sobre a agua turquesa da home
+   * o titulo branco dava 2,59:1, sobre a areia do hero 2,94:1, e sobre o ceu
+   * claro do cartao do e-book o link dava 2,24:1 — onze reprovacoes do criterio
+   * 1.4.3, todas em texto branco sobre foto CLARA. Sobre as fotos escuras o
+   * mesmo 0,30 ja bastava, e escurecer todas para resolver as claras apagaria
+   * aquelas.
+   *
+   * Por isso a correcao nao e um numero maior: e um GRADIENTE. O topo da foto
+   * fica no 0,30 de sempre e a metade de baixo — onde <Hero> centraliza e
+   * <ChamadaAcao conteudo="fim"> encosta o texto — vai para este valor.
+   *
+   * O 0,58 NAO FOI ESCOLHIDO. Ele e o menor degrau em que as 41 paginas x 3
+   * viewports passam no `tests/verify-contraste.mjs`, que mede o pior pixel
+   * atras de cada linha de texto. Mexer aqui pede rodar aquele portao de novo —
+   * e ele e o unico que enxerga, porque o checador de tokens compara pares e
+   * "branco sobre a areia que calhou de estar no recorte" nao e um par.
+   */
+  --color-veu-forte: rgb(0 0 0 / 0.58);
 
   /* ==========================================================
    * TIPOGRAFIA

@@ -127,6 +127,13 @@ const BASE = {
       />
     )
   }
+  {/*
+    O veu so existe quando ha foto, e existe pelo mesmo motivo do <Hero> e da
+    <ChamadaAcao>: o texto e branco e a foto nao e. Aqui ele e CHAPADO, e nao
+    gradiente — nestas secoes a imagem e textura de fundo, nao um assunto com
+    topo e base, entao nao ha uma metade que precise ficar clara.
+  */}
+  {foto && <span class="veu" aria-hidden="true" />}
   <div class="corpo"><slot /></div>
 </section>
 
@@ -157,7 +164,26 @@ const BASE = {
     object-fit: cover;
   }
 
-  /* O conteudo sobe acima da foto sem que ela precise descer. */
+  /*
+   * O VEU, e ele entrou por medicao.
+   *
+   * A foto da secao de video tem um facho ciano em V que cruza exatamente a
+   * altura do titulo. Branco sobre aquele ponto da 1,64:1 no h2 de 39px e
+   * 1,66:1 no texto de 19px — as duas ultimas reprovacoes de contraste do site,
+   * e a mais grave delas, porque e o titulo maior daquela pagina.
+   *
+   * O `--color-veu-forte` (58%) e o mesmo token do <Hero> e da <ChamadaAcao>:
+   * um numero so para o mesmo problema. Sobre o ciano ele leva o contraste para
+   * 8,5:1, e sobre as duas faixas de textura — que ja sao quase pretas — o custo
+   * visual e pequeno, porque ali a imagem so acrescenta grao.
+   */
+  .veu {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-veu-forte);
+  }
+
+  /* O conteudo sobe acima da foto e do veu sem que eles precisem descer. */
   .corpo {
     position: relative;
   }

@@ -8,27 +8,76 @@
  * `<h1 class="text-md h2">`: um h1 que queria parecer h2.
  *
  * Aqui `nivel` decide a TAG (o que o leitor de tela e o Google enxergam) e
- * `tamanho` decide a APARENCIA. Um h2 grande e um h1 discreto deixam de exigir
+ * `papel` decide a APARENCIA. Um h2 grande e um h1 discreto deixam de exigir
  * uma classe que contradiga a tag, e o erro deixa de ter por onde voltar.
  *
- *   <Titulo nivel={2} tamanho="2xl">Nossos associados</Titulo>
- *   <Titulo nivel={1} tamanho="md">Seja um associado</Titulo>
+ *   <Titulo nivel={2} papel="secao">Nossos associados</Titulo>
+ *   <Titulo nivel={1} papel="pagina">Seja um associado</Titulo>
  *
- * Sem `tamanho`, vale o tamanho do base.css para aquela tag — que sao os valores
- * medidos no tema. Passar `tamanho` e sempre uma decisao explicita.
+ * ERA `tamanho`, E O EIXO LIVRE VIROU O DEFEITO SEGUINTE.
+ *
+ * A separacao acima consertou o sumario — os 39 estao em zero e o
+ * verifica-sistema afirma isso a cada build. Mas ela deixou a APARENCIA sem
+ * regra nenhuma, e a medicao no navegador mostrou o resultado: `h2` renderiza
+ * em CINCO tamanhos (18, 25, 34, 50 e 62px) e `h3` renderiza em UM (18px, nas
+ * 45 ocorrencias). Onde os dois se encontram em 18px, nivel 2 e nivel 3 sao o
+ * mesmo objeto visual, e o tamanho parou de dizer qualquer coisa sobre a
+ * profundidade.
+ *
+ * Tres colisoes medidas, e cada uma nasceu de uma pagina escolhendo sozinha:
+ *
+ *   home         h1 de 62px seguido de h2 de 62px — os dois primeiros titulos
+ *                do site, indistinguiveis por tamanho;
+ *   apoie        "Parceiro" como h3 de 18px no cartao e como h2 de 50px na
+ *                faixa, a mesma palavra na mesma tela, 2,8x de diferenca;
+ *   publicacoes  os h2 de conteudo em 18px sob o h2 do CTA em 25px — o convite
+ *                tipograficamente maior que as publicacoes que nomeiam a pagina.
+ *
+ * `papel` fecha isso com quatro degraus, um por profundidade. Nao e uma
+ * renomeacao de `tamanho`: e a lista de valores que UMA pagina pode usar, e ela
+ * nao inclui o 2xl justamente porque o 2xl so existia nas faixas de apoie e
+ * historia, que eram a colisao.
+ *
+ *   pagina   text-3xl   40 ate 62px   o titulo da pagina, um por pagina
+ *   secao    text-xl    24 ate 34px   titulo de secao, e tambem o das faixas
+ *   bloco    text-lg    19 ate 25px   sub-bloco, cartao sobre foto
+ *   cartao   text-md    18px          cartao, rotulo de grupo
+ *
+ * `tamanho` SOBREVIVE COMO ESCAPE, e nao por comodidade: a pagina do e-book tem
+ * escala propria (hero em 4xl, secoes em 3xl e 2xl) pelo mesmo motivo que tem
+ * paleta propria, e o catalogo do design system precisa exibir a escala crua
+ * inteira. Sao os dois unicos arquivos onde ele e permitido, e quem afirma isso
+ * e a allowlist do `scripts/verifica-sistema.mjs` — que guarda o NUMERO
+ * esperado por arquivo, como ja faz com `style=`, para que um uso novo num
+ * arquivo ja excepcionado continue reprovando.
  */
 interface Props {
   /** A tag. E o unico eixo que muda a semantica do documento. */
   nivel: 1 | 2 | 3 | 4 | 5 | 6;
-  /** A aparencia. Omitido, herda o tamanho que o base.css da a essa tag. */
+  /** A aparencia, por profundidade. Ver a tabela acima. */
+  papel?: 'pagina' | 'secao' | 'bloco' | 'cartao';
+  /** O ESCAPE. So no PaginaEbook.astro e no design.astro. */
   tamanho?: 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
-  cor?: 'padrao' | 'inverso' | 'sutil' | 'paragrafo';
+  cor?: 'padrao' | 'inverso' | 'sutil' | 'sutil-inverso' | 'paragrafo';
   alinhamento?: 'inicio' | 'centro' | 'fim';
   peso?: 'medio' | 'semibold' | 'bold' | 'extrabold';
   class?: string;
 }
 
-const { nivel, tamanho, cor = 'padrao', alinhamento, peso, class: classe } = Astro.props;
+const { nivel, papel, tamanho, cor = 'padrao', alinhamento, peso, class: classe } = Astro.props;
+
+/* Os dois eixos sao exclusivos: `papel` e a lista curta que uma pagina pode
+   usar, `tamanho` e o escape. Aceitar os dois juntos deixaria a precedencia
+   como detalhe de implementacao. */
+if (papel && tamanho) {
+  throw new Error(
+    'Titulo: use `papel` OU `tamanho`, nunca os dois. Recebeu papel="' +
+      papel +
+      '" e tamanho="' +
+      tamanho +
+      '".'
+  );
+}
 
 const Tag = `h${nivel}` as const;
 
@@ -47,10 +96,19 @@ const TAMANHOS = {
   '4xl': 'text-4xl',
 } as const;
 
+/* Os quatro degraus de profundidade. Ver a tabela no topo do arquivo. */
+const PAPEIS = {
+  pagina: 'text-3xl',
+  secao: 'text-xl',
+  bloco: 'text-lg',
+  cartao: 'text-md',
+} as const;
+
 const CORES = {
   padrao: '',
   inverso: 'text-texto-inverso',
   sutil: 'text-texto-sutil',
+  'sutil-inverso': 'text-texto-sutil-inverso',
   paragrafo: 'text-texto-paragrafo',
 } as const;
 
@@ -70,7 +128,7 @@ const PESOS = {
 
 <Tag
   class:list={[
-    tamanho && TAMANHOS[tamanho],
+    papel ? PAPEIS[papel] : tamanho && TAMANHOS[tamanho],
     CORES[cor],
     alinhamento && ALINHAMENTOS[alinhamento],
     peso && PESOS[peso],
