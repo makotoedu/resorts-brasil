@@ -494,24 +494,38 @@ nem cabeçalho fixo no scroll. Também não há `<iframe>` no HTML gerado (os v�
 são fachada), nenhuma webfont de ícone, e nenhuma regra que use Nunito — a fonte
 era baixada e nunca aplicada.
 
-## O que está em aberto
+## O que estava em aberto, e como as três decisões saíram
 
-Três itens da auditoria de layout **não foram aplicados**, cada um porque depende
-de uma decisão que nenhuma medição toma. Estão descritos por inteiro — não como
-lembrete, mas de forma executável — em [docs/decisoes.md](docs/decisoes.md),
-seção "O que está em aberto, esperando decisão":
+Os três itens da auditoria de layout foram decididos em 31/08/2026. O registro
+inteiro está em [docs/decisoes.md](docs/decisoes.md), seção "As três decisões que
+a auditoria não podia tomar":
 
-1. **a paleta**, que reduz sete fundos de faixa a um par de navy. O argumento é
-   do conteúdo: `RE` + `SO` + `RT` soletram **RESORT**, e três matizes sem
-   parentesco escondem isso. De quebra, o âmbar sai do papel de fundo e passa a
-   significar uma coisa só — ação;
-2. **a cópia do convite**, repetido em cinco páginas com o mesmo texto (quinze
-   instâncias somando os idiomas). Falta texto novo, não código;
-3. **os emoji** (😍 💪 ❤️ ✌️ 🤝), que são um segundo sistema de ícones ao lado dos
-   16 SVGs conferidos contra a fonte de origem.
+1. **a paleta de sete fundos FICA.** A proposta era reduzi-la a um par de navy,
+   e foi recusada por decisão de marca: a Resorts Brasil é uma marca colorida e
+   viva, e a coerência que a proposta comprava saía justamente daí. **O argumento
+   a favor ficou registrado por inteiro** — proposta recusada sem o raciocínio ao
+   lado volta como ideia nova daqui a um ano. Do que ele dizia, uma coisa
+   continua valendo como nota: o âmbar tem dois papéis (fundo e ação), e isso é
+   custo aceito, não defeito a corrigir;
+2. **a cópia do convite está feita.** O `<ConviteAssociese>` tem `origem`
+   obrigatória e uma frase por página nos três idiomas;
+3. **os emoji saíram**, os cinco, nas 15 ocorrências. Nenhum virou `<Icone>`:
+   todos eram decoração.
 
-**Os três mexem em conteúdo traduzido**, então vale a regra de sempre: ler os
-três idiomas lado a lado faz parte da etapa.
+**A parede de parceiros não foi mexida** — recortá-la fora de `/apoie` é decisão
+de marca, da mesma natureza da paleta.
+
+Duas lições de método saíram daí, e as duas são gerais:
+
+- **contar o componente não é contar o texto.** O convite renderiza em quatro
+  páginas, mas o parágrafo dele aparecia em cinco: `/associe-se` tomava a chave
+  emprestada sem chamar o componente. Quem achou foi o `astro check`, quando a
+  chave morreu — nenhuma contagem de `<ConviteAssociese>` veria. É o mesmo erro
+  das "7 publicações" que eram 5;
+- **tirar markup pode engordar o orçamento.** Sem os três parágrafos de emoji,
+  `/apoie` encurtou, o limiar de `loading="lazy"` alcançou um logotipo a mais da
+  faixa de parceiros e o mobile subiu 10 KB. Nenhum recurso novo — a mesma
+  faixa, um passo adiante.
 
 ## Onde os dados moram
 

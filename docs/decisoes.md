@@ -3343,14 +3343,45 @@ três versões — são trabalho de **conteúdo**, não de sistema. Nenhum tem c
 objetivo que um portão possa afirmar. Ficam registrados em
 [deltas-visuais.md](deltas-visuais.md).
 
-## O que está em aberto, esperando decisão
+## As três decisões que a auditoria não podia tomar
 
-Três itens saíram da mesma auditoria e **não foram aplicados**, cada um porque
-depende de uma decisão que nenhuma medição toma. Estão aqui inteiros, e não como
-lembrete: quem retomar precisa poder executar sem procurar a conversa em que
-nasceram.
+Três itens saíram da mesma auditoria de layout e ficaram parados, cada um porque
+dependia de uma decisão que nenhuma medição toma. **As três foram decididas em
+31/08/2026**, e o registro fica inteiro — inclusive o da que foi recusada, que é
+a que mais importa preservar.
 
-### 1. A paleta: sete fundos de faixa viram um par
+| item | decisão |
+|---|---|
+| a paleta de sete fundos | **fica como está.** Ver logo abaixo |
+| a cópia do convite | **feita** — uma frase por origem, nos três idiomas |
+| os emoji | **removidos**, os cinco |
+
+### 1. A paleta: RECUSADA, e a marca é o motivo
+
+**A proposta era reduzir sete fundos de faixa a um par de navy, e ela não foi
+aceita.** A decisão é de marca e veio de quem responde por ela: a Resorts Brasil
+é uma marca **colorida e viva**, e a proposta comprava coerência tipográfica
+pagando com exatamente aquilo. Um site de resorts que se apresenta em dois tons
+de azul-marinho descreve outra empresa.
+
+Isso encerra o item. O que está escrito abaixo era o argumento a favor, e fica
+registrado por dois motivos: ele contém medições que continuam válidas, e porque
+uma proposta recusada sem o raciocínio ao lado volta como ideia nova daqui a um
+ano.
+
+**Duas observações do argumento sobrevivem à recusa**, e valem como nota de
+atenção, não como plano:
+
+- **o âmbar tem dois papéis** — fundo de faixa e cor de ação. Enquanto for
+  assim, "âmbar quer dizer aja aqui" não é uma leitura que o site possa firmar.
+  É um custo aceito, não um defeito a corrigir;
+- **as duas superfícies que exigem texto escuro** (âmbar e verde) continuam
+  sendo as únicas do site assim. Passam na WCAG desde a Etapa 3 — o que a
+  proposta atacava era coerência, não conformidade.
+
+O argumento completo, como foi escrito:
+
+### A proposta recusada, na íntegra: sete fundos de faixa viram um par
 
 **O argumento é do próprio conteúdo, e é o que torna isto mais que arrumação:**
 `RE` + `SO` + `RT` soletram **RESORT**. Os três eixos da associação são três
@@ -3400,37 +3431,80 @@ e [`CartaoModalidade`](../src/components/padroes/CartaoModalidade.astro) — e `
 idiomas. Não há como esquecer um. O catálogo `/design` entra junto, porque o
 build reprova componente fora da vitrine.
 
-A divergência entra em [deltas-visuais.md](deltas-visuais.md) como
-**redesenho** — categoria nova ao lado de refino, correção e regressão, porque é
-o primeiro pixel deste projeto que muda por decisão de marca e não por medição.
+A divergência entraria em [deltas-visuais.md](deltas-visuais.md) como
+**redesenho** — categoria nova ao lado de refino, correção e regressão, porque
+seria o primeiro pixel deste projeto a mudar por decisão de marca e não por
+medição. *(Fim do argumento recusado. A categoria nunca chegou a existir.)*
 
-### 2. A repetição do convite e da parede de parceiros
+### 2. A repetição do convite: FEITA
 
-O `<ConviteAssociese>` aparece em **cinco** páginas com o mesmo título e o mesmo
-texto (quinze instâncias somando os idiomas); a `<FaixaParceiros>`, em **quatro**
-(doze). Como engenharia isso é exemplar — um componente, dados em `src/data/`,
-nada duplicado. Como leitura é o inverso: no quarto encontro o leitor para de ver
-os dois.
+O `<ConviteAssociese>` dizia o mesmo título e o mesmo texto em todas as páginas
+que fecha. Como engenharia era exemplar — um componente, dados em `src/data/`,
+nada duplicado. Como leitura era o inverso: no quarto encontro o leitor parava de
+ver o bloco.
 
-O que falta é **cópia**, e por isso não foi feito: o convite deveria variar com a
-origem — quem chega pelas publicações não está no mesmo ponto da jornada de quem
-chega pelos associados. Precisa de título e texto novos nos três idiomas, em
-[`src/i18n/ui.ts`](../src/i18n/ui.ts), e vale a regra do projeto: ler os três lado
-a lado faz parte da etapa.
+**Agora o desenho continua um só e o argumento muda com a origem.** O componente
+ganhou a prop `origem`, e o texto vem de `joinInvite[origem]` no
+[`ui.ts`](../src/i18n/ui.ts) — uma frase por página, nos três idiomas, cada uma
+partindo do que a pessoa acabou de ler:
 
-A parede completa cabe em uma página — `/apoie`, onde parceiros **são** o assunto
-— com as outras trazendo um recorte ou nada.
+| origem | página | o argumento |
+|---|---|---|
+| `institucional` | `/resorts-brasil` | os três eixos são o trabalho dos associados, não um serviço entregue pronto |
+| `associados` | `/associados` | cada resort da lista passou pelo mesmo processo; o próximo nome pode ser o seu |
+| `publicacoes` | `/publicacoes` | as publicações nascem do que os associados medem e compartilham |
+| `estudos` | `/estatisticas-e-estudos` | os números da página vêm dos associados que os informam |
 
-### 3. Os emoji, que são um segundo sistema de ícones
+**A prop é obrigatória de propósito.** Com um padrão, a próxima página a chamar o
+convite herdaria em silêncio a frase de outra — que é o defeito de onde viemos. E
+o `Record<OrigemConvite, …>` obriga os três idiomas a ter as quatro: falta uma e
+o `astro check` reprova no `ui.ts`, em vez de a página renderizar `undefined`.
 
-😍 💪 ❤️ vivem em [`src/i18n/ui.ts`](../src/i18n/ui.ts), nos três idiomas, e ✌️ 🤝 😍
-em [`apoie.astro`](../src/pages/apoie.astro). São glifos **raster do sistema
+**Os rótulos dos dois botões não variam.** É a mesma ação com o mesmo nome, e um
+rótulo por ação é o que impede a próxima cópia de divergir.
+
+> **A contagem estava errada, e foi o `astro check` que corrigiu.** Este arquivo
+> dizia "cinco páginas, quinze instâncias"; o componente renderiza em **quatro**,
+> doze vezes. A quinta era `/associe-se`, que não chama o componente e tomava
+> emprestado o `joinInviteText` no fecho — invisível para qualquer contagem de
+> `<ConviteAssociese>`, e revelada na hora em que a chave morreu. Aquele fecho tem
+> texto próprio agora, o `joinCtaText`, que fala do que o botão dele faz.
+>
+> É o mesmo erro de método das "7 publicações" que eram 5: **contar o componente
+> não é contar o texto.**
+
+A parede de parceiros **não foi mexida**. A proposta era recortá-la fora de
+`/apoie`, e ela some ou encolhe em três páginas — é decisão de marca, da mesma
+natureza da paleta, e não estava na instrução.
+
+### 3. Os emoji: REMOVIDOS, os cinco
+
+😍 💪 ❤️ ✌️ 🤝 eram um segundo sistema de ícones: glifos **raster do sistema
 operacional**, diferentes em cada plataforma, fora do
-[`verify-icones`](../tests/verify-icones.mjs) — e convivem com 16 SVGs gerados e
-conferidos contra a fonte de origem, que é um sistema construído exatamente para
-isso.
+[`verify-icones`](../tests/verify-icones.mjs) — convivendo com 16 SVGs gerados e
+conferidos contra a fonte de origem.
 
-A Etapa 8 já os tirou do sumário (eram `<h2>` e `<h3>` cujo texto era "😍"; viraram
-texto decorativo com `aria-hidden`). O que falta é decidir: **onde carregam
-significado, trocar por `<Icone>`; onde são decoração, remover.** Muda cópia nos
-três idiomas, e por isso parou aqui.
+A Etapa 8 já os tirara do sumário (eram `<h2>` e `<h3>` cujo texto era o emoji;
+viraram texto decorativo com `aria-hidden`). Agora saíram inteiros — as 15
+ocorrências, contando os três idiomas:
+
+- os três do topo dos blocos de destaque de `/apoie`, com a regra `.emoji` que
+  os dimensionava;
+- o 💪 do fim do `supportLead`;
+- o ❤️ do fim da hashtag de parceiros;
+- o 😍 do `joinInviteText`, que a copy nova substituiu de qualquer forma.
+
+**Nenhum virou `<Icone>`.** A alternativa estava prevista — "onde carregam
+significado, trocar; onde são decoração, remover" — e os cinco caíam do lado da
+decoração: nenhum deles nomeia, distingue ou aponta coisa alguma que o texto ao
+lado já não diga.
+
+**A hashtag é a única que merece um segundo olhar de quem cuida da marca**, e
+está anotada em [deltas-visuais.md](deltas-visuais.md): ali o coração estava mais
+perto de assinatura de campanha do que de decoração.
+
+**E tirar três parágrafos moveu o orçamento**, o que vale registrar como método:
+sem eles `/apoie` encurta, o limiar de `loading="lazy"` alcança um logotipo a
+mais da faixa de parceiros, e o mobile passou de 10 para 11 logos — 10 KB acima
+da base, nas versões portuguesa e espanhola. Medido, não suposto: nenhum recurso
+novo, nenhuma imagem maior. A linha de base foi regravada.

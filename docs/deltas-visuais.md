@@ -720,6 +720,33 @@ compara contra o site original, que carrega os mesmos defeitos. Quem afirma o
 resultado aqui são os dois portões novos — contraste e tipografia —, que medem o
 que a página entrega em vez de compará-la com o que ela era.
 
+## Conteúdo — a copy do convite e a saída dos emoji
+
+Os dois itens que faltavam da auditoria de layout, aplicados. São deltas de
+**conteúdo**: mudam texto, não geometria, e nenhum dos seis portões teria pedido
+qualquer um dos dois.
+
+| páginas | tipo | motivo |
+|---|---|---|
+| 4 páginas × 3 idiomas | **refino** | o `<ConviteAssociese>` passa a argumentar a partir da página de onde o leitor vem. Eram doze instâncias da mesma frase — resolvido como engenharia e não como leitura; no quarto encontro o bloco some da vista. O desenho continua um só, o que varia é o argumento |
+| `/associe-se` × 3 idiomas | **refino** | o fecho tinha o parágrafo do convite emprestado, e era a **quinta** instância dele, a que a contagem do componente não via. Ganha `joinCtaText`, que fala do que o botão faz: levar à lista de associados |
+| `/apoie` × 3 idiomas | **refino** | saem os três emoji decorativos do topo dos blocos de destaque (😍 ✌️ 🤝). Eram um segundo sistema de ícones — glifos raster do sistema operacional, diferentes em cada plataforma — ao lado dos 16 SVGs conferidos contra a fonte de origem |
+| `/apoie` e as 4 com parceiros, × 3 idiomas | **refino** | saem o 💪 do `supportLead` e o ❤️ do fim da hashtag. Ver a ressalva abaixo |
+
+**A hashtag é a única que merece revisão de quem cuida da marca.**
+`#ApoieOTurismoBrasileiro❤️` virou `#ApoieOTurismoBrasileiro`, e o coração ali
+estava mais perto de assinatura de campanha do que de decoração. Saiu junto
+porque a instrução foi remover os emoji do site; se a campanha existe fora do
+site com o coração, é reverter uma string em cada idioma.
+
+**O peso de `/apoie` e `/apoye` subiu 10 KB no mobile, e a linha de base foi
+regravada.** A causa foi medida, não suposta: sem os três parágrafos de emoji a
+página encurta, o limiar de `loading="lazy"` alcança um logotipo a mais da faixa
+de parceiros e passam a ser 11 em vez de 10. Nenhum recurso novo, nenhuma imagem
+maior — a mesma faixa, um passo adiante. É o tipo de variação que o próprio
+`verify-orcamento.mjs` já documenta como sensível, e por isso ele fixa a conexão
+em 4G e congela a animação.
+
 ## Como classificar um delta novo
 
 Ao rodar o diff numa etapa, cada página acima do limiar entra aqui com captura,
