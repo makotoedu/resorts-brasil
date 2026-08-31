@@ -62,17 +62,14 @@ const tamanhosFoto = '(min-width: 48rem) 46vw, 92vw';
     <Container>
       <Grade colunas={3} piso={1} espaco="md">
         <ChamadaAcao fundo="marca" alinhamento="centro">
-          <p class="emoji" aria-hidden="true">😍</p>
           <Titulo nivel={2} papel="bloco" cor="inverso">{t.supportHighlightQuestion}</Titulo>
         </ChamadaAcao>
 
         <ChamadaAcao fundo="clara" alinhamento="centro">
-          <p class="emoji" aria-hidden="true">✌️</p>
           <Texto peso="semibold" semMargem>{t.supportHighlightRole}</Texto>
         </ChamadaAcao>
 
         <ChamadaAcao fundo="clara" alinhamento="centro">
-          <p class="emoji" aria-hidden="true">🤝</p>
           <Texto peso="semibold" semMargem>{t.supportHighlightPartnership}</Texto>
         </ChamadaAcao>
       </Grade>
@@ -116,19 +113,6 @@ const tamanhosFoto = '(min-width: 48rem) 46vw, 92vw';
      markup. */
   .modalidades {
     margin-top: 1.875rem;
-  }
-
-  /*
-   * O emoji nao e cabecalho, e no tema ele era `<h3 class="m-b-0">`.
-   *
-   * Como `<h3>`, ele entrava no sumario da pagina: um leitor de tela anunciava
-   * "titulo nivel 3, cara sorridente com olhos de coracao" antes de cada bloco.
-   * Aqui e um `<p>` com `aria-hidden`, no tamanho que o h3 tinha.
-   */
-  .emoji {
-    font-size: var(--text-lg);
-    line-height: 1.2;
-    margin-block: 0 0.5rem;
   }
 
   /*

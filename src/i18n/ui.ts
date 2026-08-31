@@ -456,7 +456,7 @@ export const ui = {
     statisticsLead:
       'Confira abaixo os últimos estudos do setor de resorts, elaborados pela Resorts Brasil ou por parceiros.',
     joinInviteTitle: 'Quer fazer parte de um grupo seleto de resorts brasileiros?',
-    joinInviteText: 'Faça parte e ajude a transformar o setor. 😍',
+    joinInviteText: 'Faça parte e ajude a transformar o setor.',
     joinInviteAction: 'Associe-se',
     joinInviteSecondary: 'Conheça os associados',
 
@@ -474,7 +474,7 @@ export const ui = {
     partnersPartners: 'Parceiros:',
     partnersDiscounts: 'Descontos:',
     partnersDiscountsNote: 'Cursos e Eventos',
-    partnersHashtag: '#ApoieOTurismoBrasileiro❤️',
+    partnersHashtag: '#ApoieOTurismoBrasileiro',
 
     /*
      * Associados. Os cinco rótulos dos indicadores estavam EM PORTUGUÊS nas três
@@ -540,7 +540,7 @@ export const ui = {
     /* Apoie o turismo. */
     supportTitle: 'Apoie o turismo',
     supportLead:
-      'Buscamos ajudar a transformar o setor de turismo no Brasil, lutando em diversas frentes por um setor produtivo mais forte. 💪',
+      'Buscamos ajudar a transformar o setor de turismo no Brasil, lutando em diversas frentes por um setor produtivo mais forte.',
     supportIntro:
       'Para isso, contamos com parceiros que apoiam nossos projetos e se aproximam dos resorts associados. Existem duas principais modalidades de apoio a projetos:',
     supportPhotoAlt: 'Vista aérea do Rio de Janeiro',
@@ -740,7 +740,7 @@ export const ui = {
     statisticsLead:
       'Check below the latest studies of the resort sector, prepared by Resorts Brasil or by partners.',
     joinInviteTitle: 'Do you want to be part of a select group of Brazilian resorts?',
-    joinInviteText: 'Take part and help transform the sector. 😍',
+    joinInviteText: 'Take part and help transform the sector.',
     joinInviteAction: 'Become a member',
     joinInviteSecondary: 'Meet the associates',
 
@@ -749,7 +749,7 @@ export const ui = {
     partnersPartners: 'Partners:',
     partnersDiscounts: 'Discounts:',
     partnersDiscountsNote: 'Courses and Events',
-    partnersHashtag: '#SupportBrazilianTourism❤️',
+    partnersHashtag: '#SupportBrazilianTourism',
 
     associatesTitle: 'Associated Resorts',
     associatesLead:
@@ -803,7 +803,7 @@ export const ui = {
 
     supportTitle: 'Support Tourism',
     supportLead:
-      'We seek to help transform the tourism sector in Brazil, fighting on several fronts for a stronger productive sector. 💪',
+      'We seek to help transform the tourism sector in Brazil, fighting on several fronts for a stronger productive sector.',
     supportIntro:
       'To do this, we have partners who support our projects and get closer to the associated resorts. There are two main types of project support:',
     supportPhotoAlt: 'Aerial view of Rio de Janeiro',
@@ -998,7 +998,7 @@ export const ui = {
     statisticsLead:
       'Confiera abajo los últimos estudios del sector de resorts, elaborados por Resorts Brasil o por colaboradores.',
     joinInviteTitle: '¿Quiere formar parte de un grupo selecto de resorts brasileños?',
-    joinInviteText: 'Forme parte y ayude a transformar el sector. 😍',
+    joinInviteText: 'Forme parte y ayude a transformar el sector.',
     joinInviteAction: 'Asóciese',
     joinInviteSecondary: 'Conozca los asociados',
 
@@ -1019,7 +1019,7 @@ export const ui = {
      * que o portugues ("Apoie") e o ingles ("Support") usam nas duas paginas
      * deles. O infinitivo era o intruso.
      */
-    partnersHashtag: '#ApoyeElTurismoBrasileño❤️',
+    partnersHashtag: '#ApoyeElTurismoBrasileño',
 
     associatesTitle: 'Resorts Asociados',
     associatesLead:
@@ -1073,7 +1073,7 @@ export const ui = {
 
     supportTitle: 'Apoye al turismo',
     supportLead:
-      'Buscamos ayudar a transformar el sector de turismo en Brasil, luchando en diversos frentes por un sector productivo más fuerte. 💪',
+      'Buscamos ayudar a transformar el sector de turismo en Brasil, luchando en diversos frentes por un sector productivo más fuerte.',
     supportIntro:
       'Para eso, contamos con colaboradores que apoyan nuestros proyectos y se aproximan de los resorts asociados. Existen dos principales modalidades de apoyo a proyectos:',
     supportPhotoAlt: 'Vista aérea de Río de Janeiro',
