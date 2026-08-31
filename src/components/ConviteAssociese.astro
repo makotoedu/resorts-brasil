@@ -4,7 +4,7 @@ import Container from './layout/Container.astro';
 import Titulo from './primitivos/Titulo.astro';
 import Texto from './primitivos/Texto.astro';
 import Botao from './primitivos/Botao.astro';
-import { ui, routes, type Locale } from '../i18n/ui';
+import { ui, routes, type Locale, type OrigemConvite } from '../i18n/ui';
 
 /**
  * O convite para se associar, que fecha varias paginas.
@@ -28,9 +28,27 @@ import { ui, routes, type Locale } from '../i18n/ui';
  *
  * O `p-b-150` do tema — 150px de recuo so embaixo — vira `espacoBase="xl"`, que
  * e o mesmo valor com nome.
+ *
+ * E DEPOIS AS DOZE VOLTARAM A SER QUATRO, de proposito. Unificar resolveu o
+ * problema de engenharia e criou o de leitura: as quatro paginas passaram a
+ * dizer a MESMA frase, e no quarto encontro o leitor para de ver o bloco. Agora
+ * o desenho e um so e o argumento muda com a `origem` — o unico dado que este
+ * componente tem sobre a pessoa e a pagina de onde ela esta saindo.
+ *
+ * A prop e OBRIGATORIA por isso: com um padrao, a proxima pagina a chamar o
+ * convite herdaria em silencio a frase de outra, que e exatamente o defeito de
+ * onde viemos. Sem padrao, o `astro check` cobra.
  */
 interface Props {
   lang: Locale;
+  /**
+   * De onde o leitor esta vindo, que e o que escolhe o titulo e o texto.
+   *
+   * Os rotulos dos dois botoes NAO variam: e a mesma acao com o mesmo nome, e um
+   * rotulo por acao e o que impede a proxima copia de divergir. Quem muda e o
+   * argumento, nao o convite.
+   */
+  origem: OrigemConvite;
   /**
    * O segundo botao, "Conheca os associados".
    *
@@ -42,8 +60,9 @@ interface Props {
   secundario?: boolean;
 }
 
-const { lang, secundario = true } = Astro.props;
+const { lang, origem, secundario = true } = Astro.props;
 const t = ui[lang];
+const convite = t.joinInvite[origem];
 ---
 
 {/*
@@ -61,8 +80,8 @@ const t = ui[lang];
         segundo nivel. No tema era `<h3>`, escolhido pelo tamanho — a causa raiz
         que o <Titulo> existe para separar.
       */}
-      <Titulo nivel={2} papel="secao" alinhamento="centro">{t.joinInviteTitle}</Titulo>
-      <Texto alinhamento="centro">{t.joinInviteText}</Texto>
+      <Titulo nivel={2} papel="secao" alinhamento="centro">{convite.titulo}</Titulo>
+      <Texto alinhamento="centro">{convite.texto}</Texto>
       <div class="botoes">
         <Botao href={routes.joinUs[lang]}>{t.joinInviteAction}</Botao>
         {secundario && (

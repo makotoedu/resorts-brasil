@@ -326,6 +326,23 @@ export const social = {
   youtube: 'https://www.youtube.com/channel/UCakNUVaii4VdkoAPS_dWABg',
 } as const;
 
+/**
+ * As quatro origens do <ConviteAssociese>.
+ *
+ * O convite fecha quatro paginas por idioma, e ate aqui as doze instancias
+ * diziam a mesma frase — resolvido como engenharia (um componente, uma chave) e
+ * nao como leitura: no quarto encontro o leitor para de ver o bloco. Cada origem
+ * argumenta a partir do que a pessoa acabou de ler, que e a unica coisa que o
+ * componente sabe sobre ela.
+ *
+ * O `Record` e o que obriga os tres idiomas a ter as quatro: falta uma e o
+ * `astro check` reprova aqui, no lugar certo, em vez de a pagina renderizar
+ * `undefined`. Mesma tatica do `associatesStats`.
+ */
+export type OrigemConvite = 'institucional' | 'associados' | 'publicacoes' | 'estudos';
+
+type TextoConvite = { titulo: string; texto: string };
+
 export const ui = {
   'pt-br': {
     skipToContent: 'Pular para o conteúdo',
@@ -448,6 +465,10 @@ export const ui = {
      * mesmo parágrafo no markup, e a de resorts-brasil já tinha divergido — está
      * sobre fundo escuro e com outra quebra de linha. As duas primeiras migram
      * aqui; as outras duas na Etapa 8.
+     *
+     * As doze viraram uma, e DEPOIS voltaram a ser quatro de propósito: o texto
+     * agora vem de `joinInvite[origem]`, uma frase por página. Ver o comentário
+     * do `OrigemConvite`, no topo deste arquivo.
      */
     publicationsTitle: 'Publicações',
     publicationsLead:
@@ -455,8 +476,28 @@ export const ui = {
     statisticsTitle: 'Estatísticas e Estudos',
     statisticsLead:
       'Confira abaixo os últimos estudos do setor de resorts, elaborados pela Resorts Brasil ou por parceiros.',
-    joinInviteTitle: 'Quer fazer parte de um grupo seleto de resorts brasileiros?',
-    joinInviteText: 'Faça parte e ajude a transformar o setor.',
+    joinInvite: {
+      institucional: {
+        titulo: 'Os três eixos se movem com quem está dentro deles',
+        texto:
+          'Representar, pesquisar e agir em conjunto não é serviço que a associação entrega pronto: é o trabalho dos resorts associados. Traga o seu para essa mesa.',
+      },
+      associados: {
+        titulo: 'Seu resort ao lado destes',
+        texto:
+          'Cada resort desta lista passou pelo mesmo processo de afiliação e análise. Se o seu tem essa régua, o próximo nome pode ser o dele.',
+      },
+      publicacoes: {
+        titulo: 'Quem se associa ajuda a escrever as próximas',
+        texto:
+          'Estas publicações nascem do que os associados vivem, medem e compartilham em comitês. Some o seu resort, e o que ele sabe, a este acervo.',
+      },
+      estudos: {
+        titulo: 'Os números desta página vêm dos associados',
+        texto:
+          'Cada estudo é feito com dados que os resorts associados informam, e é assim que o segmento consegue falar de si com evidência. Contribua com os seus.',
+      },
+    } as Record<OrigemConvite, TextoConvite>,
     joinInviteAction: 'Associe-se',
     joinInviteSecondary: 'Conheça os associados',
 
@@ -534,7 +575,14 @@ export const ui = {
         texto: 'Os associados recebem o direito de utilizar a marca da associação Resorts Brasil.',
       },
     ],
+    /*
+     * O fecho de /associe-se tinha o texto do <ConviteAssociese> emprestado, e
+     * era a QUINTA instancia daquele parágrafo — a que o componente não contava.
+     * Aqui ele fala do que o botão faz: levar à lista de associados.
+     */
     joinCtaTitle: 'Conheça os resorts que já fazem parte da Resorts Brasil',
+    joinCtaText:
+      'São resorts de todas as regiões do país, e cada um chegou até aqui pelo mesmo caminho que você acabou de ler.',
     joinCtaAction: 'Saiba mais',
 
     /* Apoie o turismo. */
@@ -739,8 +787,28 @@ export const ui = {
     statisticsTitle: 'Statistics and Studies',
     statisticsLead:
       'Check below the latest studies of the resort sector, prepared by Resorts Brasil or by partners.',
-    joinInviteTitle: 'Do you want to be part of a select group of Brazilian resorts?',
-    joinInviteText: 'Take part and help transform the sector.',
+    joinInvite: {
+      institucional: {
+        titulo: 'Those three axes move with the resorts inside them',
+        texto:
+          'Representing, researching and acting together is not a service the association hands over ready-made: it is the work of the member resorts. Bring yours to that table.',
+      },
+      associados: {
+        titulo: 'Your resort alongside these',
+        texto:
+          'Every resort on this list went through the same affiliation and review process. If yours meets that standard, the next name on it could be yours.',
+      },
+      publicacoes: {
+        titulo: 'Members help write the next ones',
+        texto:
+          'These publications come from what the members experience, measure and share in committees. Add your resort, and what it knows, to this collection.',
+      },
+      estudos: {
+        titulo: 'The numbers on this page come from the members',
+        texto:
+          'Every study is built on data that the member resorts report, and that is how the segment gets to speak about itself with evidence. Contribute yours.',
+      },
+    } as Record<OrigemConvite, TextoConvite>,
     joinInviteAction: 'Become a member',
     joinInviteSecondary: 'Meet the associates',
 
@@ -799,6 +867,8 @@ export const ui = {
       },
     ],
     joinCtaTitle: 'Meet the resorts that already are Resorts Brasil',
+    joinCtaText:
+      'They are resorts from every region of the country, and each one got here along the path you have just read.',
     joinCtaAction: 'Learn more',
 
     supportTitle: 'Support Tourism',
@@ -997,8 +1067,28 @@ export const ui = {
     statisticsTitle: 'Estadísticas y Estudios',
     statisticsLead:
       'Confiera abajo los últimos estudios del sector de resorts, elaborados por Resorts Brasil o por colaboradores.',
-    joinInviteTitle: '¿Quiere formar parte de un grupo selecto de resorts brasileños?',
-    joinInviteText: 'Forme parte y ayude a transformar el sector.',
+    joinInvite: {
+      institucional: {
+        titulo: 'Los tres ejes se mueven con quienes están dentro de ellos',
+        texto:
+          'Representar, investigar y actuar en conjunto no es un servicio que la asociación entrega listo: es el trabajo de los resorts asociados. Traiga el suyo a esa mesa.',
+      },
+      associados: {
+        titulo: 'Su resort junto a estos',
+        texto:
+          'Cada resort de esta lista pasó por el mismo proceso de afiliación y análisis. Si el suyo cumple ese criterio, el próximo nombre puede ser el suyo.',
+      },
+      publicacoes: {
+        titulo: 'Quien se asocia ayuda a escribir las próximas',
+        texto:
+          'Estas publicaciones nacen de lo que los asociados viven, miden y comparten en comités. Sume su resort, y lo que sabe, a este acervo.',
+      },
+      estudos: {
+        titulo: 'Los números de esta página vienen de los asociados',
+        texto:
+          'Cada estudio se hace con datos que los resorts asociados informan, y así el segmento logra hablar de sí con evidencia. Aporte los suyos.',
+      },
+    } as Record<OrigemConvite, TextoConvite>,
     joinInviteAction: 'Asóciese',
     joinInviteSecondary: 'Conozca los asociados',
 
@@ -1006,7 +1096,8 @@ export const ui = {
      * O rótulo de parceiros era "Socios / Partners:" — o único dos nove com duas
      * línguas na mesma linha. E o fecho da página de asociese dizia "ayude a
      * formar el sector" onde as outras três cópias espanholas dizem
-     * "transformar"; reaproveitar `joinInviteText` resolve as duas.
+     * "transformar"; reaproveitar o texto do convite resolveu as duas. Aquele
+     * fecho tem texto próprio desde então — é o `joinCtaText`.
      */
     partnersTitle: 'Conozca algunas empresas que apoyan al turismo a través de Resorts Brasil',
     partnersMaintainers: 'Mantenedores:',
@@ -1069,6 +1160,8 @@ export const ui = {
       },
     ],
     joinCtaTitle: 'Conozca los resorts que ya forman parte de Resorts Brasil',
+    joinCtaText:
+      'Son resorts de todas las regiones del país, y cada uno llegó hasta aquí por el mismo camino que usted acaba de leer.',
     joinCtaAction: 'Infórmese más',
 
     supportTitle: 'Apoye al turismo',
