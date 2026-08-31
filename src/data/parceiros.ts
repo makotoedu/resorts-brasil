@@ -33,12 +33,11 @@ export const mantenedores: LogoParceiro[] = [
   { nome: 'Villa Camarão', logo: '/images/parceiros/villa-camarao.png', url: 'https://www.villacamarao.com.br/' },
 ];
 
-/** Os 8 parceiros. */
+/** Os 7 parceiros. */
 export const parceiros: LogoParceiro[] = [
   { nome: 'Amigos do bem', logo: '/images/parceiros/amigos-do-bem.png', url: 'https://www.amigosdobem.org/' },
   { nome: 'senac', logo: '/images/parceiros/senac.png', url: 'https://www.sp.senac.br/' },
   { nome: 'fgv cemd', logo: '/images/parceiros/fgv-cemd.png', url: 'https://eaesp.fgv.br/centros/fgvcemd' },
-  { nome: 'JLL', logo: '/images/parceiros/jll.png', url: 'https://www.jll.com.br/' },
   { nome: 'STR', logo: '/images/parceiros/str.png', url: 'https://str.com/pt-br' },
   { nome: 'Arbache Consulting', logo: '/images/parceiros/arbache-consulting.png' },
   { nome: 'GKS', logo: '/images/parceiros/gks.png', url: 'https://gks.com.br/' },
