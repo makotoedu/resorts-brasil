@@ -5,7 +5,7 @@
  * com ~600 linhas cada. Os dados nao tem variacao por idioma: as tres listas
  * eram identicas, 78 resorts na mesma ordem, com os nomes dos estados tambem em
  * portugues nos tres. O que traduz e o rotulo da aba, que fica em `ui`
- * (src/i18n/ui.ts).
+ * (src/i18n/ui.ts). Hoje sao 79: o Monthez (SC) entrou em 31/08/2026.
  *
  * A ordem deste arquivo e a ordem de exibicao.
  */
@@ -120,6 +120,7 @@ export const regioesAssociados: RegiaoAssociados[] = [
         resorts: [
           { nome: 'Costão do Santinho', logo: '/images/associados/costao-do-santinho.png', url: 'https://costao.com.br/' },
           { nome: 'Fazzenda park hotel', logo: '/images/associados/fazzenda-park-hotel.png', url: 'https://www.fazzenda.com.br/' },
+          { nome: 'Monthez', logo: '/images/associados/monthez.png', url: 'https://monthez.com.br/' },
         ],
       },
     ],
@@ -242,11 +243,15 @@ export const totalAssociados = regioesAssociados.reduce(
  * Os cinco indicadores do topo da pagina de associados.
  *
  * OS TRES IDIOMAS DIZIAM NUMEROS DIFERENTES: 83 resorts em portugues, 80 em
- * ingles e em espanhol, e a lista acima tem 78 logotipos. Tres numeros para o
+ * ingles e em espanhol, e a lista acima tinha 78 logotipos. Tres numeros para o
  * mesmo fato, cada um escrito a mao no markup do seu arquivo — a forma exata da
  * divergencia que este projeto ja viu no rotulo "Leia agora" e na lista de
- * parceiros. O cliente confirmou 83 como o valor correto; os 78 da lista sao os
+ * parceiros. O cliente confirmou 83 como o valor correto; os 79 da lista sao os
  * associados com logotipo publicado.
+ *
+ * ENTAO O `ate` NAO SEGUE O TAMANHO DA LISTA, e isso e de proposito: a lista
+ * cresce quando um logotipo e publicado, o indicador so muda quando o cliente
+ * confirmar outro numero. O Monthez entrou em 31/08/2026 e os 83 ficaram.
  *
  * Ficam aqui, e nao no `ui.ts`, porque numero nao traduz. E a mesma divisao do
  * `cargo` da diretoria e da data de vigencia dos documentos juridicos: o dado

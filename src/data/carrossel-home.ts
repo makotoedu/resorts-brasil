@@ -1,8 +1,13 @@
 /**
- * O carrossel de logos da home: 70 logos, contra os 78 de /associados.
+ * O carrossel de logos da home: 71 logos, contra os 79 de /associados.
  *
  * Nem todo associado aparece aqui — seis dos listados em /associados ficam de
  * fora. E uma selecao, nao a lista inteira.
+ *
+ * OS SEIS SAO A DIFERENCA ENTRE LOGOTIPOS DISTINTOS, e nao entre entradas: o
+ * `clubmed.png` aparece tres vezes em associados.ts (SP, RJ e BA), entao as 79
+ * entradas de la sao 77 arquivos, e 77 - 71 = 6. Quem quiser conferir a conta
+ * depois de acrescentar alguem tem de deduplicar pelo `logo`, nao contar linhas.
  *
  * Antes estava escrita a mao nas tres homes e ja havia divergido: o EN trocava
  * a ordem de dois logos e o PT e o EN ainda traziam o Wyndham Gramado, que
@@ -59,6 +64,7 @@ export const carrosselHome: (Omit<Resort, 'url'> & { url?: string })[] = [
   { nome: 'Maceió Mar All Inclusive Resort', logo: '/images/associados/maceio-mar.png', url: 'https://mmehoteis.com.br/maceio-mar-resort/' },
   { nome: 'malai manso resort', logo: '/images/associados/malai-manso-resort.png', url: 'https://www.malaimansoresort.com.br/' },
   { nome: 'Mavsa Resort', logo: '/images/associados/mavsa.png', url: 'https://mavsaresort.com/' },
+  { nome: 'Monthez', logo: '/images/associados/monthez.png', url: 'https://monthez.com.br/' },
   { nome: 'Nannai', logo: '/images/associados/nannai.png', url: 'https://www.nannai.com.br/muro-alto/' },
   { nome: 'Novotel Itu', logo: '/images/associados/novotel-itu.png', url: 'https://www.novotelitu.com.br/' },
   { nome: 'Ocean Palace', logo: '/images/associados/ocean-palace.png', url: 'https://www.oceanpalace.com.br/' },
