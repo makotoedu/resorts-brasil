@@ -45,7 +45,7 @@ const ready = (fn) =>
 // O tema anima min-height de 0 ate a altura da janela em 500ms com
 // easeInOutQuart, marcando .toggle-active no gatilho, .mainMenu-open no body e
 // .menu-animate no menu 300ms depois. Os submenus nao precisam de toggle: abaixo
-// de 992px o CSS ja os deixa em display:block.
+// de 1200px o CSS ja os deixa em display:block.
 function mobileMenu(signal) {
   const trigger = document.querySelector('#mainMenu-trigger a, #mainMenu-trigger button');
   const menu = document.querySelector('#mainMenu');
@@ -86,10 +86,12 @@ function mobileMenu(signal) {
     setOpen(!open);
   }, { signal });
 
-  // O tema fecha o menu ao redimensionar para o breakpoint de desktop.
+  // O tema fecha o menu ao redimensionar para o breakpoint de desktop. Era 992,
+  // a faixa do Bootstrap; desde a revisao de design e 1200, a mesma dos 75rem
+  // do <Cabecalho> -- ver a nota de faixa no <style> dele.
   // PRESO A `window`: sem o signal, uma copia por navegacao.
   window.addEventListener('resize', () => {
-    if (open && window.innerWidth >= 992) setOpen(false);
+    if (open && window.innerWidth >= 1200) setOpen(false);
   }, { signal });
 }
 

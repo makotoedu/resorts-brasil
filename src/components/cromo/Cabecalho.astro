@@ -287,7 +287,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
   /*
    * O submenu da navegacao no MOBILE.
    *
-   * No desktop ele abre por :hover e :focus-within, em CSS. Abaixo de 992px nao
+   * No desktop ele abre por :hover e :focus-within, em CSS. Abaixo de 1200px nao
    * ha hover, e o tema resolvia isso deixando todos os submenus abertos o tempo
    * todo — o menu mobile nascia com os 11 itens visiveis de uma vez. Aqui cada
    * um abre no toque, e o `aria-expanded` diz a verdade nas duas faixas.
@@ -303,17 +303,27 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
 
 <style>
   /*
-   * A FAIXA DO CROMO E 992px, e ela e escrita a mao aqui.
+   * A FAIXA DO MENU E 1200px (75rem), e ela e escrita a mao aqui.
    *
-   * Nao e nenhuma das cinco faixas do site (xs/sm/md/lg/xl): e a faixa do
-   * BOOTSTRAP que o tema usa para trocar o menu de barra por painel — o mesmo
-   * 992 que o `site.js` compara em `window.innerWidth >= 992` ao fechar o menu
-   * no redimensionamento. Medido: a topbar desaparece e o gatilho aparece ali.
+   * Ate a revisao de design ela era 992px, a faixa do BOOTSTRAP que o tema usava
+   * para trocar o menu de barra por painel. E 992 era pouco. Medido com uma
+   * sonda que procura a menor largura em que logotipo, menu e seletor de
+   * idioma cabem numa linha: 1088px em portugues, 1072 em ingles, 1152 em
+   * espanhol. Entre 992 e esses numeros o seletor de idioma caia para baixo do
+   * logotipo (pt, en) ou o menu inteiro descia (es) -- e 1024px e o iPad na
+   * horizontal. Nenhum portao via: nao ha sobreposicao nem transbordo, so
+   * quebra de linha (achado A17). 1200 e a faixa `xl` do proprio site, e deixa
+   * 48px de folga no pior idioma.
    *
-   * Ela nao pode virar token porque media query nao aceita `var()`. Esta escrita
-   * como `62rem` nos tres arquivos do cromo, sempre com esta nota. Trocar por uma
-   * das faixas do site descasaria o CSS do script — que e exatamente o erro que
-   * este projeto ja pagou com 22 comparacoes de tablet reprovadas.
+   * A TOPBAR FICA EM 992px. Ela e uma faixa propria, sem disputa de largura, e
+   * leva o "Seja um associado" que o painel nao tem; tira-la junto tiraria o
+   * link do iPad horizontal sem ganho nenhum.
+   *
+   * Ela nao pode virar token porque media query nao aceita `var()`. O mesmo
+   * 1200 esta no `site.js`, que compara `window.innerWidth >= 1200` ao fechar o
+   * menu no redimensionamento; os dois mudam juntos ou o script descasa do CSS
+   * -- o erro que este projeto ja pagou com 22 comparacoes de tablet
+   * reprovadas.
    */
 
   /* ---------------- topbar ---------------- */
@@ -385,7 +395,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
     flex-wrap: wrap;
     align-items: center;
     gap: 0.5rem;
-    /* MEDIDO: 80px. `min-height` e nao `height` porque abaixo de 992px o menu
+    /* MEDIDO: 80px. `min-height` e nao `height` porque abaixo de 1200px o menu
        aberto entra como segunda linha desta mesma caixa e ela precisa crescer. */
     min-height: 5rem;
   }
@@ -402,7 +412,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
     height: 3.5rem;
   }
 
-  @media (min-width: 62rem) {
+  @media (min-width: 75rem) {
     .logo :global(img) {
       height: 5rem;
     }
@@ -413,7 +423,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
     margin-left: auto;
   }
 
-  @media (min-width: 62rem) {
+  @media (min-width: 75rem) {
     .extras {
       order: 3;
       margin-left: 0;
@@ -424,7 +434,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
 
   .menu {
     /*
-     * Abaixo de 992px o menu e um painel que ocupa a segunda linha da barra, e
+     * Abaixo de 1200px o menu e um painel que ocupa a segunda linha da barra, e
      * quem o abre e o site.js escrevendo `min-height` inline.
      *
      * `height: 0` E `overflow: hidden` juntos, e o par nao e redundante: o
@@ -440,7 +450,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
     overflow: hidden;
   }
 
-  @media (min-width: 62rem) {
+  @media (min-width: 75rem) {
     .menu {
       order: 2;
       flex: 1;
@@ -456,7 +466,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
     padding: 0;
   }
 
-  @media (min-width: 62rem) {
+  @media (min-width: 75rem) {
     .menu-nivel1 {
       display: flex;
       align-items: center;
@@ -488,7 +498,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
     transition: color 0.3s;
   }
 
-  @media (min-width: 62rem) {
+  @media (min-width: 75rem) {
     .menu-nivel1 > li > a,
     .menu-nivel1 > li > button {
       /* MEDIDO no desktop: recuo 10px/12px. */
@@ -524,7 +534,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
 
   /* ---------------- submenu ---------------- */
 
-  /* Abaixo de 992px o submenu abre no toque, e fechado ele nao existe: o tema
+  /* Abaixo de 1200px o submenu abre no toque, e fechado ele nao existe: o tema
      deixava os 11 itens visiveis de uma vez. */
   .dropdown-menu {
     display: none;
@@ -541,7 +551,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
     transform: rotate(-90deg);
   }
 
-  @media (min-width: 62rem) {
+  @media (min-width: 75rem) {
     .dropdown {
       position: relative;
     }
@@ -683,7 +693,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
     align-items: center;
   }
 
-  @media (min-width: 62rem) {
+  @media (min-width: 75rem) {
     .gatilho {
       display: none;
     }
@@ -779,7 +789,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
   /*
    * E FLUTUAR TEM UM PRECO NO MOBILE, que so aparece com o menu ABERTO.
    *
-   * Abaixo de 992px o menu e um painel que ocupa a segunda linha da barra, e o
+   * Abaixo de 1200px o menu e um painel que ocupa a segunda linha da barra, e o
    * site.js lhe da a altura da janela. No cromo claro o cabecalho esta no fluxo:
    * o painel EMPURRA a pagina para baixo e se le sobre o branco do <body>. Aqui
    * o cabecalho e absoluto, entao o painel se sobrepoe ao hero — os seis itens
@@ -839,18 +849,18 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
    * O SUBMENU MUDA DE FUNDO CONFORME A FAIXA, e por isso a cor do link dele
    * tambem tem de mudar.
    *
-   * Acima de 992px o submenu e um painel BRANCO (ver a regra na media query
+   * Acima de 1200px o submenu e um painel BRANCO (ver a regra na media query
    * acima), e ali o cinza de paragrafo esta certo nas duas variacoes. Abaixo de
-   * 992px o painel nao tem fundo proprio: ele herda o do cabecalho. No claro
+   * 1200px o painel nao tem fundo proprio: ele herda o do cabecalho. No claro
    * isso da cinza sobre branco; no escuro, cinza sobre carvao — 2,86:1, o mesmo
    * numero que o rodape invertido do tema entregava nos 12 links dele.
    *
    * Por isso a regra vive numa consulta de largura MAXIMA, e nao junto das
    * outras: `.escuro .dropdown-menu a` pesa 0-2-1 e venceria o painel branco do
-   * desktop tambem. O 61.9375rem e o complemento exato dos 62rem usados no resto
-   * do arquivo — os 992px do Bootstrap que o site.js tambem compara.
+   * desktop tambem. O 74.9375rem e o complemento exato dos 75rem usados no resto
+   * do arquivo — os 1200px que o site.js tambem compara.
    */
-  @media (max-width: 61.9375rem) {
+  @media (max-width: 74.9375rem) {
     .escuro .dropdown-menu a {
       color: var(--color-texto-sutil-inverso);
     }
@@ -872,7 +882,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
   }
 
   /*
-   * O painel do menu mobile abre SOBRE a pagina, e abaixo de 992px ele nao tem
+   * O painel do menu mobile abre SOBRE a pagina, e abaixo de 1200px ele nao tem
    * fundo proprio — no cromo claro isso funciona porque a pagina tambem e clara.
    * Aqui o fundo do e-book ja e escuro e o texto branco continua legivel, entao
    * nao ha nada a acrescentar. A nota fica porque foi verificado, e nao suposto.
