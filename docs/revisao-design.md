@@ -175,3 +175,128 @@ O portão de contraste já se protegia disso, porque rola a página com
 `requestAnimationFrame` antes de coletar. O `medir-sistema.mjs` nasceu sem essa
 proteção e passou a ter, porque a primeira versão dele contava o hero sem as duas
 peças. **Captura de página com animação de entrada pede quadro forçado antes.**
+
+---
+
+## Depois — 21/10/2026
+
+Medido sobre a build final da branch `revisao-design`, com as mesmas 40 páginas ×
+3 viewports no inventário e as mesmas 15 páginas nas capturas.
+
+### O sistema medido
+
+| | antes | depois |
+|---|---|---|
+| famílias | 1 | 2, com papel: DM Sans no texto, Poppins nos títulos |
+| pesos | 5 (400–800) | **3** (400, 500, 600) |
+| combinações tipográficas (desktop) | 42 | **18** |
+| entrelinhas distintas (desktop) | 16 | 11 |
+| combinações de caixa alta | 7 | **1** — o `.rotulo`, em 566 elementos |
+| pares tamanho × peso de título no conteúdo | 15 | **7**, um por degrau |
+| raios | 4 (9999, 5,88, 11,48, 14px) | 3 (9999, 12, 6px) |
+| parágrafos acima de 75 caracteres (desktop) | 217 de 332 | **0** |
+| caracteres por linha, mediana (desktop) | 91 (máximo 207) | 68 (máximo 74) |
+| controles com menos de 44px no celular | 508, 60 formas | **12**, 9 formas |
+| CLS, pior página auditada | 0,066 | 0,022 |
+| fontes baixadas por página | 23,6 KB | 52,7 KB |
+
+Os títulos do conteúdo, no desktop, são agora sete pares e todos são um degrau:
+61/500 (página), 34/500 (seção), 25/600 (bloco), 20/600 (cartão) e 44/500 (a
+escala do e-book), em `h1`, `h2` e `h3`. Antes, o `h2` sozinho renderizava em oito.
+
+As fontes custam 29 KB a mais: é o preço da segunda família, que fica fora do
+orçamento (ele conta só bytes do próprio domínio) e está registrado aqui por isso.
+O orçamento do próprio domínio emagreceu: `/resorts-brasil` foi de 236 para
+211 KB no celular (192 KB em espanhol), e a base foi regravada. A única página
+que engordou foi o catálogo, de 257 para 270 KB, com as demos novas desta
+revisão — o crescimento querido está registrado em
+[deltas-visuais.md](deltas-visuais.md).
+
+### Notas por categoria
+
+| categoria | peso | antes | depois | o que mudou |
+|---|---|---|---|---|
+| Hierarquia visual | 15% | C | **A** | A1, A8 e A9 corrigidos |
+| Tipografia | 15% | D− | **A** | A2 a A6 corrigidos |
+| Espaçamento e layout | 15% | C+ | **A** | A10 a A13 corrigidos |
+| Cor e contraste | 10% | B+ | B+ | A24 é decisão de marca, e fica |
+| Estados de interação | 10% | D+ | **B+** | A14, A15, A16 e A18 corrigidos; metade de A20 fica com o cliente |
+| Responsivo | 10% | B | **A** | A17 corrigido |
+| Conteúdo e microcópia | 10% | B+ | B+ | A22 e A23 são texto do cliente |
+| AI slop | 5% | B+ | **A** | A21 corrigido |
+| Movimento | 5% | B+ | **A** | A19 corrigido |
+| Performance como design | 5% | A | **A** | A7 corrigido; a regressão de CLS da troca de fonte foi corrigida no D27 |
+
+**Design Score: C+ (2,45) → A− (3,85 de 4).**
+
+**AI Slop Score: B+ → A.** O único tique que havia, a grade de oito ícones
+iguais, virou lista.
+
+As três categorias que não chegaram a A param em decisões que não são de
+desenho: a paleta, decidida em 31/08/2026, e três textos do cliente.
+
+### O que aconteceu com cada achado
+
+| # | status | commit |
+|---|---|---|
+| A1, A2 | corrigido — o peso sai do degrau, e o `peso` do `<Titulo>` deixa de existir | D03 `a78f0fb` |
+| A3 | corrigido — corpo de 16px | D02 `b611e74` |
+| A4 | corrigido — linha de ~67 caracteres, e a da abertura no D28 | D06 `bc03732`, D28 `4f7e346` |
+| A5 | corrigido — escala com razão de 1,2; o `<Texto>` ganha `papel` | D02, D04 `61391f0` |
+| A6 | corrigido — entrelinha por degrau; caixa alta é o `.rotulo` | D02, D05 `11eec1d` |
+| A7 | corrigido — 700 e 800 saem; o pedido ao Google foi medido | D01 `eab632a` |
+| A8 | corrigido — `<CabecalhoPagina>` nas 33 páginas internas | D04, D17 `c0dee5d` |
+| A9 | corrigido — o título de seção alinha com o que apresenta | D18 `9de5982` |
+| A10 | corrigido — grade de 4px e recuo fluido de 20 a 40px | D19 `8666004` |
+| A11 | corrigido — raio de 6 e 12px com regra | D11 `b881309` |
+| A12 | corrigido — peso (D03), raio (D11) e recuo (D19) do cartão | D03, D11, D19 |
+| A13 | corrigido — escala de ícone 12/16/24/48 | D14 `41b6fbe` |
+| A14 | corrigido — o hover e a seta do link de ação | D08 `0ce30d4` |
+| A15 | corrigido — 508 controles pequenos viram 12 | D07 `b73b980`, D08, D26 `6529eb7` |
+| A16 | corrigido — o botão tem um raio só | D07 |
+| A17 | corrigido — o menu vira painel até 1200px | D09 `d69a445` |
+| A18 | corrigido — o menu marca a página atual | D25 `b6a775b` |
+| A19 | corrigido — a cascata do hero inclui o título e cabe em 700ms | D16 `daa63e8` |
+| A20 | metade corrigida — um tamanho de botão por contexto; o "Fale conosco" duplo fica em Adiados | D10 `1c6e274` |
+| A21 | corrigido — os benefícios viram lista | D15 `60ea334` |
+| A22, A23, A24 | adiados | — |
+| S1, S2 | corrigidos — o catálogo em dia e a invariante de tipografia literal; os portões de peso e caixa alta vieram com as regras, no D03 e no D05 | D22/D23 `834b12f` |
+
+### O que a reauditoria achou de novo
+
+A skill reaudita depois de corrigir porque correção também quebra coisa. Foram
+quatro:
+
+- **A troca de fonte passou a mover a página.** CLS de 0,11 em `/associados` no
+  celular e de 0,10 a 0,106 em `/termos-de-uso` no tablet, acima do teto de 0,1.
+  Isolado antes de corrigir: com as fontes bloqueadas, zero. **Corrigido no D27**
+  (`910fb82`), com faces de reserva de métrica medida: 0,001 e 0.
+- **A abertura ficou estreita demais.** A linha de 512px do corpo dava ~53
+  caracteres em 20px, em quatro linhas sob o título. **Corrigido no D28**: a
+  abertura tem os mesmos ~67 caracteres, em 40rem.
+- **Sobravam 405 controles abaixo de 44px**, quase todos círculos sociais e o
+  LinkedIn dos cartões. **Corrigido no D26**: sobram 12, sete links de uma lista
+  da página de estatísticas — polimento, em Adiados.
+- **O logotipo "25 anos" quase some no cabeçalho escuro do e-book.** É azul-escuro
+  sobre carvão, e já era antes da revisão. É arquivo de marca: Adiados.
+
+### Adiados
+
+Achados que pedem decisão de conteúdo ou de marca, e não de desenho:
+
+| achado | por quê |
+|---|---|
+| A20 (metade) — "Fale conosco" é link nos cartões de `/apoie` e botão na faixa logo abaixo | os cartões poderiam levar à faixa, mas é decisão de destino |
+| A22 — `/apoie` e `/associe-se` usam o mesmo h2, palavra por palavra | texto do cliente |
+| A23 — títulos terminados em dois-pontos; "Resort" com maiúscula no hero | texto do cliente |
+| A24 — a paleta passa de 12 cores não cinza | decidido em 31/08/2026: a paleta fica |
+| Poppins está na lista de fontes de título batidas da skill | decisão de marca de 20/10/2026 |
+| o logotipo "25 anos" sobre o cabeçalho escuro do e-book | arquivo de marca |
+| sete links de 27px de altura na lista de `/estatisticas-e-estudos` | polimento; a WCAG 2.5.8 pede 24px, e eles passam nela |
+
+### Resumo
+
+Revisão de design encontrou 24 achados de tela e 2 de sistema, corrigiu 22 e
+meio, e adiou o resto para decisão do cliente. Design score C+ → A−, AI slop
+B+ → A. Na branch `revisao-design`, um commit por achado, com os seis portões
+inteiros passando no fim de cada fase.

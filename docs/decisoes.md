@@ -3508,3 +3508,169 @@ sem eles `/apoie` encurta, o limiar de `loading="lazy"` alcança um logotipo a
 mais da faixa de parceiros, e o mobile passou de 10 para 11 logos — 10 KB acima
 da base, nas versões portuguesa e espanhola. Medido, não suposto: nenhum recurso
 novo, nenhuma imagem maior. A linha de base foi regravada.
+
+# Revisão de design (outubro de 2026)
+
+O relatório com as notas de antes e depois e a lista de achados está em
+[revisao-design.md](revisao-design.md). Aqui fica o porquê de cada decisão.
+
+## Por que ela existe
+
+A migração mediu tudo e decidiu nada. O próprio registro da auditoria de
+consistência dizia: onde o valor antigo violava uma regra objetiva, o projeto
+corrigiu com rigor; onde era apenas arbitrário, atravessou intacto. A queixa que
+abriu esta etapa ("o design está grosseiro, o peso da tipografia e os
+componentes estão estranhos") é esse resíduo, e ela não se resolve medindo
+melhor: os números estavam certos, e eram os do tema.
+
+**É a primeira etapa em que os valores foram DECIDIDOS.** A regra 2 do CLAUDE.md
+continua valendo, com uma metade nova: valor decidido entra registrado aqui, com
+o motivo, e é medido depois no navegador — pelo
+[`scripts/medir-sistema.mjs`](../scripts/medir-sistema.mjs), que nasceu nesta
+etapa porque os `medir-*.mjs` anteriores miram seletores do tema e não medem
+mais nada.
+
+## O método: a skill `/design-review`, adaptada
+
+A skill do gstack audita o site no navegador, dá nota de A a F em dez categorias,
+corrige um achado por commit e reaudita. Ela supõe ferramentas que este projeto
+não tem — um navegador próprio (`$B`), um detector de padrões, uma segunda opinião
+via Codex, um `DESIGN.md` —, e cada uma foi trocada pelo equivalente daqui:
+
+| a skill pede | aqui |
+|---|---|
+| navegador `$B` | o Playwright do projeto, contra o preview em 4330 |
+| sistema inferido | `scripts/medir-sistema.mjs`, 40 páginas × 3 viewports |
+| `DESIGN.md` | não foi criado: a fonte é o `tokens.css` mais o `/design`, e um terceiro lugar divergiria |
+| relatório e baseline | `docs/revisao-design.md` |
+| commit `style(design): FINDING-NNN` | o estilo da casa, com o achado no corpo |
+
+**Uma adaptação foi de método, e é a que vale levar adiante: o portão entra no
+mesmo commit da regra que ele guarda.** O plano previa os portões novos no fim
+da revisão; o D03 (peso) e o D05 (caixa alta) trouxeram as regras 3, 4 e 5 do
+`verify-tipografia.mjs` junto, e cada uma foi rodada contra a build de antes
+para provar que reprova — 58 ocorrências em quatro páginas, no caso do peso.
+Regra sem portão é a forma como o `peso` livre atravessou onze etapas.
+
+## As três decisões de marca
+
+Tomadas pelo responsável pelo projeto em 20/10/2026, antes da auditoria. Duas
+delas recusaram a recomendação, e a recomendação fica escrita.
+
+### 1. Duas famílias: Poppins nos títulos, DM Sans no texto e na interface
+
+A Poppins fica onde é voz da marca e sai de onde a largura dela pesava: em 14px
+de corpo, a geometria larga e o olho grande dela enchem a linha. `--font-sans`
+passa a ser a DM Sans (o Preflight e o `<body>` a leem, então tudo que não é
+título herda), e `--font-titulo` é a Poppins.
+
+**O pedido ao Google foi medido, e o óbvio era o pior.** Os três pesos da DM
+Sans pedidos separados davam 110,8 KB: o Google serve o mesmo arquivo variável
+uma vez por peso. O eixo óptico junto dava 62,7 KB. Só o eixo de peso, de 400 a
+600, são 36,9 KB num arquivo. As fontes da página foram de 23,6 para 52,7 KB —
+fora do orçamento, que só conta bytes do próprio domínio.
+
+> **A recomendação recusada: manter só a Poppins.** O defeito que a auditoria
+> achou era o PESO, não a família: 33 títulos de página em 500 abaixo de títulos
+> de seção em 600, o mesmo papel em três pesos. Isso se corrige dentro da
+> Poppins, sem segunda família, sem os 29 KB a mais e sem a troca de fonte no
+> carregamento (o `swap`) passar a ter duas famílias para trocar. O argumento
+> contra ela: a Poppins em 14 ou 16px de corpo continua larga, e a DM Sans dá
+> uma linha mais densa e mais leve no mesmo tamanho. O peso foi corrigido nas
+> duas frentes de qualquer forma — a família nova não substituiu a regra de
+> peso, somou-se a ela.
+
+### 2. Caixa alta padronizada: um tamanho, um peso, um espaçamento
+
+Botão, item do menu principal e link de ação continuam em maiúsculas, com a voz
+do `.rotulo`: DM Sans 13px, 600, 0,08em. Antes eram sete combinações, uma por
+componente.
+
+> **A recomendação recusada: caixa normal.** Botões, menu e links em caixa
+> normal de 16px, e a caixa alta só nos rótulos pequenos (sobretítulo, títulos
+> do rodapé). O argumento: caixa alta pequena com espaçamento é a voz do tema de
+> 2018 de onde o site veio, ela é mais lenta de ler que a caixa normal, e em
+> 13px ela tira presença do botão mais importante do site — o do hero, que era
+> 16px com 2px de espaçamento. O argumento contra, que venceu: a caixa alta é
+> parte da identidade do site, e o problema era a falta de regra, não a caixa.
+> O D07 devolveu a presença ao botão pela altura (52px no hero) em vez do
+> tamanho da letra.
+
+### 3. Corpo de 16px
+
+O 14px era herança do root de 14px do tema. Com 16px a coluna de leitura teve de
+ser recalibrada (D06): a média da DM Sans de 16px é 7,67px por caractere, e a
+linha passou a 32rem, ~67 caracteres.
+
+## As regras que a revisão deixou
+
+Cada uma nasceu de um achado e mora num lugar só.
+
+- **O peso diminui conforme o tamanho cresce.** Os degraus `xl`, `2xl` e `3xl`
+  carregam 500 e um tracking negativo nos próprios tokens
+  (`--text-xl--font-weight`, `--text-xl--letter-spacing`), que o Tailwind 4.3
+  emite dentro da utilitária. Os pequenos herdam os 600 do `base.css`. Por isso
+  o `peso` do `<Titulo>` deixou de existir.
+- **O `<Texto>` tem `papel`, e não `tamanho`**: corpo, abertura, apoio e legenda.
+  Mesmo motivo do `<Titulo>`, terceira vez no projeto: eixo livre por página é
+  como a abertura chegou a 25px e a três cores.
+- **Toda caixa alta é o `.rotulo`**, e o texto no `ui.ts` fica em caixa normal.
+- **A linha de leitura é medida em caracteres, não em pixels**: ~67, que são
+  32rem no corpo de 16px (`--container-linha`: container estreito, texto
+  centralizado, interior das chamadas) e 40rem na abertura de 20px
+  (`--container-abertura`). A primeira versão deu os 32rem também à abertura, e
+  a reauditoria viu quatro linhas estreitas de ~53 caracteres sob o título.
+- **O raio tem três degraus com regra**: `sm` para controle e mídia dentro de
+  superfície, `md` para superfície e mídia solta, `full` para círculo.
+- **A abertura de página é o `<CabecalhoPagina>`**, uma seção, e o vão até o
+  conteúdo é o vão entre seções.
+- **O título de seção alinha com o que ele apresenta.**
+- **A grade de 4px vale nos componentes**, e o recuo lateral do container é
+  fluido, de 20 a 40px.
+- **O menu é barra a partir de 1200px**, e não de 992: a sonda mediu que em
+  espanhol ele só cabe numa linha a partir de 1152.
+
+## O que ficou com o cliente
+
+Achados que pedem decisão de conteúdo ou de marca, não de desenho. Estão no
+relatório, em "Adiados":
+
+- **/apoie e /associe-se usam o mesmo h2, palavra por palavra**: "Buscamos
+  ajudar a transformar o setor de turismo no Brasil…".
+- **"Fale conosco" aparece como link nos cartões de /apoie e como botão na faixa
+  logo abaixo.** Os cartões poderiam apontar para a faixa; é decisão de destino.
+- **Títulos que terminam em dois-pontos** e "Resort" com maiúscula no meio da
+  frase do hero.
+- **A paleta passa de 12 cores não cinza**, o limite da skill. Já decidido em
+  31/08/2026: a paleta fica.
+
+## O que o método ensinou
+
+- **O Chromium headless só produz quadro quando alguém pede.** A primeira
+  captura do hero saiu sem o sobretítulo e sem o botão: 1,2s depois do
+  `networkidle` o `document.timeline.currentTime` ainda era 0, e com
+  `fill-mode: both` a animação segura o quadro inicial. Captura e medição de
+  página com animação de entrada pedem `requestAnimationFrame` antes — o
+  `verify-contraste` já fazia isso, rolando a página; o `medir-sistema` passou a
+  fazer.
+- **Pedir o que não existe não quebra nada.** Depois que o 700 deixou de ser
+  baixado, o selo de /historia continuava pedindo 700; o navegador desenha a
+  face mais próxima, e o `getComputedStyle` devolve o pedido. É exatamente isso
+  que a regra 4 do `verify-tipografia` lê.
+- **Um pseudo-elemento de área de toque entra na `scrollWidth`.** O `::after` do
+  `<LinkAcao>` com recuo horizontal fez a geometria acusar texto vazando na
+  célula do catálogo. A área foi limitada à vertical, que é o que faltava.
+- **Classe global nova colide com classe local de mesmo nome.** A
+  `FaixaParceiros` e o catálogo já tinham uma classe `rotulo` própria, e
+  herdariam a caixa alta sem ninguém pedir. Antes de criar uma classe global,
+  procure o nome no `src/`.
+- **Duas famílias com `swap` movem a página, e a reserva precisa da métrica.**
+  A reauditoria mediu CLS de 0,11 e 0,106, acima do teto de 0,1, onde antes o
+  pior era 0,066. Isolar foi o que poupou tempo: com as fontes do Google
+  bloqueadas o CLS era zero, então a causa era a troca, e não o layout. As faces
+  de reserva do `tokens.css` são a Arial reescalada com `size-adjust` para a
+  largura medida de cada fonte (103,62% para a DM Sans), e o CLS caiu para 0,001.
+- **Container com recuo fluido não tem largura de conteúdo fixa.** O
+  `--container-texto` passou a ser a linha mais duas vezes o recuo daquela
+  largura, em `calc()`: com um número fixo, a linha dava 512px no desktop e 538
+  no tablet.

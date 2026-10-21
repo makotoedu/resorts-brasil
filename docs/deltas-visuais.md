@@ -747,15 +747,82 @@ maior — a mesma faixa, um passo adiante. É o tipo de variação que o própri
 `verify-orcamento.mjs` já documenta como sensível, e por isso ele fixa a conexão
 em 4G e congela a animação.
 
+## Revisão de design — o primeiro pixel que muda por decisão
+
+Outubro de 2026, na branch `revisao-design`. O relatório, com as notas de antes e
+depois, está em [revisao-design.md](revisao-design.md); o porquê de cada decisão,
+em [decisoes.md](decisoes.md), "Revisão de design".
+
+**A CATEGORIA `redesenho` PASSA A EXISTIR AQUI.** Ela foi proposta em 31/08/2026,
+junto da paleta de dois navy, "porque seria o primeiro pixel deste projeto a mudar
+por decisão de marca e não por medição", e nunca chegou a existir porque a
+proposta foi recusada. Esta revisão é esse primeiro pixel: as três decisões de
+marca de 20/10/2026 (duas famílias, caixa alta padronizada, corpo de 16px) e as
+regras que saíram da auditoria mudam o desenho de propósito, e não porque o
+valor anterior estava errado de um jeito que se mede.
+
+| commit | páginas | tipo | motivo |
+|---|---|---|---|
+| D01 | 41 | **redesenho** | a DM Sans assume o texto e a interface; a Poppins fica nos títulos |
+| D02 | 41 | **redesenho** | corpo de 16px e escala com razão de pelo menos 1,2 entre degraus vizinhos |
+| D03 | 41 | **correção** | o peso sai do degrau: o h1 em 500 estava abaixo de títulos menores em 600 |
+| D04 | 33 páginas × 3 idiomas | **correção** | a abertura de página numa cor só e num degrau só (era 25px, em três cores) |
+| D05 | 41 | **redesenho** | toda caixa alta passa a ter a voz do rótulo (13px, 600, 0,08em) |
+| D06 | 41 | **correção** | a linha de leitura vai a ~67 caracteres; 240 parágrafos passavam de 75 |
+| D07 | 41 | **redesenho** | o tamanho do botão passa a ser a altura (36/44/52px); cookies em pilha no celular |
+| D08 | homes e `/apoie` × 3 | **correção** | o link de ação volta a responder ao hover |
+| D09 | 41, entre 992 e 1199px | **correção** | o menu vira painel até 1200px; o cabeçalho quebrava em linha |
+| D10 | `/historia`, 404, e-book | **refino** | um tamanho de botão por contexto |
+| D11 | 41 | **refino** | raios de 6 e 12px com regra; vídeo e cartão de pessoa entram nela |
+| D14 | `/associe-se`, `/historia`, cromo | **refino** | a escala de ícone passa a ser a que o site desenha |
+| D15 | `/associe-se` × 3 | **redesenho** | os benefícios deixam de ser oito ícones iguais e viram lista |
+| D16 | 3 homes | **correção** | o título do hero entra na cascata; tudo termina em 700ms |
+| D17 | 33 páginas × 3 idiomas | **refino** | toda abertura de página é o `<CabecalhoPagina>`, com o mesmo vão até o conteúdo |
+| D18 | `/associe-se` × 3 | **refino** | o título de seção alinha com o que apresenta |
+| D19 | 41 | **refino** | grade de 4px nos componentes e recuo lateral fluido de 20 a 40px |
+| D20 | cromo, `/associados` | **refino** | o círculo da topbar aparece; o separador de região afina |
+| D25 | 40 | **correção** | o menu marca a página atual |
+| D26 | 41 | **refino** | os últimos alvos de toque chegam a 44px |
+
+**O `visual-diff` não diz nada aqui, e era esperado.** A troca de família muda o
+pixel de cada linha de texto do site, então ele acusaria as 120 comparações sem
+distinguir o desejado do acidental. Quem afirma o resultado são os seis portões,
+que passaram inteiros no fim de cada fase, e três medições que mudam de número:
+
+- o inventário do `scripts/medir-sistema.mjs` (combinações tipográficas, pesos,
+  caixa alta, linha, toque e raio, antes e depois, em
+  [revisao-design.md](revisao-design.md));
+- o `innerText` do `<main>` das 40 páginas contra a build de antes, que mudou só
+  nos títulos dos eixos de `/resorts-brasil`, como devia;
+- as duas sondas do cromo: o cabeçalho numa linha só a partir de 1200px em todo
+  idioma e variação, e nenhum parágrafo acima de 75 caracteres.
+
+**O orçamento emagreceu, e a base foi regravada no fim.** `/resorts-brasil` caiu de
+236 para 210 KB no celular, e `/associe-se` de 255 para 239: com o corpo maior as
+páginas ficaram mais altas, e o limiar de `loading="lazy"` deixou de alcançar
+algumas imagens — o mesmo mecanismo que fez `/apoie` engordar na saída dos emoji,
+no sentido oposto. As fontes da página foram de 23,6 para 52,7 KB, e esse peso o
+orçamento não vê: ele só conta bytes do próprio domínio.
+
+**Uma página engordou de propósito: o catálogo**, de 257 para 270 KB, com o
+HTML de 207 para 219 KB. São as demos que esta revisão acrescentou — o
+`<CabecalhoPagina>`, a disposição lateral da `<CaixaIcone>`, o rótulo, os papéis
+do `<Titulo>` e do `<Texto>`, a variante `clara-solida` nos cinco estados —, e a
+base foi regravada com ele. É o mesmo caso da View Transitions: o portão reprova
+o crescimento, e o crescimento querido entra com o motivo escrito aqui.
+
 ## Como classificar um delta novo
 
 Ao rodar o diff numa etapa, cada página acima do limiar entra aqui com captura,
-viewport e uma linha de motivo, numa destas três categorias:
+viewport e uma linha de motivo, numa destas quatro categorias:
 
 - **refino** — tipografia fluida, balanceamento de título, espaçamento
   harmônico, `aspect-ratio` no hero. Mudança de pixel querida.
 - **correção** — hierarquia de heading, `bodyClass` uniformizado, divergência
   entre idiomas resolvida por componentização.
+- **redesenho** — pixel que muda por decisão de desenho ou de marca, e não
+  porque o valor anterior estava errado de um jeito que se mede. Nasceu na
+  revisão de design de outubro de 2026, e exige o motivo no `decisoes.md`.
 - **regressão** — volta para a etapa.
 
 **Delta sem classificação bloqueia a etapa.** É o que impede uma regressão de se

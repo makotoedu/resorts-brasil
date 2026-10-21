@@ -53,6 +53,15 @@ defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
    o **hover** junto e, no cromo, com o **estado aberto**, porque menu, submenu e
    seletor de idioma medem zero em repouso.
 
+   **Aqueles medidores mediram o TEMA**, e miram seletores que saíram na Etapa
+   11. Para o sistema que ficou, o medidor é `node scripts/medir-sistema.mjs`: as
+   combinações de família, tamanho, peso, entrelinha, espaçamento e caixa de
+   todo texto visível, a linha em caracteres, os alvos de toque e os raios, nas
+   40 páginas × 3 viewports, pelo computado. **Desde a revisão de design o valor
+   também pode ser DECIDIDO** — ela foi a primeira etapa a mudar pixel por
+   decisão, e não por medição —, mas valor decidido entra com o motivo no
+   [`decisoes.md`](docs/decisoes.md) e é medido depois, no navegador.
+
    Nunca lido de uma folha, nunca contado no markup. O `padding` das listas já
    entrou errado por leitura (28px onde o real é 14px), a largura do container
    por suposição (1140px onde o real é 1500px), a largura da linha de leitura por
@@ -89,20 +98,27 @@ defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
    Quando precisar de CSS de verdade, escreva CSS de verdade em `<style>` com
    escopo. Utilitária para o que é único, componente para o que se repete.
 
-5. **Tamanho de título vem do `papel`, não do `tamanho`.** O
+5. **A aparência do título vem do `papel`, não do `tamanho` nem do peso.** O
    [`<Titulo>`](src/components/primitivos/Titulo.astro) tem dois eixos: `nivel`
-   escolhe a tag e `papel` escolhe a aparência, em quatro degraus.
+   escolhe a tag e `papel` escolhe a aparência inteira, em quatro degraus.
 
    ```astro
    <Titulo nivel={2} papel="secao">Benefícios de ser um associado</Titulo>
    ```
 
-   | `papel` | token | medido | uso |
-   |---|---|---|---|
-   | `pagina` | `text-3xl` | 40→62px | um por página |
-   | `secao` | `text-xl` | 24→34px | título de seção, e o das faixas |
-   | `bloco` | `text-lg` | 19→25px | sub-bloco, cartão sobre foto |
-   | `cartao` | `text-md` | 18px | cartão, rótulo de grupo |
+   | `papel` | token | 390→1440px | peso | uso |
+   |---|---|---|---|---|
+   | `pagina` | `text-3xl` | 40→61px | 500 | um por página |
+   | `secao` | `text-xl` | 28→34px | 500 | título de seção, e o das faixas |
+   | `bloco` | `text-lg` | 23→25px | 600 | sub-bloco, cartão sobre foto |
+   | `cartao` | `text-md` | 19→20px | 600 | cartão, rótulo de grupo |
+
+   Tudo em Poppins, que desde a revisão de design é só a família dos títulos; o
+   texto e a interface são DM Sans. **O peso diminui conforme o tamanho
+   cresce**, e mora no token do degrau (`--text-xl--font-weight`, com o
+   espaçamento ao lado), não num prop: o `peso` livre que o `<Titulo>` teve
+   repetiu a doença do `tamanho` — título de página em 500, 600 ou 800 conforme
+   a página, e o `h1` em 500 abaixo de títulos de seção em 600.
 
    **Separar tag de aparência consertou o sumário e criou o defeito seguinte.**
    Com `tamanho` livre por página, `h2` passou a renderizar em **cinco** tamanhos
@@ -115,6 +131,12 @@ defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
    assunto — `PaginaEbook.astro`, que tem escala própria como tem paleta própria,
    e `design.astro`, que é a vitrine. **A allowlist de `verifica-sistema.mjs`
    guarda o número por arquivo**, igual à do `style=`.
+
+   **O `<Texto>` segue a mesma forma**, pelo mesmo motivo, pela terceira vez:
+   `papel` (`corpo`, `abertura`, `apoio`, `legenda`) traz tamanho, entrelinha e
+   cor de partida, e `cor` fica para superfície escura ou foto, não para gosto.
+   Com o `tamanho` livre, a frase que abre a página chegou a 25px e a três
+   cores.
 
 > **Uma regra saiu na Etapa 11 e vale saber que existiu.** Todo componente e toda
 > página precisavam de uma linha `@source` em `src/styles/global.css`, porque
@@ -429,6 +451,14 @@ quatro degraus do `papel`. Ele cobre o que o checador de sumário não vê — a
 garante que não há salto de nível, este que o **tamanho** ainda significa alguma
 coisa. Nasceu com 33 ocorrências e chegou a zero na mesma sessão.
 
+**A revisão de design deu a ele três regras a mais, cada uma no mesmo commit da
+regra que guarda**: todo título pesa e é desenhado como a sonda do degrau dele;
+nenhum texto da página inteira sai de DM Sans e Poppins em 400, 500 e 600 (um
+`font-weight` que pede uma face que não é baixada não quebra nada — o navegador
+desenha a mais próxima, e o `getComputedStyle` devolve o pedido); e toda caixa
+alta tem a voz do `.rotulo`. Antes de valer, cada uma foi rodada contra a build
+de antes, para provar que reprova.
+
 Uma regra foi tentada e descartada, e vale saber: *"irmãos do mesmo nível medem
 igual"*. Ela achou o defeito que originou o portão e, depois de corrigido,
 continuou acusando 63 casos que não são defeito — grade de cartão e seção moram
@@ -459,6 +489,18 @@ O procedimento completo está em [docs/verificacao.md](docs/verificacao.md).
   `abort`.** Com o `<ClientRouter />` o documento não recarrega entre páginas, e
   o que estiver preso a `window` ou a `document` sem `signal` ganha uma cópia por
   navegação. Ver a seção seguinte.
+- **Toda caixa alta é a classe `.rotulo`** do `base.css` (DM Sans 13px, 600,
+  `0,08em`), e o texto no `ui.ts` fica em caixa normal: quem sobe a caixa é o
+  CSS. Ela é global de propósito — vale passada como `class` a um `<Titulo>` ou
+  `<Texto>`, onde classe escopada não valeria. Antes de criar outra classe
+  global, procure o nome no `src/`: a `FaixaParceiros` e o catálogo já tinham uma
+  `rotulo` local, e herdariam a caixa alta sem ninguém pedir.
+- **O menu é barra a partir de 1200px** (`75rem` no CSS do `<Cabecalho>` e `1200`
+  no `site.js`, que mudam juntos). Era a faixa de 992px do Bootstrap, e entre ela
+  e 1152px o cabeçalho quebrava em linha em espanhol. A topbar continua em 992.
+- **Toda abertura de página interna é o `<CabecalhoPagina>`**, e o vão até o
+  conteúdo é o recuo de cima da seção seguinte. Não o cancele com
+  `espacoTopo="nenhum"`.
 - Comentários e documentação em português, acompanhando o resto do projeto.
 
 ## Antes de mexer no `site.js`
