@@ -907,8 +907,10 @@ const faixas = [
       <section>
         <h3>CaixaIcone</h3>
         <p class="legenda">
-          36 usos. Glifo de 36px numa caixa de 46px, título e uma frase — os oito benefícios de ser
-          associado e os canais da página de contato.
+          Símbolo, título e uma frase, em duas disposições. <code>empilhada</code>, com o símbolo
+          de 48px em cima, para quando cada caixa tem o seu — os canais da página de contato.{' '}
+          <code>lado</code>, com o símbolo de 24px na linha do título, para quando ele se repete —
+          os oito benefícios de ser associado, que eram o mesmo visto de 46px empilhado oito vezes.
         </p>
         <div class="demo">
           <Grade colunas={4} espaco="md">
@@ -923,6 +925,15 @@ const faixas = [
             </CaixaIcone>
             <CaixaIcone icone="map-pin" titulo="Onde estamos" nivel={4} alinhamento="centro">
               <Texto>Alinhamento centro, para blocos de contato.</Texto>
+            </CaixaIcone>
+          </Grade>
+          <p class="rotulo-demo"><code>disposicao="lado"</code> <small>quando o símbolo se repete</small></p>
+          <Grade colunas={4} espaco="md">
+            <CaixaIcone icone="check-circle" titulo="Feiras" nivel={4} tom="acao" disposicao="lado">
+              <Texto>Participação nas principais feiras do setor em estande cooperado.</Texto>
+            </CaixaIcone>
+            <CaixaIcone icone="check-circle" titulo="B2B" nivel={4} tom="acao" disposicao="lado">
+              <Texto>Rodadas de negócio em formatos inovadores com clientes.</Texto>
             </CaixaIcone>
           </Grade>
           <p class="legenda">

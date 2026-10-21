@@ -13,6 +13,19 @@ import type { NomeIcone } from '../../icones/glifos';
  *     Participacao nas principais feiras do setor em estande cooperado.
  *   </CaixaIcone>
  *
+ * DUAS DISPOSICOES, desde a revisao de design (achado A21):
+ *
+ *   empilhada  o simbolo em cima, em 48px. Para quando o simbolo DIZ algo e
+ *              cada caixa tem o seu -- os canais da pagina de contato.
+ *   lado       o simbolo de 24px a esquerda, na linha do titulo. Para listas
+ *              em que ele se repete: os oito beneficios de /associe-se eram o
+ *              mesmo visto de 46px empilhado oito vezes sobre titulo e frase,
+ *              o padrao que a skill de revisao chama de "AI slop". Ao lado de
+ *              cada item, o mesmo visto e uma lista de verificacao -- que e o
+ *              que o conteudo e.
+ *
+ *   <CaixaIcone icone="check-circle" titulo="Feiras" disposicao="lado">
+ *
  * MEDIDO (scripts/medir-padroes.mjs): glifo de 36px numa caixa de 46px, 16px
  * ate o titulo, titulo de 18px com entrelinha de 25px e 4px ate o texto, texto
  * de 14px com entrelinha de 22,4px.
@@ -33,19 +46,39 @@ interface Props {
   alinhamento?: 'inicio' | 'centro';
   /** Cor do simbolo. `acao` destaca a lista inteira sem tocar no texto. */
   tom?: 'padrao' | 'acao';
+  /** Ver a nota do topo: `lado` e para quando o simbolo se repete. */
+  disposicao?: 'empilhada' | 'lado';
   class?: string;
 }
 
-const { icone, titulo, nivel = 3, alinhamento = 'inicio', tom = 'padrao', class: classe } = Astro.props;
+const {
+  icone,
+  titulo,
+  nivel = 3,
+  alinhamento = 'inicio',
+  tom = 'padrao',
+  disposicao = 'empilhada',
+  class: classe,
+} = Astro.props;
 ---
 
-<div class:list={['caixa', alinhamento === 'centro' && 'centro', tom === 'acao' && 'tom-acao', classe]}>
+<div
+  class:list={[
+    'caixa',
+    alinhamento === 'centro' && 'centro',
+    tom === 'acao' && 'tom-acao',
+    disposicao === 'lado' && 'lado',
+    classe,
+  ]}
+>
   {/* aria-hidden por omissao do `rotulo`: o titulo logo abaixo diz a mesma
       coisa, e anunciar os dois faria o leitor de tela repetir cada item. */}
-  <Icone nome={icone} tamanho="lg" class="simbolo" />
-  <Titulo nivel={nivel} papel="cartao" class="titulo">{titulo}</Titulo>
-  <div class="texto">
-    <slot />
+  <Icone nome={icone} tamanho={disposicao === 'lado' ? 'md' : 'lg'} class="simbolo" />
+  <div class="conteudo">
+    <Titulo nivel={nivel} papel="cartao" class="titulo">{titulo}</Titulo>
+    <div class="texto">
+      <slot />
+    </div>
   </div>
 </div>
 
@@ -87,6 +120,22 @@ const { icone, titulo, nivel = 3, alinhamento = 'inicio', tom = 'padrao', class:
 
   .tom-acao :global(.simbolo) {
     color: var(--color-acao-primaria);
+  }
+
+  /*
+   * O simbolo ao lado: uma coluna do tamanho dele, e o titulo e o texto na
+   * outra. O recuo de 2px poe o visto de 24px na altura da linha do titulo
+   * (19 a 20px de corpo em 1,4 de entrelinha), em vez de no topo da caixa.
+   */
+  .lado {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.75rem;
+    align-items: start;
+  }
+
+  .lado :global(.simbolo) {
+    margin-block: 0.125rem 0;
   }
 
   /* A entrelinha e a do degrau `cartao`; a medida do tema (1.39) saiu na
