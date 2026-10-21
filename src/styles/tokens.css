@@ -652,8 +652,25 @@
    * E o que a `largura="estreita"` do <Container> passa a valer. Ela apontava
    * para `max-w-3xl`, um padrao do Tailwind que ninguem tinha medido — mesmo
    * tipo de valor que ja pos o container em 1140px quando o real eram 1500px.
+   *
+   * A FONTE MUDOU E A MEDIDA FOI REFEITA, na revisao de design (achado A4). Os
+   * 75 caracteres eram da Poppins em 14px; com a DM Sans em 16px, os mesmos
+   * 660px davam 86 -- medido pelo `scripts/medir-sistema.mjs`, que conta com a
+   * fonte carregada. A media da DM Sans de 16px e 7,67px por caractere, e a
+   * linha passa a ser a `--container-linha` abaixo: 32rem, ~67 caracteres, o
+   * meio da faixa de 45-75. O container estreito e ela mais os 14px de recuo
+   * de cada lado no desktop; no tablet, com os 30px, sobram ~62 caracteres.
    */
-  --container-texto: 43rem; /* 688px — 75ch medidos */
+  --container-texto: 33.75rem; /* 540px: 512 de linha + 2 x 14 de recuo */
+
+  /*
+   * A LINHA DE UM PARAGRAFO, para onde ele nao mora no container estreito: o
+   * texto centrado de uma abertura ou de um convite, e o interior de uma
+   * chamada larga. Medido antes dela, o convite corria em 188 caracteres numa
+   * linha so, e o texto da chamada sobre foto de /associe-se em 169. Em 20px
+   * (a abertura) os mesmos 32rem dao ~53 caracteres.
+   */
+  --container-linha: 32rem; /* 512px — ~67 caracteres de DM Sans em 16px */
 
   /*
    * PROPORCAO

@@ -397,6 +397,12 @@ const cartao = t.homeHighlights.ebook;
     border-radius: var(--radius-md);
   }
 
+  /* A linha do texto da chamada: corria em 102 caracteres no desktop. Ver
+     --container-linha. `:global` porque o `<p>` e de um <Texto>. */
+  .chamada :global(p) {
+    max-width: var(--container-linha);
+  }
+
   /* ---------------- faixas de credito ---------------- */
 
   .creditos {

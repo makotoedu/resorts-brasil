@@ -186,6 +186,20 @@ const PROPORCOES = {
     position: relative;
   }
 
+  /*
+   * O PARAGRAFO TEM MEDIDA, mesmo quando a chamada e larga. Sobre a foto de
+   * /associe-se a chamada ocupa o container inteiro, e o texto corria em 169
+   * caracteres por linha. `:global` porque o `<p>` nasce dentro do <Texto>, e
+   * estilo com escopo nao alcanca markup de componente filho (armadilha 1).
+   */
+  .interior :global(p) {
+    max-width: var(--container-linha);
+  }
+
+  .centro .interior :global(p) {
+    margin-inline: auto;
+  }
+
   /* ---------------- proporcao ---------------- */
 
   /*

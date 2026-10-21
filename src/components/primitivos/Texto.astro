@@ -99,6 +99,16 @@ const ALINHAMENTOS = {
 } as const;
 
 const corFinal = cor ?? COR_DE_PARTIDA[papel];
+
+/*
+ * MEDIDA. A abertura e o texto centralizado ganham a linha do sistema, e o
+ * centralizado ainda se centra como bloco. Linha longa e ruim; linha longa
+ * centrada e pior, porque cada uma comeca num lugar. Sem isto o convite ao
+ * associado corria em 188 caracteres numa linha so, a introducao de /historia
+ * em 128 e as aberturas em 95. Ver --container-linha no tokens.css.
+ */
+const comMedida = (papel === 'abertura' || alinhamento === 'centro') && 'max-w-linha';
+const centrado = alinhamento === 'centro' && 'mx-auto';
 ---
 
 <Tag
@@ -107,6 +117,8 @@ const corFinal = cor ?? COR_DE_PARTIDA[papel];
     corFinal && CORES[corFinal],
     peso && PESOS[peso],
     alinhamento && ALINHAMENTOS[alinhamento],
+    comMedida,
+    centrado,
     semMargem && 'mb-0',
     classe,
   ]}
