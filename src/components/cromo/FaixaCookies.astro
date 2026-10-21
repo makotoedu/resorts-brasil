@@ -18,12 +18,19 @@ import { ui, url, type Locale } from '../../i18n/ui';
  *
  * MEDIDO (scripts/medir-cromo.mjs): fixa embaixo, fundo navy, 20px de recuo,
  * texto branco de 14px centralizado, botoes de 11px em pilula com fundo branco.
+ *
+ * A PILULA NUNCA RENDERIZOU AQUI. O `rounded-full` passado aos botoes perdia
+ * para o raio do <Botao>, cuja regra escopada fica fora de camada e vence a
+ * utilitaria -- os botoes saiam com os 5,88px de todo botao. A revisao de
+ * design tirou a classe em vez de forcar a pilula: o botao tem um raio so. E
+ * os tres passaram de `sm` para `md`, a altura de toque de 44px, porque sao a
+ * escolha de consentimento, e ela tem de ser confortavel no celular.
  * A altura desce de 204px no mobile para 91px no desktop — o texto e os botoes
  * cabem na mesma linha a partir de certa largura, e e so isso que muda.
  *
  * DOIS DESVIOS DELIBERADOS:
  *
- *   1. Os botoes sao `<Botao variante="clara-solida" tamanho="sm">`. A variante
+ *   1. Os botoes sao `<Botao variante="clara-solida" tamanho="md">`. A variante
  *      nasceu aqui: a Etapa 1 leu `.btn-light` no markup, achou os 17 usos com
  *      `.btn-outline` junto e concluiu que a clara era sempre vazada. Estes tres
  *      sao o `.btn-light` cheio, e sao 40 paginas deles.
@@ -59,20 +66,19 @@ const t = ui[lang];
       <!-- Os tres botoes usam a MESMA variante e o MESMO tamanho: recusar
            precisa ser tao facil e tao visivel quanto aceitar. -->
       <div class="acoes">
-        <Botao variante="clara-solida" tamanho="sm" class="rounded-full" data-cookie="rejeitar">
+        <Botao variante="clara-solida" tamanho="md" data-cookie="rejeitar">
           {t.cookieRejectAll}
         </Botao>
         <Botao
           variante="clara-solida"
-          tamanho="sm"
-          class="rounded-full"
+          tamanho="md"
           data-cookie="personalizar"
           aria-expanded="false"
           aria-controls="cookiePrefs"
         >
           {t.cookieCustomize}
         </Botao>
-        <Botao variante="clara-solida" tamanho="sm" class="rounded-full" data-cookie="aceitar">
+        <Botao variante="clara-solida" tamanho="md" data-cookie="aceitar">
           {t.cookieAcceptAll}
         </Botao>
       </div>
@@ -104,7 +110,7 @@ const t = ui[lang];
           <p>{t.cookieCatAdsDesc}</p>
         </li>
       </ul>
-      <Botao variante="clara-solida" tamanho="sm" class="rounded-full" data-cookie="salvar">
+      <Botao variante="clara-solida" tamanho="md" data-cookie="salvar">
         {t.cookieSave}
       </Botao>
     </div>
@@ -176,6 +182,21 @@ const t = ui[lang];
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.625rem;
+  }
+
+  /*
+   * NO CELULAR, UMA PILHA DE LARGURA INTEIRA. Com os botoes no `md` de 44px
+   * (a altura de toque) e o rotulo de 0,08em, dois nao cabem lado a lado em
+   * 390px, e a quebra livre deixava tres botoes de tres larguras, um por linha
+   * e desalinhados. Empilhados por igual, os tres tem o mesmo peso -- que e o
+   * que a nota do markup pede: recusar tao facil e tao visivel quanto aceitar.
+   */
+  @media (max-width: 35.9375rem) {
+    .acoes {
+      flex: 1 1 100%;
+      flex-direction: column;
+      align-items: stretch;
+    }
   }
 
   /* ---------------- painel de categorias ---------------- */

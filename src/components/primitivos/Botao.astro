@@ -85,6 +85,19 @@ const Tag = href ? 'a' : 'button';
    * O `sm` sobe de 11 para 12px (o degrau `--text-xs`): 11px nao esta na escala
    * e criar um degrau para um botao que so existe na faixa de cookies seria
    * inverter a relacao entre sistema e excecao. Delta de 1px, deliberado.
+   *
+   * A REVISAO DE DESIGN TROCOU A REGUA (achados A15 e A16). Desde ela o
+   * rotulo e o mesmo nos tres tamanhos -- 13px, 600, 0,08em, a decisao de
+   * marca --, e o tamanho do botao e a ALTURA, na grade de 4px e sem `clamp`:
+   *
+   *   tamanho  altura  recuo-x  uso
+   *   sm       36px    16px     contexto denso, so desktop
+   *   md       44px    24px     o padrao: e a altura minima de toque
+   *   lg       52px    32px     o CTA de uma tela inteira (o hero)
+   *
+   * O `md` media 32 a 38px, abaixo dos 44 de toque; eram 5 dos 508 controles
+   * pequenos do celular. A conta e a linha do rotulo (20px) mais as duas
+   * bordas (4px) mais o recuo vertical.
    */
   .botao {
     display: inline-block;
@@ -113,18 +126,15 @@ const Tag = href ? 'a' : 'button';
   /* ---------------- tamanhos ---------------- */
 
   .t-sm {
-    padding: 0.375rem 0.875rem; /* 6px / 14px */
+    padding: 0.375rem 1rem; /* 20 + 4 + 2 x 6 = 36px */
   }
 
   .t-md {
-    /* 8.8 -> 12px de altura e 14 -> 18px de recuo, ancorados em 390 e 1440. */
-    padding: clamp(0.55rem, 0.4757rem + 0.3048vw, 0.75rem)
-      clamp(0.875rem, 0.7821rem + 0.381vw, 1.125rem);
+    padding: 0.625rem 1.5rem; /* 20 + 4 + 2 x 10 = 44px */
   }
 
   .t-lg {
-    padding: clamp(0.7rem, 0.5329rem + 0.6857vw, 1.15rem)
-      clamp(1.5rem, 1.1286rem + 1.5238vw, 2.5rem);
+    padding: 0.875rem 2rem; /* 20 + 4 + 2 x 14 = 52px */
   }
 
   /* ---------------- variantes ---------------- */
