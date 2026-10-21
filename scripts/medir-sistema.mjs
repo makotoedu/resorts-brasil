@@ -133,11 +133,25 @@ const COLETAR = (escopo) => {
       if (r.width >= 1 && r.height >= 1 && naTela && visivel(el, r)) {
         /* Link dentro de frase e isento pela WCAG 2.5.8; o resto e controle. */
         const inline = cs.display === 'inline' && !!el.closest('p, li, td, th, small, figcaption');
+        /*
+         * O ALVO PODE SER MAIOR QUE A CAIXA. O <LinkAcao> estende a area de
+         * toque com um `::after` absoluto de inset negativo, sem mudar o
+         * desenho; medir so a caixa contaria 20px num alvo de 44. O inset
+         * negativo do pseudo-elemento soma a dimensao.
+         */
+        let w = r.width;
+        let h = r.height;
+        const depois = getComputedStyle(el, '::after');
+        if (depois.content !== 'none' && depois.position === 'absolute') {
+          const fora = (v) => Math.max(0, -(parseFloat(v) || 0));
+          h += fora(depois.top) + fora(depois.bottom);
+          w += fora(depois.left) + fora(depois.right);
+        }
         controles.push({
           seletor: seletor(el),
           texto: (el.textContent || el.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' ').slice(0, 40),
-          w: Math.round(r.width),
-          h: Math.round(r.height),
+          w: Math.round(w),
+          h: Math.round(h),
           inline,
           regiao: regiao(el),
         });
