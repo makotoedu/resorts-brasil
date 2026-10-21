@@ -72,6 +72,8 @@
   h5,
   h6 {
     color: inherit;
+    /* Titulo e Poppins; o resto herda a DM Sans do body. Ver --font-titulo. */
+    font-family: var(--font-titulo);
     font-weight: var(--font-weight-semibold);
     /*
      * Titulo curto sem orfa de uma palavra. Nao existia no tema; entra como

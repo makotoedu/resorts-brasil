@@ -170,16 +170,23 @@ const orgJsonLd = {
 <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
 
 <!--
-  Poppins, que era um @import na linha 9 do style.css. Os pesos sao os
-  medidos (400-800), a Nunito saiu por nao ter uso, e o endpoint css2 traz
-  o display=swap. Preload das faces nao da: a URL do gstatic e opaca.
-  Motivos e medicoes em docs/decisoes.md, "Google Fonts".
+  DM Sans no texto e na interface, Poppins nos titulos (ver --font-titulo no
+  tokens.css). A DM Sans vem VARIAVEL so no eixo de peso, de 400 a 600, num
+  arquivo por subconjunto: medido, o latin pesa 36,9 KB, contra 62,7 KB com o
+  eixo optico junto e 110,8 KB pedindo os tres pesos separados -- o Google
+  serve o mesmo arquivo variavel uma vez por peso. O texto daqui vive entre 13
+  e 20px, onde a instancia padrao do eixo optico (14) ja e a certa.
+
+  Da Poppins sobram os dois pesos que os titulos usam (15,7 KB). Os 700 e 800
+  sairam: eram baixados em toda pagina para nove elementos. O endpoint css2
+  traz o display=swap, e preload das faces continua sem dar: a URL do gstatic
+  e opaca. Motivos em docs/decisoes.md, "Google Fonts" e "Revisao de design".
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
   rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+  href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400..600&family=Poppins:wght@500;600&display=swap"
 />
 
 <!--

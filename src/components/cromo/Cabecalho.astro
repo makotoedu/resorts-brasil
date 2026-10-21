@@ -832,12 +832,16 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
    *
    * O ambar-800 existe para passar sobre BRANCO (4,96:1, ver o tokens.css) e
    * sobre o carvao do e-book ele da 2,6:1 — o mesmo tipo de par invertido que a
-   * topbar ja tinha. A saida e a mesma que a topbar adotou: o item deixa de ser
-   * dourado e fica branco, distinguido por peso.
+   * topbar ja tinha. A primeira saida foi a da topbar: branco, distinguido por
+   * peso (700 contra os 600 do menu).
+   *
+   * O 700 DEIXOU DE SER BAIXADO na revisao de design, e o item ficaria igual
+   * aos irmaos sem erro nenhum. A distincao passa para a COR, que e o canal que
+   * o menu claro ja usa: dourado nas duas variacoes, cada um no tom que passa
+   * no proprio fundo. Ver --color-navegacao-destaque-inverso.
    */
   .escuro .menu-nivel1 > li > a.destaque {
-    color: var(--color-texto-inverso);
-    font-weight: var(--font-weight-bold);
+    color: var(--color-navegacao-destaque-inverso);
   }
 
   /*

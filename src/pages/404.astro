@@ -84,8 +84,10 @@ const t = ui[lang];
    */
   .algarismo {
     color: var(--color-texto-decorativo);
+    font-family: var(--font-titulo);
     font-size: clamp(8.75rem, 4.1667rem + 18.8333vw, 18.75rem);
-    font-weight: var(--font-weight-extrabold);
+    /* Era 800, que deixou de ser baixado: o mais pesado que sobrou. */
+    font-weight: var(--font-weight-semibold);
     line-height: 0.8;
     margin: 0;
   }

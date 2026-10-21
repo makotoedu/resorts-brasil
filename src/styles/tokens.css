@@ -309,6 +309,13 @@
    * motivo. Registrada em docs/deltas-visuais.md.
    */
   --color-navegacao-destaque: var(--cor-ambar-800);
+  /*
+   * O MESMO DESTAQUE SOBRE O CARVAO do cabecalho escuro do e-book. Ate a
+   * revisao de design ele era branco distinguido por peso 700, e o 700 deixou
+   * de ser baixado. O ambar-400 e o ambar da acao de destaque, e sobre o
+   * carvao-900 da 11,6:1 -- o ouro escuro de cima daria 2,6:1 ali.
+   */
+  --color-navegacao-destaque-inverso: var(--cor-ambar-400);
 
   /* Cor de marca de cada rede. Ver a nota das primitivas. */
   --color-rede-facebook: var(--cor-rede-facebook);
@@ -426,7 +433,7 @@
   /* ==========================================================
    * TIPOGRAFIA
    * ==========================================================
-   * Poppins e a unica familia em uso — 773 de 773 elementos medidos.
+   * Duas familias desde a revisao de design: ver a nota de --font-sans abaixo.
    *
    * A ESCALA E FLUIDA POR clamp(), e as ancoras sao medidas: o minimo e o valor
    * que o site tem hoje no viewport de 390px, o maximo e o de 1440px. Os
@@ -449,7 +456,23 @@
    * rem sobre 16px o MESMO tamanho em pixel que foi medido. Renderizacao
    * identica, preferencia do usuario respeitada, escala do Tailwind alinhada.
    */
-  --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  /*
+   * DUAS FAMILIAS, e a divisao e por PAPEL, decidida na revisao de design de
+   * outubro de 2026 (docs/revisao-design.md).
+   *
+   *   --font-sans    DM Sans: o texto corrido e a interface -- corpo, menu,
+   *                  botao, link de acao, rotulo, rodape. E o que o Preflight e
+   *                  o <body> leem, entao tudo que nao e titulo herda daqui.
+   *   --font-titulo  Poppins: h1-h6 (pelo base.css) e os algarismos de vitrine
+   *                  (contador, sigla dos eixos, o 404).
+   *
+   * A Poppins era a familia unica, medida em 773 de 773 elementos. Ela fica
+   * onde e voz da marca -- os titulos -- e sai de onde a largura dela pesava:
+   * em 14px de corpo, a geometria larga e o olho grande da Poppins enchem a
+   * linha e cansam a leitura.
+   */
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-titulo: 'Poppins', ui-sans-serif, system-ui, sans-serif;
 
   /* 12px */
   --text-xs: 0.75rem;
