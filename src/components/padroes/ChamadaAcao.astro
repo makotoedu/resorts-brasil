@@ -200,6 +200,17 @@ const PROPORCOES = {
     margin-inline: auto;
   }
 
+  /*
+   * MIDIA DENTRO DA CHAMADA usa o raio de controle. A chamada ja e uma
+   * superficie arredondada, e o raio de dentro igual ao de fora deixa a foto
+   * com cantos mais redondos que a caixa que a contem -- era a home nos tres
+   * idiomas. Ver a regra de raio no tokens.css. `:global` porque o `<img>` e
+   * do <Imagem>, e a regra sem camada vence a utilitaria `rounded-md` dele.
+   */
+  .interior :global(img) {
+    border-radius: var(--radius-sm);
+  }
+
   /* ---------------- proporcao ---------------- */
 
   /*

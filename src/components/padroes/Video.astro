@@ -97,6 +97,11 @@ const t = ui[lang];
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
+    /* Midia solta tem o raio de superficie, como a foto ao lado dela em
+       /resorts-brasil; antes o video era o unico canto vivo da fileira. O
+       `overflow` recorta junto o `<iframe>` que nasce no clique. */
+    border-radius: var(--radius-md);
+    overflow: hidden;
   }
 
   /*
@@ -166,7 +171,9 @@ const t = ui[lang];
     left: 50%;
     width: 4.25rem;
     height: 3rem;
-    border-radius: 0.875rem;
+    /* Era 14px literal, copiado do player do YouTube; o raio do sistema
+       mais proximo. */
+    border-radius: var(--radius-md);
     background: var(--color-superficie-controle);
     transform: translate(-50%, -50%);
     transition: background-color 0.2s;

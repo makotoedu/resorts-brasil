@@ -132,7 +132,8 @@ const Marca = linkedin ? 'a' : 'span';
 <style>
   .cartao {
     background-color: var(--color-superficie);
-    border-radius: var(--radius-sm);
+    /* Cartao e superficie: `md`, como os outros. Era `sm`, o raio de botao. */
+    border-radius: var(--radius-md);
     /* Medido no tema. E o que corta a foto nos cantos de cima sem que ela
        precise repetir o raio do cartao. */
     overflow: hidden;

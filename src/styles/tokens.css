@@ -690,9 +690,23 @@
    * root voltou para 16px (ver base.css), repetir a fracao em rem inflaria os
    * dois em 14% — o mesmo erro que a escala tipografica ja evitou com os tokens
    * compensados. Aqui a compensacao esta no valor.
+   *
+   * A REVISAO DE DESIGN ARREDONDOU OS DOIS E DEU A ELES UMA REGRA (achado
+   * A11). 5,88 e 11,48 eram a fracao do tema contra um root que nao existe
+   * mais; 6 e 12 sao os mesmos raios na grade de 2px, a diferenca nao se ve, e
+   * o que se ganha e a regra:
+   *
+   *   sm    controle -- botao, menu suspenso, campo -- e midia DENTRO de uma
+   *         superficie ja arredondada (o raio de dentro e menor que o de fora)
+   *   md    superficie -- cartao, chamada, hero -- e midia solta: foto, video
+   *   full  circulo e pilula
+   *
+   * Antes, o cartao de pessoa usava sm e os outros cartoes md, o video nao
+   * tinha raio ao lado de uma chamada em md, e o botao de play usava 14px
+   * literal.
    */
-  --radius-sm: 0.3675rem; /* 5.88px — .btn, .dropdown-menu, .card */
-  --radius-md: 0.7175rem; /* 11.48px — .rounded (105 usos) */
+  --radius-sm: 0.375rem; /* 6px */
+  --radius-md: 0.75rem; /* 12px */
   --radius-full: 9999px;
 
   /* ==========================================================
