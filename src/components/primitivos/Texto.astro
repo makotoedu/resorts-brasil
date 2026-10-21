@@ -107,7 +107,8 @@ const corFinal = cor ?? COR_DE_PARTIDA[papel];
  * associado corria em 188 caracteres numa linha so, a introducao de /historia
  * em 128 e as aberturas em 95. Ver --container-linha no tokens.css.
  */
-const comMedida = (papel === 'abertura' || alinhamento === 'centro') && 'max-w-linha';
+const comMedida =
+  papel === 'abertura' ? 'max-w-abertura' : alinhamento === 'centro' && 'max-w-linha';
 const centrado = alinhamento === 'centro' && 'mx-auto';
 ---
 

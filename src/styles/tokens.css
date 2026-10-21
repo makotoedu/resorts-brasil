@@ -740,6 +740,13 @@
    * (a abertura) os mesmos 32rem dao ~53 caracteres.
    */
   --container-linha: 32rem; /* 512px — ~67 caracteres de DM Sans em 16px */
+  /*
+   * A MESMA LINHA, NA ABERTURA. O que a medida fixa e o numero de caracteres,
+   * nao a largura: em 20px os 512px do corpo davam ~53, e a frase de abertura
+   * quebrava em quatro linhas estreitas sob um titulo bem mais largo. 40rem
+   * sao os mesmos ~67 caracteres no degrau `md`.
+   */
+  --container-abertura: 40rem; /* 640px */
 
   /*
    * PROPORCAO
