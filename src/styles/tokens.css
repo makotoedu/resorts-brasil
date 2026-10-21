@@ -589,8 +589,25 @@
    */
   --spacing-secao-sm: 2.5rem; /* 40px */
   --spacing-secao-md: 5rem; /* 80px — medido no section nu */
-  --spacing-secao-lg: 6.25rem; /* 100px */
-  --spacing-secao-xl: 9.375rem; /* 150px */
+  --spacing-secao-lg: 6rem; /* 96px; era 100, fora da grade */
+  --spacing-secao-xl: 9rem; /* 144px; era 150, fora da grade */
+
+  /*
+   * A GRADE DE 4px, NA PRATICA, desde a revisao de design (achado A10). A
+   * escala do Tailwind ja era de 4px, mas os componentes seguiam o ritmo
+   * 10/20/30/50/60 do tema, em valores proprios -- 21px no cartao de
+   * modalidade, 26 a 50 na chamada, 73 na faixa. Foram para o degrau mais
+   * proximo, e os dois recuos que se repetem viraram token.
+   *
+   * O RECUO LATERAL DO CONTAINER era 30px ate 1023px e 14px dai em diante --
+   * no desktop o conteudo encostava na janela ate o container parar, em
+   * 1500px. Agora e fluido, de 20px em 390 a 40px em 1440: mais texto no
+   * celular, mais respiro no desktop.
+   */
+  --spacing-recuo: clamp(1.25rem, 0.7857rem + 1.9048vw, 2.5rem);
+  /* O recuo da <ChamadaAcao> e da chamada do ebook: 24 ate 48px, o mesmo nos
+     quatro lados. Era 26-46 em cima, 26-50 nos lados e 18-34 embaixo. */
+  --spacing-chamada: clamp(1.5rem, 0.9429rem + 2.2857vw, 3rem);
 
   /* ==========================================================
    * FAIXAS
@@ -661,7 +678,9 @@
    * meio da faixa de 45-75. O container estreito e ela mais os 14px de recuo
    * de cada lado no desktop; no tablet, com os 30px, sobram ~62 caracteres.
    */
-  --container-texto: 33.75rem; /* 540px: 512 de linha + 2 x 14 de recuo */
+  /* A linha de 32rem mais o recuo dos dois lados NAQUELA largura: com o recuo
+     fluido, um numero fixo dava 512px de texto no desktop e 538 no tablet. */
+  --container-texto: calc(var(--container-linha) + 2 * var(--spacing-recuo));
 
   /*
    * A LINHA DE UM PARAGRAFO, para onde ele nao mora no container estreito: o

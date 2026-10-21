@@ -45,7 +45,8 @@ const LARGURAS = {
 } as const;
 ---
 
-<!-- px-7.5 = 30px e lg:px-3.5 = 14px, os dois valores medidos. -->
-<Tag class:list={['mx-auto w-full px-7.5 lg:px-3.5', LARGURAS[largura], classe]}>
+<!-- O recuo e o --spacing-recuo, fluido de 20 a 40px. Era 30px ate 1023 e
+     14px depois, os dois medidos no tema. -->
+<Tag class:list={['mx-auto w-full px-recuo', LARGURAS[largura], classe]}>
   <slot />
 </Tag>

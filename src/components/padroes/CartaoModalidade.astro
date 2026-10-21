@@ -73,7 +73,7 @@ const { tom, titulo, nivel = 3, href, class: classe } = Astro.props;
   /* MEDIDO: 21px de recuo, raio 11,48px. A borda do tema era `none` num `.card`
      que o Bootstrap desenha com 1px — por isso ela e declarada aqui. */
   .cartao {
-    padding: 1.3125rem;
+    padding: 1.5rem; /* era 21px; o recuo de cartao do sistema */
     border: 0;
     border-radius: var(--radius-md);
   }

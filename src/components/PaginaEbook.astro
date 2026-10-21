@@ -320,7 +320,7 @@ const cartao = t.homeHighlights.ebook;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.875rem;
+    gap: 2rem;
   }
 
   @media (min-width: 62rem) {
@@ -338,13 +338,13 @@ const cartao = t.homeHighlights.ebook;
 
   /* MEDIDO: 16px do titulo ao subtitulo no mobile, 30px no desktop. */
   .topo :global(.topo-titulo) {
-    margin-block: 0 clamp(1rem, 0.5843rem + 1.7048vw, 1.875rem);
+    margin-block: 0 clamp(1rem, 0.6286rem + 1.5238vw, 2rem);
   }
 
   /* MEDIDO: 400px de largura maxima no desktop — o `col-lg-9` do tema. */
   .topo :global(.topo-subtitulo) {
     max-width: 25rem;
-    margin-block: 0 1.875rem;
+    margin-block: 0 2rem;
   }
 
   .topo-ilustracao {
@@ -387,8 +387,9 @@ const cartao = t.homeHighlights.ebook;
    * pontas, entao quem cede e o fundo.
    */
   .chamada {
-    padding: clamp(1.625rem, 1.1281rem + 2.0381vw, 2.875rem)
-      clamp(1.625rem, 1.0286rem + 2.4457vw, 3.125rem);
+    /* O recuo da <ChamadaAcao>, em vez de uma copia do clamp dela com outros
+       coeficientes. */
+    padding: var(--spacing-chamada);
     background-image: linear-gradient(
       160deg,
       var(--color-ebook-chamada-inicio) 0%,
@@ -420,7 +421,7 @@ const cartao = t.homeHighlights.ebook;
 
   /* MEDIDO: 30px entre o logotipo e o botao, na faixa de creditos. */
   .creditos :global(.botao) {
-    margin-top: 1.125rem;
+    margin-top: 1rem;
   }
 
   /* ---------------- video ---------------- */
@@ -429,8 +430,8 @@ const cartao = t.homeHighlights.ebook;
   .video {
     display: flex;
     flex-direction: column;
-    gap: 1.875rem;
-    padding-top: 1.875rem;
+    gap: 2rem;
+    padding-top: 2rem;
   }
 
   /* ---------------- estrutura e indice ---------------- */
@@ -448,7 +449,7 @@ const cartao = t.homeHighlights.ebook;
    * proprio template. Aqui, o elemento.
    */
   .cabeca {
-    margin-bottom: 1.875rem;
+    margin-bottom: 2rem;
   }
 
   /* O <h2> dentro dele nao pode somar a propria margem ao vao acima. */
@@ -464,7 +465,7 @@ const cartao = t.homeHighlights.ebook;
 
   /* MEDIDO: 50px entre uma secao do indice e a seguinte. */
   .indice + .indice {
-    margin-top: 3.125rem;
+    margin-top: 3rem;
   }
 
   /*
@@ -481,14 +482,14 @@ const cartao = t.homeHighlights.ebook;
    */
   .indice :global(.indice-titulo) {
     color: var(--color-destaque);
-    margin-block: 0 3.125rem;
-    padding-bottom: 0.625rem;
+    margin-block: 0 3rem;
+    padding-bottom: 0.75rem;
     border-bottom: 2px solid color-mix(in srgb, var(--color-destaque) 90%, transparent);
   }
 
   /* MEDIDO: 5px do titulo do capitulo ate a linha de autores. */
   .indice :global(.capitulo-titulo) {
-    margin-block: 0 0.3125rem;
+    margin-block: 0 0.25rem;
   }
 
   /* ---------------- autores ---------------- */
@@ -499,7 +500,7 @@ const cartao = t.homeHighlights.ebook;
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: clamp(1.875rem, 0.9505rem + 3.7924vw, 3.75rem);
+    margin-bottom: clamp(2rem, 1.2571rem + 3.0476vw, 4rem);
   }
 
   /* O cartao unico do prefacio, na largura de uma coluna da grade abaixo. */
