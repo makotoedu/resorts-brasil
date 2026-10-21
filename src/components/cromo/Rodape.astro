@@ -231,8 +231,18 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
     color: var(--color-acao-primaria);
   }
 
+  /* O alvo de toque do botao de preferencias: ele mede a linha do copyright,
+     32px, e o pseudo-elemento leva o alvo a 44 so na vertical -- largura ele
+     ja tem. Mesma tecnica do <LinkAcao>. */
+  .cookie-manage-btn::after {
+    content: '';
+    position: absolute;
+    inset: -0.375rem 0;
+  }
+
   /* O botao tem de parecer o link ao lado dele: e a mesma acao para quem le. */
   .cookie-manage-btn {
+    position: relative;
     background: none;
     border: 0;
     padding: 0;

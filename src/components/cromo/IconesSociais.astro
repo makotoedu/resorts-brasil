@@ -97,15 +97,30 @@ const redes: { key: string; rede: string; href: string; icone: NomeIcone }[] = [
 
   /* ---------------- rodape ---------------- */
 
+  /*
+   * O ALVO DE TOQUE, 44px, sem mudar o desenho de 32px. A revisao de design
+   * mediu 156 ocorrencias destes circulos abaixo de 44px no celular -- com os
+   * 150 do LinkedIn do <CartaoMembro>, a maior parte do que sobrava do achado
+   * A15.
+   *
+   * O LINK TEM OS 44px DE VERDADE, e o circulo continua com 32: 6px de recuo
+   * e o fundo recortado na caixa de conteudo, com o raio cheio acompanhando.
+   * Um pseudo-elemento estendendo o alvo (a tecnica do <LinkAcao>) entrava na
+   * `scrollWidth` do item da lista, e a geometria o lia como texto vazando.
+   * Os recuos de dois vizinhos somam os 12px de vao entre os circulos, e a
+   * margem negativa da lista devolve o primeiro ao alinhamento do titulo da
+   * coluna.
+   */
   .s-rodape {
     flex-wrap: wrap;
-    gap: 0.25rem; /* os 4px medidos entre os circulos */
+    margin-inline: -0.375rem;
   }
 
-  /* MEDIDO: circulo de 32px com glifo de 16px. */
   .s-rodape a {
-    width: 2rem;
-    height: 2rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.375rem;
+    background-clip: content-box;
     border-radius: var(--radius-full);
   }
 

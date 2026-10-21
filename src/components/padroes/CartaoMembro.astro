@@ -159,6 +159,7 @@ const Marca = linkedin ? 'a' : 'span';
   /* Circulo de 32px com borda de 1px, medido. O glifo de 16px vem do
      <Icone tamanho="sm">, que e o mesmo tamanho medido no rodape. */
   .social {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -171,6 +172,18 @@ const Marca = linkedin ? 'a' : 'span';
     transition:
       background-color 0.3s,
       color 0.3s;
+  }
+
+  /*
+   * O ALVO DE TOQUE, 44px, sem mudar o desenho de 32px: o pseudo-elemento
+   * estende a area clicavel 6px para cada lado. A revisao de design mediu 150
+   * ocorrencias deste circulo abaixo de 44px no celular, e com os 156 do
+   * rodape eram a maior parte do que sobrava do achado A15.
+   */
+  a.social::after {
+    content: '';
+    position: absolute;
+    inset: -0.375rem;
   }
 
   /* Medido com o mouse em cima: fundo cinza claro e a cor de acao no glifo. */
