@@ -113,6 +113,14 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
   { rotulo: t.navSupport, href: url('support', lang) },
   { rotulo: t.navContact, href: url('contact', lang), destaque: true },
 ];
+
+/*
+ * A PAGINA ATUAL, que o menu nao marcava (achado A18 da revisao de design: o
+ * "onde estou?" do Trunk Test). O link dela recebe `aria-current="page"`; o
+ * item de primeiro nivel que a contem num submenu recebe a marca visual,
+ * porque o filho fica escondido no painel. A 404 nao tem rota, e nada marca.
+ */
+const atual = route ? url(route, lang) : undefined;
 ---
 
 {
@@ -165,7 +173,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
             {
               menu.map((item) =>
                 item.filhos ? (
-                  <li class="dropdown">
+                  <li class:list={['dropdown', item.filhos.some((f) => f.href === atual) && 'contem-atual']}>
                     {/*
                       `<button>` e nao `<a href="#">`: o item so abre um submenu,
                       nao navega. O `href="#"` do tema sujava o historico e
@@ -178,14 +186,20 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
                     <ul class="dropdown-menu">
                       {item.filhos.map((filho) => (
                         <li>
-                          <a href={filho.href}>{filho.rotulo}</a>
+                          <a href={filho.href} aria-current={filho.href === atual ? 'page' : undefined}>
+                            {filho.rotulo}
+                          </a>
                         </li>
                       ))}
                     </ul>
                   </li>
                 ) : (
                   <li>
-                    <a href={item.href} class:list={['rotulo', item.destaque && 'destaque']}>
+                    <a
+                      href={item.href}
+                      class:list={['rotulo', item.destaque && 'destaque']}
+                      aria-current={item.href === atual ? 'page' : undefined}
+                    >
                       {item.rotulo}
                     </a>
                   </li>
@@ -510,6 +524,21 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
   .menu-nivel1 > li > a:hover,
   .menu-nivel1 > li > button:hover {
     color: var(--color-acao-primaria);
+  }
+
+  /*
+   * A PAGINA ATUAL E SUBLINHADA, e nao colorida, de proposito. O menu aparece
+   * sobre branco, sobre o carvao do ebook e, no painel, sobre o fundo que o
+   * cabecalho tiver -- a sexta armadilha do CLAUDE.md: uma cor nova seria um
+   * par novo a medir em cada um desses fundos. O sublinhado herda a cor do
+   * proprio texto, e passa onde o texto passa.
+   */
+  .menu-nivel1 > li > a[aria-current='page'],
+  .menu-nivel1 > li.contem-atual > button,
+  .dropdown-menu a[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.5em;
   }
 
   /* O ouro escurecido. Ver a nota de --color-navegacao-destaque no tokens.css. */
