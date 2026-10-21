@@ -63,6 +63,7 @@ const {
 
 <style>
   .link-acao {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
@@ -89,15 +90,48 @@ const {
     color: var(--color-texto-inverso);
   }
 
+  /*
+   * O HOVER DESTA VARIANTE NAO EXISTIA. A cor fica branca de proposito -- o
+   * azul de acao some sobre a foto --, e a resposta ao mouse era a seta
+   * deslizando. So que a seta nunca deslizou: a regra estava escrita `.seta`,
+   * com escopo, e o `<svg>` nasce dentro do <Icone>, que nao recebe o atributo
+   * de escopo deste arquivo (armadilha 1 do CLAUDE.md). Repouso e hover eram o
+   * mesmo pixel nos seis cartoes da home e nos de modalidade. Achado A14 da
+   * revisao de design.
+   *
+   * Agora sao dois sinais: o sublinhado, que e o que o base.css ja da a link
+   * sobre superficie escura, e a seta.
+   */
   .inverso:hover {
     color: var(--color-texto-inverso);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
   }
 
-  .seta {
-    transition: transform 0.3s;
+  /* `:global` pelo motivo acima: o `<svg>` e do <Icone>. */
+  .link-acao :global(.seta) {
+    transition: transform 0.2s ease-out;
   }
 
-  .link-acao:hover .seta {
+  .link-acao:hover :global(.seta) {
     transform: translateX(0.25rem);
+  }
+
+  /*
+   * A AREA DE TOQUE. O link mede 20px de altura -- a linha do rotulo --, e no
+   * celular eram 23px num controle que se toca com o dedo. O pseudo-elemento
+   * estende o alvo a 44px sem mudar um pixel do desenho nem empurrar o
+   * vizinho.
+   *
+   * SO NA VERTICAL, e isso e medido: com 8px para cada lado tambem, o alvo
+   * entrava na `scrollWidth` de quem contem o link, e a varredura de geometria
+   * o leu como texto vazando da caixa -- na celula do catalogo, 112px de
+   * conteudo em 104. Largura o link ja tem; o que faltava era altura.
+   */
+  .link-acao::after {
+    content: '';
+    position: absolute;
+    inset: -0.75rem 0;
   }
 </style>
