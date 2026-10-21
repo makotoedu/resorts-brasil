@@ -205,27 +205,34 @@ const {
 
   /*
    * A cascata. O tema fazia isto em JavaScript, com 1s de espera e 350ms entre
-   * um elemento e o seguinte; os mesmos numeros estao aqui.
+   * um elemento e o seguinte, e esses numeros ficaram aqui ate a revisao de
+   * design.
    *
    * `both` e a parte que importa: o quadro inicial vale DURANTE o atraso, e o
    * final permanece depois. Se a animacao nao rodar, o elemento fica com o
    * estilo normal — visivel. O tema fazia o contrario, e foi assim que seis
    * paginas ficaram sem conteudo quando o plugin saiu.
+   *
+   * O TITULO NUNCA ENTROU NELA (achado A19). A regra era `.surge`, com escopo,
+   * e o h1 nasce no <Titulo>, que nao recebe o atributo de escopo deste
+   * arquivo -- a armadilha 1. Ele so pegava o `animation-delay`, sem animacao
+   * nenhuma. Resultado: o titulo aparecia primeiro, o sobretitulo, que fica
+   * ACIMA dele, surgia um segundo depois, e o botao principal so ficava
+   * inteiro perto dos 2,3s. `.legendas :global(.surge)` alcanca os tres.
+   *
+   * E A CASCATA ENCOLHEU: 0, 100 e 200ms de atraso e 500ms de animacao, tudo
+   * dentro de 700ms. O botao e a acao da pagina; ele nao espera o visitante.
    */
-  .surge {
-    animation: surgir 600ms ease-out both;
+  .legendas :global(.surge) {
+    animation: surgir 500ms ease-out both;
   }
 
-  .sobretitulo.surge {
-    animation-delay: 1s;
-  }
-
-  .hero :global(.titulo.surge) {
-    animation-delay: 1.35s;
+  .legendas :global(.titulo.surge) {
+    animation-delay: 100ms;
   }
 
   .acao.surge {
-    animation-delay: 1.7s;
+    animation-delay: 200ms;
   }
 
   @keyframes surgir {
