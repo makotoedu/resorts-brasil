@@ -423,7 +423,7 @@ export const ui = {
       'A ideia da criação de uma entidade que representasse os interesses do setor começou no ano de 2000 e tomou forma durante o Festival de Turismo de Gramado.',
     historyIntro:
       'Em dezembro de 2001, oficialmente, a Resorts Brasil foi fundada, fruto da iniciativa de 12 empresas do setor.',
-    historyBookBadge: '20 ANOS',
+    historyBookBadge: '20 anos',
     historyBookTitle: 'Memórias, sustentabilidade e um olhar para o futuro',
 
     contactTitle: 'Como você prefere falar com a gente?',
@@ -612,10 +612,17 @@ export const ui = {
       'Trabalhamos em conjunto com os associados em prol do segmento de resorts e do setor de turismo.',
     resortsBrasilPhotoAlt: 'Piscina de um resort à beira-mar',
     resortsBrasilAxesIntro: 'Para melhor organização de nossas estratégias, atuamos em três eixos:',
+    /*
+     * Os títulos dos eixos estavam DIGITADOS em caixa alta, nos três idiomas, e
+     * renderizavam como títulos de bloco em Poppins 600 -- três linhas de 25px
+     * em maiúsculas. A revisão de design deixou a caixa alta só para rótulos, e
+     * pela convenção da nota da Etapa 9 abaixo ela vem do CSS, nunca do texto.
+     * O jogo das siglas (RE, SO, RT) continua na sigla grande acima de cada um.
+     */
     resortsBrasilAxes: [
       {
         sigla: 'RE',
-        titulo: 'REPRESENTAR E ENGAJAR',
+        titulo: 'Representar e engajar',
         textos: [
           'Eixo voltado à representação do setor, em que fazemos a interlocução com o Governo, no sentido de trabalhar os principais pleitos do segmento.',
           'Buscamos também representar os resorts nos principais eventos do mercado, engajando parceiros e associados no fortalecimento dos resorts.',
@@ -623,14 +630,14 @@ export const ui = {
       },
       {
         sigla: 'SO',
-        titulo: 'SENSIBILIZAR O OLHAR',
+        titulo: 'Sensibilizar o olhar',
         textos: [
           'Eixo voltado para a informação, com o desenvolvimento de pesquisas e publicações relevantes que possam gerar valor para o associado e que possam fortalecer o segmento, revelando a importância dos resorts para o turismo nacional.',
         ],
       },
       {
         sigla: 'RT',
-        titulo: 'REFLETIR PARA TRANSFORMAR',
+        titulo: 'Refletir para transformar',
         textos: [
           'Voltado às ações coletivas dos associados, este eixo busca identificar temas de interesse comum no segmento de resorts para atuação conjunta.',
           'Trabalhamos fortemente com ações de promoção, além de reuniões em comitês e grupos de trabalho para compartilhar os desafios e pensar em soluções para o setor.',
@@ -761,7 +768,7 @@ export const ui = {
       'The idea of creating an entity to represent the interests of the industry in 2000 was shaped during the Gramado Tourism Festival.',
     historyIntro:
       'In December 2001, Resorts Brasil was officially founded as a result of the initiative of 12 companies in the sector.',
-    historyBookBadge: '20 YEARS',
+    historyBookBadge: '20 years',
     historyBookTitle: 'Memories, sustainability and a look to the future',
 
     contactTitle: 'How would you like to contact us?',
@@ -899,7 +906,7 @@ export const ui = {
     resortsBrasilAxes: [
       {
         sigla: 'RE',
-        titulo: 'REPRESENT AND ENGAGE',
+        titulo: 'Represent and engage',
         textos: [
           'This front is focused on representing the sector and we dialogue with the Government, to work on the main demands of the segment.',
           'We also seek to represent the resorts at the main market events, engaging partners and associates in strengthening the resorts.',
@@ -907,14 +914,14 @@ export const ui = {
       },
       {
         sigla: 'SO',
-        titulo: 'SENSITIZE THE LOOK',
+        titulo: 'Sensitize the look',
         textos: [
           'Front focused on information with the development of research and relevant publications that can generate value for the member and that can strengthen the segment, showing the importance of resorts for national tourism.',
         ],
       },
       {
         sigla: 'RT',
-        titulo: 'REFLECT TO TRANSFORM',
+        titulo: 'Reflect to transform',
         textos: [
           'Focused on collective actions of associates, this front seeks to identify themes of common interest in the resort segment for joint action.',
           'We work hard with promotions, in addition to meetings in committees and working groups to share challenges and think about solutions for the sector.',
@@ -1030,7 +1037,7 @@ export const ui = {
       'La idea de la creación de una entidad que representase los intereses del sector empezó en el año 2000 y fue tomando forma durante el Festival de Turismo de Gramado.',
     historyIntro:
       'En diciembre de 2001, oficialmente, Resorts Brasil fue fundada, fruto de la iniciativa de 12 empresas del sector.',
-    historyBookBadge: '20 AÑOS',
+    historyBookBadge: '20 años',
     /*
      * A pagina de publicacoes traz este mesmo titulo em espanhol com dois erros
      * — "marida" no lugar de "mirada" e um "Y" maiusculo no meio da frase — e
@@ -1192,7 +1199,7 @@ export const ui = {
     resortsBrasilAxes: [
       {
         sigla: 'RE',
-        titulo: 'REPRESENTAR Y COMPROMETER',
+        titulo: 'Representar y comprometer',
         textos: [
           'Eje centrado en la representación del sector, en el que hacemos la interlocución con el Gobierno, en el sentido de trabajar los principales pleitos del segmento.',
           'Buscamos también representar los resorts en los principales eventos del mercado, comprometiendo colaboradores y asociados en el fortalecimiento de los resorts.',
@@ -1200,14 +1207,14 @@ export const ui = {
       },
       {
         sigla: 'SO',
-        titulo: 'SENSIBILIZAR LA MIRADA',
+        titulo: 'Sensibilizar la mirada',
         textos: [
           'Eje orientado hacia la información, con desarrollo de investigaciones, encuestas y publicaciones relevantes que puedan generar valor para el asociado y que puedan fortalecer el segmento, revelando la importancia de los resorts para el turismo nacional.',
         ],
       },
       {
         sigla: 'RT',
-        titulo: 'REFLEXIONAR PARA TRANSFORMAR',
+        titulo: 'Reflexionar para transformar',
         textos: [
           'Centrado en las acciones colectivas de los asociados, este eje busca identificar temas de interés común en el segmento de resorts para una actuación conjunta.',
           'Trabajamos fuertemente con acciones de promoción, además de reuniones en comités y grupos de trabajo para compartir los desafíos y pensar en soluciones para el sector.',

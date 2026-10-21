@@ -88,8 +88,8 @@ const faixas = [
         */
         <div class="faixa">
           <Grade colunas={4} piso={1} espaco="md" alinhamento="inicio">
-            <div class="rotulo">
-              <Titulo nivel={3} papel="cartao" alinhamento="centro" class="nome">
+            <div class="grupo">
+              <Titulo nivel={3} papel="cartao" alinhamento="centro">
                 {faixa.rotulo}
               </Titulo>
               {faixa.nota && (
@@ -137,12 +137,6 @@ const faixas = [
      primeira. */
   .faixa + .faixa {
     margin-top: 1.875rem;
-  }
-
-  /* MEDIDO: 1px de espacamento entre letras no rotulo, o `letter-spacing` que
-     estava em `style=` inline nas doze copias. */
-  .rotulo :global(.nome) {
-    letter-spacing: 1px;
   }
 
   /* O `hr.space` do tema — 60px de vao — mais o texto centrado. */

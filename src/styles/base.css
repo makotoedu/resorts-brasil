@@ -288,6 +288,34 @@
   }
 
   /*
+   * O ROTULO -- toda caixa alta do site, e so ela.
+   *
+   * Decisao de marca da revisao de design (docs/revisao-design.md): botao,
+   * item do menu principal, link de acao, titulo de coluna do rodape,
+   * sobretitulo do hero, selo e etiqueta continuam em caixa alta, mas com UMA
+   * voz. Antes eram sete combinacoes medidas -- 12 a 16px, peso 500 ou 600,
+   * espacamento de 0,5 a 2px --, uma por componente.
+   *
+   * Fica aqui, global, e nao num componente, por dois motivos. Ele se aplica a
+   * elementos de seis componentes diferentes, e passado como `class` a um
+   * <Titulo> ou <Texto> ele continua valendo -- classe escopada passada a um
+   * componente nao vale (armadilha 1 do CLAUDE.md), classe global vale. E a
+   * caixa alta vem SEMPRE daqui, nunca digitada no ui.ts: o texto fica em
+   * caixa normal e quem sobe a caixa e o CSS.
+   *
+   * O `verify-tipografia.mjs` afirma o resultado: todo elemento com caixa alta
+   * computada mede 13px, 600 e 0,08em.
+   */
+  .rotulo {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--tracking-rotulo);
+    text-transform: uppercase;
+  }
+
+  /*
    * O tema respeitava prefers-reduced-motion so no scroll-behavior. Aqui vale
    * para tudo: quem pediu menos movimento nao deveria depender de cada
    * componente lembrar.

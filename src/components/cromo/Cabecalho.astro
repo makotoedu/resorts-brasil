@@ -171,7 +171,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
                       nao navega. O `href="#"` do tema sujava o historico e
                       punha um destino falso na barra de status.
                     */}
-                    <button type="button" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="rotulo" aria-haspopup="true" aria-expanded="false">
                       {item.rotulo}
                       <Icone nome="chevron-right" tamanho="sm" class="seta" />
                     </button>
@@ -185,7 +185,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
                   </li>
                 ) : (
                   <li>
-                    <a href={item.href} class:list={[item.destaque && 'destaque']}>
+                    <a href={item.href} class:list={['rotulo', item.destaque && 'destaque']}>
                       {item.rotulo}
                     </a>
                   </li>
@@ -206,7 +206,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
           -->
           <button type="button" aria-label={t.chooseLanguage} aria-haspopup="true" aria-expanded="false">
             <Icone nome="globe" tamanho="sm" />
-            <span class="distintivo">{localeBadge[lang]}</span>
+            <span class="distintivo rotulo">{localeBadge[lang]}</span>
           </button>
           <ul class="p-dropdown-content">
             {
@@ -480,14 +480,9 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
     /* MEDIDO no mobile: 12px em cima e embaixo, 45px de altura de linha. */
     padding: 0.75rem 0;
     color: var(--color-texto);
-    font-family: inherit;
-    /* Interface, nao corpo: o `base` virou o corpo de 16px na revisao. */
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: 0.6px;
-    line-height: 1.5;
+    /* A voz e a do `.rotulo`, a mesma nas duas faixas: o tema usava 14px no
+       celular e 13px no desktop, com 0,6px de espacamento. */
     text-align: left;
-    text-transform: uppercase;
     text-decoration: none;
     cursor: pointer;
     transition: color 0.3s;
@@ -496,10 +491,9 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
   @media (min-width: 62rem) {
     .menu-nivel1 > li > a,
     .menu-nivel1 > li > button {
-      /* MEDIDO no desktop: 13px, recuo 10px/12px. */
+      /* MEDIDO no desktop: recuo 10px/12px. */
       width: auto;
       padding: 0.625rem 0.75rem;
-      font-size: var(--text-sm);
     }
   }
 
@@ -633,10 +627,6 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
 
   .p-dropdown > button:hover {
     color: var(--color-acao-primaria);
-  }
-
-  .distintivo {
-    letter-spacing: 0.5px;
   }
 
   .p-dropdown-content {

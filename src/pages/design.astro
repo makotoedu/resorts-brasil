@@ -297,7 +297,7 @@ const faixas = [
           {
             escalaTipo.map((e) => (
               <li>
-                <span class="rotulo">
+                <span class="rotulo-escala">
                   <code>{e.token}</code> <small>{e.nota}</small>
                 </span>{' '}
                 <span class="exemplo" style={`font-size: var(${e.token})`}>
@@ -336,6 +336,18 @@ const faixas = [
             <li>Segundo item</li>
           </ul>
           <hr />
+        </div>
+
+        <h3>Rótulo</h3>
+        <p class="legenda">
+          A classe global <code>.rotulo</code>: DM Sans de 13px, peso 600, caixa alta e{' '}
+          <code>0,08em</code> de espaçamento. É a única caixa alta do site — botão, item do menu,
+          link de ação, título de coluna do rodapé, sobretítulo do hero, selo e etiqueta — e o texto
+          continua em caixa normal no <code>ui.ts</code>: quem sobe a caixa é a classe. O{' '}
+          <code>verify-tipografia.mjs</code> reprova caixa alta com qualquer outra voz.
+        </p>
+        <div class="demo">
+          <p class="rotulo">Em todo o Brasil</p>
         </div>
       </section>
 
@@ -1596,7 +1608,7 @@ const faixas = [
     border-bottom: 1px solid var(--color-borda);
   }
 
-  .rotulo {
+  .rotulo-escala {
     flex: none;
     width: 12rem;
     max-width: 100%;

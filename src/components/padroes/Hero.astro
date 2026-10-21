@@ -99,7 +99,7 @@ const {
   />
   <span class="veu" aria-hidden="true"></span>
   <div class="legendas">
-    {sobretitulo && <p class="sobretitulo surge">{sobretitulo}</p>}
+    {sobretitulo && <p class="sobretitulo rotulo surge">{sobretitulo}</p>}
     <Titulo nivel={nivel} papel="pagina" cor="inverso" alinhamento="centro" class="titulo surge">
       {titulo}
     </Titulo>
@@ -192,13 +192,9 @@ const {
     text-align: center;
   }
 
-  /* MEDIDO: 12px / 500, 20px ate o titulo. */
+  /* A voz e a do `.rotulo`; daqui so a cor e os 20px medidos ate o titulo. */
   .sobretitulo {
     color: inherit;
-    font-size: var(--text-xs);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: 1px;
-    text-transform: uppercase;
     margin-block: 0 1.25rem;
   }
 

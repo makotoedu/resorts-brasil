@@ -61,7 +61,15 @@
  *      `getComputedStyle` continua devolvendo o pedido. E isso que esta regra
  *      le.
  *
- * NAO MEDE cor nem espacamento.
+ * E UMA REGRA DE CAIXA ALTA, que entrou com a classe `.rotulo`:
+ *
+ *   5. TODA CAIXA ALTA TEM A VOZ DO ROTULO. A decisao de marca da revisao foi
+ *      manter a caixa alta em botao, menu e link de acao, com um tamanho, um
+ *      peso e um espacamento. Antes eram sete combinacoes, uma por componente,
+ *      e nenhum portao lia `text-transform`. A referencia e uma sonda com a
+ *      propria classe, entao mudar o rotulo no CSS nao desatualiza o teste.
+ *
+ * NAO MEDE cor nem espacamento entre blocos.
  *
  * ELE NASCEU CONTADOR E VIROU BLOQUEIO NA MESMA SESSAO. Na primeira execucao
  * eram 33 ocorrencias em 27 paginas; a conversao de `tamanho` para `papel`, a
@@ -169,7 +177,38 @@ const COLETAR = () => {
     }
   }
 
-  return { escala, voz, titulos, vozesFora: [...vozesFora.entries()] };
+  /*
+   * Regra 5, coletada aqui: toda CAIXA ALTA tem a voz do rotulo. A referencia
+   * e uma sonda com a classe `.rotulo`, e nao numeros escritos neste arquivo --
+   * o mesmo motivo das sondas da escala.
+   */
+  const sondaRotulo = document.createElement('span');
+  sondaRotulo.className = 'rotulo';
+  sondaRotulo.style.position = 'absolute';
+  sondaRotulo.style.visibility = 'hidden';
+  sondaRotulo.textContent = 'M';
+  document.body.appendChild(sondaRotulo);
+  const vozDe = (cs) =>
+    [
+      cs.fontFamily.split(',')[0].replace(/["']/g, '').trim(),
+      Math.round(parseFloat(cs.fontSize)) + 'px',
+      cs.fontWeight,
+      (Math.round((parseFloat(cs.letterSpacing) / parseFloat(cs.fontSize)) * 100) / 100 || 0) + 'em',
+    ].join(' ');
+  const rotulo = vozDe(getComputedStyle(sondaRotulo));
+  sondaRotulo.remove();
+  const caixaAltaFora = new Map();
+  for (const el of document.body.querySelectorAll('*')) {
+    if (![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
+    const cs = getComputedStyle(el);
+    if (cs.textTransform !== 'uppercase' || cs.display === 'none' || cs.visibility === 'hidden') continue;
+    const v = vozDe(cs);
+    if (v !== rotulo && !caixaAltaFora.has(v)) {
+      caixaAltaFora.set(v, `${el.tagName.toLowerCase()} "${el.textContent.trim().replace(/\s+/g, ' ').slice(0, 30)}"`);
+    }
+  }
+
+  return { escala, voz, titulos, vozesFora: [...vozesFora.entries()], rotulo, caixaAltaFora: [...caixaAltaFora.entries()] };
 };
 
 const falhas = [];
@@ -192,9 +231,19 @@ for (const vp of VIEWPORTS) {
       await page.close();
       continue;
     }
-    const { escala, voz, titulos, vozesFora } = await page.evaluate(COLETAR);
+    const { escala, voz, titulos, vozesFora, rotulo, caixaAltaFora } = await page.evaluate(COLETAR);
     await page.close();
     paginasVistas += 1;
+
+    /* Regra 5 -------------------------------------------------------- */
+    for (const [v, exemplo] of caixaAltaFora) {
+      falhas.push({
+        regra: 'caixa alta fora da voz do rotulo',
+        pagina: caminho,
+        vp: vp.nome,
+        detalhe: `${v} -- ${exemplo}; o rotulo e ${rotulo}. Use a classe \`.rotulo\`.`,
+      });
+    }
 
     /* Regra 4 -------------------------------------------------------- */
     for (const [chave, exemplo] of vozesFora) {

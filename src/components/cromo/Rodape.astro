@@ -101,7 +101,7 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
 
             {colunas.map((coluna) => (
               <div>
-                <Titulo nivel={2} class="titulo-lista">
+                <Titulo nivel={2} class="titulo-lista rotulo">
                   {coluna.titulo}
                 </Titulo>
                 <ul class="lista">
@@ -115,7 +115,7 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
             ))}
 
             <div>
-              <Titulo nivel={2} class="titulo-lista">
+              <Titulo nivel={2} class="titulo-lista rotulo">
                 {t.footerSocial}
               </Titulo>
               <IconesSociais lang={lang} superficie="rodape" />
@@ -174,13 +174,9 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
     height: 5rem;
   }
 
-  /* MEDIDO: 14px / 600 / 1px de espacamento / caixa alta / 20px ate a lista.
-     O <Titulo> traz a tag e a cor; o resto e o desenho deste bloco. */
+  /* O <Titulo> traz a tag e a cor, o `.rotulo` traz a voz (era 14px com 1px
+     de espacamento, medido); daqui so os 20px medidos ate a lista. */
   .rodape :global(.titulo-lista) {
-    font-size: var(--text-sm);
-    letter-spacing: 1px;
-    line-height: var(--text-sm--line-height);
-    text-transform: uppercase;
     margin-block: 0 1.25rem;
   }
 

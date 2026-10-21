@@ -50,7 +50,7 @@ const {
 ---
 
 <a
-  class:list={['link-acao', cor === 'inverso' && 'inverso', classe]}
+  class:list={['link-acao', 'rotulo', cor === 'inverso' && 'inverso', classe]}
   href={href}
   target={externo ? '_blank' : undefined}
   rel={externo ? 'noopener noreferrer' : undefined}
@@ -67,13 +67,9 @@ const {
     align-items: center;
     gap: 0.375rem;
     color: var(--color-texto);
-    /* Interface, nao corpo: o `base` virou o corpo de 16px na revisao. */
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-medium);
-    /* MEDIDO: `text-transform: uppercase !important` e `letter-spacing: 1px` no
-       `.item-link` do tema. Ver a nota do cabecalho. */
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    /* A caixa alta medida no `.item-link` do tema (ver a nota do cabecalho)
+       ficou, por decisao de marca; o tamanho, o peso e o espacamento sao os do
+       `.rotulo`, iguais aos do botao. */
     text-decoration: none;
     transition: color 0.3s;
   }
