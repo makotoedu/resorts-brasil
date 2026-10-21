@@ -1,4 +1,5 @@
 ---
+import CabecalhoPagina from '../../components/padroes/CabecalhoPagina.astro';
 import LayoutSistema from '../../layouts/LayoutSistema.astro';
 import Secao from '../../components/layout/Secao.astro';
 import Container from '../../components/layout/Container.astro';
@@ -28,12 +29,10 @@ const tamanhosFoto = '(min-width: 64rem) 15rem, (min-width: 30rem) 33vw, 50vw';
 ---
 
 <LayoutSistema lang={lang} route="board">
+  <CabecalhoPagina titulo={t.boardTitle} nota={mandato} />
+
   <Secao id="diretoria" espacoBase="nenhum">
     <Container>
-      <div class="cabeca">
-        <Titulo nivel={1} papel="pagina" alinhamento="centro">{t.boardTitle}</Titulo>
-        <Texto papel="apoio" alinhamento="centro" semMargem>{mandato}</Texto>
-      </div>
       <Grade colunas={6} espaco="md">
         {
           diretoria.map((membro) => (

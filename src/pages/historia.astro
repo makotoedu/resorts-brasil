@@ -1,4 +1,5 @@
 ---
+import CabecalhoPagina from '../components/padroes/CabecalhoPagina.astro';
 import LayoutSistema from '../layouts/LayoutSistema.astro';
 import Secao from '../components/layout/Secao.astro';
 import Container from '../components/layout/Container.astro';
@@ -39,13 +40,12 @@ const livro = await publicacaoEm('memorias-sustentabilidade-e-um-olhar-para-o-fu
 ---
 
 <LayoutSistema lang={lang} route="history">
+  <CabecalhoPagina titulo={t.historyTitle} abertura={t.historyLead}>
+    <Texto alinhamento="centro">{t.historyIntro}</Texto>
+  </CabecalhoPagina>
+
   <Secao id="historia">
     <Container largura="media">
-      <div class="abertura">
-        <Titulo nivel={1} papel="pagina" alinhamento="centro">{t.historyTitle}</Titulo>
-        <Texto papel="abertura" alinhamento="centro">{t.historyLead}</Texto>
-        <Texto alinhamento="centro">{t.historyIntro}</Texto>
-      </div>
       <ListaIcones marcador="circulo" colunas={3} itens={fundadores} />
     </Container>
   </Secao>
@@ -80,15 +80,3 @@ const livro = await publicacaoEm('memorias-sustentabilidade-e-um-olhar-para-o-fu
   </Secao>
 </LayoutSistema>
 
-<style>
-  /*
-   * O vao ate a lista de fundadoras.
-   *
-   * No tema isso eram DUAS secoes, a segunda com `p-t-0` para cancelar os 80px
-   * que ela mesma traria — um bloco visual escrito como dois porque a grade do
-   * Bootstrap pedia. Aqui e uma secao so, e o vao e uma margem.
-   */
-  .abertura {
-    margin-bottom: 2.5rem;
-  }
-</style>

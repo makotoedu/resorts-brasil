@@ -1,4 +1,5 @@
 ---
+import CabecalhoPagina from '../../components/padroes/CabecalhoPagina.astro';
 import LayoutSistema from '../../layouts/LayoutSistema.astro';
 import Secao from '../../components/layout/Secao.astro';
 import Container from '../../components/layout/Container.astro';
@@ -56,12 +57,7 @@ const compartilhamento = [
 ---
 
 <LayoutSistema lang={lang} route="privacy">
-  <Secao id="titulo" espacoBase="nenhum">
-    <Container largura="estreita">
-      <Titulo nivel={1} papel="pagina" alinhamento="centro">{t.privacyTitle}</Titulo>
-      <Texto papel="legenda" alinhamento="centro">{atualizacao}</Texto>
-    </Container>
-  </Secao>
+  <CabecalhoPagina titulo={t.privacyTitle} nota={atualizacao} />
 
   <Secao id="politica-de-privacidad">
     <Container largura="estreita">

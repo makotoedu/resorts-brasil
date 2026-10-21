@@ -1,4 +1,5 @@
 ---
+import CabecalhoPagina from '../../components/padroes/CabecalhoPagina.astro';
 import LayoutSistema from '../../layouts/LayoutSistema.astro';
 import Secao from '../../components/layout/Secao.astro';
 import Container from '../../components/layout/Container.astro';
@@ -23,11 +24,7 @@ const tamanhosFoto = '(min-width: 48rem) 46vw, 92vw';
 ---
 
 <LayoutSistema lang={lang} route="support">
-  <Secao id="title" espacoBase="nenhum">
-    <Container largura="media">
-      <Titulo nivel={1} papel="pagina" alinhamento="centro">{t.supportTitle}</Titulo>
-    </Container>
-  </Secao>
+  <CabecalhoPagina id="title" titulo={t.supportTitle} />
 
   <Secao id="support" espacoBase="nenhum">
     <Container>

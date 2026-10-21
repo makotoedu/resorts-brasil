@@ -1,4 +1,5 @@
 ---
+import CabecalhoPagina from '../../components/padroes/CabecalhoPagina.astro';
 import LayoutSistema from '../../layouts/LayoutSistema.astro';
 import Secao from '../../components/layout/Secao.astro';
 import Container from '../../components/layout/Container.astro';
@@ -23,14 +24,10 @@ const tamanhosFoto = '(min-width: 48rem) 42vw, 92vw';
 ---
 
 <LayoutSistema lang={lang} route="joinUs">
+  <CabecalhoPagina titulo={t.joinTitle} />
+
   <Secao id="join-us">
     <Container>
-      {/* `mb-15` = 60px, que e o `<div class="space">` vazio do tema — um
-          elemento sem conteudo cujo unico papel era abrir um vao. */}
-      <Titulo nivel={1} papel="pagina" alinhamento="centro" class="mb-15">
-        {t.joinTitle}
-      </Titulo>
-
       <Grade colunas={2} piso={1} espaco="md" alinhamento="centro">
         <Imagem
           src="/images/hero/pexels-1134176.jpg"

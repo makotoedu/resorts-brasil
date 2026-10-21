@@ -1,9 +1,9 @@
 ---
+import CabecalhoPagina from '../components/padroes/CabecalhoPagina.astro';
 import LayoutSistema from '../layouts/LayoutSistema.astro';
 import Secao from '../components/layout/Secao.astro';
 import Container from '../components/layout/Container.astro';
 import Grade from '../components/layout/Grade.astro';
-import Titulo from '../components/primitivos/Titulo.astro';
 import Texto from '../components/primitivos/Texto.astro';
 import CaixaIcone from '../components/padroes/CaixaIcone.astro';
 import ChamadaAcao from '../components/padroes/ChamadaAcao.astro';
@@ -34,13 +34,9 @@ const t = ui[lang];
 ---
 
 <LayoutSistema lang={lang} route="contact">
-  <Secao id="fale-conosco">
-    <Container>
-      <Titulo nivel={1} papel="pagina" alinhamento="centro">{t.contactTitle}</Titulo>
-    </Container>
-  </Secao>
+  <CabecalhoPagina id="fale-conosco" titulo={t.contactTitle} />
 
-  <Secao id="contato" espacoTopo="nenhum">
+  <Secao id="contato">
     <Container>
       {/*
         Sem o `p-t-100` do tema.

@@ -1,9 +1,9 @@
 ---
+import CabecalhoPagina from '../../components/padroes/CabecalhoPagina.astro';
 import LayoutSistema from '../../layouts/LayoutSistema.astro';
 import Secao from '../../components/layout/Secao.astro';
 import Container from '../../components/layout/Container.astro';
 import Titulo from '../../components/primitivos/Titulo.astro';
-import Texto from '../../components/primitivos/Texto.astro';
 import Prosa from '../../components/padroes/Prosa.astro';
 import { juridico, dataEm } from '../../data/juridico';
 import { ui, type Locale } from '../../i18n/ui';
@@ -17,12 +17,7 @@ const atualizacao = `${t.legalUpdated} ${dataEm(juridico.termos.atualizadoEm, la
 ---
 
 <LayoutSistema lang={lang} route="terms">
-  <Secao id="titulo" espacoBase="nenhum">
-    <Container largura="estreita">
-      <Titulo nivel={1} papel="pagina" alinhamento="centro">{t.termsTitle}</Titulo>
-      <Texto papel="legenda" alinhamento="centro">{atualizacao}</Texto>
-    </Container>
-  </Secao>
+  <CabecalhoPagina titulo={t.termsTitle} nota={atualizacao} />
 
   <Secao id="terminos-de-uso">
     <Container largura="estreita">

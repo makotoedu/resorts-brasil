@@ -33,6 +33,7 @@ import CartaoPublicacao from '../components/padroes/CartaoPublicacao.astro';
 import LinkAcao from '../components/padroes/LinkAcao.astro';
 import ListaIcones from '../components/padroes/ListaIcones.astro';
 import Hero from '../components/padroes/Hero.astro';
+import CabecalhoPagina from '../components/padroes/CabecalhoPagina.astro';
 import FaixaDestaque from '../components/padroes/FaixaDestaque.astro';
 import Contador from '../components/padroes/Contador.astro';
 import Abas from '../components/padroes/Abas.astro';
@@ -1023,6 +1024,29 @@ const faixas = [
               'Quando você entra em contato conosco por telefone, e-mail ou presencialmente.',
             ]}
           />
+        </div>
+      </section>
+
+      <section>
+        <h3>CabecalhoPagina</h3>
+        <p class="legenda">
+          O título de toda página interna — 33, nos três idiomas —, e o que vem com ele: uma{' '}
+          <code>nota</code> (data de atualização, mandato), uma <code>abertura</code> e o que mais
+          pertencer a ela, pelo slot. É uma seção própria, no container médio e centralizada, e o
+          vão até o conteúdo é o vão entre seções. Antes cada página montava a sua, e o vão media
+          14, 54, 60, 94 ou 120px conforme a página. Aqui ele sai em <code>h2</code>: o catálogo já
+          tem o próprio <code>h1</code>.
+        </p>
+        <div class="demo">
+          <CabecalhoPagina
+            nivel={2}
+            id="demo-cabecalho"
+            titulo="Resorts Associados"
+            abertura="Representamos os grandes resorts do país, que passam por um criterioso processo de afiliação."
+          />
+        </div>
+        <div class="demo">
+          <CabecalhoPagina nivel={2} id="demo-cabecalho-nota" titulo="Termos de uso" nota="Última atualização em 21 de fevereiro de 2022" />
         </div>
       </section>
 

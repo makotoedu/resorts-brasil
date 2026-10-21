@@ -1,0 +1,75 @@
+---
+import Secao from '../layout/Secao.astro';
+import Container from '../layout/Container.astro';
+import Titulo from '../primitivos/Titulo.astro';
+import Texto from '../primitivos/Texto.astro';
+
+/**
+ * CabecalhoPagina — o titulo da pagina, e o que vem com ele.
+ *
+ *   <CabecalhoPagina titulo={t.associatesTitle} abertura={t.associatesLead} />
+ *   <CabecalhoPagina titulo={t.termsTitle} nota={atualizacao} />
+ *
+ * NASCEU NA REVISAO DE DESIGN (achado A8), porque cada uma das 33 paginas
+ * internas montava a propria abertura. A mesma coisa -- h1 centrado e, as
+ * vezes, uma frase de abertura -- estava escrita de cinco jeitos: numa secao
+ * propria, dentro da secao de conteudo com `mb-15`, num `.cabeca` com 60px,
+ * num `.abertura` com 40px, ou numa secao cujo vizinho cancelava o proprio
+ * recuo. O vao do titulo ate o conteudo media 14, 54, 60, 94 ou 120px
+ * conforme a pagina, e a frase de abertura aparecia em tres cores.
+ *
+ * Agora o cabecalho e uma secao, e o vao ate o conteudo e o vao entre secoes:
+ * os 80px do recuo de cima da secao seguinte, em todas. Quem usa o componente
+ * so precisa nao cancelar esse recuo.
+ *
+ *   titulo     o h1, `papel="pagina"`, um por pagina
+ *   nota       metadado logo abaixo: data de atualizacao, mandato
+ *   abertura   a frase que apresenta a pagina
+ *   <slot />   o que mais pertencer a abertura -- a introducao de /historia
+ *
+ * No container MEDIO, e nao no estreito dos documentos: o titulo de 61px na
+ * coluna de leitura quebrava em tres linhas. A abertura e o texto centrado
+ * tem a linha propria do <Texto>, entao a largura do container nao alonga a
+ * leitura.
+ */
+interface Props {
+  titulo: string;
+  nota?: string;
+  abertura?: string;
+  /** O `id` da secao. `titulo` na maioria; mude so para preservar uma ancora. */
+  id?: string;
+  /**
+   * So para o catalogo /design, que ja tem o proprio h1 e nao pode ter dois --
+   * o mesmo motivo do `estado` do <Botao>. Numa pagina, o cabecalho e o h1.
+   */
+  nivel?: 1 | 2;
+}
+
+const { titulo, nota, abertura, id = 'titulo', nivel = 1 } = Astro.props;
+---
+
+<Secao id={id} espacoBase="nenhum">
+  <Container largura="media">
+    <div class="cabeca">
+      <Titulo nivel={nivel} papel="pagina" alinhamento="centro">{titulo}</Titulo>
+      {nota && <Texto papel="legenda" alinhamento="centro">{nota}</Texto>}
+      {abertura && <Texto papel="abertura" alinhamento="centro">{abertura}</Texto>}
+      <slot />
+    </div>
+  </Container>
+</Secao>
+
+<style>
+  /*
+   * 24px do titulo ao que vem abaixo, e nada depois do ultimo filho: o vao ate
+   * o conteudo e da secao seguinte. `:global` porque o h1 e o `<p>` nascem no
+   * <Titulo> e no <Texto> (armadilha 1).
+   */
+  .cabeca > :global(:first-child) {
+    margin-bottom: 1.5rem;
+  }
+
+  .cabeca > :global(:last-child) {
+    margin-bottom: 0;
+  }
+</style>
