@@ -186,7 +186,8 @@ const paineis = await Promise.all(
     background: none;
     color: var(--color-texto-paragrafo);
     font: inherit;
-    font-size: var(--text-base);
+    /* Interface, nao corpo: o `base` virou o corpo de 16px na revisao. */
+    font-size: var(--text-sm);
     font-weight: var(--font-weight-medium);
     text-align: center;
     cursor: pointer;

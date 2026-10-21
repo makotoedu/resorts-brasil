@@ -219,7 +219,7 @@ const ESTILO_INLINE_PERMITIDO = {
  *
  * Ele nao foi removido porque duas coisas legitimamente precisam dele:
  *
- *   PaginaEbook.astro  a landing do e-book tem ESCALA propria (hero em 4xl,
+ *   PaginaEbook.astro  a landing do e-book tem ESCALA propria (hero em 3xl,
  *                      secoes em 2xl) pelo mesmo motivo que tem paleta propria.
  *   design.astro       o catalogo existe para exibir a escala crua inteira lado
  *                      a lado; pedir que ele use `papel` seria pedir que a

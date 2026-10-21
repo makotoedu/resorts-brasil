@@ -177,9 +177,9 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
   /* MEDIDO: 14px / 600 / 1px de espacamento / caixa alta / 20px ate a lista.
      O <Titulo> traz a tag e a cor; o resto e o desenho deste bloco. */
   .rodape :global(.titulo-lista) {
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     letter-spacing: 1px;
-    line-height: 1.7;
+    line-height: var(--text-sm--line-height);
     text-transform: uppercase;
     margin-block: 0 1.25rem;
   }
@@ -190,14 +190,15 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
     padding: 0;
   }
 
-  /* MEDIDO: entrelinha de 32px por item. */
+  /* MEDIDO: 32px por item. E altura de linha da lista, nao entrelinha de
+     texto, e por isso vai em rem: em fracao ela crescia com o corpo de 16px. */
   .lista li {
-    line-height: 2.2857;
+    line-height: 2rem;
   }
 
   .lista a {
     color: var(--color-texto-paragrafo);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     text-decoration: none;
     transition: color 0.3s;
   }
@@ -217,7 +218,7 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
   .copyright-texto {
     color: var(--color-texto);
     font-size: var(--text-sm);
-    line-height: 2.4615; /* os 32px medidos sobre 13px */
+    line-height: 2rem; /* os 32px medidos, em rem pelo mesmo motivo da lista */
     margin: 0;
     text-align: center;
   }

@@ -474,33 +474,59 @@
   --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   --font-titulo: 'Poppins', ui-sans-serif, system-ui, sans-serif;
 
-  /* 12px */
-  --text-xs: 0.75rem;
-  --text-xs--line-height: 1.6;
-  /* 13px */
-  --text-sm: 0.8125rem;
-  --text-sm--line-height: 1.6;
-  /* 14px — corpo; line-height 23.8/14 = 1.7 medido */
-  --text-base: 0.875rem;
-  --text-base--line-height: 1.7;
-  /* 18px */
-  --text-md: 1.125rem;
+  /*
+   * A ESCALA DEIXOU DE SER MEDIDA E PASSOU A SER DECIDIDA, na revisao de
+   * design (docs/revisao-design.md, achados A3 e A5). A medida era a do tema, e
+   * trazia tres defeitos que nenhuma medicao corrige:
+   *
+   *   - o corpo em 14px, heranca do root de 14px do tema;
+   *   - tres degraus pequenos a 1px um do outro (12, 13, 14), que eram ruido;
+   *   - degraus que colidiam no celular: o titulo de cartao em 18px e o de
+   *     bloco em 19px eram o mesmo objeto visual.
+   *
+   * A regra nova: CORPO FIXO EM 16PX e, acima dele, razao de pelo menos 1,2
+   * entre degraus vizinhos em qualquer viewport -- 1,2 no celular, 1,25 no
+   * desktop, como uma escala modular que abre conforme a tela abre. Os
+   * `clamp()` ancoram em 390px e 1440px, as duas pontas da amostragem dos
+   * portoes. Uma entrelinha por degrau, e nenhum componente sobrescreve.
+   *
+   *   degrau  390 -> 1440  uso
+   *   xs      13           rotulo (caixa alta) e legenda
+   *   sm      14           apoio: menu, submenu, abas, rodape, cargo
+   *   base    16           corpo
+   *   md      19 -> 20     abertura de pagina, titulo de cartao
+   *   lg      23 -> 25     titulo de bloco
+   *   xl      28 -> 34     titulo de secao
+   *   2xl     34 -> 44     escala do ebook, contador, sigla dos eixos
+   *   3xl     40 -> 61     titulo de pagina
+   *
+   * O `4xl` saiu: nenhuma pagina o usava -- o "hero do ebook em 4xl" de alguns
+   * comentarios era 3xl desde a Etapa 10.
+   */
+  /* 13px; 20px de linha, que e a altura que o rotulo ocupa no botao */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5385;
+  /* 14px */
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.5;
+  /* 16px -- corpo */
+  --text-base: 1rem;
+  --text-base--line-height: 1.6;
+  /* 19px -> 20px */
+  --text-md: clamp(1.1875rem, 1.1643rem + 0.0952vw, 1.25rem);
   --text-md--line-height: 1.4;
-  /* 19px -> 25px (h3 e o unico elemento nu que muda de faixa) */
-  --text-lg: clamp(1.1875rem, 1.0223rem + 0.678vw, 1.5625rem);
-  --text-lg--line-height: 1.5;
-  /* 24px -> 34px */
-  --text-xl: clamp(1.5rem, 1.2248rem + 1.1299vw, 2.125rem);
-  --text-xl--line-height: 1.25;
-  /* 30px -> 50px */
-  --text-2xl: clamp(1.875rem, 1.3246rem + 2.2599vw, 3.125rem);
-  --text-2xl--line-height: 1.2;
-  /* 40px -> 62px */
-  --text-3xl: clamp(2.5rem, 1.8946rem + 2.4859vw, 3.875rem);
-  --text-3xl--line-height: 1.15;
-  /* 48px -> 90px — so o hero do ebook chega aqui */
-  --text-4xl: clamp(3rem, 1.8443rem + 4.7458vw, 5.625rem);
-  --text-4xl--line-height: 1.1;
+  /* 23px -> 25px */
+  --text-lg: clamp(1.4375rem, 1.3911rem + 0.1905vw, 1.5625rem);
+  --text-lg--line-height: 1.25;
+  /* 28px -> 34px */
+  --text-xl: clamp(1.75rem, 1.6107rem + 0.5714vw, 2.125rem);
+  --text-xl--line-height: 1.2;
+  /* 34px -> 44px */
+  --text-2xl: clamp(2.125rem, 1.8929rem + 0.9524vw, 2.75rem);
+  --text-2xl--line-height: 1.15;
+  /* 40px -> 61px */
+  --text-3xl: clamp(2.5rem, 2.0125rem + 2vw, 3.8125rem);
+  --text-3xl--line-height: 1.1;
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;

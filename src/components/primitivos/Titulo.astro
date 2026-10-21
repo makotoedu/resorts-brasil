@@ -44,7 +44,7 @@
  *   cartao   text-md    18px          cartao, rotulo de grupo
  *
  * `tamanho` SOBREVIVE COMO ESCAPE, e nao por comodidade: a pagina do e-book tem
- * escala propria (hero em 4xl, secoes em 3xl e 2xl) pelo mesmo motivo que tem
+ * escala propria (hero em 3xl, secoes em 2xl e xl) pelo mesmo motivo que tem
  * paleta propria, e o catalogo do design system precisa exibir a escala crua
  * inteira. Sao os dois unicos arquivos onde ele e permitido, e quem afirma isso
  * e a allowlist do `scripts/verifica-sistema.mjs` — que guarda o NUMERO
@@ -57,7 +57,7 @@ interface Props {
   /** A aparencia, por profundidade. Ver a tabela acima. */
   papel?: 'pagina' | 'secao' | 'bloco' | 'cartao';
   /** O ESCAPE. So no PaginaEbook.astro e no design.astro. */
-  tamanho?: 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
+  tamanho?: 'md' | 'lg' | 'xl' | '2xl' | '3xl';
   cor?: 'padrao' | 'inverso' | 'sutil' | 'sutil-inverso' | 'paragrafo';
   alinhamento?: 'inicio' | 'centro' | 'fim';
   peso?: 'medio' | 'semibold' | 'bold' | 'extrabold';
@@ -93,7 +93,6 @@ const TAMANHOS = {
   xl: 'text-xl',
   '2xl': 'text-2xl',
   '3xl': 'text-3xl',
-  '4xl': 'text-4xl',
 } as const;
 
 /* Os quatro degraus de profundidade. Ver a tabela no topo do arquivo. */

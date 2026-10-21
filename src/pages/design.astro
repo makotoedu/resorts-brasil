@@ -152,17 +152,16 @@ const estadosBotao = [
   { rotulo: 'desabilitado', props: { desabilitado: true } },
 ];
 
-/** Cada degrau com o par de pixels medido nas pontas da escala. */
+/** Cada degrau com os pixels das duas pontas da escala, em 390 e 1440px. */
 const escalaTipo = [
-  { token: '--text-xs', rotulo: 'xs', nota: '12px' },
-  { token: '--text-sm', rotulo: 'sm', nota: '13px' },
-  { token: '--text-base', rotulo: 'base', nota: '14px — corpo' },
-  { token: '--text-md', rotulo: 'md', nota: '18px' },
-  { token: '--text-lg', rotulo: 'lg', nota: '19 → 25px' },
-  { token: '--text-xl', rotulo: 'xl', nota: '24 → 34px' },
-  { token: '--text-2xl', rotulo: '2xl', nota: '30 → 50px' },
-  { token: '--text-3xl', rotulo: '3xl', nota: '40 → 62px' },
-  { token: '--text-4xl', rotulo: '4xl', nota: '48 → 90px' },
+  { token: '--text-xs', rotulo: 'xs', nota: '13px — rótulo, legenda' },
+  { token: '--text-sm', rotulo: 'sm', nota: '14px — apoio' },
+  { token: '--text-base', rotulo: 'base', nota: '16px — corpo' },
+  { token: '--text-md', rotulo: 'md', nota: '19 → 20px' },
+  { token: '--text-lg', rotulo: 'lg', nota: '23 → 25px' },
+  { token: '--text-xl', rotulo: 'xl', nota: '28 → 34px' },
+  { token: '--text-2xl', rotulo: '2xl', nota: '34 → 44px' },
+  { token: '--text-3xl', rotulo: '3xl', nota: '40 → 61px' },
 ];
 
 /**
@@ -290,9 +289,9 @@ const faixas = [
       <section>
         <h2>Tipografia</h2>
         <p class="legenda">
-          Escala fluida por <code>clamp()</code>. As âncoras são os valores medidos em 390px e
-          1440px — os extremos são os do site atual, o que muda é o meio, que antes saltava na
-          media query. Redimensione a janela para ver.
+          Escala fluida por <code>clamp()</code>, ancorada em 390px e 1440px. Ela foi decidida na
+          revisão de design, e não medida: corpo fixo em 16px e, acima dele, razão de pelo menos
+          1,2 entre degraus vizinhos em qualquer largura. Redimensione a janela para ver.
         </p>
         <ul class="tipos">
           {
@@ -1579,9 +1578,10 @@ const faixas = [
   }
 
   /*
-   * `wrap` e `min-width: 0` nao sao enfeite: sem eles o degrau 4xl (48px ja no
-   * minimo) somado aos 12rem do rotulo estoura a linha em 390px, e a varredura
-   * de geometria reprova o catalogo por transbordo horizontal — reprovou.
+   * `wrap` e `min-width: 0` nao sao enfeite: sem eles o maior degrau (48px ja
+   * no minimo, quando ele era o 4xl) somado aos 12rem do rotulo estoura a linha
+   * em 390px, e a varredura de geometria reprova o catalogo por transbordo
+   * horizontal — reprovou.
    */
   .tipos li {
     display: flex;
