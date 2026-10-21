@@ -518,15 +518,38 @@
   /* 23px -> 25px */
   --text-lg: clamp(1.4375rem, 1.3911rem + 0.1905vw, 1.5625rem);
   --text-lg--line-height: 1.25;
+  /*
+   * O PESO E O TRACKING TAMBEM SAO DO DEGRAU, e nao de quem o usa (achados A1
+   * e A2). A regra: o peso diminui conforme o tamanho cresce. Os tres degraus
+   * grandes carregam 500 e um tracking negativo que aperta a Poppins, larga
+   * como e, onde ela fica grande; os pequenos nao declaram peso e herdam os
+   * 600 que o base.css da a h1-h6 -- e os 400 do corpo, quando o degrau e de
+   * texto.
+   *
+   * Isto e o que tirou o `peso` livre do <Titulo>. Com ele, o mesmo titulo de
+   * pagina saia em 500, 600 ou 800 conforme a pagina, e o h1 em 500 ficava
+   * abaixo de titulos de secao e de bloco em 600 -- a hierarquia de cabeca
+   * para baixo, medida em 33 paginas.
+   *
+   * O Tailwind emite os dois subtokens dentro da propria utilitaria (`text-xl`
+   * passa a escrever font-weight e letter-spacing), entao quem usa a classe
+   * leva a voz inteira do degrau sem lembrar de nada.
+   */
   /* 28px -> 34px */
   --text-xl: clamp(1.75rem, 1.6107rem + 0.5714vw, 2.125rem);
   --text-xl--line-height: 1.2;
+  --text-xl--font-weight: 500;
+  --text-xl--letter-spacing: -0.01em;
   /* 34px -> 44px */
   --text-2xl: clamp(2.125rem, 1.8929rem + 0.9524vw, 2.75rem);
   --text-2xl--line-height: 1.15;
+  --text-2xl--font-weight: 500;
+  --text-2xl--letter-spacing: -0.015em;
   /* 40px -> 61px */
   --text-3xl: clamp(2.5rem, 2.0125rem + 2vw, 3.8125rem);
   --text-3xl--line-height: 1.1;
+  --text-3xl--font-weight: 500;
+  --text-3xl--letter-spacing: -0.02em;
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;

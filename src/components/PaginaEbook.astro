@@ -114,7 +114,7 @@ const cartao = t.homeHighlights.ebook;
         papeis diferentes, como o tokens.css ja registrava.
       -->
       <div class="chamada">
-        <Titulo nivel={2} tamanho="xl" cor="inverso" peso="medio">
+        <Titulo nivel={2} tamanho="xl" cor="inverso">
           E-book organizado pela Resorts Brasil e pelo Centro de Estudos de Marketing Digital da
           FGV-EAESP.
         </Titulo>
@@ -136,7 +136,7 @@ const cartao = t.homeHighlights.ebook;
 <SecaoEbook superficie="faixa" foto={imagensEbook.textura} id="iniciativa">
   <Container>
     <div class="creditos">
-      <Titulo nivel={2} tamanho="lg" cor="inverso" peso="medio" alinhamento="centro">
+      <Titulo nivel={2} tamanho="lg" cor="inverso" alinhamento="centro">
         O e-book é uma iniciativa:
       </Titulo>
       <Imagem
@@ -163,7 +163,7 @@ const cartao = t.homeHighlights.ebook;
   <Container largura="media">
     <div class="video">
       <Video lang={lang} id={videoEbook} titulo={t.videoEbook} params="controls=0" />
-      <Titulo nivel={2} tamanho="2xl" cor="inverso" peso="extrabold" alinhamento="centro">
+      <Titulo nivel={2} tamanho="2xl" cor="inverso" alinhamento="centro">
         Você já parou para pensar nas transformações que o turismo passou nos últimos tempos?
       </Titulo>
       <Texto tamanho="lg" cor="inverso" peso="semibold" alinhamento="centro">
@@ -177,7 +177,7 @@ const cartao = t.homeHighlights.ebook;
 <SecaoEbook superficie="estrutura" id="estrutura">
   <Container>
     <div class="cabeca">
-      <Titulo nivel={2} tamanho="2xl" cor="inverso" peso="medio" alinhamento="centro">
+      <Titulo nivel={2} tamanho="2xl" cor="inverso" alinhamento="centro">
         Como o e-book está estruturado?
       </Titulo>
     </div>
@@ -185,7 +185,7 @@ const cartao = t.homeHighlights.ebook;
       {
         estruturaEbook.map((bloco) => (
           <div class="bloco">
-            <Titulo nivel={3} tamanho="lg" cor="inverso" peso="medio" alinhamento="centro">
+            <Titulo nivel={3} tamanho="lg" cor="inverso" alinhamento="centro">
               {textoEm(bloco.titulo, lang)}
             </Titulo>
             <Texto cor="inverso" alinhamento="centro" semMargem>
@@ -202,7 +202,7 @@ const cartao = t.homeHighlights.ebook;
 <SecaoEbook superficie="secoes" id="secoes">
   <Container>
     <div class="cabeca">
-      <Titulo nivel={2} tamanho="2xl" cor="inverso" peso="medio" alinhamento="centro">
+      <Titulo nivel={2} tamanho="2xl" cor="inverso" alinhamento="centro">
         Seções do e-book
       </Titulo>
     </div>
@@ -213,7 +213,7 @@ const cartao = t.homeHighlights.ebook;
             `<h3>` e nao `<h4>`: no tema os tres rotulos de secao eram h4 sob um
             h2, pulando o h3. E a mesma correcao de sumario do subtitulo do topo.
           */}
-          <Titulo nivel={3} tamanho="lg" peso="semibold" class="indice-titulo">
+          <Titulo nivel={3} tamanho="lg" class="indice-titulo">
             Seção {secao.numero}: {textoEm(secao.nome, lang)}
           </Titulo>
           <Grade colunas={4} espaco="md" alinhamento="inicio">
@@ -239,7 +239,7 @@ const cartao = t.homeHighlights.ebook;
   <Container>
     <div class="cabeca-medalha">
       <Imagem src={imagensEbook.medalha} alt="" largura={96} altura={96} />
-      <Titulo nivel={2} tamanho="2xl" cor="inverso" peso="medio" alinhamento="centro">
+      <Titulo nivel={2} tamanho="2xl" cor="inverso" alinhamento="centro">
         Prefácio
       </Titulo>
     </div>
@@ -259,7 +259,7 @@ const cartao = t.homeHighlights.ebook;
 
     <div class="cabeca-medalha">
       <Imagem src={imagensEbook.medalha} alt="" largura={96} altura={96} />
-      <Titulo nivel={2} tamanho="2xl" cor="inverso" peso="medio" alinhamento="centro">
+      <Titulo nivel={2} tamanho="2xl" cor="inverso" alinhamento="centro">
         Autores
       </Titulo>
     </div>
@@ -286,7 +286,7 @@ const cartao = t.homeHighlights.ebook;
 <SecaoEbook superficie="faixa" foto={imagensEbook.textura} id="creditos">
   <Container>
     <div class="creditos">
-      <Titulo nivel={2} tamanho="lg" cor="inverso" peso="medio" alinhamento="centro">
+      <Titulo nivel={2} tamanho="lg" cor="inverso" alinhamento="centro">
         O e-book é uma iniciativa:
       </Titulo>
       <Imagem

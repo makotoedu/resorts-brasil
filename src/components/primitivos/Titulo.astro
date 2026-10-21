@@ -38,10 +38,21 @@
  * nao inclui o 2xl justamente porque o 2xl so existia nas faixas de apoie e
  * historia, que eram a colisao.
  *
- *   pagina   text-3xl   40 ate 62px   o titulo da pagina, um por pagina
- *   secao    text-xl    24 ate 34px   titulo de secao, e tambem o das faixas
- *   bloco    text-lg    19 ate 25px   sub-bloco, cartao sobre foto
- *   cartao   text-md    18px          cartao, rotulo de grupo
+ *   papel    token      390 ate 1440px   peso   uso
+ *   pagina   text-3xl   40 ate 61px      500    o titulo da pagina, um por pagina
+ *   secao    text-xl    28 ate 34px      500    titulo de secao, e o das faixas
+ *   bloco    text-lg    23 ate 25px      600    sub-bloco, cartao sobre foto
+ *   cartao   text-md    19 ate 20px      600    cartao, rotulo de grupo
+ *
+ * O PESO NAO E MAIS UM PROP, e pelo mesmo motivo que o `tamanho` deixou de ser.
+ * Ate a revisao de design havia um `peso` livre, e ele repetiu a doenca: o
+ * titulo de pagina saia em 500, 600 ou 800 conforme a pagina, e o h1 em 500
+ * ficava ABAIXO dos titulos de secao e de bloco em 600 -- medido em 33
+ * paginas, a hierarquia de cabeca para baixo. Agora o peso vem com o degrau:
+ * os grandes (xl, 2xl, 3xl) carregam 500 e um tracking negativo no proprio
+ * token do tokens.css, os pequenos herdam os 600 do base.css. O peso diminui
+ * conforme o tamanho cresce, e o escape `tamanho` obedece a mesma regra --
+ * e assim que o ebook entra nela.
  *
  * `tamanho` SOBREVIVE COMO ESCAPE, e nao por comodidade: a pagina do e-book tem
  * escala propria (hero em 3xl, secoes em 2xl e xl) pelo mesmo motivo que tem
@@ -60,11 +71,10 @@ interface Props {
   tamanho?: 'md' | 'lg' | 'xl' | '2xl' | '3xl';
   cor?: 'padrao' | 'inverso' | 'sutil' | 'sutil-inverso' | 'paragrafo';
   alinhamento?: 'inicio' | 'centro' | 'fim';
-  peso?: 'medio' | 'semibold' | 'bold' | 'extrabold';
   class?: string;
 }
 
-const { nivel, papel, tamanho, cor = 'padrao', alinhamento, peso, class: classe } = Astro.props;
+const { nivel, papel, tamanho, cor = 'padrao', alinhamento, class: classe } = Astro.props;
 
 /* Os dois eixos sao exclusivos: `papel` e a lista curta que uma pagina pode
    usar, `tamanho` e o escape. Aceitar os dois juntos deixaria a precedencia
@@ -116,13 +126,6 @@ const ALINHAMENTOS = {
   centro: 'text-center',
   fim: 'text-right',
 } as const;
-
-const PESOS = {
-  medio: 'font-medium',
-  semibold: 'font-semibold',
-  bold: 'font-bold',
-  extrabold: 'font-extrabold',
-} as const;
 ---
 
 <Tag
@@ -130,7 +133,6 @@ const PESOS = {
     papel ? PAPEIS[papel] : tamanho && TAMANHOS[tamanho],
     CORES[cor],
     alinhamento && ALINHAMENTOS[alinhamento],
-    peso && PESOS[peso],
     classe,
   ]}
 >

@@ -22,7 +22,8 @@ interface Props {
    * e o escuro daria 2,1:1 sobre carvao. Ver a nota de `--color-texto-sutil`.
    */
   cor?: 'padrao' | 'paragrafo' | 'sutil' | 'sutil-inverso' | 'inverso' | 'destaque';
-  peso?: 'normal' | 'medio' | 'semibold' | 'bold';
+  /** Sem `bold`: o 700 deixou de ser baixado na revisao de design. */
+  peso?: 'normal' | 'medio' | 'semibold';
   alinhamento?: 'inicio' | 'centro' | 'fim';
   /** Remove a margem inferior — util quando o container ja controla o ritmo. */
   semMargem?: boolean;
@@ -63,7 +64,6 @@ const PESOS = {
   normal: 'font-normal',
   medio: 'font-medium',
   semibold: 'font-semibold',
-  bold: 'font-bold',
 } as const;
 
 const ALINHAMENTOS = {

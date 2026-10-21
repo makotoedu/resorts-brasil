@@ -12,10 +12,11 @@ import Titulo from '../primitivos/Titulo.astro';
  *   <TituloSecao nivel={2}>Beneficios de ser um associado</TituloSecao>
  *
  * MEDIDO (scripts/medir-padroes.mjs, grupo `tituloSecao`): 24px no mobile e 34px
- * no desktop com peso 600 e espacamento de -0,7px, entrelinha 26 -> 40px, e 10px
- * (mobile) / 30px (desktop) ate o que vem depois. Os dois tamanhos sao
- * exatamente as pontas do `--text-xl`, entao a escala ja existia; o que este
- * componente acrescenta e o risco.
+ * no desktop com peso 600 e espacamento de -0,7px, e 10px (mobile) / 30px
+ * (desktop) ate o que vem depois. Os dois tamanhos eram as pontas do
+ * `--text-xl`, entao a escala ja existia; o que este componente acrescenta e o
+ * risco. Desde a revisao de design, tamanho, peso, entrelinha e tracking sao
+ * os do degrau `secao`, sem nada proprio -- o -0,7px virou o tracking do token.
  *
  * O RISCO PRECISOU DO CSS, E ESSA E A NOTA QUE IMPORTA. Medido, o `:before` deu
  * `left: 0` num titulo centralizado — o que sugeria uma barra encostada na
@@ -60,7 +61,6 @@ const { nivel, alinhamento = 'centro', class: classe } = Astro.props;
    */
   .cabeca :global(.titulo) {
     position: relative;
-    letter-spacing: -0.7px;
     margin-bottom: clamp(0.625rem, 0.2536rem + 1.5238vw, 1.875rem);
   }
 

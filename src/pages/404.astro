@@ -42,7 +42,7 @@ const t = ui[lang];
       <div class="tela">
         <p class="algarismo" aria-hidden="true">404</p>
         <div>
-          <Titulo nivel={1} papel="pagina" peso="extrabold">
+          <Titulo nivel={1} papel="pagina">
             Ops, não foi possível encontrar esta página!
           </Titulo>
           <Texto tamanho="md">
@@ -86,8 +86,9 @@ const t = ui[lang];
     color: var(--color-texto-decorativo);
     font-family: var(--font-titulo);
     font-size: clamp(8.75rem, 4.1667rem + 18.8333vw, 18.75rem);
-    /* Era 800, que deixou de ser baixado: o mais pesado que sobrou. */
-    font-weight: var(--font-weight-semibold);
+    /* Era 800. Algarismo de 300px nao precisa de peso para ter presenca: segue
+       a regra dos degraus grandes, 500. */
+    font-weight: var(--font-weight-medium);
     line-height: 0.8;
     margin: 0;
   }

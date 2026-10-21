@@ -44,8 +44,24 @@
  * junto acusaria o rodape de ser filho da ultima secao do conteudo. A
  * acessibilidade do sumario completo continua com o verifica-sistema.
  *
- * NAO MEDE peso, cor nem espacamento. Mede tamanho, que e o eixo em que a
- * hierarquia falhou.
+ * DUAS REGRAS DE PESO, que entraram na revisao de design junto com a regra
+ * que elas guardam -- no mesmo commit, e nao depois:
+ *
+ *   3. O PESO E A FAMILIA SAO DO DEGRAU. Todo titulo pesa e e desenhado como
+ *      a sonda do degrau dele. O `peso` do <Titulo> era um eixo livre, e
+ *      repetiu a doenca do `tamanho`: titulo de pagina em 500, 600 ou 800
+ *      conforme a pagina, e o h1 em 500 sob titulos de secao em 600 -- a
+ *      hierarquia de cabeca para baixo em 33 paginas, sem portao que medisse
+ *      peso. Vale para o ebook tambem: a escala dele e propria, a regra nao.
+ *
+ *   4. NENHUM TEXTO FORA DO SISTEMA, na pagina inteira, cabecalho e rodape
+ *      incluidos: DM Sans ou Poppins, em 400, 500 ou 600. O 700 e o 800
+ *      deixaram de ser baixados, e um `font-weight` que pede o que nao existe
+ *      nao quebra nada -- o navegador escolhe a face mais proxima, e o
+ *      `getComputedStyle` continua devolvendo o pedido. E isso que esta regra
+ *      le.
+ *
+ * NAO MEDE cor nem espacamento.
  *
  * ELE NASCEU CONTADOR E VIROU BLOQUEIO NA MESMA SESSAO. Na primeira execucao
  * eram 33 ocorrencias em 27 paginas; a conversao de `tamanho` para `papel`, a
@@ -86,8 +102,15 @@ const COLETAR = () => {
    * 40/40/40/40, que e o `text-3xl` repetido. Com um elemento por classe, cada
    * um tem estilo proprio e nao ha recalculo para esperar.
    */
-  const sondas = ['text-3xl', 'text-xl', 'text-lg', 'text-md'].map((classe) => {
-    const el = document.createElement('div');
+  /*
+   * As sondas sao `<h2>`, e nao `<div>`: o peso e a familia de um degrau
+   * pequeno vem do base.css para h1-h6, e numa div a sonda leria o 400 do
+   * corpo. O `2xl` entra so para a regra 3 -- ele nao e `papel`, mas e a
+   * escala do ebook, e o ebook obedece ao peso como todas as outras.
+   */
+  const DEGRAUS = ['text-3xl', 'text-2xl', 'text-xl', 'text-lg', 'text-md'];
+  const sondas = DEGRAUS.map((classe) => {
+    const el = document.createElement('h2');
     el.className = classe;
     el.style.position = 'absolute';
     el.style.visibility = 'hidden';
@@ -95,8 +118,17 @@ const COLETAR = () => {
     document.body.appendChild(el);
     return el;
   });
-  const escala = sondas.map((el) => Math.round(parseFloat(getComputedStyle(el).fontSize)));
+  const voz = sondas.map((el) => {
+    const cs = getComputedStyle(el);
+    return {
+      px: Math.round(parseFloat(cs.fontSize)),
+      peso: Number(cs.fontWeight),
+      familia: cs.fontFamily.split(',')[0].replace(/["']/g, '').trim(),
+    };
+  });
   for (const el of sondas) el.remove();
+  /* Os quatro do `papel`: tudo menos o 2xl. */
+  const escala = voz.filter((_, i) => DEGRAUS[i] !== 'text-2xl').map((v) => v.px);
 
   const titulos = [...raiz.querySelectorAll('h1, h2, h3, h4, h5, h6')]
     .filter((el) => {
@@ -105,13 +137,39 @@ const COLETAR = () => {
       const r = el.getBoundingClientRect();
       return r.width > 0 && r.height > 0;
     })
-    .map((el) => ({
-      nivel: Number(el.tagName[1]),
-      px: Math.round(parseFloat(getComputedStyle(el).fontSize)),
-      texto: el.textContent.trim().replace(/\s+/g, ' ').slice(0, 44),
-    }));
+    .map((el) => {
+      const cs = getComputedStyle(el);
+      return {
+        nivel: Number(el.tagName[1]),
+        px: Math.round(parseFloat(cs.fontSize)),
+        peso: Number(cs.fontWeight),
+        familia: cs.fontFamily.split(',')[0].replace(/["']/g, '').trim(),
+        texto: el.textContent.trim().replace(/\s+/g, ' ').slice(0, 44),
+      };
+    });
 
-  return { escala, titulos };
+  /*
+   * Regra 4, coletada aqui: todo texto renderizado na pagina INTEIRA -- cabecalho
+   * e rodape incluidos -- em peso e familia do sistema. So conta elemento com
+   * texto proprio, como no verify-contraste.
+   */
+  const PESOS = [400, 500, 600];
+  const FAMILIAS = ['DM Sans', 'Poppins'];
+  const vozesFora = new Map();
+  for (const el of document.body.querySelectorAll('*')) {
+    if (![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
+    const cs = getComputedStyle(el);
+    if (cs.visibility === 'hidden' || cs.display === 'none') continue;
+    const peso = Number(cs.fontWeight);
+    const familia = cs.fontFamily.split(',')[0].replace(/["']/g, '').trim();
+    if (PESOS.includes(peso) && FAMILIAS.includes(familia)) continue;
+    const chave = `${familia} ${peso}`;
+    if (!vozesFora.has(chave)) {
+      vozesFora.set(chave, `${el.tagName.toLowerCase()} "${el.textContent.trim().replace(/\s+/g, ' ').slice(0, 30)}"`);
+    }
+  }
+
+  return { escala, voz, titulos, vozesFora: [...vozesFora.entries()] };
 };
 
 const falhas = [];
@@ -134,9 +192,20 @@ for (const vp of VIEWPORTS) {
       await page.close();
       continue;
     }
-    const { escala, titulos } = await page.evaluate(COLETAR);
+    const { escala, voz, titulos, vozesFora } = await page.evaluate(COLETAR);
     await page.close();
     paginasVistas += 1;
+
+    /* Regra 4 -------------------------------------------------------- */
+    for (const [chave, exemplo] of vozesFora) {
+      falhas.push({
+        regra: 'texto fora dos pesos e familias do sistema',
+        pagina: caminho,
+        vp: vp.nome,
+        detalhe: `${chave} -- ${exemplo}. O sistema e DM Sans e Poppins, em 400, 500 e 600.`,
+      });
+    }
+
     if (!titulos.length) continue;
 
     /*
@@ -171,6 +240,22 @@ for (const vp of VIEWPORTS) {
         });
       }
     });
+
+    /* Regra 3 -------------------------------------------------------- */
+    for (const t of titulos) {
+      const degrau = voz.find((v) => v.px === t.px);
+      if (!degrau) continue; /* fora da escala: a regra 2 ja acusa */
+      if (t.peso !== degrau.peso || t.familia !== degrau.familia) {
+        falhas.push({
+          regra: 'peso ou familia fora do degrau',
+          pagina: caminho,
+          vp: vp.nome,
+          detalhe:
+            `h${t.nivel} de ${t.px}px em ${t.familia} ${t.peso}, e o degrau e ` +
+            `${degrau.familia} ${degrau.peso} -- "${t.texto}"`,
+        });
+      }
+    }
 
     /* Regra 2 -------------------------------------------------------- */
     if (!ebook) {
