@@ -24,8 +24,13 @@ import { glifos, type NomeIcone } from '../../icones/glifos';
  */
 interface Props {
   nome: NomeIcone;
-  /** 16px (o `.fab` do rodape), 24px, 36px (o `.icon-box`) — os dois medidos. */
-  tamanho?: 'sm' | 'md' | 'lg';
+  /**
+   * 12, 16, 24 e 48px. Ate a revisao de design eram 16/24/36, e o que de fato
+   * renderizava era 10/12/16/46: o chevron do menu, o marcador de lista e a
+   * caixa de icone sobrescreviam o primitivo no proprio CSS. A escala passou a
+   * ser a que o site usa, na grade de 4px, e ninguem sobrescreve.
+   */
+  tamanho?: 'xs' | 'sm' | 'md' | 'lg';
   /**
    * Descricao para leitor de tela. COM rotulo o icone vira `img` com nome; SEM
    * ele fica `aria-hidden`, que e o certo quando o texto ao lado ja diz a mesma
@@ -41,9 +46,10 @@ const glifo = glifos[nome];
 
 /* Classes inteiras — ver a nota do Titulo.astro sobre a varredura do Tailwind. */
 const TAMANHOS = {
+  xs: 'size-3', // 12px: marcador de lista, chevron de menu
   sm: 'size-4', // 16px, medido no .fab
   md: 'size-6', // 24px
-  lg: 'size-9', // 36px, medido no .icon-box
+  lg: 'size-12', // 48px: a caixa de icone, que desenhava 46 por cima do primitivo
 } as const;
 ---
 

@@ -71,7 +71,7 @@ const ICONES = { circulo: 'dot-circle', seta: 'chevron-right-solido' } as const;
           {/* Sem `rotulo`: o marcador e decoracao, e o texto do item ja e o
               conteudo. Anuncia-lo faria o leitor de tela dizer "bolinha" 12
               vezes na pagina de historia. */}
-          <Icone nome={ICONES[marcador]} class="marcador" />
+          <Icone nome={ICONES[marcador]} tamanho="xs" class="marcador" />
           <span>{item}</span>
         </li>
       ))
@@ -108,17 +108,14 @@ const ICONES = { circulo: 'dot-circle', seta: 'chevron-right-solido' } as const;
   }
 
   /*
-   * 12px medidos, e o <Icone> nao tem esse degrau — o menor dele e 16px, o
-   * tamanho do glifo do rodape. Criar um degrau de 12px no primitivo por causa
-   * de um marcador inverteria a relacao entre sistema e excecao, entao o
-   * ajuste fica aqui, onde a excecao mora.
+   * 12px medidos -- o `xs` do <Icone>, que a revisao de design criou porque o
+   * marcador de lista e o chevron do menu ja eram dois usos de 12px (eram
+   * excecao aqui e 10px no menu). Deixou de ser excecao.
    *
    * `flex: none` porque um `<svg>` em flex encolhe quando o texto e longo.
    */
   .lista :global(.marcador) {
     flex: none;
-    width: 0.75rem;
-    height: 0.75rem;
     color: var(--color-acao-primaria);
     /* `baseline` num svg alinha pela borda de baixo; este recuo poe o marcador
        na linha do texto em vez de sobre ela. */

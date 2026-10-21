@@ -173,7 +173,7 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
                     */}
                     <button type="button" class="rotulo" aria-haspopup="true" aria-expanded="false">
                       {item.rotulo}
-                      <Icone nome="chevron-right" tamanho="sm" class="seta" />
+                      <Icone nome="chevron-right" tamanho="xs" class="seta" />
                     </button>
                     <ul class="dropdown-menu">
                       {item.filhos.map((filho) => (
@@ -526,8 +526,8 @@ const menu: { rotulo: string; href?: string; destaque?: boolean; filhos?: { rotu
    * CartaoMembro.
    */
   .menu-nivel1 :global(.seta) {
-    width: 0.625rem;
-    height: 0.625rem;
+    /* O tamanho e o `xs` do <Icone>, 12px; ate a revisao de design esta regra
+       forcava 10px por cima do primitivo. */
     transform: rotate(90deg);
     transition: transform 0.3s;
   }

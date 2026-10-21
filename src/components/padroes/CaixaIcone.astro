@@ -72,14 +72,12 @@ const { icone, titulo, nivel = 3, alinhamento = 'inicio', tom = 'padrao', class:
   }
 
   /*
-   * Caixa de 46px para um glifo de 36px, medidos. O <Icone tamanho="lg"> ja
-   * desenha os 36px; os 46 vem daqui, e sao eles que dao a linha de base comum
-   * quando varias caixas ficam lado a lado com glifos de alturas diferentes.
+   * O tamanho e o do <Icone tamanho="lg">, 48px. Ate a revisao de design esta
+   * regra forcava o `<svg>` a 46px -- e o comentario dela falava em "glifo de
+   * 36px numa caixa de 46", mas a caixa ERA o svg, e o glifo desenhava 46.
    */
   .caixa :global(.simbolo) {
     display: block;
-    width: 2.875rem;
-    height: 2.875rem;
     margin-bottom: 1rem;
   }
 
