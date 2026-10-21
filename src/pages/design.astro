@@ -393,18 +393,22 @@ const faixas = [
       <section>
         <h3>Texto</h3>
         <p class="legenda">
-          Sem props, é o parágrafo do <code>base.css</code> — <code>14px</code> e{' '}
-          <code>#525e75</code>, os valores medidos.
-          As props existem para os desvios, não para o caso comum.
+          Quatro papéis, e cada um traz tamanho, entrelinha e cor de partida. Sem props é o{' '}
+          <code>corpo</code>: o parágrafo do <code>base.css</code>, em <code>16px</code> e{' '}
+          <code>#525e75</code>. A <code>cor</code> existe para superfície escura ou foto, não para
+          gosto.
         </p>
         <div class="demo">
+          <Texto papel="abertura">
+            abertura — 19 a 20px, a frase que abre a página. Representamos os grandes resorts do país.
+          </Texto>
           <Texto>
-            Parágrafo padrão. A associação reúne os principais resorts do país e representa o setor
+            corpo — 16px. A associação reúne os principais resorts do país e representa o setor
             junto ao poder público, à imprensa e ao mercado.
           </Texto>
-          <Texto tamanho="lg" cor="padrao">Texto lg, cor padrão — abertura de seção.</Texto>
-          <Texto tamanho="sm" cor="sutil">Texto sm, cor sutil — legenda e apoio.</Texto>
-          <Texto como="span" tamanho="sm">Um <code>span</code>, para uso dentro de frase.</Texto>
+          <Texto papel="apoio">apoio — 14px, cinza sutil: cargo, mandato, metadado.</Texto>
+          <Texto papel="legenda">legenda — 13px, cinza sutil: data de atualização, nota.</Texto>
+          <Texto como="span" papel="apoio">Um <code>span</code>, para uso dentro de frase.</Texto>
         </div>
         {/*
           O `destaque` e o `sutil-inverso` vivem numa demo ESCURA porque e onde
@@ -415,9 +419,9 @@ const faixas = [
         */}
         <p class="rotulo-demo">Sobre superfície escura</p>
         <div class="demo demo-escura">
-          <Texto tamanho="xs" cor="destaque" peso="semibold">Texto xs, destaque, semibold.</Texto>
-          <Texto tamanho="sm" cor="sutil-inverso">Texto sm, cor sutil-inverso — o par escuro.</Texto>
-          <Texto tamanho="sm" cor="inverso">Texto sm, cor inversa.</Texto>
+          <Texto papel="legenda" cor="destaque" peso="semibold">legenda, destaque, semibold.</Texto>
+          <Texto papel="apoio" cor="sutil-inverso">apoio, cor sutil-inverso — o par escuro.</Texto>
+          <Texto papel="apoio" cor="inverso">apoio, cor inversa.</Texto>
         </div>
       </section>
 

@@ -19,7 +19,7 @@ import { ui, type Locale } from '../i18n/ui';
  * QUATRO CORRECOES DELIBERADAS, nos tres idiomas:
  *
  *   1. Hierarquia. Era `<h1 class="text-md h2">` seguido de um `<h3>` que nao e
- *      cabecalho de nada — e a frase de abertura. Virou <Texto tamanho="lg">, e
+ *      cabecalho de nada — e a frase de abertura. Virou <Texto papel="abertura">, e
  *      o salto some por deixar de existir. Mesma correcao da /historia.
  *   2. O `<br>` no meio da abertura sai. Em portugues e espanhol havia um; em
  *      ingles nao — a quebra manual so acertava numa largura, e o
@@ -52,7 +52,7 @@ const tamanhosCapa = '(min-width: 64rem) 18rem, (min-width: 30rem) 32vw, 92vw';
   <Secao id="titulo" espacoBase="nenhum">
     <Container largura="media">
       <Titulo nivel={1} papel="pagina" alinhamento="centro">{t.publicationsTitle}</Titulo>
-      <Texto tamanho="lg" alinhamento="centro">{t.publicationsLead}</Texto>
+      <Texto papel="abertura" alinhamento="centro">{t.publicationsLead}</Texto>
     </Container>
   </Secao>
 

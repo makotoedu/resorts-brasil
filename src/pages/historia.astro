@@ -22,7 +22,7 @@ import { ui, type Locale } from '../i18n/ui';
  *      via.
  *   2. Hierarquia. Era `<h1 class="text-md h2">` seguido de `<h3>`: um h1 que
  *      queria parecer h2, e um salto de nivel. A frase que estava no h3 nao e um
- *      cabecalho, e uma abertura — virou <Texto tamanho="lg">, e com isso o
+ *      cabecalho, e uma abertura — virou <Texto papel="abertura">, e com isso o
  *      salto some por deixar de existir, nao por remendo.
  *   3. Os 12 fundadores eram TRES listas de quatro, uma por coluna do Bootstrap.
  *      Uma lista so, em tres colunas de CSS. Ver src/data/fundadores.ts.
@@ -43,7 +43,7 @@ const livro = await publicacaoEm('memorias-sustentabilidade-e-um-olhar-para-o-fu
     <Container largura="media">
       <div class="abertura">
         <Titulo nivel={1} papel="pagina" alinhamento="centro">{t.historyTitle}</Titulo>
-        <Texto tamanho="lg" cor="padrao" alinhamento="centro">{t.historyLead}</Texto>
+        <Texto papel="abertura" alinhamento="centro">{t.historyLead}</Texto>
         <Texto alinhamento="centro">{t.historyIntro}</Texto>
       </div>
       <ListaIcones marcador="circulo" colunas={3} itens={fundadores} />

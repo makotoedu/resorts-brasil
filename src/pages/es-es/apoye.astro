@@ -35,7 +35,7 @@ const tamanhosFoto = '(min-width: 48rem) 46vw, 92vw';
       <Grade colunas={2} piso={1} espaco="md" alinhamento="centro">
         <ChamadaAcao fundo="clara">
           <Titulo nivel={2} papel="secao">{t.supportLead}</Titulo>
-          <Texto tamanho="lg">{t.supportIntro}</Texto>
+          <Texto papel="abertura">{t.supportIntro}</Texto>
           <div class="modalidades">
             <Grade colunas={2} piso={1} espaco="md">
               <CartaoModalidade tom="roxo" titulo={t.modalityPartner} nivel={3} href={routes.contact[lang]}>
@@ -76,7 +76,7 @@ const tamanhosFoto = '(min-width: 48rem) 46vw, 92vw';
       </Grade>
 
       <div class="fecho">
-        <Texto tamanho="lg" alinhamento="centro" semMargem>{t.supportHighlightsLead}</Texto>
+        <Texto papel="abertura" alinhamento="centro" semMargem>{t.supportHighlightsLead}</Texto>
       </div>
     </Container>
   </Secao>
@@ -91,14 +91,14 @@ const tamanhosFoto = '(min-width: 48rem) 46vw, 92vw';
     <FaixaDestaque tons={['roxo', 'magenta']}>
       <div slot="1">
         <Titulo nivel={2} papel="secao">{t.modalityPartner}</Titulo>
-        <Texto tamanho="lg">{t.modalityPartnerText}</Texto>
+        <Texto papel="abertura">{t.modalityPartnerText}</Texto>
         <div class="acao">
           <Botao href={routes.contact[lang]} variante="clara">{t.navContact}</Botao>
         </div>
       </div>
       <div slot="2">
         <Titulo nivel={2} papel="secao">{t.modalityMaintainer}</Titulo>
-        <Texto tamanho="lg">{t.modalityMaintainerText}</Texto>
+        <Texto papel="abertura">{t.modalityMaintainerText}</Texto>
         <div class="acao">
           <Botao href={routes.contact[lang]} variante="clara">{t.navContact}</Botao>
         </div>

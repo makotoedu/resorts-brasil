@@ -1,29 +1,48 @@
 ---
 /**
- * Texto — corpo, legenda e apoio.
+ * Texto — corpo, abertura, apoio e legenda.
  *
- * O par de <Titulo>: ali a tag e o tamanho se separam, aqui a tag e o PAPEL. Um
+ * O par de <Titulo>: ali a tag e a aparencia se separam, aqui tambem. Um
  * paragrafo, um `<span>` dentro de uma frase e um item de lista compartilham a
  * mesma escala e as mesmas cores sem que ninguem precise repetir a cadeia de
  * utilitarias.
  *
  *   <Texto>Nossos planos sao feitos pelos resorts para os resorts.</Texto>
- *   <Texto como="span" tamanho="sm" cor="sutil">Atualizado em agosto</Texto>
+ *   <Texto papel="abertura">Representamos os grandes resorts do pais.</Texto>
+ *   <Texto como="span" papel="legenda">Atualizado em agosto</Texto>
  *
- * Sem `tamanho` e sem `cor`, sai o que o base.css define para a tag — 14px e
- * #525e75 no `p`, ambos medidos no tema.
+ * ERA `tamanho`, E O EIXO LIVRE FEZ AQUI O QUE TINHA FEITO NO <Titulo>. Cada
+ * pagina escolhia o tamanho e a cor da propria abertura, e a medicao da revisao
+ * de design achou o resultado: a frase que abre a pagina em 25px no desktop --
+ * o mesmo degrau do titulo de bloco --, em tres cores (cinza de paragrafo em
+ * 27 paginas, navy em 7, cinza sutil em 9). `papel` fecha isso com quatro
+ * papeis, e cada um traz tamanho, entrelinha e cor de partida:
+ *
+ *   papel      degrau  px        cor de partida   uso
+ *   corpo      base    16        a do `p`         o texto corrido
+ *   abertura   md      19 ate 20 a do `p`         a frase que abre a pagina
+ *   apoio      sm      14        sutil            cargo, mandato, metadado
+ *   legenda    xs      13        sutil            data de atualizacao, nota
+ *
+ * `cor` continua existindo, e e para SUPERFICIE: sobre fundo escuro ou foto a
+ * cor de partida nao serve, e quem sabe disso e quem chama. Escolher uma cor
+ * por gosto numa superficie clara e o que o papel existe para evitar.
  */
 interface Props {
   como?: 'p' | 'span' | 'div' | 'li' | 'strong' | 'small';
-  tamanho?: 'xs' | 'sm' | 'base' | 'md' | 'lg';
+  /** Tamanho, entrelinha e cor de partida. Ver a tabela acima. */
+  papel?: 'corpo' | 'abertura' | 'apoio' | 'legenda';
   /**
    * `sutil` e `sutil-inverso` sao o MESMO papel em dois fundos, e sao dois
    * tokens porque um cinza so nao serve aos dois: o claro da 2,64:1 sobre branco
    * e o escuro daria 2,1:1 sobre carvao. Ver a nota de `--color-texto-sutil`.
    */
   cor?: 'padrao' | 'paragrafo' | 'sutil' | 'sutil-inverso' | 'inverso' | 'destaque';
-  /** Sem `bold`: o 700 deixou de ser baixado na revisao de design. */
-  peso?: 'normal' | 'medio' | 'semibold';
+  /**
+   * Enfase dentro do corpo, e so isso: os titulos tem o peso deles, e o 700
+   * deixou de ser baixado na revisao de design.
+   */
+  peso?: 'normal' | 'semibold';
   alinhamento?: 'inicio' | 'centro' | 'fim';
   /** Remove a margem inferior — util quando o container ja controla o ritmo. */
   semMargem?: boolean;
@@ -32,7 +51,7 @@ interface Props {
 
 const {
   como = 'p',
-  tamanho,
+  papel = 'corpo',
   cor,
   peso,
   alinhamento,
@@ -43,12 +62,20 @@ const {
 const Tag = como;
 
 /* Classes inteiras, pelo mesmo motivo explicado no Titulo.astro. */
-const TAMANHOS = {
-  xs: 'text-xs',
-  sm: 'text-sm',
-  base: 'text-base',
-  md: 'text-md',
-  lg: 'text-lg',
+const PAPEIS = {
+  corpo: '',
+  abertura: 'text-md',
+  apoio: 'text-sm',
+  legenda: 'text-xs',
+} as const;
+
+/* A cor de partida de cada papel. Vazio e a do proprio elemento: o `p` traz o
+   cinza de paragrafo do base.css, e um `span` herda de quem o contem. */
+const COR_DE_PARTIDA = {
+  corpo: undefined,
+  abertura: undefined,
+  apoio: 'sutil',
+  legenda: 'sutil',
 } as const;
 
 const CORES = {
@@ -62,7 +89,6 @@ const CORES = {
 
 const PESOS = {
   normal: 'font-normal',
-  medio: 'font-medium',
   semibold: 'font-semibold',
 } as const;
 
@@ -71,12 +97,14 @@ const ALINHAMENTOS = {
   centro: 'text-center',
   fim: 'text-right',
 } as const;
+
+const corFinal = cor ?? COR_DE_PARTIDA[papel];
 ---
 
 <Tag
   class:list={[
-    tamanho && TAMANHOS[tamanho],
-    cor && CORES[cor],
+    PAPEIS[papel],
+    corFinal && CORES[corFinal],
     peso && PESOS[peso],
     alinhamento && ALINHAMENTOS[alinhamento],
     semMargem && 'mb-0',

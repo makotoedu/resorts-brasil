@@ -16,7 +16,7 @@ import { ui, type Locale } from '../i18n/ui';
  *
  *   1. Hierarquia, duas vezes. O primeiro bloco era um `<h2>` com um PARAGRAFO
  *      inteiro dentro — 638px de altura de heading no mobile, medidos. Nao e
- *      cabecalho, e a abertura do documento: virou <Texto tamanho="lg">, mesma
+ *      cabecalho, e a abertura do documento: virou <Texto papel="abertura">, mesma
  *      correcao que a pagina de historia recebeu na Etapa 5. Os 14 capitulos
  *      eram `<h4>` logo abaixo do `<h1>`; sao `<h2>`.
  *   2. A linha tinha 127 caracteres no desktop, medidos. Ver a nota em
@@ -86,14 +86,14 @@ const compartilhamento = [
   <Secao id="titulo" espacoBase="nenhum">
     <Container largura="estreita">
       <Titulo nivel={1} papel="pagina" alinhamento="centro">{t.privacyTitle}</Titulo>
-      <Texto tamanho="xs" alinhamento="centro">{atualizacao}</Texto>
+      <Texto papel="legenda" alinhamento="centro">{atualizacao}</Texto>
     </Container>
   </Secao>
 
   <Secao id="politica-de-privacidade">
     <Container largura="estreita">
       <Prosa>
-        <Texto tamanho="lg" cor="padrao">
+        <Texto papel="abertura">
           Nós da ASSOCIAÇÃO BRASILEIRA DE RESORTS (“RESORTS BRASIL” ou “Resorts”) criamos essa
           Política de Privacidade e Proteção de Dados Pessoais (“Política”) para reafirmar o
           compromisso que temos com os nossos associados e todos aqueles que interagem conosco, a fim
