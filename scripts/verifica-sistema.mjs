@@ -169,6 +169,32 @@ async function semCorLiteral(fontes) {
 }
 
 /* ------------------------------------------------------------------ *
+ * 2b. Nenhuma familia nem espacamento de letra literal fora do tokens.css
+ * ------------------------------------------------------------------ *
+ * Entrou na revisao de design, pelo mesmo motivo da cor. A familia era uma so
+ * e virou duas, com papeis (`--font-sans` e `--font-titulo`); o espacamento
+ * de letra era cinco numeros em px espalhados por cinco componentes, e virou
+ * os tokens de degrau e o `--tracking-rotulo`. Um `letter-spacing: 1px` novo
+ * num componente e exatamente como aquilo comecou.
+ *
+ * Passa: `var(--...)`, `inherit`, `0` e `normal`.
+ */
+async function semTipografiaLiteral(fontes) {
+  const LIVRE = /^(var\(|inherit\b|normal\b|0\s*[;!]|0$)/;
+  for (const f of fontes) {
+    if (f === ARQUIVO_DE_TOKENS || !/\.(astro|css)$/.test(f)) continue;
+    const texto = await readFile(join(RAIZ, f), 'utf8');
+    linhasSemComentario(texto).forEach((linha, i) => {
+      const m = linha.match(/(?:^|[\s;{])(font-family|letter-spacing)\s*:\s*([^;}]*)/);
+      if (!m || LIVRE.test(m[2].trim())) return;
+      falhas.push(
+        `${f}:${i + 1}  ${m[1]} literal — use um token do tokens.css  › ${linha.trim().slice(0, 70)}`
+      );
+    });
+  }
+}
+
+/* ------------------------------------------------------------------ *
  * 3. Nenhum style= inline
  * ------------------------------------------------------------------ *
  * Eram 549 no comeco do projeto, 420 deles nas tres paginas de ebook. Ate a
@@ -235,7 +261,7 @@ const TAMANHO_DE_TITULO_PERMITIDO = {
     porque: 'a landing do e-book tem escala propria, como tem paleta propria',
   },
   'src/pages/design.astro': {
-    quantos: 25,
+    quantos: 19,
     porque: 'o catalogo demonstra a escala crua inteira',
   },
 };
@@ -491,6 +517,7 @@ const fontes = await arquivos(FONTES[0], ['.astro', '.css', '.ts', '.js']);
 
 await semApply(fontes);
 await semCorLiteral(fontes);
+await semTipografiaLiteral(fontes);
 const estilosInline = await semEstiloInline(fontes);
 const tamanhosSoltos = await tamanhoDeTituloRestrito(fontes);
 const componentes = await catalogoCobrePrimitivos(fontes);

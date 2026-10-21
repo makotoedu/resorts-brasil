@@ -473,6 +473,8 @@
    */
   --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   --font-titulo: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  /* So o catalogo usa: os valores que ele cita entre <code>. */
+  --font-codigo: ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /*
    * A ESCALA DEIXOU DE SER MEDIDA E PASSOU A SER DECIDIDA, na revisao de

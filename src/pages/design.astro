@@ -118,6 +118,7 @@ const variantesBotao = [
   { variante: 'primaria' as const, papel: 'a acao principal da tela' },
   { variante: 'contorno' as const, papel: 'acao secundaria, mesmo peso visual menor' },
   { variante: 'clara' as const, papel: 'sobre foto ou fundo escuro (17 usos no site)' },
+  { variante: 'clara-solida' as const, papel: 'a faixa de cookies: as tres escolhas, com o mesmo peso' },
   { variante: 'destaque' as const, papel: 'chamada de conversao, uma por pagina' },
   { variante: 'ebook' as const, papel: 'so a landing page do e-book, que tem paleta propria' },
 ];
@@ -381,25 +382,27 @@ const faixas = [
       <section>
         <h3>Título</h3>
         <p class="legenda">
-          <code>nivel</code> escolhe a tag, <code>tamanho</code> escolhe a aparência. São eixos
-          separados de propósito: 39 das 40 páginas do site têm hierarquia quebrada, e sempre pela
-          mesma causa — escolher a tag pelo tamanho que ela desenha.
+          <code>nivel</code> escolhe a tag, <code>papel</code> escolhe a aparência — e a aparência
+          inteira: tamanho, peso, entrelinha e espaçamento vêm do degrau, nenhum é prop. O peso
+          diminui conforme o tamanho cresce: <code>pagina</code> e <code>secao</code> em 500, com
+          espaçamento negativo, <code>bloco</code> e <code>cartao</code> em 600. Foi a regra que
+          endireitou a hierarquia: o <code>h1</code> estava em 500 abaixo de títulos menores em 600.
         </p>
         <div class="demo">
-          <Titulo nivel={2} tamanho="2xl">h2 no tamanho 2xl</Titulo>
-          <Titulo nivel={3} tamanho="xl">h3 no tamanho xl</Titulo>
-          <Titulo nivel={4} tamanho="lg">h4 no tamanho lg</Titulo>
-          <Titulo nivel={5} tamanho="md">h5 no tamanho md</Titulo>
+          <Titulo nivel={2} papel="pagina">pagina — 40 a 61px, peso 500</Titulo>
+          <Titulo nivel={3} papel="secao">secao — 28 a 34px, peso 500</Titulo>
+          <Titulo nivel={4} papel="bloco">bloco — 23 a 25px, peso 600</Titulo>
+          <Titulo nivel={5} papel="cartao">cartao — 19 a 20px, peso 600</Titulo>
           <hr />
           <p class="legenda">
-            O ponto do componente: aqui vai um <code>h6</code> — o último nível do documento —
-            desenhado no maior tamanho da escala. Sem os dois eixos, isso exigiria uma classe
-            contradizendo a tag.
+            O escape <code>tamanho</code> existe só aqui e no e-book, e obedece à mesma regra de
+            peso. Aqui ele desenha um <code>h6</code> — o último nível do documento — no maior degrau
+            da escala: sem os dois eixos, isso exigiria uma classe contradizendo a tag.
           </p>
           <Titulo nivel={6} tamanho="3xl">h6 no tamanho 3xl</Titulo>
           <hr />
-          <Titulo nivel={4} tamanho="lg" cor="sutil">cor sutil</Titulo>
-          <Titulo nivel={4} tamanho="lg" alinhamento="centro">alinhamento centro</Titulo>
+          <Titulo nivel={4} papel="bloco" cor="sutil">cor sutil</Titulo>
+          <Titulo nivel={4} papel="bloco" alinhamento="centro">alinhamento centro</Titulo>
         </div>
       </section>
 
@@ -441,9 +444,10 @@ const faixas = [
       <section>
         <h3>Botão</h3>
         <p class="legenda">
-          Cinco variantes × três tamanhos × cinco estados. Os valores são medidos com{' '}
+          Seis variantes × três tamanhos × cinco estados. As cores e os hovers foram medidos com{' '}
           <code>scripts/medir-primitivos.mjs</code>, <strong>hover incluído</strong> — ele não
-          aparece no HTML nem no diff visual, então seria a parte mais fácil de inventar.{' '}
+          aparece no HTML nem no diff visual, então seria a parte mais fácil de inventar. O rótulo e
+          as alturas foram decididos na revisão de design.{' '}
           <code>href</code> decide a tag: com ele sai <code>&lt;a&gt;</code>, sem ele{' '}
           <code>&lt;button&gt;</code>.
         </p>
@@ -463,7 +467,8 @@ const faixas = [
                 'demo-botoes',
                 /* `superficie-inversa` nao e decoracao: e a marca que o base.css
                    procura para trocar a cor do contorno de foco. */
-                (variante === 'clara' || variante === 'ebook') && 'demo-escura superficie-inversa',
+                (variante === 'clara' || variante === 'clara-solida' || variante === 'ebook') &&
+                  'demo-escura superficie-inversa',
               ]}
             >
               <p class="rotulo-demo">
@@ -1600,7 +1605,7 @@ const faixas = [
   }
 
   code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-codigo);
     font-size: 0.8125rem;
   }
 
