@@ -33,7 +33,13 @@ import Titulo from '../primitivos/Titulo.astro';
 interface Props {
   /** A tag. Depende do lugar na pagina, nao do desenho — ver <Titulo>. */
   nivel: 1 | 2 | 3 | 4 | 5 | 6;
-  /** O tema so usa centralizado; `inicio` existe porque a regra dele tambem. */
+  /**
+   * O titulo ALINHA COM O QUE ELE APRESENTA, a regra da revisao de design
+   * (achado A9): centrado sobre conteudo centrado -- o mapa de /associados, o
+   * carrossel e a parede de logotipos --, a esquerda sobre texto a esquerda.
+   * Os beneficios de /associe-se eram um titulo centrado sobre uma lista
+   * alinhada a esquerda, e o olho trocava de eixo entre os dois.
+   */
   alinhamento?: 'centro' | 'inicio';
   class?: string;
 }
