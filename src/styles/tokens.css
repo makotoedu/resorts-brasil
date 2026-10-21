@@ -17,6 +17,54 @@
  * scripts/verifica-sistema.mjs.
  */
 
+/*
+ * AS FACES DE RESERVA, com a metrica da fonte que elas substituem.
+ *
+ * As fontes vem do Google com `display=swap`: o texto aparece primeiro na
+ * reserva do sistema e troca quando a fonte chega. Com uma familia so isso
+ * passava; com duas, a reauditoria da revisao de design mediu CLS de 0,11 em
+ * /associados no celular e de 0,10 a 0,106 em /termos-de-uso no tablet -- o
+ * limite e 0,1 --, e zero nas mesmas paginas com as fontes bloqueadas. Era a
+ * troca: a DM Sans e mais larga que a Arial, o texto longo quebra a linha em
+ * outro lugar quando ela chega, e o bloco inteiro desce.
+ *
+ * Cada reserva e a Arial reescalada para ocupar a largura da fonte de verdade.
+ * Os numeros sao MEDIDOS no navegador, com as tres fontes carregadas, sobre o
+ * texto dos termos de uso: a DM Sans tem 103,62% da largura da Arial; a Poppins
+ * 500 tem 111,46% da Arial e a 600 tem 104,74% da Arial negrito. As alturas
+ * (asc/desc) sao as do `fontBoundingBox` de cada uma, divididas pelo mesmo
+ * fator. Onde a Arial nao existe (Android), a reserva falha e o navegador segue
+ * a pilha -- sem ganho, e sem perda.
+ */
+@font-face {
+  font-family: 'DM Sans reserva';
+  src: local('Arial'), local('ArialMT');
+  size-adjust: 103.62%;
+  ascent-override: 95.54%;
+  descent-override: 29.92%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Poppins reserva';
+  font-weight: 500;
+  src: local('Arial'), local('ArialMT');
+  size-adjust: 111.46%;
+  ascent-override: 94.2%;
+  descent-override: 31.4%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Poppins reserva';
+  font-weight: 600;
+  src: local('Arial Bold'), local('Arial-BoldMT');
+  size-adjust: 104.74%;
+  ascent-override: 100.25%;
+  descent-override: 33.42%;
+  line-gap-override: 0%;
+}
+
 @theme {
   /* ==========================================================
    * PRIMITIVOS — cor
@@ -471,8 +519,8 @@
    * em 14px de corpo, a geometria larga e o olho grande da Poppins enchem a
    * linha e cansam a leitura.
    */
-  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-titulo: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'DM Sans', 'DM Sans reserva', ui-sans-serif, system-ui, sans-serif;
+  --font-titulo: 'Poppins', 'Poppins reserva', ui-sans-serif, system-ui, sans-serif;
   /* So o catalogo usa: os valores que ele cita entre <code>. */
   --font-codigo: ui-monospace, SFMono-Regular, Menlo, monospace;
 
