@@ -85,9 +85,14 @@ const redes: { key: string; rede: string; href: string; icone: NomeIcone }[] = [
   }
 
   /* MEDIDO com o mouse em cima: o circulo aparece no azul do Facebook, que o
-     tema usa como cor unica de hover na topbar — nao por rede. */
+     tema usa como cor unica de hover na topbar — nao por rede.
+
+     E O CIRCULO NAO APARECIA: o comentario do topo o descreve, o rodape o
+     desenha, e aqui o hover pintava um quadrado de canto vivo. Com o raio, a
+     topbar e o rodape passam a ter a mesma forma. */
   .s-topbar a:hover {
     background-color: var(--color-rede-facebook);
+    border-radius: var(--radius-full);
   }
 
   /* ---------------- rodape ---------------- */

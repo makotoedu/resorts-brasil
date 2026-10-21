@@ -58,14 +58,17 @@ const { regiao } = Astro.props;
   /*
    * O separador entre estados, que eram os 11 `<div class="line">` do markup.
    *
-   * MEDIDO: 2px na cor de borda, com 50px de vao em cima e embaixo. Como borda
+   * MEDIDO: 2px na cor de borda, com 50px de vao em cima e embaixo -- desde a
+   * revisao de design, 1px e 48px: separador de conteudo e a linha fina do
+   * sistema, a mesma do `hr` e da tabela, e 2px ficou para o que indica
+   * estado, como a aba ativa. Como borda
    * de `+ .estado`, ele so existe ENTRE dois — nunca antes do primeiro nem
    * depois do ultimo, que era a regra que o markup tinha de acertar a mao em
    * cinco paineis com dezesseis estados. Foi a primeira coisa que o metodo de
    * comparar HTML gerado pegou neste projeto.
    */
   .estado + .estado {
-    border-top: 2px solid var(--color-borda);
+    border-top: 1px solid var(--color-borda);
     margin-top: 3rem;
     padding-top: 3rem;
   }
