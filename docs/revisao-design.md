@@ -292,7 +292,7 @@ Achados que pedem decisão de conteúdo ou de marca, e não de desenho:
 | A24 — a paleta passa de 12 cores não cinza | decidido em 31/08/2026: a paleta fica |
 | Poppins está na lista de fontes de título batidas da skill | decisão de marca de 20/10/2026 |
 | o logotipo "25 anos" sobre o cabeçalho escuro do e-book | arquivo de marca |
-| sete links de 27px de altura na lista de `/estatisticas-e-estudos` | polimento; a WCAG 2.5.8 pede 24px, e eles passam nela |
+| sete links de 27px de altura na lista de `/estatisticas-e-estudos` | polimento; a WCAG 2.5.8 pede 24px, e eles passam nela. **Resolvido no Soft UI**: viraram o link esticado do cartão, e o alvo é a caixa inteira (decisoes.md, "Soft UI") |
 
 ### Resumo
 

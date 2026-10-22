@@ -377,7 +377,7 @@ export const ui = {
     footerStatistics: 'Estatísticas e Estudos',
     footerSocial: 'Redes Sociais',
     copyright: 'Resorts Brasil - Todos os direitos reservados. by',
-    regioesAssociados: { sudeste: 'SUDESTE', sul: 'SUL', norte: 'NORTE', nordeste: 'NORDESTE', 'centro-oeste': 'CENTRO-OESTE' },
+    regioesAssociados: { sudeste: 'Sudeste', sul: 'Sul', norte: 'Norte', nordeste: 'Nordeste', 'centro-oeste': 'Centro-Oeste' },
     cookieRegion: 'Aviso de cookies',
     cookieText:
       'Usamos cookies para manter o site funcionando e, com a sua autorização, para medir o uso das páginas e apoiar nossas campanhas.',
@@ -739,7 +739,7 @@ export const ui = {
     footerStatistics: 'Statistics and Studies',
     footerSocial: 'Social Media',
     copyright: 'Resorts Brasil - All rights reserved. by',
-    regioesAssociados: { sudeste: 'SOUTHEAST', sul: 'SOUTH', norte: 'NORTH', nordeste: 'NORTHEAST', 'centro-oeste': 'MIDWEST' },
+    regioesAssociados: { sudeste: 'Southeast', sul: 'South', norte: 'North', nordeste: 'Northeast', 'centro-oeste': 'Midwest' },
     cookieRegion: 'Cookie notice',
     cookieText:
       'We use cookies to keep this site working and, with your permission, to measure how the pages are used and support our campaigns.',
@@ -1008,7 +1008,7 @@ export const ui = {
     footerStatistics: 'Estadísticas y estudios',
     footerSocial: 'Redes sociales',
     copyright: 'Resorts Brasil - Todos los derechos reservados. by',
-    regioesAssociados: { sudeste: 'SURESTE', sul: 'SUR', norte: 'NORTE', nordeste: 'NORESTE', 'centro-oeste': 'CENTRO-OESTE' },
+    regioesAssociados: { sudeste: 'Sureste', sul: 'Sur', norte: 'Norte', nordeste: 'Noreste', 'centro-oeste': 'Centro-Oeste' },
     cookieRegion: 'Aviso de cookies',
     cookieText:
       'Usamos cookies para que el sitio funcione y, con su autorización, para medir el uso de las páginas y apoyar nuestras campañas.',

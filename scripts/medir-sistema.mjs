@@ -139,13 +139,33 @@ const COLETAR = (escopo) => {
          * desenho; medir so a caixa contaria 20px num alvo de 44. O inset
          * negativo do pseudo-elemento soma a dimensao.
          */
+        /*
+         * E O ALVO PODE SER O CARTAO INTEIRO. O link esticado do Soft UI (o
+         * <LinkAcao esticado>, o titulo da <CartaoPublicacao>) e `static`, e o
+         * `::after` absoluto dele se ancora no ancestral posicionado -- o
+         * cartao --, nao no link. Somar o inset a caixa do link, como acima,
+         * contava 20px num alvo de 200: foram 24 "controles pequenos" que
+         * eram cartoes inteiros clicaveis. Aqui o pseudo-elemento e medido
+         * contra o bloco que de fato o contem.
+         */
         let w = r.width;
         let h = r.height;
         const depois = getComputedStyle(el, '::after');
         if (depois.content !== 'none' && depois.position === 'absolute') {
-          const fora = (v) => Math.max(0, -(parseFloat(v) || 0));
-          h += fora(depois.top) + fora(depois.bottom);
-          w += fora(depois.left) + fora(depois.right);
+          if (cs.position === 'static') {
+            let bloco = el.parentElement;
+            while (bloco && getComputedStyle(bloco).position === 'static') bloco = bloco.parentElement;
+            if (bloco) {
+              const b = bloco.getBoundingClientRect();
+              const px = (v) => parseFloat(v) || 0;
+              w = Math.max(w, b.width - px(depois.left) - px(depois.right));
+              h = Math.max(h, b.height - px(depois.top) - px(depois.bottom));
+            }
+          } else {
+            const fora = (v) => Math.max(0, -(parseFloat(v) || 0));
+            h += fora(depois.top) + fora(depois.bottom);
+            w += fora(depois.left) + fora(depois.right);
+          }
         }
         controles.push({
           seletor: seletor(el),

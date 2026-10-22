@@ -46,12 +46,15 @@ const t = ui[lang];
     height: 2.75rem;
     background-color: var(--color-superficie-flutuante);
     border-radius: var(--radius-full);
+    /* O botao flutua sobre o conteudo, e no Soft UI o que flutua tem a
+       sombra do degrau dele: a 2, a mesma do cartao respondendo. */
+    box-shadow: var(--shadow-2);
     color: var(--color-texto-inverso);
     opacity: 0;
     transition:
-      bottom 0.3s,
-      opacity 0.3s,
-      background-color 0.3s;
+      bottom var(--duracao) var(--ease-chegada),
+      opacity var(--duracao) var(--ease-chegada),
+      background-color var(--duracao) var(--ease-chegada);
   }
 
   .topo:hover {

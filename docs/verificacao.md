@@ -55,6 +55,13 @@ slide. Hoje ela compara o hero consigo mesmo com 1,5 s de intervalo e exige que
 os pixels mudem; sem a correção, a variação medida é **0,00**. Ao testar um
 efeito, teste o efeito, não o andaime.
 
+**Caber numa linha é uma afirmação, e não uma expectativa.** Desde o Soft UI a
+suíte confere que, em 1200px, o logotipo, os itens do menu e o seletor de idioma
+estão na mesma faixa vertical, em português, inglês, espanhol e na variação
+escura. A quebra de linha entre 992 e 1199px (achado A17 da revisão de design)
+tinha sido vista olhando: não há sobreposição nem transbordo, e a geometria não
+acusa. A folga medida no pior idioma, o espanhol, é de 36px.
+
 **Abrir não é ir para o lugar certo.** A verificação do seletor de idioma
 checava que o menu abria, ficava opaco e clicável — e passava enquanto o
 seletor mandava para a home do outro idioma em vez da tradução da página atual.
@@ -328,8 +335,11 @@ coração da hashtag sobrevivia à chapa e virava o "fundo" medido.
 ### O que ele não mede, e o que ele isenta
 
 Não mede contraste de componente não textual (critério 1.4.11) nem estado de
-hover, porque a captura é do repouso — o menu e o submenu continuam sendo
-trabalho do `medir-cromo.mjs`. Isenta, com fundamento na própria norma, texto de
+hover, porque a captura é do repouso. Os estados do menu — hover, página atual,
+submenu e painel abertos, nas duas variações — foram medidos no Soft UI pelo
+mesmo método da chapa, com o mouse em cima; a tabela está em
+[decisoes.md](decisoes.md), "Soft UI". Ao dar a um componente de cromo um estado
+novo, repita essa medição: o portão não a fará. Isenta, com fundamento na própria norma, texto de
 **controle desabilitado** (1.4.3 exclui componente inativo) e texto sob
 `aria-hidden` (o algarismo gigante da 404, cujo papel é não ser lido). Texto
 recortado por `overflow` e texto fora da tela saem por regra geométrica: a caixa
@@ -374,6 +384,18 @@ seção acima; isso é limite do HTML, não do desenho.
 
 Nasceu contador, com 33 ocorrências em 27 páginas, e chegou a zero na mesma
 sessão. Hoje bloqueia.
+
+**Depois vieram mais quatro, cada uma no commit da regra que guarda.** A revisão
+de design trouxe a 3 (todo título pesa e é desenhado como a sonda do degrau), a 4
+(nenhum texto da página inteira fora de DM Sans e Poppins em 400, 500 e 600) e a
+5 (toda caixa alta tem a voz do `.rotulo`). O Soft UI trouxe a 6: **botão, link
+de ação e item do menu principal têm a voz da `.voz-acao`**, lida de uma sonda com
+a própria classe. A 6 conta o que mediu — o relatório diz "N ações na regra 6" —,
+e zero reprova: um seletor que não casa nada não falha, ele passa.
+
+A regra 5 tem um ponto cego: ela lê o `text-transform` computado, então caixa
+alta **digitada** no `ui.ts` passa por ela. Foi assim que os rótulos das abas de
+regiões ficaram em "SUDESTE" até o Soft UI.
 
 ## 3. Diff visual — hoje um changelog
 

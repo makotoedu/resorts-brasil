@@ -1,5 +1,5 @@
 {
-  "medidoEm": "2026-10-21",
+  "medidoEm": "2026-10-22",
   "base": "http://localhost:4330",
   "resumo": {
     "mobile": {
@@ -55,31 +55,6 @@
           ]
         },
         {
-          "chave": "DM Sans 13px 600 lh1.54 ls0.08em alta",
-          "n": 326,
-          "paginas": 41,
-          "exemplos": [
-            {
-              "seletor": "span.distintivo.rotulo",
-              "texto": "BR",
-              "pagina": "/index.html",
-              "regiao": "cabecalho"
-            },
-            {
-              "seletor": "p.sobretitulo.rotulo.surge",
-              "texto": "Em todo o Brasil",
-              "pagina": "/index.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "a.botao.rotulo.v-destaque",
-              "texto": "Conheça os resorts",
-              "pagina": "/index.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
           "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
           "n": 297,
           "paginas": 6,
@@ -130,6 +105,31 @@
           ]
         },
         {
+          "chave": "DM Sans 13px 600 lh1.54 ls0.08em alta",
+          "n": 217,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "span.distintivo.rotulo",
+              "texto": "BR",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
+            },
+            {
+              "seletor": "p.sobretitulo.rotulo.surge",
+              "texto": "Em todo o Brasil",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
           "chave": "DM Sans 16px 600 lh1.6 ls0em normal",
           "n": 138,
           "paginas": 12,
@@ -175,6 +175,31 @@
               "seletor": "h2.text-lg.text-texto-inverso.text-center",
               "texto": "O e-book é uma iniciativa:",
               "pagina": "/ebook.html",
+              "regiao": "conteudo"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 16px 600 lh1.25 ls0em normal",
+          "n": 109,
+          "paginas": 29,
+          "exemplos": [
+            {
+              "seletor": "a.botao.voz-acao.v-destaque",
+              "texto": "Conheça os resorts",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "a.link-acao.voz-acao",
+              "texto": "Conheça a associação",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "a.link-acao.voz-acao.inverso",
+              "texto": "Saiba mais",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             }
           ]
@@ -299,13 +324,13 @@
           "exemplos": [
             {
               "seletor": "button.aba.ativa",
-              "texto": "SUDESTE",
+              "texto": "Sudeste",
               "pagina": "/associados.html",
               "regiao": "conteudo"
             },
             {
               "seletor": "button.aba",
-              "texto": "SUL",
+              "texto": "Sul",
               "pagina": "/associados.html",
               "regiao": "conteudo"
             }
@@ -523,7 +548,7 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a.botao.rotulo.v-destaque",
+              "seletor": "a.botao.voz-acao.v-destaque",
               "texto": "Conheça os resorts",
               "pagina": "/index.html",
               "regiao": "conteudo"
@@ -600,7 +625,7 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a.botao.rotulo.v-destaque",
+              "seletor": "a.botao.voz-acao.v-destaque",
               "texto": "Conheça os resorts",
               "pagina": "/index.html",
               "regiao": "conteudo"
@@ -661,25 +686,25 @@
         },
         {
           "chave": "16",
-          "n": 723,
-          "paginas": 34,
+          "n": 832,
+          "paginas": 38,
           "exemplos": [
             {
-              "seletor": "p",
-              "texto": "Eixo voltado à representação do setor, em que fa",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "a.botao.voz-acao.v-destaque",
+              "texto": "Conheça os resorts",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             },
             {
-              "seletor": "p.mb-0",
-              "texto": "Acreditamos que os resorts são indutores de dese",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "a.link-acao.voz-acao",
+              "texto": "Conheça a associação",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             },
             {
-              "seletor": "p.text-center.max-w-linha.mx-auto",
-              "texto": "Representar, pesquisar e agir em conjunto não é ",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "a.link-acao.voz-acao.inverso",
+              "texto": "Saiba mais",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             }
           ]
@@ -711,8 +736,8 @@
         },
         {
           "chave": "13",
-          "n": 335,
-          "paginas": 41,
+          "n": 226,
+          "paginas": 40,
           "exemplos": [
             {
               "seletor": "span.distintivo.rotulo",
@@ -727,10 +752,10 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a.botao.rotulo.v-destaque",
-              "texto": "Conheça os resorts",
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "rodape"
             }
           ]
         },
@@ -925,31 +950,6 @@
           ]
         },
         {
-          "chave": "1.54",
-          "n": 335,
-          "paginas": 41,
-          "exemplos": [
-            {
-              "seletor": "span.distintivo.rotulo",
-              "texto": "BR",
-              "pagina": "/index.html",
-              "regiao": "cabecalho"
-            },
-            {
-              "seletor": "p.sobretitulo.rotulo.surge",
-              "texto": "Em todo o Brasil",
-              "pagina": "/index.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "a.botao.rotulo.v-destaque",
-              "texto": "Conheça os resorts",
-              "pagina": "/index.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
           "chave": "1.5",
           "n": 297,
           "paginas": 6,
@@ -976,26 +976,51 @@
         },
         {
           "chave": "1.25",
-          "n": 126,
-          "paginas": 18,
+          "n": 235,
+          "paginas": 35,
           "exemplos": [
+            {
+              "seletor": "a.botao.voz-acao.v-destaque",
+              "texto": "Conheça os resorts",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "a.link-acao.voz-acao",
+              "texto": "Conheça a associação",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
             {
               "seletor": "h2.text-lg.text-texto-inverso",
               "texto": "Apoie o Turismo",
               "pagina": "/index.html",
               "regiao": "conteudo"
+            }
+          ]
+        },
+        {
+          "chave": "1.54",
+          "n": 226,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "span.distintivo.rotulo",
+              "texto": "BR",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
             },
             {
-              "seletor": "h2.text-lg",
-              "texto": "Representar e engajar",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "p.sobretitulo.rotulo.surge",
+              "texto": "Em todo o Brasil",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             },
             {
-              "seletor": "h2.text-lg.text-texto-inverso.text-center",
-              "texto": "O e-book é uma iniciativa:",
-              "pagina": "/ebook.html",
-              "regiao": "conteudo"
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
+              "pagina": "/index.html",
+              "regiao": "rodape"
             }
           ]
         },
@@ -1091,8 +1116,8 @@
       "trackings": [
         {
           "chave": "0.08em @13px",
-          "n": 326,
-          "paginas": 41,
+          "n": 217,
+          "paginas": 40,
           "exemplos": [
             {
               "seletor": "span.distintivo.rotulo",
@@ -1107,10 +1132,10 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a.botao.rotulo.v-destaque",
-              "texto": "Conheça os resorts",
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "rodape"
             }
           ]
         },
@@ -1206,8 +1231,8 @@
       "caixaAlta": [
         {
           "chave": "DM Sans 13px 600 ls0.08em",
-          "n": 326,
-          "paginas": 41,
+          "n": 217,
+          "paginas": 40,
           "exemplos": [
             {
               "seletor": "span.distintivo.rotulo",
@@ -1222,10 +1247,10 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a.botao.rotulo.v-destaque",
-              "texto": "Conheça os resorts",
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "rodape"
             }
           ]
         }
@@ -1233,7 +1258,7 @@
       "raios": [
         {
           "chave": "9999px",
-          "n": 346,
+          "n": 358,
           "paginas": 39,
           "exemplos": [
             {
@@ -1255,8 +1280,8 @@
         },
         {
           "chave": "12px",
-          "n": 249,
-          "paginas": 30,
+          "n": 252,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "div.chamada.f-clara",
@@ -1276,23 +1301,23 @@
           ]
         },
         {
-          "chave": "6px",
-          "n": 58,
-          "paginas": 29,
+          "chave": "8px",
+          "n": 128,
+          "paginas": 41,
           "exemplos": [
             {
-              "seletor": "a.botao.rotulo.v-destaque",
+              "seletor": "a.voz-acao",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "cabecalho"
             },
             {
-              "seletor": "img.rounded-md",
+              "seletor": "a.botao.voz-acao.v-primaria",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.rotulo.v-primaria",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "a.botao.voz-acao.v-destaque",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             }
           ]
@@ -1305,98 +1330,7 @@
         "max": 50,
         "acimaDe75": 0
       },
-      "toqueAbaixoDe44": [
-        {
-          "seletor": "a",
-          "texto": "Cartilha ESG Resorts Brasil",
-          "w": 254,
-          "h": 27,
-          "inline": false,
-          "regiao": "conteudo",
-          "pagina": "/publicacoes.html",
-          "ocorrencias": 1
-        },
-        {
-          "seletor": "a",
-          "texto": "Guia do viajante responsável",
-          "w": 282,
-          "h": 27,
-          "inline": false,
-          "regiao": "conteudo",
-          "pagina": "/publicacoes.html",
-          "ocorrencias": 1
-        },
-        {
-          "seletor": "a",
-          "texto": "Radar Resorts Brasil Jul/25",
-          "w": 259,
-          "h": 27,
-          "inline": false,
-          "regiao": "conteudo",
-          "pagina": "/estatisticas-e-estudos.html",
-          "ocorrencias": 3
-        },
-        {
-          "seletor": "a",
-          "texto": "Hotelaria em Números",
-          "w": 218,
-          "h": 27,
-          "inline": false,
-          "regiao": "conteudo",
-          "pagina": "/estatisticas-e-estudos.html",
-          "ocorrencias": 1
-        },
-        {
-          "seletor": "a",
-          "texto": "ESG Resorts Brasil Booklet",
-          "w": 247,
-          "h": 27,
-          "inline": false,
-          "regiao": "conteudo",
-          "pagina": "/en-us/publications.html",
-          "ocorrencias": 2
-        },
-        {
-          "seletor": "a",
-          "texto": "Responsible traveler guide",
-          "w": 257,
-          "h": 27,
-          "inline": false,
-          "regiao": "conteudo",
-          "pagina": "/en-us/publications.html",
-          "ocorrencias": 1
-        },
-        {
-          "seletor": "a",
-          "texto": "Hotel Industry in Figures",
-          "w": 232,
-          "h": 27,
-          "inline": false,
-          "regiao": "conteudo",
-          "pagina": "/en-us/statistics-and-studies.html",
-          "ocorrencias": 1
-        },
-        {
-          "seletor": "a",
-          "texto": "Guía del viajero responsable",
-          "w": 276,
-          "h": 27,
-          "inline": false,
-          "regiao": "conteudo",
-          "pagina": "/es-es/publicaciones.html",
-          "ocorrencias": 1
-        },
-        {
-          "seletor": "a",
-          "texto": "Hotelaría en Números",
-          "w": 211,
-          "h": 27,
-          "inline": false,
-          "regiao": "conteudo",
-          "pagina": "/es-es/estadisticas-y-estudios.html",
-          "ocorrencias": 1
-        }
-      ]
+      "toqueAbaixoDe44": []
     },
     "tablet": {
       "combinacoes": [
@@ -1446,31 +1380,6 @@
               "seletor": "p.text-center.max-w-linha.mx-auto",
               "texto": "Representar, pesquisar e agir em conjunto não é ",
               "pagina": "/resorts-brasil.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
-          "chave": "DM Sans 13px 600 lh1.54 ls0.08em alta",
-          "n": 326,
-          "paginas": 41,
-          "exemplos": [
-            {
-              "seletor": "span.distintivo.rotulo",
-              "texto": "BR",
-              "pagina": "/index.html",
-              "regiao": "cabecalho"
-            },
-            {
-              "seletor": "p.sobretitulo.rotulo.surge",
-              "texto": "Em todo o Brasil",
-              "pagina": "/index.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "a.botao.rotulo.v-destaque",
-              "texto": "Conheça os resorts",
-              "pagina": "/index.html",
               "regiao": "conteudo"
             }
           ]
@@ -1526,6 +1435,31 @@
           ]
         },
         {
+          "chave": "DM Sans 13px 600 lh1.54 ls0.08em alta",
+          "n": 217,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "span.distintivo.rotulo",
+              "texto": "BR",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
+            },
+            {
+              "seletor": "p.sobretitulo.rotulo.surge",
+              "texto": "Em todo o Brasil",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
           "chave": "DM Sans 16px 600 lh1.6 ls0em normal",
           "n": 138,
           "paginas": 12,
@@ -1571,6 +1505,31 @@
               "seletor": "h2.text-lg.text-texto-inverso.text-center",
               "texto": "O e-book é uma iniciativa:",
               "pagina": "/ebook.html",
+              "regiao": "conteudo"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 16px 600 lh1.25 ls0em normal",
+          "n": 109,
+          "paginas": 29,
+          "exemplos": [
+            {
+              "seletor": "a.botao.voz-acao.v-destaque",
+              "texto": "Conheça os resorts",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "a.link-acao.voz-acao",
+              "texto": "Conheça a associação",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "a.link-acao.voz-acao.inverso",
+              "texto": "Saiba mais",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             }
           ]
@@ -1695,13 +1654,13 @@
           "exemplos": [
             {
               "seletor": "button.aba.ativa",
-              "texto": "SUDESTE",
+              "texto": "Sudeste",
               "pagina": "/associados.html",
               "regiao": "conteudo"
             },
             {
               "seletor": "button.aba",
-              "texto": "SUL",
+              "texto": "Sul",
               "pagina": "/associados.html",
               "regiao": "conteudo"
             }
@@ -1919,7 +1878,7 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a.botao.rotulo.v-destaque",
+              "seletor": "a.botao.voz-acao.v-destaque",
               "texto": "Conheça os resorts",
               "pagina": "/index.html",
               "regiao": "conteudo"
@@ -1996,7 +1955,7 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a.botao.rotulo.v-destaque",
+              "seletor": "a.botao.voz-acao.v-destaque",
               "texto": "Conheça os resorts",
               "pagina": "/index.html",
               "regiao": "conteudo"
@@ -2057,25 +2016,25 @@
         },
         {
           "chave": "16",
-          "n": 734,
-          "paginas": 34,
+          "n": 843,
+          "paginas": 38,
           "exemplos": [
             {
-              "seletor": "p",
-              "texto": "Eixo voltado à representação do setor, em que fa",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "a.botao.voz-acao.v-destaque",
+              "texto": "Conheça os resorts",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             },
             {
-              "seletor": "p.mb-0",
-              "texto": "Acreditamos que os resorts são indutores de dese",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "a.link-acao.voz-acao",
+              "texto": "Conheça a associação",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             },
             {
-              "seletor": "p.text-center.max-w-linha.mx-auto",
-              "texto": "Representar, pesquisar e agir em conjunto não é ",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "a.link-acao.voz-acao.inverso",
+              "texto": "Saiba mais",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             }
           ]
@@ -2107,8 +2066,8 @@
         },
         {
           "chave": "13",
-          "n": 335,
-          "paginas": 41,
+          "n": 226,
+          "paginas": 40,
           "exemplos": [
             {
               "seletor": "span.distintivo.rotulo",
@@ -2123,10 +2082,10 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a.botao.rotulo.v-destaque",
-              "texto": "Conheça os resorts",
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "rodape"
             }
           ]
         },
@@ -2321,31 +2280,6 @@
           ]
         },
         {
-          "chave": "1.54",
-          "n": 335,
-          "paginas": 41,
-          "exemplos": [
-            {
-              "seletor": "span.distintivo.rotulo",
-              "texto": "BR",
-              "pagina": "/index.html",
-              "regiao": "cabecalho"
-            },
-            {
-              "seletor": "p.sobretitulo.rotulo.surge",
-              "texto": "Em todo o Brasil",
-              "pagina": "/index.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "a.botao.rotulo.v-destaque",
-              "texto": "Conheça os resorts",
-              "pagina": "/index.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
           "chave": "1.5",
           "n": 297,
           "paginas": 6,
@@ -2372,26 +2306,51 @@
         },
         {
           "chave": "1.25",
-          "n": 126,
-          "paginas": 18,
+          "n": 235,
+          "paginas": 35,
           "exemplos": [
+            {
+              "seletor": "a.botao.voz-acao.v-destaque",
+              "texto": "Conheça os resorts",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "a.link-acao.voz-acao",
+              "texto": "Conheça a associação",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
             {
               "seletor": "h2.text-lg.text-texto-inverso",
               "texto": "Apoie o Turismo",
               "pagina": "/index.html",
               "regiao": "conteudo"
+            }
+          ]
+        },
+        {
+          "chave": "1.54",
+          "n": 226,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "span.distintivo.rotulo",
+              "texto": "BR",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
             },
             {
-              "seletor": "h2.text-lg",
-              "texto": "Representar e engajar",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "p.sobretitulo.rotulo.surge",
+              "texto": "Em todo o Brasil",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             },
             {
-              "seletor": "h2.text-lg.text-texto-inverso.text-center",
-              "texto": "O e-book é uma iniciativa:",
-              "pagina": "/ebook.html",
-              "regiao": "conteudo"
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
+              "pagina": "/index.html",
+              "regiao": "rodape"
             }
           ]
         },
@@ -2487,8 +2446,8 @@
       "trackings": [
         {
           "chave": "0.08em @13px",
-          "n": 326,
-          "paginas": 41,
+          "n": 217,
+          "paginas": 40,
           "exemplos": [
             {
               "seletor": "span.distintivo.rotulo",
@@ -2503,10 +2462,10 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a.botao.rotulo.v-destaque",
-              "texto": "Conheça os resorts",
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "rodape"
             }
           ]
         },
@@ -2602,8 +2561,8 @@
       "caixaAlta": [
         {
           "chave": "DM Sans 13px 600 ls0.08em",
-          "n": 326,
-          "paginas": 41,
+          "n": 217,
+          "paginas": 40,
           "exemplos": [
             {
               "seletor": "span.distintivo.rotulo",
@@ -2618,10 +2577,10 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a.botao.rotulo.v-destaque",
-              "texto": "Conheça os resorts",
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "rodape"
             }
           ]
         }
@@ -2629,7 +2588,7 @@
       "raios": [
         {
           "chave": "9999px",
-          "n": 354,
+          "n": 359,
           "paginas": 39,
           "exemplos": [
             {
@@ -2638,12 +2597,12 @@
               "regiao": "rodape"
             },
             {
-              "seletor": "a.social",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
+              "seletor": "a.topo",
+              "pagina": "/index.html",
+              "regiao": "outro"
             },
             {
-              "seletor": "span.social",
+              "seletor": "a.social",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
             }
@@ -2651,8 +2610,8 @@
         },
         {
           "chave": "12px",
-          "n": 249,
-          "paginas": 30,
+          "n": 252,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "div.chamada.f-clara",
@@ -2672,23 +2631,23 @@
           ]
         },
         {
-          "chave": "6px",
-          "n": 58,
-          "paginas": 29,
+          "chave": "8px",
+          "n": 128,
+          "paginas": 41,
           "exemplos": [
             {
-              "seletor": "a.botao.rotulo.v-destaque",
+              "seletor": "a.voz-acao",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "cabecalho"
             },
             {
-              "seletor": "img.rounded-md",
+              "seletor": "a.botao.voz-acao.v-primaria",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.rotulo.v-primaria",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "a.botao.voz-acao.v-destaque",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             }
           ]
@@ -2730,31 +2689,6 @@
           ]
         },
         {
-          "chave": "DM Sans 13px 600 lh1.54 ls0.08em alta",
-          "n": 566,
-          "paginas": 41,
-          "exemplos": [
-            {
-              "seletor": "a.rotulo",
-              "texto": "Início",
-              "pagina": "/index.html",
-              "regiao": "cabecalho"
-            },
-            {
-              "seletor": "button.rotulo",
-              "texto": "Sobre nós",
-              "pagina": "/index.html",
-              "regiao": "cabecalho"
-            },
-            {
-              "seletor": "a.rotulo.destaque",
-              "texto": "Fale conosco",
-              "pagina": "/index.html",
-              "regiao": "cabecalho"
-            }
-          ]
-        },
-        {
           "chave": "DM Sans 16px 400 lh1.6 ls0em normal",
           "n": 563,
           "paginas": 31,
@@ -2776,6 +2710,31 @@
               "texto": "Representar, pesquisar e agir em conjunto não é ",
               "pagina": "/resorts-brasil.html",
               "regiao": "conteudo"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 16px 600 lh1.25 ls0em normal",
+          "n": 349,
+          "paginas": 41,
+          "exemplos": [
+            {
+              "seletor": "a.voz-acao",
+              "texto": "Início",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
+            },
+            {
+              "seletor": "button.voz-acao",
+              "texto": "Sobre nós",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
+            },
+            {
+              "seletor": "a.botao.voz-acao.v-primaria",
+              "texto": "Fale conosco",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
             }
           ]
         },
@@ -2826,6 +2785,31 @@
               "texto": "Alessandro Cunha",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 13px 600 lh1.54 ls0.08em alta",
+          "n": 217,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "span.distintivo.rotulo",
+              "texto": "BR",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
+            },
+            {
+              "seletor": "p.sobretitulo.rotulo.surge",
+              "texto": "Em todo o Brasil",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
+              "pagina": "/index.html",
+              "regiao": "rodape"
             }
           ]
         },
@@ -3025,13 +3009,13 @@
           "exemplos": [
             {
               "seletor": "button.aba.ativa",
-              "texto": "SUDESTE",
+              "texto": "Sudeste",
               "pagina": "/associados.html",
               "regiao": "conteudo"
             },
             {
               "seletor": "button.aba",
-              "texto": "SUL",
+              "texto": "Sul",
               "pagina": "/associados.html",
               "regiao": "conteudo"
             }
@@ -3249,7 +3233,7 @@
               "regiao": "outro"
             },
             {
-              "seletor": "a.rotulo",
+              "seletor": "a.voz-acao",
               "texto": "Início",
               "pagina": "/index.html",
               "regiao": "cabecalho"
@@ -3320,13 +3304,13 @@
               "regiao": "outro"
             },
             {
-              "seletor": "a.rotulo",
+              "seletor": "a.voz-acao",
               "texto": "Início",
               "pagina": "/index.html",
               "regiao": "cabecalho"
             },
             {
-              "seletor": "button.rotulo",
+              "seletor": "button.voz-acao",
               "texto": "Sobre nós",
               "pagina": "/index.html",
               "regiao": "cabecalho"
@@ -3361,6 +3345,31 @@
       ],
       "tamanhos": [
         {
+          "chave": "16",
+          "n": 1083,
+          "paginas": 41,
+          "exemplos": [
+            {
+              "seletor": "a.voz-acao",
+              "texto": "Início",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
+            },
+            {
+              "seletor": "button.voz-acao",
+              "texto": "Sobre nós",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
+            },
+            {
+              "seletor": "a.botao.voz-acao.v-primaria",
+              "texto": "Fale conosco",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
+            }
+          ]
+        },
+        {
           "chave": "14",
           "n": 940,
           "paginas": 40,
@@ -3386,56 +3395,6 @@
           ]
         },
         {
-          "chave": "16",
-          "n": 734,
-          "paginas": 34,
-          "exemplos": [
-            {
-              "seletor": "p",
-              "texto": "Eixo voltado à representação do setor, em que fa",
-              "pagina": "/resorts-brasil.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.mb-0",
-              "texto": "Acreditamos que os resorts são indutores de dese",
-              "pagina": "/resorts-brasil.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.text-center.max-w-linha.mx-auto",
-              "texto": "Representar, pesquisar e agir em conjunto não é ",
-              "pagina": "/resorts-brasil.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
-          "chave": "13",
-          "n": 649,
-          "paginas": 41,
-          "exemplos": [
-            {
-              "seletor": "a",
-              "texto": "Conheça nosso e-book",
-              "pagina": "/index.html",
-              "regiao": "outro"
-            },
-            {
-              "seletor": "a.destaque",
-              "texto": "Seja um associado",
-              "pagina": "/index.html",
-              "regiao": "outro"
-            },
-            {
-              "seletor": "a.rotulo",
-              "texto": "Início",
-              "pagina": "/index.html",
-              "regiao": "cabecalho"
-            }
-          ]
-        },
-        {
           "chave": "20",
           "n": 343,
           "paginas": 37,
@@ -3457,6 +3416,31 @@
               "texto": "Trabalhamos em conjunto com os associados em pro",
               "pagina": "/resorts-brasil.html",
               "regiao": "conteudo"
+            }
+          ]
+        },
+        {
+          "chave": "13",
+          "n": 300,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "a",
+              "texto": "Conheça nosso e-book",
+              "pagina": "/index.html",
+              "regiao": "outro"
+            },
+            {
+              "seletor": "a.destaque",
+              "texto": "Seja um associado",
+              "pagina": "/index.html",
+              "regiao": "outro"
+            },
+            {
+              "seletor": "span.distintivo.rotulo",
+              "texto": "BR",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
             }
           ]
         },
@@ -3626,24 +3610,24 @@
           ]
         },
         {
-          "chave": "1.54",
-          "n": 575,
+          "chave": "1.25",
+          "n": 475,
           "paginas": 41,
           "exemplos": [
             {
-              "seletor": "a.rotulo",
+              "seletor": "a.voz-acao",
               "texto": "Início",
               "pagina": "/index.html",
               "regiao": "cabecalho"
             },
             {
-              "seletor": "button.rotulo",
+              "seletor": "button.voz-acao",
               "texto": "Sobre nós",
               "pagina": "/index.html",
               "regiao": "cabecalho"
             },
             {
-              "seletor": "a.rotulo.destaque",
+              "seletor": "a.botao.voz-acao.v-primaria",
               "texto": "Fale conosco",
               "pagina": "/index.html",
               "regiao": "cabecalho"
@@ -3701,27 +3685,27 @@
           ]
         },
         {
-          "chave": "1.25",
-          "n": 126,
-          "paginas": 18,
+          "chave": "1.54",
+          "n": 226,
+          "paginas": 40,
           "exemplos": [
             {
-              "seletor": "h2.text-lg.text-texto-inverso",
-              "texto": "Apoie o Turismo",
+              "seletor": "span.distintivo.rotulo",
+              "texto": "BR",
+              "pagina": "/index.html",
+              "regiao": "cabecalho"
+            },
+            {
+              "seletor": "p.sobretitulo.rotulo.surge",
+              "texto": "Em todo o Brasil",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
             {
-              "seletor": "h2.text-lg",
-              "texto": "Representar e engajar",
-              "pagina": "/resorts-brasil.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "h2.text-lg.text-texto-inverso.text-center",
-              "texto": "O e-book é uma iniciativa:",
-              "pagina": "/ebook.html",
-              "regiao": "conteudo"
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
+              "pagina": "/index.html",
+              "regiao": "rodape"
             }
           ]
         },
@@ -3836,26 +3820,26 @@
       "trackings": [
         {
           "chave": "0.08em @13px",
-          "n": 566,
-          "paginas": 41,
+          "n": 217,
+          "paginas": 40,
           "exemplos": [
             {
-              "seletor": "a.rotulo",
-              "texto": "Início",
+              "seletor": "span.distintivo.rotulo",
+              "texto": "BR",
               "pagina": "/index.html",
               "regiao": "cabecalho"
             },
             {
-              "seletor": "button.rotulo",
-              "texto": "Sobre nós",
+              "seletor": "p.sobretitulo.rotulo.surge",
+              "texto": "Em todo o Brasil",
               "pagina": "/index.html",
-              "regiao": "cabecalho"
+              "regiao": "conteudo"
             },
             {
-              "seletor": "a.rotulo.destaque",
-              "texto": "Fale conosco",
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
               "pagina": "/index.html",
-              "regiao": "cabecalho"
+              "regiao": "rodape"
             }
           ]
         },
@@ -3951,26 +3935,26 @@
       "caixaAlta": [
         {
           "chave": "DM Sans 13px 600 ls0.08em",
-          "n": 566,
-          "paginas": 41,
+          "n": 217,
+          "paginas": 40,
           "exemplos": [
             {
-              "seletor": "a.rotulo",
-              "texto": "Início",
+              "seletor": "span.distintivo.rotulo",
+              "texto": "BR",
               "pagina": "/index.html",
               "regiao": "cabecalho"
             },
             {
-              "seletor": "button.rotulo",
-              "texto": "Sobre nós",
+              "seletor": "p.sobretitulo.rotulo.surge",
+              "texto": "Em todo o Brasil",
               "pagina": "/index.html",
-              "regiao": "cabecalho"
+              "regiao": "conteudo"
             },
             {
-              "seletor": "a.rotulo.destaque",
-              "texto": "Fale conosco",
+              "seletor": "h2.titulo-lista.rotulo",
+              "texto": "Navegação",
               "pagina": "/index.html",
-              "regiao": "cabecalho"
+              "regiao": "rodape"
             }
           ]
         }
@@ -3978,7 +3962,7 @@
       "raios": [
         {
           "chave": "9999px",
-          "n": 350,
+          "n": 364,
           "paginas": 39,
           "exemplos": [
             {
@@ -4000,8 +3984,8 @@
         },
         {
           "chave": "12px",
-          "n": 249,
-          "paginas": 30,
+          "n": 252,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "div.chamada.f-clara",
@@ -4021,23 +4005,23 @@
           ]
         },
         {
-          "chave": "6px",
-          "n": 58,
-          "paginas": 29,
+          "chave": "8px",
+          "n": 128,
+          "paginas": 41,
           "exemplos": [
             {
-              "seletor": "a.botao.rotulo.v-destaque",
+              "seletor": "a.voz-acao",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "cabecalho"
             },
             {
-              "seletor": "img.rounded-md",
+              "seletor": "a.botao.voz-acao.v-primaria",
               "pagina": "/index.html",
-              "regiao": "conteudo"
+              "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.rotulo.v-primaria",
-              "pagina": "/resorts-brasil.html",
+              "seletor": "a.botao.voz-acao.v-destaque",
+              "pagina": "/index.html",
               "regiao": "conteudo"
             }
           ]
@@ -4045,7 +4029,7 @@
       ],
       "linha": {
         "paragrafos": 332,
-        "min": 36,
+        "min": 35,
         "mediana": 68,
         "max": 74,
         "acimaDe75": 0

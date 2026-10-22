@@ -165,24 +165,35 @@ const paineis = await Promise.all(
 </script>
 
 <style>
-  /* MEDIDO: borda de 2px na cor de borda, 30px ate o conteudo. */
+  /*
+   * O SOFT UI FEZ DA LISTA UM CONTROLE SEGMENTADO. Ate ali era a anatomia do
+   * tema: abas de texto sobre uma linha de 2px, a ativa marcada por um traco
+   * azul que cobria a linha. Agora a lista e um trilho tingido e a aba ativa e
+   * uma superficie branca com a sombra de repouso -- a mesma linguagem dos
+   * cartoes e do menu: o controle escolhido ganha corpo.
+   *
+   * O trilho e o `md` das superficies e a aba o `sm` dos controles, com 4px de
+   * recuo entre os dois: o raio de dentro e menor que o de fora.
+   */
   .lista {
     display: flex;
     flex-wrap: wrap;
-    border-bottom: 2px solid var(--color-borda);
+    gap: 0.25rem;
+    padding: 0.25rem;
     margin-bottom: 2rem;
+    background-color: var(--color-estado-hover);
+    border-radius: var(--radius-md);
   }
 
-  /* MEDIDO: 14px por 24px de recuo, 14px / 500, cantos de cima com o raio
-     pequeno, borda de 2px embaixo — a mesma espessura da lista, para que a aba
-     ativa cubra a linha em vez de somar-se a ela. */
+  /* MEDIDO no tema: 14px por 24px de recuo, 14px / 500. O peso e o mesmo na
+     aba ativa e nas outras de proposito: peso que muda na selecao muda a
+     largura do texto, e a fileira pularia a cada clique. */
   .aba {
     flex: 1 1 auto;
     padding: 0.75rem 1.5rem;
     border: 0;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    background: none;
+    border-radius: var(--radius-sm);
+    background-color: transparent;
     color: var(--color-texto-paragrafo);
     font: inherit;
     /* Interface, nao corpo: o `base` virou o corpo de 16px na revisao. */
@@ -191,18 +202,21 @@ const paineis = await Promise.all(
     text-align: center;
     cursor: pointer;
     transition:
-      color 0.3s,
-      border-color 0.3s;
+      background-color var(--duracao) var(--ease-chegada),
+      color var(--duracao) var(--ease-chegada),
+      box-shadow var(--duracao) var(--ease-chegada);
   }
 
-  /* Medido com o mouse em cima. */
   .aba:hover {
-    color: var(--color-acao-primaria);
+    color: var(--color-texto);
+    background-color: var(--color-estado-hover);
   }
 
-  .ativa {
-    color: var(--color-acao-primaria);
-    border-bottom-color: var(--color-acao-primaria);
+  .ativa,
+  .ativa:hover {
+    background-color: var(--color-superficie);
+    box-shadow: var(--shadow-1);
+    color: var(--color-texto);
   }
 
   /*

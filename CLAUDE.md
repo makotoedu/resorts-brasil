@@ -170,6 +170,16 @@ defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
    [`<Video>`](src/components/padroes/Video.astro) precisa de
    `:global(picture)` e `:global(img)`.
 
+   **E a exceção, que o Soft UI encontrou do jeito difícil:** o Astro passa o
+   atributo de escopo do pai como *prop* ao filho, e o filho que espalha
+   `{...resto}` na raiz — o [`<Botao>`](src/components/primitivos/Botao.astro),
+   o `<LinkAcao>` — o recebe. Aí o seletor escopado do pai **casa** na raiz do
+   filho sem ninguém pedir: dentro do cabeçalho, as regras de item de menu
+   pintaram o "Fale conosco" de branco com texto navy. Quem não espalha props (o
+   `<Cartao>`, o `<Imagem>`) segue a regra de cima. Ao estilizar um elemento
+   genérico (`li > a`) num componente que também renderiza um `<Botao>`, exclua-o
+   (`:not(.botao)`).
+
 2. **Nome de slot não pode ser dinâmico.** `<Fragment slot={item.id}>` dentro de
    um `.map()` passa no `astro check`, compila, e quebra na **geração** com
    `ReferenceError: item is not defined` — o Astro extrai os slots nomeados em
@@ -273,6 +283,15 @@ inclusive em cada faixa —, e meça cada combinação.
 - por que cada coisa é assim → [docs/decisoes.md](docs/decisoes.md), seção
   "Design system"
 - o que pode divergir do site original → [docs/deltas-visuais.md](docs/deltas-visuais.md)
+
+**A skill [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)
+recomenda; quem decide é este repositório.** Ela deu a direção do Soft UI e fica
+fora do git (`.claude/skills/`): reinstale com `npx ui-ux-pro-max-cli init --ai
+claude` e rode o `search.py` com `python`, nunca `python -I`, que quebra os
+imports dela. O gerador de design system propõe paleta, fontes e um
+`MASTER.md`, e os três já foram recusados com motivo — ver
+[docs/decisoes.md](docs/decisoes.md), "Soft UI". As buscas por domínio (`--domain
+style`, `--domain ux`) é que rendem.
 
 ## O padrão de defeito que este projeto encontrou cinco vezes
 
@@ -459,6 +478,17 @@ desenha a mais próxima, e o `getComputedStyle` devolve o pedido); e toda caixa
 alta tem a voz do `.rotulo`. Antes de valer, cada uma foi rodada contra a build
 de antes, para provar que reprova.
 
+**O Soft UI deu a ele a sexta regra**: botão, link de ação e item do menu
+principal têm a voz da `.voz-acao`. A contagem do que ela mediu sai no relatório
+e zero reprova — um seletor que não casa nada não falha, ele passa. A regra 5 tem
+um ponto cego que vale saber: ela lê o `text-transform` computado, então caixa
+alta **digitada** no `ui.ts` ("SUDESTE") passa por ela.
+
+**E deu um portão ao cabeçalho**, no `verify-behaviors.mjs`: a partir de 1200px,
+logotipo, itens e seletor de idioma cabem numa linha, nos três idiomas e na
+variação escura. Até ali o achado A17 só tinha sido visto olhando. A folga medida
+é de **36px em espanhol**: texto novo no menu, ou um item a mais, gasta dela.
+
 Uma regra foi tentada e descartada, e vale saber: *"irmãos do mesmo nível medem
 igual"*. Ela achou o defeito que originou o portão e, depois de corrigido,
 continuou acusando 63 casos que não são defeito — grade de cartão e seção moram
@@ -495,6 +525,25 @@ O procedimento completo está em [docs/verificacao.md](docs/verificacao.md).
   `<Texto>`, onde classe escopada não valeria. Antes de criar outra classe
   global, procure o nome no `src/`: a `FaixaParceiros` e o catálogo já tinham uma
   `rotulo` local, e herdariam a caixa alta sem ninguém pedir.
+- **Botão, link de ação e item do menu são a `.voz-acao`** (DM Sans 16px, 600,
+  caixa normal), e não o `.rotulo`. A caixa alta saiu deles no Soft UI e ficou
+  nos rótulos pequenos — sobretítulo, título de coluna do rodapé, selo,
+  distintivo. O nome não é `.acao` porque o `Hero` e `/apoie` já têm uma `.acao`
+  local.
+- **Todo cartão compõe o [`<Cartao>`](src/components/primitivos/Cartao.astro)**,
+  e a superfície decide a elevação (branco com sombra, carvão com fio, tom com
+  sombra). O cartão inteiro clicável é o **link esticado**, e o `::after` dele
+  mora com quem é dono do link (`<LinkAcao esticado>`, o título da
+  `<CartaoPublicacao>`): no `<Cartao>` a regra não alcançaria o `<a>`, e no
+  `base.css` ela perderia, porque o `base.css` está numa camada e o componente
+  não.
+- **Elevação, movimento e estado são token.** Três sombras (`--shadow-1/2/3`:
+  repouso, resposta, flutuante), `--duracao` e `--duracao-curta` com a saída
+  mais curta que a entrada, e os fundos `--color-estado-*` em par claro e
+  inverso. Variação de cor de um componente se faz trocando o **valor** de uma
+  propriedade personalizada, não duplicando a regra com `.escuro` na frente: o
+  Astro carimba o atributo de escopo em cada parte de cada seletor, e a
+  duplicação do menu escuro custou 4 KB a todas as páginas.
 - **O menu é barra a partir de 1200px** (`75rem` no CSS do `<Cabecalho>` e `1200`
   no `site.js`, que mudam juntos). Era a faixa de 992px do Bootstrap, e entre ela
   e 1152px o cabeçalho quebrava em linha em espanhol. A topbar continua em 992.

@@ -811,6 +811,59 @@ do `<Titulo>` e do `<Texto>`, a variante `clara-solida` nos cinco estados —, e
 base foi regravada com ele. É o mesmo caso da View Transitions: o portão reprova
 o crescimento, e o crescimento querido entra com o motivo escrito aqui.
 
+## Soft UI — menus, cartões, botões e grades
+
+Outubro de 2026, na branch `soft-ui`. O porquê de cada valor está em
+[decisoes.md](decisoes.md), "Soft UI". Quase tudo aqui é **redesenho**: os
+valores anteriores não estavam errados de um jeito que se mede, e mudaram por
+decisão de desenho — a direção Soft UI, escolhida pelo responsável em 22/10/2026,
+e a caixa alta de botão e menu, revista no mesmo dia.
+
+| passo | páginas | tipo | motivo |
+|---|---|---|---|
+| tokens | 41 | **redesenho** | raio `sm` de 6 para 8px; três degraus de elevação tingidos de navy no lugar das duas sombras do tema; tokens de movimento e de estado |
+| voz de ação | 41 | **redesenho** | botão, link de ação e item do menu saem da caixa alta de 13px para DM Sans 16px, 600, caixa normal |
+| botão | 41 | **redesenho** | sombra de repouso nas variantes cheias, elevação no hover, 98% ao pressionar |
+| cartões | diretoria, publicações, estudos, /apoie, e-book × 3 | **redesenho** | o `<Cartao>` comum: fio e sombra suaves, altura cheia na célula; publicações e modalidades viram cartões clicáveis inteiros |
+| destaques da home | 3 homes | **redesenho** | os seis cartões com foto sobem, ganham sombra e aproximam a foto no hover; a caixa inteira é o link |
+| grade | 30 | **refino** | vão de 28 para 32px e de 40 para 48px, para a sombra caber entre os cartões |
+| menu | 41 | **redesenho** | fundo de estado no hover e na página atual (era o sublinhado de 2px); submenu e idioma como painéis com sombra 3; "Fale conosco" vira botão; painel mobile em linhas de 48px com o submenu em sanfona |
+| abas | `/associados` × 3 | **redesenho** | controle segmentado: trilho tingido e aba ativa como superfície branca |
+| rótulos das abas | `/associados` × 3 | **correção** | "SUDESTE" digitado em caixa alta no `ui.ts` passa a "Sudeste" — a convenção já pedia caixa normal no texto |
+| cromo | 41 | **refino** | sublinhado no hover do rodapé, o círculo social que sobe, sombra no voltar-ao-topo, o LinkedIn do cartão com fundo em vez de borda |
+
+**O `visual-diff` acusaria as 120 comparações**, pelo mesmo motivo da revisão de
+design: a voz do menu muda o pixel do cabeçalho de toda página. Quem afirma o
+resultado são os seis portões, que passaram no fim de cada fase, mais três
+medições:
+
+- o contraste de cada **estado** do menu sobre o fundo real, com o mouse em cima
+  e os painéis abertos — o portão de contraste só mede o repouso (tabela no
+  `decisoes.md`; o pior é a página atual, 4,97:1);
+- a **folga do cabeçalho em 1200px**, que o `verify-behaviors` passou a afirmar
+  nos três idiomas e na variação escura (36px em espanhol, o pior);
+- o inventário do `scripts/medir-sistema.mjs`, antes e depois.
+
+**O orçamento: três medidas regravadas, e não as 82.** O CSS comum, que toda
+página baixa, cresceu de 41 para 45,8 KB — os tokens, a voz de ação, o `<Cartao>`
+e os estados do menu —, e as páginas de muitos cartões ganharam de 3 a 8 KB de
+HTML com o invólucro novo (o e-book, com 41 autores, +5 KB). Nenhuma passou de
+5%; as mais leves (contato, termos, 404) ficaram a 4%, e a primeira versão do
+menu passou disso e reprovou — o motivo está no `decisoes.md`.
+
+Só o catálogo reprovou no fim, de 270 para 286 KB, com as demos desta etapa (o
+`<Cartao>`, a voz de ação, a elevação e o movimento). É o crescimento querido, o
+mesmo caso da revisão de design, e entrou na base. Entrou junto
+`/es-es/apoye` no celular, que caiu de 215 para 200–202 KB nas três rodadas da
+etapa: queda estável é queda real, e a catraca aperta.
+
+**A base não foi regravada inteira, e o motivo é instrutivo.** A home no celular
+mede 461 KB quando os logotipos `lazy` do carrossel chegam antes do
+`networkidle` e 232 quando não chegam, e na rodada de regravação ela veio com
+232. Gravar esse número faria a próxima rodada com os logotipos reprovar por
++98% sem ninguém ter mexido no site. As três medidas foram copiadas da rodada
+nova para a base antiga, e as outras 79 ficaram como estavam.
+
 ## Como classificar um delta novo
 
 Ao rodar o diff numa etapa, cada página acima do limiar entra aqui com captura,

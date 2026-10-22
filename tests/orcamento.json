@@ -315,13 +315,13 @@
     "total": 212847
   },
   "/es-es/apoye.html|mobile": {
-    "html": 58746,
-    "css": 41624,
+    "html": 61268,
+    "css": 45743,
     "js": 21361,
-    "imagem": 97933,
+    "imagem": 78371,
     "fonte": 0,
     "outro": 0,
-    "total": 219664
+    "total": 206743
   },
   "/es-es/contactenos.html|mobile": {
     "html": 44846,
@@ -360,13 +360,13 @@
     "total": 113262
   },
   "/design.html|mobile": {
-    "html": 224239,
-    "css": 45954,
+    "html": 236291,
+    "css": 50735,
     "js": 0,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 276052
+    "total": 292885
   },
   "/index.html|desktop": {
     "html": 141591,
@@ -729,12 +729,12 @@
     "total": 113262
   },
   "/design.html|desktop": {
-    "html": 224239,
-    "css": 45954,
+    "html": 236291,
+    "css": 50735,
     "js": 0,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 276052
+    "total": 292885
   }
 }

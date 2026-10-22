@@ -111,6 +111,9 @@ const semanticas = [
   '--color-superficie-inversa',
   '--color-superficie-inversa-alt',
   '--color-borda',
+  '--color-borda-suave',
+  '--color-estado-hover',
+  '--color-estado-atual',
   '--color-destaque',
 ];
 
@@ -287,6 +290,32 @@ const faixas = [
             ))
           }
         </ul>
+      </section>
+
+      <section>
+        <h2>Elevação e movimento</h2>
+        <p class="legenda">
+          Do Soft UI. Três sombras, e só três, em duas camadas e tingidas de navy: a{' '}
+          <code>--shadow-1</code> é a superfície em repouso, a <code>--shadow-2</code> é a mesma
+          superfície respondendo, a <code>--shadow-3</code> é o que flutua sobre a página. Sobre
+          fundo escuro sombra não aparece, e quem eleva é o fio claro.
+        </p>
+        <div class="demo elevacoes">
+          <div class="elevacao e1"><code>--shadow-1</code><small>cartão, botão cheio, aba ativa</small></div>
+          <div class="elevacao e2"><code>--shadow-2</code><small>hover de cartão e botão, voltar ao topo</small></div>
+          <div class="elevacao e3"><code>--shadow-3</code><small>submenu, seletor de idioma</small></div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>token</th><th>valor</th><th>uso</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>--duracao</code></td><td>200ms</td><td>hover, entrada de painel, elevação</td></tr>
+            <tr><td><code>--duracao-curta</code></td><td>130ms</td><td>pressionar e fechar: a saída é mais curta que a entrada</td></tr>
+            <tr><td><code>--ease-chegada</code></td><td>desacelera</td><td>o que entra ou responde</td></tr>
+            <tr><td><code>--ease-partida</code></td><td>acelera</td><td>o que sai</td></tr>
+          </tbody>
+        </table>
       </section>
 
       <section>
@@ -1243,7 +1272,7 @@ const faixas = [
         <div class="demo">
           <Abas
             rotuloLista="Regiões"
-            abas={regioesDemo.map((r) => ({ id: r.id, rotulo: r.id.toUpperCase() }))}
+            abas={regioesDemo.map((r) => ({ id: r.id, rotulo: r.id[0].toUpperCase() + r.id.slice(1) }))}
           >
             <Fragment slot="sudeste">
               <Titulo nivel={4} tamanho="lg">Sudeste</Titulo>
@@ -1544,10 +1573,17 @@ const faixas = [
           alcançava os seis destinos que só existem lá dentro.
         </p>
         <p class="legenda">
-          <strong>O item destacado deixou de reprovar o contraste.</strong> "Fale conosco" era{' '}
-          <code>#d39e00</code> sobre branco (2,42:1) e "Seja um associado" era{' '}
-          <code>rgb(211,180,4)</code> sobre o azul da topbar (2,84:1) — os dois abaixo dos 4,5:1 que
-          o critério 1.4.3 da WCAG pede. Agora são o âmbar-800 (4,96:1) e o branco (5,80:1).
+          <strong>No Soft UI o menu ganhou corpo.</strong> Todo controle do cabeçalho responde com um
+          fundo no raio <code>sm</code>, e a página atual é esse fundo no azul da ação — aqui,
+          "Sobre nós", porque a Diretoria mora no submenu dele. Submenu e seletor de idioma são
+          superfícies <code>md</code> com a <code>--shadow-3</code>, que entram em 200ms e saem em
+          130ms. "Fale conosco" virou <code>&lt;Botao&gt;</code>: era texto dourado, e o dourado
+          tinha de ser escolhido de novo em cada fundo.
+        </p>
+        <p class="legenda">
+          <strong>Cada estado foi medido sobre o fundo real</strong>, porque o portão de contraste
+          não passa o mouse nem abre painel. O pior é a página atual, azul sobre o fundo tingido:
+          4,97:1. No cabeçalho escuro do e-book, o hover sobre a foto fica acima de 13:1.
         </p>
       </section>
 
@@ -1730,6 +1766,40 @@ const faixas = [
     border: 1px solid var(--color-borda);
     border-radius: var(--radius-md);
     padding: 1.5rem;
+  }
+
+  .elevacoes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 2rem;
+    background-color: var(--color-superficie-clara);
+    margin-bottom: 1.5rem;
+  }
+
+  .elevacao {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borda-suave);
+    border-radius: var(--radius-md);
+  }
+
+  .elevacao small {
+    color: var(--color-texto-paragrafo);
+  }
+
+  .e1 {
+    box-shadow: var(--shadow-1);
+  }
+
+  .e2 {
+    box-shadow: var(--shadow-2);
+  }
+
+  .e3 {
+    box-shadow: var(--shadow-3);
   }
 
   .nota-h1 {

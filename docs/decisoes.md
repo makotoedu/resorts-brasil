@@ -3582,6 +3582,10 @@ fora do orçamento, que só conta bytes do próprio domínio.
 
 ### 2. Caixa alta padronizada: um tamanho, um peso, um espaçamento
 
+> **Revista em 22/10/2026, no Soft UI** (ver a seção "Soft UI", no fim deste
+> arquivo): botão, item do menu e link de ação saíram da caixa alta e passaram
+> à `.voz-acao`. O `.rotulo` continua valendo para os rótulos pequenos.
+
 Botão, item do menu principal e link de ação continuam em maiúsculas, com a voz
 do `.rotulo`: DM Sans 13px, 600, 0,08em. Antes eram sete combinações, uma por
 componente.
@@ -3674,3 +3678,227 @@ relatório, em "Adiados":
   `--container-texto` passou a ser a linha mais duas vezes o recuo daquela
   largura, em `calc()`: com um número fixo, a linha dava 512px no desktop e 538
   no tablet.
+
+# Soft UI (outubro de 2026)
+
+O redesenho de menus, cartões, botões e grades, na branch `soft-ui`. Os pixels
+que mudaram estão classificados em [deltas-visuais.md](deltas-visuais.md),
+"Soft UI".
+
+## Por que ele existe
+
+A revisão de design levou o site de C+ a A−, e consertou **coerência**: peso,
+escala, raio, linha, alvo de toque. Não mexeu em **forma**. O responsável pelo
+projeto continuou insatisfeito com menus, cartões, botões e grades, e o motivo
+se via nas capturas: botão em caixa alta de 13px com raio de 6px, três cartões
+chapados sem base comum (nenhum com sombra, nenhum respondendo ao hover como
+cartão), menu de texto azul sem superfície, duas sombras no sistema inteiro e
+nenhum token de movimento. Tudo coerente, e tudo com a cara do tema de 2018.
+
+A direção foi escolhida pelo responsável em 22/10/2026, entre quatro que a skill
+oferece para hotelaria e associação: **Soft UI** — sombra suave e em camadas,
+superfície que ganha corpo no hover, painéis limpos. A paleta de sete fundos e as
+duas famílias ficaram fora da conversa por decisão dele; a caixa alta de botão e
+menu foi a única decisão de marca reaberta.
+
+## O método: a skill ui-ux-pro-max, adaptada
+
+A [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) é um
+`search.py` sobre CSVs de estilos, paletas, regras de UX e guias por stack, sem
+rede e sem dependência. Ela foi instalada com `npx ui-ux-pro-max-cli init --ai
+claude`, que traz junto mais seis skills, e `.claude/skills/` inteira ficou fora
+do git: quem quiser usá-la reinstala com o mesmo comando.
+
+**O gerador de design system foi rodado e descartado quase inteiro**, e cada
+descarte tem motivo:
+
+| a skill propôs | por que não |
+|---|---|
+| estilo Liquid Glass (linha "Hotel/Hospitality") | o próprio CSV o restringe a plataformas Apple: navegação e controles de sistema |
+| paleta navy + ouro `#A16207`, fontes Playfair Display SC e Karla | paleta e famílias são decisões de marca (31/08 e 20/10) |
+| padrão "Hero + depoimentos + CTA" com carrossel | o site não tem depoimentos, e carrossel de vários slides é coisa que ele deliberadamente não tem |
+| `--persist`, um `design-system/MASTER.md` | seria uma segunda fonte da verdade ao lado do `tokens.css` e do `/design`, e duas fontes divergem |
+
+**O que foi aproveitado veio das buscas por domínio**, e é o que está nos
+tokens:
+
+- `soft ui evolution --domain style`: raio de **8 a 12px**, sombra "mais suave
+  que o flat, mais nítida que o neumorfismo" em várias camadas, transição de
+  **200 a 300ms**, contorno de foco de 2 a 3px;
+- a referência rápida da própria skill: `elevation-consistent` (uma escala de
+  sombra só), `motion-consistency` (duração e curva em token),
+  `exit-faster-than-enter` (saída a ~60-70% da entrada), `easing` (desacelera ao
+  chegar, acelera ao sair), `scale-feedback` (0,95 a 1,05 ao pressionar),
+  `nav-state-active` (a posição atual realçada no menu);
+- `cards buttons focus --stack html-tailwind`: hover de cartão com sombra, foco
+  com `focus-visible`.
+
+**Duas buscas voltaram fora do assunto** — submenu e navegação mobile deram
+"botão voltar" e "teclado numérico" —, e a skill manda tentar uma vez com termos
+mais estreitos e, se falhar, dizer que não houve correspondência. Foi o que
+aconteceu com "dropdown submenu"; o desenho do submenu saiu das regras gerais
+acima.
+
+**Uma armadilha de execução:** rodar o `search.py` com `python -I`, o modo
+isolado que este projeto usa para scripts de terceiros, quebra os imports dela —
+o `-I` tira o diretório do script do `sys.path`, e ela importa o `core.py`
+vizinho. Ela roda com `python` simples.
+
+## A decisão de marca revista: a caixa alta sai de botão, menu e link de ação
+
+Revista pelo responsável em 22/10/2026, dois dias depois de tomada. Botão, item
+do menu principal e link de ação passam a falar na **voz de ação**: a classe
+global `.voz-acao`, DM Sans 16px, 600, caixa normal, linha de 20px. O `.rotulo`
+continua sendo a voz dos rótulos pequenos — sobretítulo, título de coluna do
+rodapé, selo, etiqueta, distintivo de idioma —, que é onde a caixa alta nunca
+atrapalhou a leitura.
+
+> **O argumento de 20/10, que perdeu agora:** a caixa alta é parte da
+> identidade do site, e o problema era a falta de regra, não a caixa. A
+> revisão de design devolveu a presença ao botão pela altura (52px no hero) e
+> manteve a caixa. **O que mudou foi a direção, não o argumento:** o Soft UI
+> pede controle com corpo, e uma etiqueta de 13px com espaçamento largo dentro
+> de um botão macio de 44px lê como o tema de onde o site veio. A recomendação
+> recusada em 20/10 ("caixa normal de 16px, e a caixa alta só nos rótulos
+> pequenos") é, palavra por palavra, o que foi adotado.
+
+O texto do `ui.ts` já estava em caixa normal — era o CSS que subia a caixa —,
+então nenhuma cópia mudou. A exceção foram os rótulos das abas de regiões,
+digitados em CAIXA ALTA nos três idiomas: a regra 5 do `verify-tipografia` lê o
+`text-transform` computado e nunca os viu. Foram corrigidos junto.
+
+**A regra 6 do `verify-tipografia` guarda a voz nova:** botão, link de ação e
+item do menu principal têm a voz da sonda `.voz-acao`, e a contagem dos
+elementos medidos entra no relatório para um seletor que não case nada reprovar
+em vez de passar calado. Rodada contra a build de antes, ela reprovou.
+
+## Os valores decididos
+
+| o quê | antes | depois | por quê |
+|---|---|---|---|
+| `--radius-sm` | 6px | **8px** | a ponta de baixo da faixa da skill; 6px num botão de 44px lia como o tema |
+| `--radius-md` | 12px | 12px | já na ponta de cima da faixa. **Pílula para botão e 16px para cartão foram propostos e recusados no ponto de parada**: a faixa da skill e a sobriedade de um site institucional |
+| elevação | 2 sombras medidas no tema, preto a 10%, só nos menus | **3 degraus**, em duas camadas, tingidos de navy | `elevation-consistent`; preto sobre o branco azulado do site lê como sujeira |
+| movimento | `0.3s` solto em cada componente, curva `ease` | `--duracao` 200ms, `--duracao-curta` 130ms, `--ease-chegada` e `--ease-partida` | a faixa do Soft UI, a saída mais curta que a entrada, um ritmo só |
+| fundo de estado | nenhum: o hover trocava a cor do texto | `--color-estado-hover` (navy a 6%) e `--color-estado-atual` (azul a 10%), em par com o inverso | o controle do Soft UI é uma superfície, e superfície responde ganhando corpo |
+| `--color-borda-suave` | — | navy a 8% | o fio de 1px por cima da sombra; a `--color-borda` opaca lia como moldura |
+| vão da `<Grade>` `md` / `lg` | 28 / 40px | **32 / 48px** | com sombra, a sombra de um cartão ocupa parte do vão e eles pareciam encostados |
+
+Os três degraus de elevação:
+
+- **1** — superfície em repouso sobre o branco: cartão, botão cheio, aba ativa;
+- **2** — a mesma superfície respondendo: hover de cartão e de botão, e o
+  voltar-ao-topo, que flutua;
+- **3** — o que flutua sobre a página: submenu e seletor de idioma.
+
+**Sombra não aparece em fundo escuro.** Sobre carvão, quem eleva uma superfície é
+o fio claro, e o `<Cartao superficie="inversa">` faz essa troca sozinho.
+
+## Os componentes
+
+- **`<Botao>`** — voz de ação, raio de 8px, `--shadow-1` nas variantes cheias,
+  `--shadow-2` e 1px para cima no hover, 98% ao pressionar. As alturas da revisão
+  (36/44/52) não mudaram: a linha da voz nova continua sendo de 20px.
+- **`<Cartao>`**, novo em `primitivos/` — a base que os três cartões não tinham.
+  A **superfície decide a elevação**: `base` é branco com fio e sombra 1;
+  `inversa` é carvão com fio claro; `tom` é um dos seis acentos, com o próprio par
+  de texto. `interativo` é só a resposta da caixa: sobe 2px, ganha a sombra 2, e a
+  mídia marcada com `.cartao-midia` aproxima 3%.
+- **O cartão inteiro clicável é o link esticado**, e o `::after` dele mora com
+  **quem é dono do link**: a prop `esticado` do `<LinkAcao>`, ou o título da
+  `<CartaoPublicacao>`. Não no `<Cartao>`, porque estilo escopado não alcança o
+  `<a>` de outro componente; e não no `base.css`, porque o `base.css` está numa
+  camada (`@layer base`) e o `position: relative` do `<LinkAcao>`, sem camada,
+  venceria. Continua havendo um link só para o teclado e o leitor de tela.
+- **`<ChamadaAcao interativo>`** — os seis destaques da home. O link esticado
+  procura o ancestral posicionado mais próximo, e era a `.interior`; na chamada
+  interativa ela deixa de ser posicionada, e foto e véu descem para
+  `z-index: -1` dentro de um `isolation: isolate` da própria chamada. Não é o
+  padrão do "plugin removido" (o `z-index` negativo que dependia de um script
+  criar o contexto): o contexto é declarado aqui, na mesma regra.
+- **Menu** — todo controle do cabeçalho responde com um fundo no raio `sm`; a
+  página atual é esse fundo no azul da ação, e deixou de ser o sublinhado de
+  2px; submenu e idioma são superfícies `md` com a sombra 3, entrando em 200ms e
+  saindo em 130ms; no painel mobile, linhas de 48px e o submenu como sanfona com
+  fio à esquerda. **"Fale conosco" virou `<Botao>`**: era texto dourado, e o
+  dourado tinha de ser escolhido de novo em cada fundo — com ele saíram o
+  `--color-navegacao-destaque`, o par inverso e a primitiva `--cor-ambar-800`.
+- **Abas** — controle segmentado: trilho tingido em `md`, aba ativa como
+  superfície branca com sombra 1. O peso é 500 nas duas, de propósito: peso que
+  muda na seleção muda a largura, e a fileira pularia a cada clique.
+- **Polimento**: sublinhado no hover dos links do rodapé, o círculo social que
+  sobe 2px, o voltar-ao-topo com sombra 2, o círculo do LinkedIn com fundo
+  tingido em vez de borda.
+
+## O que foi medido, e onde
+
+**A sexta regra do CLAUDE.md, inteira.** O menu ganhou fundo de estado, e cada
+fundo novo é um par novo em cada superfície onde o menu pode aparecer. O portão
+de contraste mede o repouso; os estados foram medidos pelo mesmo método da chapa,
+com o mouse em cima e os painéis abertos:
+
+| estado | fundo real | pior razão |
+|---|---|---|
+| página atual (barra, painel, submenu) | azul a 10% sobre o branco | **4,97:1** |
+| hover de item, de submenu, de idioma | navy a 6% sobre o branco | 12,9:1 |
+| hover na barra escura do e-book | branco a 10% sobre a foto com véu | 13,5:1 |
+| subitem do painel mobile escuro, repouso | carvão | 7,19:1 |
+| hover no painel mobile escuro | branco a 10% sobre o carvão | 14,7:1 |
+
+**A folga do menu em 1200px.** O `verify-behaviors` passou a afirmar que o
+cabeçalho cabe numa linha a partir de 1200px nos três idiomas e na variação
+escura — o achado A17 da revisão tinha sido visto olhando, e a voz nova mudou a
+largura do menu inteiro. Folga medida entre o logotipo e o primeiro item: 79px
+em português, 93 em inglês, **36 em espanhol**. A revisão tinha medido 48 no pior
+idioma com a voz antiga; o botão do "Fale conosco" gastou o resto.
+
+## O inventário, antes e depois
+
+`node scripts/medir-sistema.mjs`, 40 páginas × 3 viewports, contra a build que
+abriu a etapa:
+
+| | antes | depois |
+|---|---|---|
+| raios | 9999, 12 e **6**px | 9999, 12 e **8**px — três, como a regra pede |
+| combinações de caixa alta | 1, o `.rotulo`, em 566 elementos no desktop | 1, o `.rotulo`, só nos rótulos pequenos |
+| combinações tipográficas (desktop) | 18 | 19 — a voz de ação é uma voz nova, e o `.rotulo` continua existindo |
+| controles abaixo de 44px no celular | 12, 9 formas | **0** |
+
+**Os 12 controles pequenos eram os títulos das publicações**, links de 27px de
+altura — "sete links de 27px em `/estatisticas-e-estudos`" estava em Adiados na
+revisão de design. Como link esticado, o alvo de cada um é o cartão inteiro, e o
+adiado se resolveu de passagem.
+
+## O que o método ensinou
+
+- **O Astro passa o atributo de escopo do pai como prop, e o filho que espalha
+  `{...resto}` o recebe.** A armadilha 1 do CLAUDE.md diz que estilo escopado não
+  alcança o que um componente filho renderiza — e vale para o `<Cartao>`, que não
+  espalha props. O `<Botao>` espalha: dentro do cabeçalho, o `<a>` dele saiu com
+  o `data-astro-cid` do cabeçalho, as regras do item de menu casaram nele, e o
+  "Fale conosco" ficou branco com texto navy. A correção foi `:not(.botao)` nas
+  regras de item.
+- **Variação de cor em seletor duplicado custa bytes que o orçamento vê.** A
+  primeira versão do menu escuro repetia cada regra de estado com um `.escuro`
+  na frente; o Astro carimba o atributo de escopo em cada parte de cada seletor,
+  e o CSS comum, que todas as páginas baixam, chegou a 47,6 KB contra os 41 de
+  antes do Soft UI — mais que 5% das páginas leves (contato, termos, 404). Os
+  pares viraram propriedades personalizadas no `.cabecalho`, que o `.escuro`
+  troca de valor: de 181 ocorrências do atributo para 116, o CSS caiu para
+  45,8 KB, e o orçamento passou.
+- **Sombra de hover escurece o vizinho.** No catálogo, a legenda de 14px logo
+  abaixo do botão forçado em hover caiu para 4,14:1 sobre a `--shadow-2`. Nas
+  páginas o portão não passa o mouse e o caso não aparece; no catálogo o estado é
+  forçado, e a legenda foi afastada.
+- **Caixa alta digitada escapa da regra 5.** A regra lê o `text-transform`
+  computado; "SUDESTE" escrito assim no `ui.ts` é caixa alta que nenhum portão
+  enxerga. A convenção já dizia que o texto fica em caixa normal — faltava quem
+  conferisse.
+- **O medidor também descola do que mede.** A primeira rodada do inventário
+  depois do Soft UI deu 36 controles abaixo de 44px, três vezes o de antes. Eram
+  os links esticados: o `medir-sistema.mjs` somava o `inset` do `::after` à caixa
+  do próprio link, supondo que o link é o bloco de contenção, e o link esticado é
+  `static` — o `::after` dele cobre o cartão. O medidor passou a medir o
+  pseudo-elemento contra o ancestral posicionado, e o número foi a zero. Antes de
+  corrigir o site por um número que piorou, confira se o instrumento ainda mede
+  a coisa certa.

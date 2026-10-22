@@ -72,8 +72,9 @@ const redes: { key: string; rede: string; href: string; icone: NomeIcone }[] = [
     justify-content: center;
     color: var(--color-texto-inverso);
     transition:
-      background-color 0.3s,
-      opacity 0.3s;
+      background-color var(--duracao) var(--ease-chegada),
+      opacity var(--duracao) var(--ease-chegada),
+      transform var(--duracao) var(--ease-chegada);
   }
 
   /* ---------------- topbar ---------------- */
@@ -146,6 +147,15 @@ const redes: { key: string; rede: string; href: string; icone: NomeIcone }[] = [
    * deliberado deste componente, e ele custa uma linha.
    */
   .s-rodape a:hover {
-    opacity: 0.8;
+    opacity: 0.85;
+  }
+
+  /* No Soft UI o circulo tambem sobe 2px, como o cartao interativo. Sombra
+     nao: com o `background-clip: content-box`, a sombra seguiria a caixa de
+     44px do alvo de toque, e nao o circulo de 32px que se ve. */
+  @media (prefers-reduced-motion: no-preference) {
+    .s-rodape a:hover {
+      transform: translateY(-2px);
+    }
   }
 </style>
