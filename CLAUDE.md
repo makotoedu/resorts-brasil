@@ -412,7 +412,7 @@ Ao usar o [`<Imagem>`](src/components/primitivos/Imagem.astro):
 - **arquivo menor que 640px não vai em `escala="largura-total"`.** A escada de
   larguras fica toda acima dele, e o AVIF sai com `srcset` vazio: o navegador
   baixa o WebP original, sem erro nenhum. Use `ajustada` com a `largura`
-  renderizada. Os 79 logotipos de `/associados` continuam assim.
+  renderizada.
 
 **Logotipo de parceiro entra aparado**, sem margem transparente: a
 [`<ParedeLogos>`](src/components/padroes/ParedeLogos.astro) dá a cada marca a

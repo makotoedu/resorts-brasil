@@ -36,7 +36,7 @@ const { regiao } = Astro.props;
       {/* Alinhado ao topo pelo mesmo motivo da <FaixaParceiros>: centrado, o
           nome do estado flutuava no meio de quatro linhas de logotipos. */}
       <Grade colunas={4} piso={1} espaco="md" alinhamento="inicio">
-        <div>
+        <div class="nome">
           {/*
             `nivel={3}`: o h1 da pagina e o titulo, o h2 e "Conheca nossos
             associados" — o nome do estado e o terceiro nivel. No tema era `h4`,
@@ -73,8 +73,25 @@ const { regiao } = Astro.props;
     padding-top: 3rem;
   }
 
+  /*
+   * Abaixo de 48rem, o nome e a faixa ocupam a linha inteira, um sobre o outro.
+   *
+   * A <Grade> de quatro colunas tem DUAS entre 30 e 48rem, e o `span 3` abaixo
+   * so vale a partir de 48rem. Sem esta regra, no tablet o nome do estado ficava
+   * com metade da largura e os logotipos espremidos na outra metade — o mesmo
+   * defeito que a <FaixaParceiros> tinha, e que la saiu com o rotulo em cima.
+   */
+  .nome,
+  .logos {
+    grid-column: 1 / -1;
+  }
+
   /* A faixa de logos ocupa TRES das quatro colunas — o `col-lg-9` do tema. */
   @container (min-width: 48rem) {
+    .nome {
+      grid-column: auto;
+    }
+
     .logos {
       grid-column: span 3;
     }

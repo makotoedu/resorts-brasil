@@ -36,13 +36,13 @@
     "total": 134520
   },
   "/associados.html|mobile": {
-    "html": 104655,
-    "css": 41624,
+    "html": 106938,
+    "css": 45805,
     "js": 21361,
-    "imagem": 194668,
+    "imagem": 135210,
     "fonte": 0,
     "outro": 0,
-    "total": 362308
+    "total": 309314
   },
   "/associe-se.html|mobile": {
     "html": 72621,
@@ -162,13 +162,13 @@
     "total": 134482
   },
   "/en-us/associates.html|mobile": {
-    "html": 104632,
-    "css": 41624,
+    "html": 106915,
+    "css": 45805,
     "js": 21361,
-    "imagem": 194668,
+    "imagem": 135210,
     "fonte": 0,
     "outro": 0,
-    "total": 362285
+    "total": 309291
   },
   "/en-us/join-us.html|mobile": {
     "html": 72570,
@@ -279,13 +279,13 @@
     "total": 134725
   },
   "/es-es/asociados.html|mobile": {
-    "html": 104829,
-    "css": 41624,
+    "html": 107112,
+    "css": 45805,
     "js": 21361,
-    "imagem": 194668,
+    "imagem": 135210,
     "fonte": 0,
     "outro": 0,
-    "total": 362482
+    "total": 309488
   },
   "/es-es/asociese.html|mobile": {
     "html": 72885,
@@ -405,13 +405,13 @@
     "total": 134520
   },
   "/associados.html|desktop": {
-    "html": 104655,
-    "css": 41624,
+    "html": 106938,
+    "css": 45805,
     "js": 21361,
-    "imagem": 262758,
+    "imagem": 189991,
     "fonte": 0,
     "outro": 0,
-    "total": 430398
+    "total": 364095
   },
   "/associe-se.html|desktop": {
     "html": 72621,
@@ -531,13 +531,13 @@
     "total": 134482
   },
   "/en-us/associates.html|desktop": {
-    "html": 104632,
-    "css": 41624,
+    "html": 106915,
+    "css": 45805,
     "js": 21361,
-    "imagem": 262758,
+    "imagem": 189991,
     "fonte": 0,
     "outro": 0,
-    "total": 430375
+    "total": 364072
   },
   "/en-us/join-us.html|desktop": {
     "html": 72570,
@@ -648,13 +648,13 @@
     "total": 134725
   },
   "/es-es/asociados.html|desktop": {
-    "html": 104829,
-    "css": 41624,
+    "html": 107112,
+    "css": 45805,
     "js": 21361,
-    "imagem": 262758,
+    "imagem": 189991,
     "fonte": 0,
     "outro": 0,
-    "total": 430572
+    "total": 364269
   },
   "/es-es/asociese.html|desktop": {
     "html": 72885,

@@ -3998,10 +3998,35 @@ catálogo ao lado da outra.
 componente pelo uso que trouxe você até ele não é saber quem mais o usa. O
 `grep` dos consumidores vem antes da edição, e não depois.
 
-## O que fica pendente
+## /associados, no mesmo passo
 
-**Os logotipos de `/associados` têm o mesmo `srcset` vazio.** São 79 fontes AVIF
-sem candidato naquela página, pelo mesmo motivo: arquivo de 320px em
-`largura-total`. Todo resort baixa o WebP inteiro. Não foi mexido aqui porque
-muda o peso e o pixel de outra página; a correção é a mesma da parede, a
-`escala="ajustada"` com a largura renderizada.
+A parede deixou dois defeitos à vista em `/associados`, porque a grade dos
+resorts tinha a mesma estrutura. Os dois foram corrigidos por decisão do
+responsável, em 22/10/2026, e o desktop não mudou:
+
+- **O `srcset` vazio.** As 79 fontes AVIF da página não tinham candidato:
+  arquivo de 320px em `largura-total`. A `<FaixaLogos>` passa a
+  `escala="ajustada"` com 184px, a maior célula que ela desenha (quatro colunas
+  no container de 1500px; seis dão 96 e cinco dão 131), e o `srcset` vira 184w
+  e 320w.
+- **O tablet.** O nome do estado ficava com metade da largura entre 30 e 48rem,
+  o mesmo defeito da parede, e agora sobe para cima dos logotipos.
+
+**Subir o rótulo sozinho teria piorado o tablet**, e só a medição mostrou. A
+`<FaixaLogos>` escolhe 4, 5 ou 6 colunas pela contagem de cada estado, e abaixo
+de 48rem de container a escada da `<Grade>` leva o 5 e o 6 a três colunas, mas o
+4 a **duas**. Em 1024px isso já acontecia: os estados com 3, 4 e 7 resorts
+desenhavam logotipos de 276px ao lado dos de 157 dos vizinhos. Com o rótulo em
+cima, o 768 herdaria o mesmo. A segunda peça é um teto de 10rem no logotipo
+quando o container é estreito, os 156px que o tema media no tablet:
+
+| largura | antes | depois |
+|---|---|---|
+| 390 | 95px | 95px |
+| 768 | 90px, com o rótulo em metade da largura | 157 a 160px, rótulo em cima |
+| 1024 | 157 ou 276px | 157 a 160px |
+| 1440 | 89, 122 ou 173px | igual |
+
+Os 89, 122 e 173px do desktop continuam desiguais pelo mesmo motivo — a
+contagem de colunas por estado —, e não foram mexidos: é a página de outra
+decisão, e não a desta.

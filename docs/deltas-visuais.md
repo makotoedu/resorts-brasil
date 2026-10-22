@@ -885,8 +885,24 @@ logotipos soltos, rótulos sem dois-pontos) são do responsável, em 22/10/2026.
 | nota dos descontos | `/associe-se` × 3 | **refino** | "Cursos e Eventos" passa ao `papel="apoio"`, o do metadado |
 | texto alternativo | as 4 com parceiros × 3 | **correção** | "senac", "fgv cemd", "hsmai brasil", "Amigos do bem" e "Nestle" passam a ser escritos como a marca se escreve |
 
-**`/associados` não muda.** A grade dos 78 resorts continua na `<FaixaLogos>`, que
-foi restaurada depois de a primeira versão desta etapa reescrevê-la no lugar.
+**`/associados` não muda no desktop.** A grade dos 78 resorts continua na
+`<FaixaLogos>`, que foi restaurada depois de a primeira versão desta etapa
+reescrevê-la no lugar. Abaixo de 1104px de janela, onde o container da faixa
+passa de 48rem, duas correções no mesmo passo:
+
+| o quê | páginas | tipo | motivo |
+|---|---|---|---|
+| tablet | `/associados` × 3 | **correção** | o nome do estado deixa de ocupar metade da largura entre 30 e 48rem e sobe para cima dos logotipos, que vão de 90 para 157px |
+| teto do logotipo | `/associados` × 3 | **correção** | abaixo de 48rem de container, nenhum logotipo passa de 10rem: em 1024px os estados de quatro colunas caíam em duas e desenhavam 276px |
+| `srcset` | `/associados` × 3 e o catálogo | **refino** | AVIF de 184w e 320w no lugar do WebP de 320px; o mesmo desenho, em arquivo menor |
+
+O peso de `/associados` caiu de 354 para 302 KB no celular e de 420 para 356 no
+desktop, nos três idiomas, e as seis medidas entraram na base. **A primeira
+regravação gravou 176 KB** para a versão portuguesa no celular, com 6 KB de
+imagem: numa rodada só com as três páginas, a primeira abriu fria e os
+logotipos `lazy` não chegaram antes do `networkidle`. A conferência seguinte
+reprovou por +72%. Três rodadas daquela página deram 302 KB, que é o gravado.
+**Número que cai pela metade sem ninguém tirar imagem é medição, e não site.**
 
 **O orçamento emagreceu em 21 medidas, e as 21 entraram na base.** O AVIF passou
 a ter `srcset` (era vazio, e todo logotipo baixava o WebP de 400px), e cada

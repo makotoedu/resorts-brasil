@@ -98,13 +98,19 @@ const escolherColunas = (total: number, teto: 4 | 5 | 6): 4 | 5 | 6 => {
 const colunasReais = escolherColunas(itens.length, colunas);
 
 /*
- * O `sizes` da celula, para o pipeline nao baixar variante maior do que cabe.
- * MEDIDA: a celula do desktop entrega 130px de logotipo, a do tablet 156 e a do
- * mobile 85 — o tablet e a maior das tres, porque tres colunas em 708px sao mais
- * largas que cinco em 1052. O `sizes` segue a mesma ordem das container queries
- * da <Grade>, e o teto e o do tablet.
+ * A LARGURA DO MAIOR LOGOTIPO QUE A FAIXA DESENHA, e nao a do arquivo.
+ *
+ * Era `escala="largura-total"`, cuja escada de larguras comeca em 640px e
+ * descarta os degraus maiores que o arquivo. Os logotipos de resort tem 320px,
+ * entao nao sobrava nenhum: o AVIF saia com `srcset` vazio e os 79 de
+ * /associados baixavam o WebP inteiro. Com `ajustada`, o `srcset` e 184w e
+ * 320w, em AVIF.
+ *
+ * MEDIDO: 184px e a celula de quatro colunas no container de 1500px, a maior
+ * que existe — seis colunas dao 96 e cinco dao 131. Abaixo de 48rem o teto do
+ * <style> segura o logotipo em 160.
  */
-const TAMANHOS = '(min-width: 64rem) 9rem, (min-width: 48rem) 10rem, 6rem';
+const LARGURA = 184;
 ---
 
 <Grade colunas={colunasReais} espaco="nenhum" como="ul" alinhamento="centro" class={classe}>
@@ -118,10 +124,10 @@ const TAMANHOS = '(min-width: 64rem) 9rem, (min-width: 48rem) 10rem, 6rem';
         */}
         {item.url ? (
           <a href={item.url} target="_blank" rel="noopener noreferrer">
-            <Imagem src={item.logo} alt={item.nome} escala="largura-total" tamanhos={TAMANHOS} />
+            <Imagem src={item.logo} alt={item.nome} escala="ajustada" largura={LARGURA} tamanhos={`${LARGURA}px`} />
           </a>
         ) : (
-          <Imagem src={item.logo} alt={item.nome} escala="largura-total" tamanhos={TAMANHOS} />
+          <Imagem src={item.logo} alt={item.nome} escala="ajustada" largura={LARGURA} tamanhos={`${LARGURA}px`} />
         )}
       </li>
     ))
@@ -143,5 +149,20 @@ const TAMANHOS = '(min-width: 64rem) 9rem, (min-width: 48rem) 10rem, 6rem';
   .celula :global(img) {
     width: 100%;
     height: auto;
+  }
+
+  /*
+   * O TETO DO CONTAINER ESTREITO. Abaixo de 48rem a escada da <Grade> e grossa:
+   * cinco e seis colunas descem para tres, mas quatro desce para DUAS. Em
+   * /associados, os estados com 3, 4 e 7 resorts caem em quatro colunas, e em
+   * 1024px desenhavam logotipos de 276px ao lado dos de 157 dos vizinhos.
+   *
+   * 10rem e a celula de tres colunas, os 156px que o tema media no tablet. Acima
+   * de 48rem a regra nao existe, e o desktop fica como estava.
+   */
+  @container (max-width: 47.9375rem) {
+    .celula :global(img) {
+      max-width: 10rem;
+    }
   }
 </style>
