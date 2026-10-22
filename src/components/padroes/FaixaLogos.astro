@@ -3,7 +3,13 @@ import Grade from '../layout/Grade.astro';
 import Imagem from '../primitivos/Imagem.astro';
 
 /**
- * FaixaLogos — a fileira de logotipos de mantenedores, parceiros e descontos.
+ * FaixaLogos — a grade de logotipos dos associados, em /associados.
+ *
+ * Desenhou tambem mantenedores, parceiros e descontos ate o Soft UI, quando
+ * aquela parede passou para a <ParedeLogos>: os logotipos de parceiro tem
+ * proporcoes diferentes e pediam area igual, e os de resort sao todos quadrados.
+ * As notas abaixo sobre sete mantenedores sao daquele tempo, e explicam a regra
+ * que ficou.
  *
  * Substitui o `<GradeLogos>` de transicao, que emitia o `ul.grid.grid-N-columns`
  * do tema. Aquele componente CONTINUA existindo ate a Etapa 9: as tres paginas

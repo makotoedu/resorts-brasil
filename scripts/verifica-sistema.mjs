@@ -20,6 +20,7 @@
  */
 import { readFile, readdir } from 'node:fs/promises';
 import { join, relative } from 'node:path';
+import { DIRETORIO_DE_LOGOS, logosComMargem } from './aparar-logos.mjs';
 
 const RAIZ = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 
@@ -231,6 +232,16 @@ const ESTILO_INLINE_PERMITIDO = {
   'src/components/padroes/CarrosselLogos.astro': {
     quantos: 1,
     porque: '--itens, que da a duracao da volta a partir do tamanho da lista',
+  },
+  /*
+   * A mesma natureza da do carrossel, duas vezes: numeros que saem do DADO. As
+   * colunas de cada faixa de largura saem do tamanho da lista, e a largura de
+   * cada marca sai da proporcao do arquivo dela. O CSS teria de conhecer cada
+   * logotipo e cada lista — e um parceiro novo mudaria o CSS.
+   */
+  'src/components/padroes/ParedeLogos.astro': {
+    quantos: 2,
+    porque: '--base/--meio/--largo pelo tamanho da lista e --raiz pela proporcao de cada logotipo',
   },
 };
 
@@ -511,6 +522,28 @@ function folhasNoBuild(paginas) {
   return paginas.length;
 }
 
+/* ------------------------------------------------------------------ *
+ * 7. Logotipo de parceiro sem margem transparente
+ * ------------------------------------------------------------------ *
+ * A <ParedeLogos> da a cada marca a mesma area a partir da proporcao do arquivo,
+ * e uma margem transparente mente a proporcao: o logotipo sai menor que os
+ * vizinhos, sem erro e sem nada fora do lugar. Era o caso dos 25 arquivos do
+ * acervo, telas de 400x300 com a marca encaixada dentro.
+ *
+ * Confere a pasta inteira, e nao so o que o `parceiros.ts` usa hoje: o arquivo
+ * que entra no acervo e o que vai entrar na faixa amanha.
+ */
+async function logosAparados() {
+  const comMargem = await logosComMargem();
+  for (const l of comMargem) {
+    falhas.push(
+      `${DIRETORIO_DE_LOGOS}/${l.nome}  ${l.largura}x${l.altura} com a marca em ` +
+        `${l.tinta.width}x${l.tinta.height} — rode node scripts/aparar-logos.mjs`
+    );
+  }
+  return (await readdir(join(RAIZ, DIRETORIO_DE_LOGOS))).filter((f) => f.endsWith('.png')).length;
+}
+
 /* ------------------------------------------------------------------ */
 
 const fontes = await arquivos(FONTES[0], ['.astro', '.css', '.ts', '.js']);
@@ -521,6 +554,7 @@ await semTipografiaLiteral(fontes);
 const estilosInline = await semEstiloInline(fontes);
 const tamanhosSoltos = await tamanhoDeTituloRestrito(fontes);
 const componentes = await catalogoCobrePrimitivos(fontes);
+const logos = await logosAparados();
 
 const paginasDoDist = await lerDist();
 const comFolha = folhasNoBuild(paginasDoDist);
@@ -549,6 +583,7 @@ console.log('COBERTURA');
 console.log(`  style= inline fora da allowlist .. ${estilosInline}`);
 console.log(`  <Titulo tamanho=> fora da lista .. ${tamanhosSoltos}`);
 console.log(`  cor literal fora de tokens.css ... ${avisos.length}`);
+console.log(`  logotipos de parceiro aparados ... ${logos}`);
 console.log(`  paginas com heading conferido .... ${comHeadings ?? semDist}`);
 console.log(`  paginas com a folha do sistema ... ${comFolha ?? semDist}`);
 

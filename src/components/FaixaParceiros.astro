@@ -1,11 +1,10 @@
 ---
 import Secao from './layout/Secao.astro';
 import Container from './layout/Container.astro';
-import Grade from './layout/Grade.astro';
 import Titulo from './primitivos/Titulo.astro';
 import Texto from './primitivos/Texto.astro';
 import TituloSecao from './padroes/TituloSecao.astro';
-import FaixaLogos from './padroes/FaixaLogos.astro';
+import ParedeLogos from './padroes/ParedeLogos.astro';
 import { descontos, mantenedores, parceiros } from '../data/parceiros';
 import { ui, type Locale } from '../i18n/ui';
 
@@ -21,13 +20,13 @@ import { ui, type Locale } from '../i18n/ui';
  * Fica em `src/components/` e nao em `padroes/` pelo mesmo criterio da
  * <SecaoCookies> e do <ConviteAssociese>: e montagem de CONTEUDO a partir do
  * `ui.ts` e do `src/data/`, nao uma decisao de desenho. O desenho e a <Secao>, o
- * <TituloSecao> e a <FaixaLogos>, que estao no catalogo.
+ * <TituloSecao> e a <ParedeLogos>, que estao no catalogo.
  *
  * TRES DIVERGENCIAS ENTRE IDIOMAS MORREM AQUI, e as tres so aparecem lendo os
  * tres lado a lado:
  *
  *   1. O rotulo espanhol de parceiros era "Socios / Partners:" — o unico dos
- *      nove que traz duas linguas na mesma linha. Passa a ser "Socios:", que e
+ *      nove que traz duas linguas na mesma linha. Passa a ser "Socios", que e
  *      o que o portugues e o ingles fazem;
  *   2. O titulo tinha um `<br>` manual em portugues e em espanhol, e nao em
  *      ingles. A quebra a mao so acerta numa largura; o `text-wrap: balance` do
@@ -37,6 +36,16 @@ import { ui, type Locale } from '../i18n/ui';
  * O HASHTAG que fecha a faixa em /apoie e /resorts-brasil e traduzido de
  * verdade nos tres idiomas (#ApoieOTurismoBrasileiro, #SupportBrazilianTourism,
  * #ApoyarElTurismoBrasileno) — por isso vem do `ui.ts` e nao e literal.
+ *
+ * OS GRUPOS SAO EMPILHADOS, COM O ROTULO EM CIMA. Ate o Soft UI o rotulo
+ * ocupava uma coluna a esquerda e os logotipos as outras tres, a proporcao do
+ * `col-lg-3` + `col-lg-9` do tema. Duas coisas quebravam ali: entre 30 e 48rem
+ * a grade externa tinha DUAS colunas e a faixa so passava a ocupar tres a partir
+ * de 48rem, entao no tablet o rotulo ficava com metade da largura e os
+ * logotipos encolhiam para 90px, menores que no celular; e no desktop um quarto
+ * da largura existia para uma palavra. Empilhado, o rotulo encosta no grupo que
+ * nomeia em qualquer largura, e o bloco inteiro mora na coluna de 960px, como o
+ * titulo centrado sobre ele pede.
  */
 interface Props {
   lang: Locale;
@@ -44,64 +53,44 @@ interface Props {
   comDescontos?: boolean;
   /** O `#ApoieOTurismoBrasileiro` no fim. Em apoie e resorts-brasil. */
   comHashtag?: boolean;
-  /** 5 nas paginas institucionais, 6 em associe-se — a medida do tema. */
-  colunas?: 5 | 6;
 }
 
-const { lang, comDescontos = false, comHashtag = false, colunas = 5 } = Astro.props;
+const { lang, comDescontos = false, comHashtag = false } = Astro.props;
 const t = ui[lang];
 
 /*
  * As faixas como dado, e nao tres blocos repetidos abaixo. O `descontos` traz
- * uma segunda linha de rotulo ("Cursos e Eventos") que os outros dois nao tem —
- * e o unico eixo em que as tres diferem, fora a lista.
+ * uma segunda linha de rotulo ("Cursos e Eventos") que os outros dois nao tem.
+ * Os mantenedores sao a faixa em `destaque`: sustentam a associacao, e a parede
+ * dizia isso so pela ordem.
  */
 const faixas = [
-  { rotulo: t.partnersMaintainers, itens: mantenedores, nota: undefined as string | undefined },
-  { rotulo: t.partnersPartners, itens: parceiros, nota: undefined as string | undefined },
-  ...(comDescontos ? [{ rotulo: t.partnersDiscounts, itens: descontos, nota: t.partnersDiscountsNote }] : []),
+  { rotulo: t.partnersMaintainers, itens: mantenedores, escala: 'destaque' as const, nota: undefined as string | undefined },
+  { rotulo: t.partnersPartners, itens: parceiros, escala: 'padrao' as const, nota: undefined as string | undefined },
+  ...(comDescontos
+    ? [{ rotulo: t.partnersDiscounts, itens: descontos, escala: 'padrao' as const, nota: t.partnersDiscountsNote }]
+    : []),
 ];
 ---
 
 <Secao id="parceiros">
-  <Container>
+  <Container largura="media">
     <TituloSecao nivel={2}>{t.partnersTitle}</TituloSecao>
 
     {
       faixas.map((faixa) => (
-        /*
-          O embrulho e MEU, e nao a <Grade>, porque `.faixa + .faixa` precisa de
-          dois irmaos com essa classe. A prop `class` da <Grade> pousa na grade
-          em si, que e filha do container da query — entao a classe passada por
-          ali nunca seria irma de outra igual.
-
-          `colunas={4}` com `piso={1}`: o rotulo ocupa uma coluna e a faixa de
-          logos ocupa as outras tres, que e a proporcao do `col-lg-3` +
-          `col-lg-9` do tema. No mobile o rotulo vai para cima da faixa, como
-          ele ja ia.
-
-          `alinhamento="inicio"` e nao `centro`: centrado, o rotulo flutuava no
-          meio vertical de uma grade de duas linhas cuja segunda tem dois
-          logotipos — ficava longe do primeiro item que nomeia e no meio de um
-          espaco que nao e de ninguem. Alinhado ao topo, ele encosta na linha
-          que rotula, que e o que um rotulo faz.
-        */
-        <div class="faixa">
-          <Grade colunas={4} piso={1} espaco="md" alinhamento="inicio">
-            <div class="grupo">
-              <Titulo nivel={3} papel="cartao" alinhamento="centro">
-                {faixa.rotulo}
-              </Titulo>
-              {faixa.nota && (
-                <Texto alinhamento="centro" semMargem>
-                  {faixa.nota}
-                </Texto>
-              )}
-            </div>
-            <div class="logos">
-              <FaixaLogos itens={faixa.itens} colunas={colunas} />
-            </div>
-          </Grade>
+        <div class="grupo">
+          <div class="rotulo-grupo">
+            <Titulo nivel={3} papel="cartao" alinhamento="centro">
+              {faixa.rotulo}
+            </Titulo>
+            {faixa.nota && (
+              <Texto papel="apoio" alinhamento="centro" semMargem>
+                {faixa.nota}
+              </Texto>
+            )}
+          </div>
+          <ParedeLogos itens={faixa.itens} escala={faixa.escala} />
         </div>
       ))
     }
@@ -119,29 +108,27 @@ const faixas = [
 </Secao>
 
 <style>
-  /*
-   * A faixa de logos ocupa TRES das quatro colunas.
-   *
-   * `grid-column: span 3` e a traducao direta do `col-lg-9` do tema, e ele so
-   * vale onde ha quatro colunas de verdade — abaixo de 48rem a <Grade> desce
-   * para uma coluna, e ai o rotulo fica em cima, empilhado, como ja ficava.
-   */
-  @container (min-width: 48rem) {
-    .logos {
-      grid-column: span 3;
-    }
+  /* Do rotulo ao primeiro logotipo sobra o recuo da celula, 12px; os 8px daqui
+     completam os 20 que separam um titulo de cartao do que ele nomeia. */
+  .rotulo-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
   }
 
-  /* MEDIDO: 30px entre uma faixa e a seguinte — o `p-t-30` que o markup punha
-     na segunda e na terceira `.row`. Aqui e uma so regra, e ela nao alcanca a
-     primeira. */
-  .faixa + .faixa {
-    margin-top: 2rem;
+  .rotulo-grupo > :global(*) {
+    margin-block: 0;
   }
 
-  /* O `hr.space` do tema — 60px de vao — mais o texto centrado. */
+  /* Entre um grupo e o seguinte, o dobro do que ha entre o rotulo e o grupo: o
+     olho tem de ler as fronteiras antes dos logotipos. */
+  .grupo + .grupo {
+    margin-top: 3rem;
+  }
+
   .hashtag {
-    margin-block: 4rem 0;
+    margin-block: 3rem 0;
     text-align: center;
   }
 </style>

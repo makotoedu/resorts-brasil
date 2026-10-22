@@ -509,11 +509,15 @@ export const ui = {
      * "Socios / Partners:", o único dos nove com duas línguas na mesma linha; o
      * título trazia um `<br>` manual em PT e ES e nenhum em EN; e o espanhol
      * terminava com ponto final e os outros dois não.
+     *
+     * Os rótulos perderam os dois-pontos no Soft UI (o achado A23 da revisão de
+     * design): são títulos de grupo, `<h3>` acima dos logotipos, e título não
+     * pede pontuação para apresentar o que vem embaixo.
      */
     partnersTitle: 'Conheça algumas empresas que apoiam o turismo através da Resorts Brasil',
-    partnersMaintainers: 'Mantenedores:',
-    partnersPartners: 'Parceiros:',
-    partnersDiscounts: 'Descontos:',
+    partnersMaintainers: 'Mantenedores',
+    partnersPartners: 'Parceiros',
+    partnersDiscounts: 'Descontos',
     partnersDiscountsNote: 'Cursos e Eventos',
     partnersHashtag: '#ApoieOTurismoBrasileiro',
 
@@ -820,9 +824,9 @@ export const ui = {
     joinInviteSecondary: 'Meet the associates',
 
     partnersTitle: 'Meet a few of the companies that support tourism through Resorts Brasil',
-    partnersMaintainers: 'Maintainers:',
-    partnersPartners: 'Partners:',
-    partnersDiscounts: 'Discounts:',
+    partnersMaintainers: 'Maintainers',
+    partnersPartners: 'Partners',
+    partnersDiscounts: 'Discounts',
     partnersDiscountsNote: 'Courses and Events',
     partnersHashtag: '#SupportBrazilianTourism',
 
@@ -1107,9 +1111,9 @@ export const ui = {
      * fecho tem texto próprio desde então — é o `joinCtaText`.
      */
     partnersTitle: 'Conozca algunas empresas que apoyan al turismo a través de Resorts Brasil',
-    partnersMaintainers: 'Mantenedores:',
-    partnersPartners: 'Socios:',
-    partnersDiscounts: 'Descuentos:',
+    partnersMaintainers: 'Mantenedores',
+    partnersPartners: 'Socios',
+    partnersDiscounts: 'Descuentos',
     partnersDiscountsNote: 'Cursos y Eventos',
     /*
      * As duas paginas espanholas traziam hashtags DIFERENTES: `#ApoyeEl…` em

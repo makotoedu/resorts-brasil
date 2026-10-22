@@ -42,6 +42,7 @@ import Prosa from '../components/padroes/Prosa.astro';
 import Tabela from '../components/padroes/Tabela.astro';
 import TituloSecao from '../components/padroes/TituloSecao.astro';
 import FaixaLogos from '../components/padroes/FaixaLogos.astro';
+import ParedeLogos from '../components/padroes/ParedeLogos.astro';
 import CarrosselLogos from '../components/padroes/CarrosselLogos.astro';
 import CartaoModalidade from '../components/padroes/CartaoModalidade.astro';
 import Video from '../components/padroes/Video.astro';
@@ -53,6 +54,7 @@ import IconesSociais from '../components/cromo/IconesSociais.astro';
 import VoltarAoTopo from '../components/cromo/VoltarAoTopo.astro';
 import { glifos, nomesDeIcone } from '../icones/glifos';
 import { regioesAssociados } from '../data/associados';
+import { mantenedores, parceiros } from '../data/parceiros';
 import { diretoria, cargoEm } from '../data/diretoria';
 import { textoEm } from '../data/ebook';
 import { autoresEbook } from '../data/autores-ebook';
@@ -1322,8 +1324,8 @@ const faixas = [
       <section>
         <h3>FaixaLogos</h3>
         <p class="legenda">
-          A fileira de logotipos de mantenedores, parceiros e descontos. Aqui com quatro logos de
-          resort, tirados de <code>src/data/associados.ts</code>:
+          A grade de logotipos dos associados, em <code>/associados</code>. Aqui com quatro logos
+          de resort, tirados de <code>src/data/associados.ts</code>:
         </p>
         <div class="demo">
           <FaixaLogos itens={logosDemo} colunas={5} />
@@ -1339,6 +1341,33 @@ const faixas = [
             certo: os 40px medidos estão nos quatro lados, então são o respiro do logotipo dentro
             da própria célula, e não o vão até o vizinho. Daí o <code>espaco="nenhum"</code> — com{' '}
             <code>gap</code> somado ao recuo, o corredor daria 96px onde o medido são 80.
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>ParedeLogos</h3>
+        <p class="legenda">
+          A parede de mantenedores, parceiros e descontos. Cada marca tem a mesma <em>área</em>, e
+          não a mesma largura: a largura é <code>lado × √proporção</code>, então uma marca larga
+          fica mais baixa e uma quadrada fica mais estreita. As fileiras são centradas, e o número
+          por fileira sai do tamanho da lista. Com <code>escala="destaque"</code>, os mantenedores:
+        </p>
+        <div class="demo">
+          <ParedeLogos itens={mantenedores} escala="destaque" />
+        </div>
+        <p class="legenda">E na escala padrão, os parceiros:</p>
+        <div class="demo">
+          <ParedeLogos itens={parceiros} />
+          <p class="legenda">
+            <strong>A proporção é lida do arquivo</strong>, e por isso o arquivo não pode ter
+            margem: o acervo chegou em telas de 400×300 com a marca encaixada dentro, e o STR
+            ocupava 75% da tela onde o Talge ocupava 10%. <code>node scripts/aparar-logos.mjs</code>{' '}
+            apara, e o build reprova o logotipo que entrar com margem.
+          </p>
+          <p class="legenda">
+            <strong>O Arbache não tem site</strong>, e por isso não tem link nem fundo de hover: a
+            marca sem destino não finge que leva a algum lugar.
           </p>
         </div>
       </section>

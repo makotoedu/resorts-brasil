@@ -1,0 +1,240 @@
+---
+import Imagem from '../primitivos/Imagem.astro';
+import { imagem } from '../../imagens';
+
+/**
+ * ParedeLogos — a parede de logotipos de mantenedores, parceiros e descontos.
+ *
+ *   <ParedeLogos itens={mantenedores} escala="destaque" />
+ *   <ParedeLogos itens={parceiros} />
+ *
+ * Ate o Soft UI esta parede era a <FaixaLogos>, que continua existindo para os
+ * associados de /associados. As duas se separaram porque o acervo e outro: os
+ * logotipos de resort sao todos quadrados de 320x320, entao celula igual da
+ * logotipo igual, e la a grade alinhada a esquerda e o que lista uma lista. Os
+ * de parceiro vao de 1:1 a 3,2:1, e celula igual nao da peso igual.
+ *
+ * CADA MARCA TEM A MESMA AREA, E NAO A MESMA LARGURA. Ate aqui o logotipo
+ * ocupava a largura da celula, e a celula era igual para todos: a marca larga
+ * saia baixa e a quadrada saia enorme. O STR e o R1 dominavam a faixa e o
+ * Talge, o ESG Pulse e a Mark Up quase sumiam — 1,9 vez de diferenca de area
+ * entre marcas que estao ali pelo mesmo motivo. Aqui a largura e
+ * `lado x raiz(proporcao)` e a altura sai `lado / raiz(proporcao)`, entao o
+ * produto das duas e `lado ao quadrado` para qualquer marca.
+ *
+ * A proporcao e lida do ARQUIVO, e por isso o arquivo nao pode ter margem: o
+ * acervo chegou em telas de 400x300 com a marca encaixada dentro, e a margem
+ * transparente mentia a proporcao sem erro nenhum. O
+ * `scripts/aparar-logos.mjs` apara, e o `verifica-sistema.mjs` reprova o build
+ * se um logotipo novo entrar com margem.
+ *
+ * AS FILEIRAS SAO CENTRADAS, e o numero por fileira sai do tamanho da lista. A
+ * <FaixaLogos> e uma <Grade>, que alinha a ultima linha a esquerda: sete
+ * mantenedores em quatro colunas deixavam um buraco na ponta direita, e a regra
+ * que escolhe as colunas pela sobra existe la para encolher esse buraco.
+ * Centrada, a ultima linha nao deixa buraco nenhum — sobra so um caso feio, o
+ * logotipo sozinho numa linha, e e esse que `colunas()` evita.
+ *
+ * `escala="destaque"` e o grupo que vem primeiro e pesa mais: os mantenedores,
+ * que sustentam a associacao. Os logotipos dele tem 1,3 a 1,6 vez o lado dos
+ * outros, conforme a largura — o dobro da area, mais ou menos —, e a fileira
+ * tem menos colunas. A primeira versao usava 104px e dava 3,4 vezes a area no
+ * desktop: o parceiro virava nota de rodape. Com 88, o mantenedor tambem fica
+ * quase do mesmo tamanho nas tres larguras (84 a 88px de lado).
+ */
+interface LogoItem {
+  nome: string;
+  /** Caminho publico (`/images/parceiros/...`). Resolvido por src/imagens.ts. */
+  logo: string;
+  /** Ausente para quem nao tem site: vira imagem sem link, nao link morto. */
+  url?: string;
+}
+
+type Escala = 'destaque' | 'padrao';
+
+interface Props {
+  itens: LogoItem[];
+  escala?: Escala;
+  class?: string;
+}
+
+const { itens, escala = 'padrao', class: classe } = Astro.props;
+
+/*
+ * O TETO de colunas em cada faixa de largura do container: abaixo de 30rem,
+ * de 30 a 48rem e a partir de 48rem — os mesmos degraus da <Grade>.
+ *
+ * Os do `padrao` sao mais altos porque a marca e menor: sete parceiros cabem
+ * numa fileira so em 960px, e os sete mantenedores pedem duas.
+ */
+const TETOS: Record<Escala, { base: number; meio: number; largo: number }> = {
+  destaque: { base: 2, meio: 4, largo: 4 },
+  padrao: { base: 3, meio: 5, largo: 7 },
+};
+
+/*
+ * O teto, a menos que ele deixe UM logotipo sozinho na ultima linha e um degrau
+ * abaixo nao deixe. Lista que cabe numa linha fica no teto: a fileira e
+ * centrada, e as celulas tem a mesma largura das outras faixas da pagina.
+ *
+ *   7 com teto 4    4 + 3          7 com teto 5    5 + 2
+ *   4 com teto 3    2 + 2          7 com teto 3    3 + 3 + 1, porque 2 tambem sobra 1
+ */
+const colunas = (total: number, teto: number): number => {
+  if (total <= teto) return teto;
+  if (teto > 2 && total % teto === 1 && total % (teto - 1) !== 1) return teto - 1;
+  return teto;
+};
+
+/*
+ * As colunas de cada faixa e, ao lado, o teto. As colunas desenham a fileira; o
+ * TETO dimensiona a marca. Sem essa separacao, uma lista curta ganharia logotipo
+ * maior: os quatro descontos caem em 2 + 2 no celular, numa celula mais larga
+ * que a dos sete parceiros, e saiam maiores que eles na mesma escala.
+ */
+const teto = TETOS[escala];
+const grade = (['base', 'meio', 'largo'] as const)
+  .map((f) => `--${f}: ${colunas(itens.length, teto[f])}; --teto-${f}: ${teto[f]}`)
+  .join('; ');
+
+/*
+ * O lado maximo de cada escala, em px. ESPELHA o `--lado-max` do <style> e muda
+ * junto com ele: aqui ele so decide o `srcset`, la ele desenha.
+ *
+ * Cada logotipo pede a largura exata do maior tamanho em que aparece, e o
+ * `sizes` diz a mesma coisa. Era `escala="largura-total"`, cuja escada de
+ * larguras comeca acima dos 400px do arquivo — o AVIF saia com `srcset` vazio e
+ * todo logotipo baixava o WebP de 400px, para ser desenhado com 130.
+ */
+const LADO_MAX: Record<Escala, number> = { destaque: 88, padrao: 64 };
+
+const marcas = itens.map((item) => {
+  const { width, height } = imagem(item.logo);
+  const raiz = Math.sqrt(width / height);
+  return { ...item, raiz: raiz.toFixed(3), largura: Math.ceil(LADO_MAX[escala] * raiz) };
+});
+---
+
+<div class="caixa">
+  <ul class:list={['logos', escala, classe]} style={grade}>
+    {
+      marcas.map((marca) => (
+        <li class="celula" style={`--raiz: ${marca.raiz}`}>
+          {/*
+            Sem `url`, sai a imagem sozinha — e nao um `<a>` sem `href`, que era o
+            que o tema emitia. Ancora sem destino nao e link: nao recebe foco, nao
+            e anunciada como link e nao faz nada. E sem link nao ha hover, entao a
+            marca sem site tambem nao finge que leva a algum lugar.
+          */}
+          {marca.url ? (
+            <a class="marca" href={marca.url} target="_blank" rel="noopener noreferrer">
+              <span class="logo">
+                <Imagem src={marca.logo} alt={marca.nome} escala="ajustada" largura={marca.largura} tamanhos={`${marca.largura}px`} />
+              </span>
+            </a>
+          ) : (
+            <span class="marca">
+              <span class="logo">
+                <Imagem src={marca.logo} alt={marca.nome} escala="ajustada" largura={marca.largura} tamanhos={`${marca.largura}px`} />
+              </span>
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  /* A caixa e o container da query, como na <Grade>: a faixa responde a largura
+     de onde foi posta, nao a da janela. */
+  .caixa {
+    container-type: inline-size;
+  }
+
+  .logos {
+    --colunas: var(--base);
+    --teto: var(--teto-base);
+    /* O respiro da marca dentro da propria celula, e tambem o recuo do fundo de
+       hover em volta dela. */
+    --recuo: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @container (min-width: 30rem) {
+    .logos {
+      --colunas: var(--meio);
+      --teto: var(--teto-meio);
+    }
+  }
+
+  @container (min-width: 48rem) {
+    .logos {
+      --colunas: var(--largo);
+      --teto: var(--teto-largo);
+    }
+  }
+
+  /* Espelhados no LADO_MAX do frontmatter, que decide o `srcset`. */
+  .destaque {
+    --lado-max: 5.5rem;
+  }
+
+  .padrao {
+    --lado-max: 4rem;
+  }
+
+  /* A celula tem a largura de uma coluna mesmo na ultima linha, que e o que a
+     deixa centrada sem esticar. */
+  .celula {
+    display: flex;
+    flex: 0 0 calc(100% / var(--colunas));
+  }
+
+  .marca {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    padding: var(--recuo);
+    border-radius: var(--radius-md);
+  }
+
+  /* O fundo de estado do Soft UI, o mesmo do item de menu: a celula inteira e o
+     alvo, e e ela que responde. */
+  a.marca {
+    transition: background-color var(--duracao-curta) var(--ease-partida);
+  }
+
+  a.marca:hover {
+    background-color: var(--color-estado-hover);
+    transition-duration: var(--duracao);
+    transition-timing-function: var(--ease-chegada);
+  }
+
+  /*
+   * O lado e o menor de dois: o maximo da escala, ou o que cabe na celula do
+   * TETO — que e a menor celula que a escala usa naquela largura. O 1,8 e a raiz
+   * da marca mais larga do acervo (Talge e Mark Up, 3,2 por 1): dividindo por
+   * ele, a mais larga encosta no recuo e nenhuma passa. Uma marca ainda mais
+   * larga que entre depois para no `100%`, um pouco menor que as outras, sem
+   * transbordar.
+   */
+  .logo {
+    --lado: min(var(--lado-max), (100cqi / var(--teto) - 2 * var(--recuo)) / 1.8);
+    display: block;
+    width: min(100%, var(--lado) * var(--raiz));
+  }
+
+  /* O <img> vem do <Imagem>, e o escopo daqui nao o alcanca (armadilha 1). */
+  .logo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>
