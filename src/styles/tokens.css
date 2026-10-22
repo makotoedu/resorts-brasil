@@ -327,6 +327,35 @@
   /* MEDIDA na base da topbar: rgba(231,231,231,0.25) sobre o azul. Borda sobre
      superficie escura precisa vir da luz, nao do cinza das bordas claras. */
   --color-borda-inversa: rgb(231 231 231 / 0.25);
+
+  /*
+   * A BORDA DE SUPERFICIE do Soft UI: o fio de 1px que contorna cartao e
+   * painel por cima da sombra. A `--color-borda` (#e4e6ef) e opaca e le como
+   * moldura; esta e o navy a 8%, que sobre o branco mede quase o mesmo e sobre
+   * o `clara` (#f7f9fc) nao vira uma linha mais clara que o fundo.
+   */
+  --color-borda-suave: color-mix(in srgb, var(--cor-navy-900) 8%, transparent);
+
+  /*
+   * OS FUNDOS DE ESTADO, em par claro/inverso como os acentos.
+   *
+   * Item de menu, item de submenu, aba e hamburguer respondem ao hover com uma
+   * PILULA DE FUNDO, nao so com troca de cor: no Soft UI o controle e uma
+   * superficie, e superficie responde ganhando corpo. O item da pagina atual e
+   * a mesma pilula no azul da acao (`nav-state-active` da skill: "realce a
+   * posicao atual com cor, peso ou indicador").
+   *
+   * Sao translucidos de proposito: o mesmo token serve sobre o branco do body,
+   * sobre o `clara` do painel mobile e sobre o branco do submenu. A cor do TEXTO
+   * por cima foi medida em cada um desses fundos -- ver o decisoes.md, secao
+   * "Soft UI". Sobre o cabecalho escuro do e-book valem os pares `-inverso`,
+   * branco translucido sobre carvao e sobre foto com veu.
+   */
+  --color-estado-hover: color-mix(in srgb, var(--cor-navy-900) 6%, transparent);
+  --color-estado-atual: color-mix(in srgb, var(--cor-azul-500) 10%, transparent);
+  --color-estado-hover-inverso: rgb(255 255 255 / 0.1);
+  --color-estado-atual-inverso: rgb(255 255 255 / 0.16);
+
   --color-destaque: var(--cor-coral-500);
 
   /*
@@ -780,19 +809,78 @@
    * Antes, o cartao de pessoa usava sm e os outros cartoes md, o video nao
    * tinha raio ao lado de uma chamada em md, e o botao de play usava 14px
    * literal.
+   *
+   * O SOFT UI SUBIU O `sm` DE 6 PARA 8px, e so ele. A skill ui-ux-pro-max da
+   * ao estilo "Soft UI Evolution" a faixa de 8 a 12px; o `md` ja estava na
+   * ponta de cima e fica. O `sm` em 6px era a ponta que lia "tema de 2018" num
+   * botao de 44px. A regra continua a mesma, com uma reclassificacao: o painel
+   * do submenu e do seletor de idioma deixou de ser controle e passou a ser
+   * SUPERFICIE (`md`), e os itens dentro dele sao os controles (`sm`).
    */
-  --radius-sm: 0.375rem; /* 6px */
+  --radius-sm: 0.5rem; /* 8px */
   --radius-md: 0.75rem; /* 12px */
   --radius-full: 9999px;
 
   /* ==========================================================
-   * SOMBRA
+   * ELEVACAO
    * ==========================================================
-   * As duas sombras do site, MEDIDAS nos dois menus suspensos do cabecalho
-   * (scripts/medir-cromo.mjs). Sao tokens e nao valores no componente pelo
-   * motivo de sempre — mas tambem por um motivo mecanico: a cor de uma sombra e
-   * escrita em `rgb()`, e cor literal dentro de componente reprova o build.
+   * Tres degraus, e so tres. Ate o Soft UI o site tinha duas sombras, MEDIDAS
+   * nos dois menus suspensos do tema (0 33px 32px e 0 14px 20px, preto a 10%),
+   * e nenhuma em cartao: tudo que nao era menu era chapado.
+   *
+   *   1   repouso de superficie sobre o branco: cartao, chamada clara
+   *   2   a mesma superficie respondendo: hover de cartao e de botao
+   *   3   o que flutua sobre a pagina: submenu, seletor de idioma
+   *
+   * Duas decisoes, e as duas vem da skill (`elevation-consistent`: "uma escala
+   * de sombra so para cartao, painel e modal; nada de valores avulsos"):
+   *
+   *   - EM CAMADAS. Uma sombra curta e definida perto da borda, e uma longa e
+   *     difusa por baixo. Uma camada so obriga a escolher entre borda dura e
+   *     nevoa sem forma; o "Soft UI Evolution" pede "mais suave que o flat,
+   *     mais nitida que o neumorfismo", e e a soma das duas que da isso.
+   *   - TINGIDAS DE NAVY, e nao de preto. Preto a 10% sobre o branco azulado
+   *     do site le como sujeira cinza; o navy da marca a 6-14% le como sombra.
+   *
+   * A cor sai do `color-mix` sobre a primitiva, para a sombra acompanhar a
+   * marca. Continua sendo token pelo motivo mecanico de sempre: cor literal
+   * dentro de componente reprova o build.
+   *
+   * SOMBRA NAO APARECE EM FUNDO ESCURO. Sobre carvao ou navy, quem eleva uma
+   * superficie e a borda clara (`--color-borda-inversa`); o <Cartao> faz essa
+   * troca sozinho.
    */
-  --shadow-menu: 0 2rem 2rem rgb(0 0 0 / 0.1); /* 0 33px 32px, o submenu */
-  --shadow-suspenso: 0 0.875rem 1.25rem rgb(0 0 0 / 0.1); /* 0 14px 20px, o seletor de idioma */
+  --shadow-1:
+    0 1px 2px color-mix(in srgb, var(--cor-navy-900) 6%, transparent),
+    0 2px 8px color-mix(in srgb, var(--cor-navy-900) 6%, transparent);
+  --shadow-2:
+    0 2px 4px color-mix(in srgb, var(--cor-navy-900) 6%, transparent),
+    0 12px 28px color-mix(in srgb, var(--cor-navy-900) 12%, transparent);
+  --shadow-3:
+    0 4px 8px color-mix(in srgb, var(--cor-navy-900) 6%, transparent),
+    0 20px 48px color-mix(in srgb, var(--cor-navy-900) 16%, transparent);
+
+  /* ==========================================================
+   * MOVIMENTO
+   * ==========================================================
+   * Grupo que nao existia. Ate o Soft UI cada componente escrevia a propria
+   * duracao -- 0.3s quase sempre, 0.25s nos menus, 0.2s nas setas, 0.7s na
+   * faixa de cookies -- e a curva era o `ease` padrao em todos.
+   *
+   * Da skill: transicao de 150 a 300ms (o Soft UI pede 200-300ms), resposta
+   * ao toque em 80-150ms, SAIDA MAIS CURTA QUE A ENTRADA (~60-70% dela), e
+   * curva que desacelera ao chegar e acelera ao sair. E `motion-consistency`:
+   * um ritmo so para o site inteiro, em token.
+   *
+   *   --duracao        hover, entrada de painel, elevacao de cartao
+   *   --duracao-curta  pressionar e fechar -- o que tem de parecer instantaneo
+   *
+   * Os nomes `--ease-*` sao o namespace do Tailwind; ele gera `ease-chegada` e
+   * `ease-partida` de graca. `prefers-reduced-motion` continua no base.css,
+   * que zera toda transicao de uma vez.
+   */
+  --duracao: 200ms;
+  --duracao-curta: 130ms;
+  --ease-chegada: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-partida: cubic-bezier(0.4, 0, 1, 1);
 }

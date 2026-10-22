@@ -16,6 +16,11 @@ tests/visual-diff/
 # permissões locais do Claude Code (não versionadas)
 .claude/settings.local.json
 
+# skills de terceiros instaladas pelo `npx ui-ux-pro-max-cli init --ai claude`
+# (a ui-ux-pro-max e mais seis que o instalador traz junto). Ficam fora do git:
+# quem quiser usá-las reinstala com o mesmo comando.
+.claude/skills/
+
 # sistema operacional
 .DS_Store
 Thumbs.db
