@@ -3902,3 +3902,106 @@ adiado se resolveu de passagem.
   pseudo-elemento contra o ancestral posicionado, e o número foi a zero. Antes de
   corrigir o site por um número que piorou, confira se o instrumento ainda mede
   a coisa certa.
+
+# A parede de parceiros (outubro de 2026)
+
+A faixa de mantenedores, parceiros e descontos que fecha a home, `/apoie`,
+`/associe-se` e `/resorts-brasil`, nos três idiomas: doze páginas. Os pixels que
+mudaram estão em [deltas-visuais.md](deltas-visuais.md), "Parede de parceiros".
+
+## O que estava errado
+
+Quatro defeitos, e nenhum portão via nenhum:
+
+| defeito | medido |
+|---|---|
+| **o tablet quebrado** | a grade externa era `colunas={4} piso={1}`, que tem **duas** colunas entre 30 e 48rem. O `span 3` dos logotipos só valia a partir de 48rem. Em 768px o rótulo "Mantenedores:" ficava com metade da largura, e os logotipos com 90px, menores que no celular (95px) |
+| **peso desigual** | o acervo eram telas de 400×300 com a marca encaixada dentro, e a tinta ia de 10% da tela (Talge, 390×122) a 75% (STR, 300×300). Na mesma célula, o STR desenhava 1,9 vez a área do Talge |
+| **espaço vazio** | 40px de recuo nos quatro lados de cada célula: no celular, 1.796px de altura para 14 logotipos de 95px |
+| **AVIF sem `srcset`** | `escala="largura-total"` monta a escada a partir de 640px e descarta os degraus maiores que o arquivo (`layout.js` do Astro): com 400px, não sobra nenhum. O `<source type="image/avif">` saía com `srcset` vazio, e todo logotipo baixava o WebP de 400px para ser desenhado com 130 |
+
+E três menores: mantenedor e parceiro idênticos, sem hierarquia nenhuma; texto
+alternativo em minúsculas ("senac", "fgv cemd", "hsmai brasil"); e o logotipo
+com link sem resposta ao hover.
+
+**O tablet passou pelos portões pelo motivo de sempre.** Nada se sobrepunha,
+nada transbordava, nenhuma caixa zerava: a geometria mede caixas, e as caixas
+estavam certas. Só estava errado olhando. É a família do A17 da revisão de
+design, e da regra que o CLAUDE.md já registra para a armadilha 1 — duas regras
+que dependem uma da outra (`colunas` na `<Grade>`, `span 3` no filho), cada uma
+na sua faixa de largura, e o buraco no meio.
+
+## As três decisões do responsável (22/10/2026)
+
+- **Os mantenedores em destaque.** Sustentam a associação, e a parede só dizia
+  isso pela ordem. Recusado: os grupos iguais e só compactados, e o rótulo ao
+  lado como estava.
+- **Os logotipos soltos, e não em cartões.** Na home e em `/apoie` a parede vem
+  logo depois dos cartões de destaque, e mais 14 sombras disputariam com eles. O
+  fundo da seção também fica branco: o tom claro (`--color-superficie-clara`) é
+  o do rodapé, que vem logo abaixo em duas das quatro páginas, e os dois se
+  fundiriam.
+- **Os dois-pontos saem dos rótulos**, nos três idiomas. É o A23 da revisão de
+  design, na parte que toca esta seção. "Conheça nossos associados:" e o
+  "Resort" do hero continuam adiados.
+
+**Uma decisão anterior continua de pé.** A parede não foi recortada fora de
+`/apoie` (ver "As três decisões que a auditoria não podia tomar"): o desenho
+mudou, e as doze páginas continuam com as mesmas marcas.
+
+## Os valores decididos
+
+| | antes | depois | motivo |
+|---|---|---|---|
+| tamanho da marca | a largura da célula | **área igual**: `lado × √proporção` de largura e `lado ÷ √proporção` de altura | o produto das duas é `lado²` para qualquer marca. Medido no desktop: 7.675 a 7.794px² nos sete mantenedores, 3.166 a 3.208px² nos parceiros — no máximo 2% de diferença dentro do grupo |
+| lado | — | 88px no destaque, 64px no padrão, ou o que cabe na célula do teto | a primeira versão usava 104px no destaque e dava 3,4 vezes a área do parceiro no desktop: o parceiro virava nota de rodapé. Com 88, a razão fica entre 1,3 e 1,6 no lado, e o mantenedor mede quase igual nas três larguras (84 a 88px). Medido em `/associe-se`: 1,63 no celular, 1,34 no tablet, 1,56 no desktop |
+| fileiras | `<Grade>`, última linha alinhada à esquerda | flex centrado, cada célula com a largura de uma coluna | centrada, a última linha não deixa buraco. O único caso feio que sobra é um logotipo sozinho, e a regra evita quando um degrau abaixo não deixa |
+| colunas | 5 ou 6 por página, reduzidas pela sobra | teto por escala e por faixa: destaque 2/4/4, padrão 3/5/7 | sete parceiros numa fileira em 960px; sete mantenedores em 4 + 3 |
+| quem dimensiona | as colunas | o **teto** | com as colunas, a lista curta ganhava logotipo maior: os quatro descontos em 2 + 2 no celular saíam maiores que os sete parceiros, na mesma escala |
+| recuo | 40px nos quatro lados | 12px | é também o recuo do fundo de hover em volta da marca |
+| largura | o container de 1500px, um quarto dele para o rótulo | a coluna `media`, 960px | o título é centrado e a parede também; o rótulo vai para cima do grupo que nomeia |
+| hover | nenhum | `--color-estado-hover`, o do item de menu, no raio `md` | a célula inteira é o alvo. A marca sem site (Arbache) não ganha hover, para não fingir que leva a algum lugar |
+| opacidade | 0,9 em toda célula | 1 | era um tom medido no tema, e não um estado. Com a área igualada, nenhuma marca precisa ser amansada |
+| entre grupos | 32px | 48px | o dobro do que separa o rótulo do grupo: as fronteiras se leem antes dos logotipos |
+
+## O acervo foi aparado, e o build confere
+
+O tamanho sai da proporção do **arquivo**, então a margem transparente mente sem
+erro nenhum: o logotipo sai menor que os vizinhos, e nada fica fora do lugar. Os
+25 arquivos de `src/assets/imagens/parceiros/` com margem foram aparados por
+[`scripts/aparar-logos.mjs`](../scripts/aparar-logos.mjs), em PNG sem perda —
+quem recomprime é o pipeline do `<Imagem>`.
+
+**A checagem 7 do `verifica-sistema.mjs` reprova o build** se um arquivo da pasta
+tiver margem, e aponta o script. Ela confere a pasta inteira, os nove órfãos
+inclusive: o arquivo que entra no acervo hoje é o que entra na parede amanhã.
+Antes de valer, foi rodada com o Talge de antes, e reprovou.
+
+A largura de cada marca e as colunas de cada faixa chegam ao CSS por variável,
+`style=` inline, e por isso a `<ParedeLogos>` entrou na allowlist com **duas**
+ocorrências. É a mesma natureza da do `<CarrosselLogos>`: números que saem do
+dado, que o CSS só teria se conhecesse cada logotipo e cada lista.
+
+## A FaixaLogos ficou, e a parede saiu dela
+
+A primeira versão reescreveu a `<FaixaLogos>` no lugar. Ela também desenha os 78
+resorts de `/associados`, pelo `<PainelRegiao>`, e a mudança teria redesenhado
+aquela página sem ninguém pedir: outra grade, outro recuo e outro tamanho para 78 logotipos.
+
+As duas se separaram porque o acervo é outro: os logotipos de resort são todos
+quadrados de 320×320, então célula igual dá logotipo igual, e a grade alinhada
+à esquerda é o que lista uma lista. Os de parceiro vão de 1:1 a 3,2:1. A parede
+nova é a [`<ParedeLogos>`](../src/components/padroes/ParedeLogos.astro), no
+catálogo ao lado da outra.
+
+**É o "contar o componente não é contar o texto" ao contrário:** abrir o
+componente pelo uso que trouxe você até ele não é saber quem mais o usa. O
+`grep` dos consumidores vem antes da edição, e não depois.
+
+## O que fica pendente
+
+**Os logotipos de `/associados` têm o mesmo `srcset` vazio.** São 79 fontes AVIF
+sem candidato naquela página, pelo mesmo motivo: arquivo de 320px em
+`largura-total`. Todo resort baixa o WebP inteiro. Não foi mexido aqui porque
+muda o peso e o pixel de outra página; a correção é a mesma da parede, a
+`escala="ajustada"` com a largura renderizada.

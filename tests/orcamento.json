@@ -9,13 +9,13 @@
     "total": 471941
   },
   "/resorts-brasil.html|mobile": {
-    "html": 58317,
-    "css": 41624,
+    "html": 61971,
+    "css": 45805,
     "js": 21361,
-    "imagem": 94703,
+    "imagem": 57062,
     "fonte": 0,
     "outro": 0,
-    "total": 216005
+    "total": 186199
   },
   "/diretoria.html|mobile": {
     "html": 65805,
@@ -45,13 +45,13 @@
     "total": 362308
   },
   "/associe-se.html|mobile": {
-    "html": 68655,
-    "css": 41624,
+    "html": 72621,
+    "css": 45805,
     "js": 21361,
-    "imagem": 139751,
+    "imagem": 83191,
     "fonte": 0,
     "outro": 0,
-    "total": 271391
+    "total": 222978
   },
   "/publicacoes.html|mobile": {
     "html": 49350,
@@ -72,13 +72,13 @@
     "total": 212638
   },
   "/apoie.html|mobile": {
-    "html": 58471,
-    "css": 41624,
+    "html": 63755,
+    "css": 45805,
     "js": 21361,
-    "imagem": 97933,
+    "imagem": 60292,
     "fonte": 0,
     "outro": 0,
-    "total": 219389
+    "total": 191213
   },
   "/fale-conosco.html|mobile": {
     "html": 44592,
@@ -135,13 +135,13 @@
     "total": 477122
   },
   "/en-us/resorts-brasil.html|mobile": {
-    "html": 58167,
-    "css": 41624,
+    "html": 61821,
+    "css": 45805,
     "js": 21361,
-    "imagem": 94703,
+    "imagem": 57062,
     "fonte": 0,
     "outro": 0,
-    "total": 215855
+    "total": 186049
   },
   "/en-us/board.html|mobile": {
     "html": 65801,
@@ -171,13 +171,13 @@
     "total": 362285
   },
   "/en-us/join-us.html|mobile": {
-    "html": 68604,
-    "css": 41624,
+    "html": 72570,
+    "css": 45805,
     "js": 21361,
-    "imagem": 139751,
+    "imagem": 83191,
     "fonte": 0,
     "outro": 0,
-    "total": 271340
+    "total": 222927
   },
   "/en-us/publications.html|mobile": {
     "html": 49317,
@@ -198,13 +198,13 @@
     "total": 212610
   },
   "/en-us/support-tourism.html|mobile": {
-    "html": 58423,
-    "css": 41624,
+    "html": 63707,
+    "css": 45805,
     "js": 21361,
-    "imagem": 97933,
+    "imagem": 60292,
     "fonte": 0,
     "outro": 0,
-    "total": 219341
+    "total": 191165
   },
   "/en-us/contact-us.html|mobile": {
     "html": 44516,
@@ -252,13 +252,13 @@
     "total": 472187
   },
   "/es-es/resorts-brasil.html|mobile": {
-    "html": 58633,
-    "css": 41624,
+    "html": 62287,
+    "css": 45805,
     "js": 21361,
-    "imagem": 75141,
+    "imagem": 57062,
     "fonte": 0,
     "outro": 0,
-    "total": 196759
+    "total": 186515
   },
   "/es-es/directorio.html|mobile": {
     "html": 66017,
@@ -288,13 +288,13 @@
     "total": 362482
   },
   "/es-es/asociese.html|mobile": {
-    "html": 68919,
-    "css": 41624,
+    "html": 72885,
+    "css": 45805,
     "js": 21361,
-    "imagem": 139751,
+    "imagem": 83191,
     "fonte": 0,
     "outro": 0,
-    "total": 271655
+    "total": 223242
   },
   "/es-es/publicaciones.html|mobile": {
     "html": 49597,
@@ -315,13 +315,13 @@
     "total": 212847
   },
   "/es-es/apoye.html|mobile": {
-    "html": 61268,
-    "css": 45743,
+    "html": 64030,
+    "css": 45805,
     "js": 21361,
-    "imagem": 78371,
+    "imagem": 60292,
     "fonte": 0,
     "outro": 0,
-    "total": 206743
+    "total": 191488
   },
   "/es-es/contactenos.html|mobile": {
     "html": 44846,
@@ -369,22 +369,22 @@
     "total": 292885
   },
   "/index.html|desktop": {
-    "html": 141591,
-    "css": 41624,
+    "html": 145499,
+    "css": 45805,
     "js": 21361,
-    "imagem": 455336,
+    "imagem": 382415,
     "fonte": 0,
     "outro": 0,
-    "total": 659912
+    "total": 595080
   },
   "/resorts-brasil.html|desktop": {
-    "html": 58317,
-    "css": 41624,
+    "html": 61971,
+    "css": 45805,
     "js": 21361,
-    "imagem": 134630,
+    "imagem": 61709,
     "fonte": 0,
     "outro": 0,
-    "total": 255932
+    "total": 190846
   },
   "/diretoria.html|desktop": {
     "html": 65805,
@@ -414,13 +414,13 @@
     "total": 430398
   },
   "/associe-se.html|desktop": {
-    "html": 68655,
-    "css": 41624,
+    "html": 72621,
+    "css": 45805,
     "js": 21361,
-    "imagem": 222738,
+    "imagem": 123028,
     "fonte": 0,
     "outro": 0,
-    "total": 354378
+    "total": 262815
   },
   "/publicacoes.html|desktop": {
     "html": 49350,
@@ -441,13 +441,13 @@
     "total": 212638
   },
   "/apoie.html|desktop": {
-    "html": 58471,
-    "css": 41624,
+    "html": 63755,
+    "css": 45805,
     "js": 21361,
-    "imagem": 139091,
+    "imagem": 66170,
     "fonte": 0,
     "outro": 0,
-    "total": 260547
+    "total": 197091
   },
   "/fale-conosco.html|desktop": {
     "html": 44592,
@@ -495,22 +495,22 @@
     "total": 98530
   },
   "/en-us/home.html|desktop": {
-    "html": 141624,
-    "css": 41624,
+    "html": 145532,
+    "css": 45805,
     "js": 21361,
-    "imagem": 455336,
+    "imagem": 382415,
     "fonte": 0,
     "outro": 0,
-    "total": 659945
+    "total": 595113
   },
   "/en-us/resorts-brasil.html|desktop": {
-    "html": 58167,
-    "css": 41624,
+    "html": 61821,
+    "css": 45805,
     "js": 21361,
-    "imagem": 134630,
+    "imagem": 61709,
     "fonte": 0,
     "outro": 0,
-    "total": 255782
+    "total": 190696
   },
   "/en-us/board.html|desktop": {
     "html": 65801,
@@ -540,13 +540,13 @@
     "total": 430375
   },
   "/en-us/join-us.html|desktop": {
-    "html": 68604,
-    "css": 41624,
+    "html": 72570,
+    "css": 45805,
     "js": 21361,
-    "imagem": 222738,
+    "imagem": 123028,
     "fonte": 0,
     "outro": 0,
-    "total": 354327
+    "total": 262764
   },
   "/en-us/publications.html|desktop": {
     "html": 49317,
@@ -567,13 +567,13 @@
     "total": 212610
   },
   "/en-us/support-tourism.html|desktop": {
-    "html": 58423,
-    "css": 41624,
+    "html": 63707,
+    "css": 45805,
     "js": 21361,
-    "imagem": 139091,
+    "imagem": 66170,
     "fonte": 0,
     "outro": 0,
-    "total": 260499
+    "total": 197043
   },
   "/en-us/contact-us.html|desktop": {
     "html": 44516,
@@ -612,22 +612,22 @@
     "total": 112413
   },
   "/es-es/inicio.html|desktop": {
-    "html": 141837,
-    "css": 41624,
+    "html": 145745,
+    "css": 45805,
     "js": 21361,
-    "imagem": 455336,
+    "imagem": 382415,
     "fonte": 0,
     "outro": 0,
-    "total": 660158
+    "total": 595326
   },
   "/es-es/resorts-brasil.html|desktop": {
-    "html": 58633,
-    "css": 41624,
+    "html": 62287,
+    "css": 45805,
     "js": 21361,
-    "imagem": 134630,
+    "imagem": 61709,
     "fonte": 0,
     "outro": 0,
-    "total": 256248
+    "total": 191162
   },
   "/es-es/directorio.html|desktop": {
     "html": 66017,
@@ -657,13 +657,13 @@
     "total": 430572
   },
   "/es-es/asociese.html|desktop": {
-    "html": 68919,
-    "css": 41624,
+    "html": 72885,
+    "css": 45805,
     "js": 21361,
-    "imagem": 222738,
+    "imagem": 123028,
     "fonte": 0,
     "outro": 0,
-    "total": 354642
+    "total": 263079
   },
   "/es-es/publicaciones.html|desktop": {
     "html": 49597,
@@ -684,13 +684,13 @@
     "total": 212847
   },
   "/es-es/apoye.html|desktop": {
-    "html": 58746,
-    "css": 41624,
+    "html": 64030,
+    "css": 45805,
     "js": 21361,
-    "imagem": 139091,
+    "imagem": 66170,
     "fonte": 0,
     "outro": 0,
-    "total": 260822
+    "total": 197366
   },
   "/es-es/contactenos.html|desktop": {
     "html": 44846,

@@ -409,6 +409,16 @@ Ao usar o [`<Imagem>`](src/components/primitivos/Imagem.astro):
   `node scripts/medir-imagens.mjs`, que compara fidelidade contra o original.
   `quality` não é escala comum entre codecs: no 80 que parecia óbvio, o AVIF
   saía **50% maior** que o WebP.
+- **arquivo menor que 640px não vai em `escala="largura-total"`.** A escada de
+  larguras fica toda acima dele, e o AVIF sai com `srcset` vazio: o navegador
+  baixa o WebP original, sem erro nenhum. Use `ajustada` com a `largura`
+  renderizada. Os 79 logotipos de `/associados` continuam assim.
+
+**Logotipo de parceiro entra aparado**, sem margem transparente: a
+[`<ParedeLogos>`](src/components/padroes/ParedeLogos.astro) dá a cada marca a
+mesma área a partir da proporção do arquivo, e a margem mente a proporção. Rode
+`node scripts/aparar-logos.mjs`; o `verifica-sistema.mjs` reprova o que entrar
+com margem.
 
 ## Antes de declarar qualquer coisa pronta
 
@@ -603,8 +613,11 @@ a auditoria não podia tomar":
 3. **os emoji saíram**, os cinco, nas 15 ocorrências. Nenhum virou `<Icone>`:
    todos eram decoração.
 
-**A parede de parceiros não foi mexida** — recortá-la fora de `/apoie` é decisão
-de marca, da mesma natureza da paleta.
+**A parede de parceiros não foi recortada** — tirá-la de fora de `/apoie` é
+decisão de marca, da mesma natureza da paleta. O **desenho** dela mudou em
+22/10/2026, com as mesmas marcas nas doze páginas: mantenedores em destaque,
+área igual por marca, rótulo em cima. Ver [docs/decisoes.md](docs/decisoes.md),
+"A parede de parceiros".
 
 Duas lições de método saíram daí, e as duas são gerais:
 
@@ -680,3 +693,8 @@ Três omissões que só esse método pegou, e que nenhum erro de build revelaria
 Ao trocar um bloco por componente, prefira recortar um trecho **balanceado**
 (um `<ul>…</ul>` inteiro) a recortar até um comentário — e confira a contagem de
 `<div>` contra a de `</div>` no recorte antes de aplicar.
+
+**E o caminho inverso: antes de reescrever um componente, procure todos os que o
+usam.** A `<FaixaLogos>` foi aberta para redesenhar a parede de parceiros e
+também desenhava os 78 resorts de `/associados`; reescrita no lugar, teria
+mudado aquela página sem ninguém pedir. A parede virou a `<ParedeLogos>`.

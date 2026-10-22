@@ -864,6 +864,53 @@ mede 461 KB quando os logotipos `lazy` do carrossel chegam antes do
 +98% sem ninguém ter mexido no site. As três medidas foram copiadas da rodada
 nova para a base antiga, e as outras 79 ficaram como estavam.
 
+## Parede de parceiros — mantenedores em destaque, área igual por marca
+
+Outubro de 2026. O porquê de cada valor está em [decisoes.md](decisoes.md), "A
+parede de parceiros". As três decisões de desenho (destaque dos mantenedores,
+logotipos soltos, rótulos sem dois-pontos) são do responsável, em 22/10/2026.
+
+| o quê | páginas | tipo | motivo |
+|---|---|---|---|
+| tablet | as 4 com parceiros × 3 | **correção** | entre 30 e 48rem o rótulo ficava com metade da largura e os logotipos com 90px, menores que no celular. O rótulo sobe para cima do grupo em toda largura |
+| tamanho da marca | as 4 com parceiros × 3 | **correção** | área igual por marca no lugar de largura igual: o STR desenhava 1,9 vez a área do Talge. Os 25 arquivos com margem transparente foram aparados |
+| mantenedores em destaque | as 4 com parceiros × 3 | **redesenho** | o grupo dos mantenedores tem logotipos de 1,3 a 1,6 vez o lado dos parceiros, conforme a largura |
+| fileiras centradas | as 4 com parceiros × 3 | **redesenho** | a última linha centra em vez de alinhar à esquerda; sete parceiros numa fileira só no desktop |
+| coluna de 960px | as 4 com parceiros × 3 | **redesenho** | a parede sai do container de 1500px para a coluna `media`; o título, centrado, passa a quebrar em duas linhas no desktop |
+| recuo e espaço | as 4 com parceiros × 3 | **refino** | 40px nos quatro lados da célula viram 12px; entre grupos, de 32 para 48px |
+| altura da seção | as 4 com parceiros × 3 | **refino** | consequência das três linhas acima: de 1.796 para 1.054px no celular, de 1.558 para 800 no tablet e de 1.196 para 749 no desktop (`/associe-se`, com os descontos: 2.144, 1.794 e 1.346 viram 1.209, 905 e 849) |
+| hover | as 4 com parceiros × 3 | **redesenho** | o fundo de estado do menu na célula do logotipo com link; a marca sem site não ganha |
+| opacidade | as 4 com parceiros × 3 | **redesenho** | 0,9 vira 1 |
+| rótulos | as 4 com parceiros × 3 | **correção** | "Mantenedores:", "Parceiros:" e "Descontos:" perdem os dois-pontos nos três idiomas (A23, na parte desta seção) |
+| nota dos descontos | `/associe-se` × 3 | **refino** | "Cursos e Eventos" passa ao `papel="apoio"`, o do metadado |
+| texto alternativo | as 4 com parceiros × 3 | **correção** | "senac", "fgv cemd", "hsmai brasil", "Amigos do bem" e "Nestle" passam a ser escritos como a marca se escreve |
+
+**`/associados` não muda.** A grade dos 78 resorts continua na `<FaixaLogos>`, que
+foi restaurada depois de a primeira versão desta etapa reescrevê-la no lugar.
+
+**O orçamento emagreceu em 21 medidas, e as 21 entraram na base.** O AVIF passou
+a ter `srcset` (era vazio, e todo logotipo baixava o WebP de 400px), e cada
+marca pede a largura em que é desenhada:
+
+| página | celular | desktop |
+|---|---|---|
+| `/associe-se` × 3 | 265 → 218 KB | 346 → 257 KB |
+| `/apoie` × 3 | 214 → 187 KB (202 em espanhol) | 254 → 192 KB |
+| `/resorts-brasil` × 3 | 211 → 182 KB (192 em espanhol) | 250 → 186 KB |
+| as três homes | não regravada | 644 → 581 KB |
+
+**A home no celular ficou de fora**, pelo motivo da seção anterior: ela mediu
+461 KB numa rodada e 235 na seguinte, conforme os logotipos do carrossel chegam
+antes do `networkidle`. Gravar 235 faria a próxima rodada reprovar sem ninguém
+ter mexido no site.
+
+**As páginas sem parede mediram de 4 a 9 KB acima da base, e não é desta etapa.**
+É a folha comum, de 40,6 para 44,7 KB, o crescimento que o Soft UI registrou e
+deixou fora da base de propósito; o CSS da parede não está nela, porque o Astro
+o embute nas páginas que a usam. O catálogo subiu de 286 para 299 KB com as duas
+demos da `<ParedeLogos>`, 4,5% da folga de 5%, e também não foi regravado: a
+catraca aperta o que emagrece, e não alarga o que cresceu.
+
 ## Como classificar um delta novo
 
 Ao rodar o diff numa etapa, cada página acima do limiar entra aqui com captura,

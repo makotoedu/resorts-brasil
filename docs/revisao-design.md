@@ -288,7 +288,7 @@ Achados que pedem decisão de conteúdo ou de marca, e não de desenho:
 |---|---|
 | A20 (metade) — "Fale conosco" é link nos cartões de `/apoie` e botão na faixa logo abaixo | os cartões poderiam levar à faixa, mas é decisão de destino |
 | A22 — `/apoie` e `/associe-se` usam o mesmo h2, palavra por palavra | texto do cliente |
-| A23 — títulos terminados em dois-pontos; "Resort" com maiúscula no hero | texto do cliente |
+| A23 — títulos terminados em dois-pontos; "Resort" com maiúscula no hero | texto do cliente. **Em parte resolvido na parede de parceiros**: "Mantenedores", "Parceiros" e "Descontos" perderam os dois-pontos nos três idiomas, por decisão do responsável em 22/10/2026 (decisoes.md, "A parede de parceiros"). "Conheça nossos associados:" e o "Resort" do hero continuam |
 | A24 — a paleta passa de 12 cores não cinza | decidido em 31/08/2026: a paleta fica |
 | Poppins está na lista de fontes de título batidas da skill | decisão de marca de 20/10/2026 |
 | o logotipo "25 anos" sobre o cabeçalho escuro do e-book | arquivo de marca |

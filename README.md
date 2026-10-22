@@ -46,6 +46,8 @@ node scripts/verifica-sistema.mjs # invariantes do design system (já embutido n
 node scripts/imagens.mjs          # guarda e purga de imagens (idem)
 #   DETALHE=1 ... lista as imagens do acervo que ninguém referencia
 python scripts/glifos-para-svg.py # regera src/icones/glifos.ts a partir de vendor/webfonts/
+node scripts/aparar-logos.mjs     # apara a margem transparente dos logotipos de parceiro
+#   --verificar ... só confere (o build confere também)
 node scripts/medir-base.mjs       # mede a base tipográfica no navegador
 node scripts/medir-primitivos.mjs # mede botão, seção, container, grade e ícone
 node scripts/medir-padroes.mjs    # mede as composições (cartão, hero, abas…)
@@ -88,7 +90,8 @@ Quatro camadas de componente:
 - `src/components/layout/` — `Secao`, `Container`, `Grade`
 - `src/components/padroes/` — `CartaoMembro`, `ChamadaAcao`, `CaixaIcone`,
   `CartaoPublicacao`, `LinkAcao`, `ListaIcones`, `Hero`, `FaixaDestaque`,
-  `Contador`, `Abas`, `Prosa`, `Tabela`, `Video`, `CarrosselLogos`, …
+  `Contador`, `Abas`, `Prosa`, `Tabela`, `Video`, `CarrosselLogos`,
+  `ParedeLogos`, …
 - `src/components/cromo/` — `Cabecalho`, `Rodape`, `FaixaCookies`,
   `IconesSociais`, `VoltarAoTopo`
 
@@ -153,6 +156,11 @@ nunca os componentes. As strings dos três idiomas ficam todas lá.
 **Acrescentar ou tirar um resort, parceiro ou membro da diretoria** — edite o
 arquivo correspondente em [`src/data/`](src/data/). Os três idiomas mudam juntos,
 que é o ponto: quando isso era markup, as versões divergiram.
+
+O logotipo de parceiro novo entra em `src/assets/imagens/parceiros/` **sem margem
+transparente**: a parede dá a cada marca a mesma área a partir da proporção do
+arquivo, e a margem mente a proporção. Rode `node scripts/aparar-logos.mjs`; o
+build reprova o arquivo que entrar com margem.
 
 **Acrescentar uma publicação ou um estudo** — acrescente um item em
 [`src/content/publicacoes.yaml`](src/content/publicacoes.yaml) ou

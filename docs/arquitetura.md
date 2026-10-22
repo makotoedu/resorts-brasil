@@ -57,6 +57,7 @@ vendor/
 scripts/
   glifos.json             a procedência de cada um dos 16 contornos
   glifos-para-svg.py      gera src/icones/glifos.ts a partir de vendor/
+  aparar-logos.mjs        apara a margem transparente dos logotipos de parceiro
   imagens.mjs             purga o que o Vite emitiu sem uso; aborta se algum
                           /images/ escapar do pipeline
   verifica-sistema.mjs    as invariantes do design system, no build
