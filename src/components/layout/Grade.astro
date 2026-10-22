@@ -48,7 +48,13 @@ interface Props {
    */
   piso?: 1 | 2;
   /**
-   * 16px, 28px (o vao medido no tema) ou 40px.
+   * 16px, 32px ou 48px.
+   *
+   * O `md` era 28px, o vao medido no `.row` do tema, e o `lg` 40px. O Soft UI
+   * abriu os dois um degrau da grade de 8px: com cartao chapado, 28px bastava
+   * para separar duas caixas; com sombra, a sombra de uma ocupa parte do vao e
+   * as caixas passam a parecer encostadas. 32 e 48 sao os degraus seguintes da
+   * mesma grade de 4px em que o `sm` ja estava.
    *
    * `nenhum` entrou na Etapa 8, para a faixa de logos, e e a UNICA excecao a
    * regra "espaco entre irmaos e do container" que a <CaixaIcone> deixou
@@ -80,8 +86,8 @@ const Tag = como;
 const ESPACOS = {
   nenhum: 'gap-0', // a celula traz o proprio recuo — ver a nota da prop
   sm: 'gap-4', // 16px
-  md: 'gap-7', // 28px — o vao do .row do tema, medido
-  lg: 'gap-10', // 40px
+  md: 'gap-8', // 32px — era o gap-7 (28px) medido no .row do tema
+  lg: 'gap-12', // 48px — era 40px
 } as const;
 
 const ALINHAMENTOS = {

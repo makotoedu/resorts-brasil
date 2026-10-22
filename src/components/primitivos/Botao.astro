@@ -62,7 +62,7 @@ const Tag = href ? 'a' : 'button';
 ---
 
 <Tag
-  class:list={['botao', 'rotulo', `v-${variante}`, `t-${tamanho}`, larguraTotal && 'largura-total', classe]}
+  class:list={['botao', 'voz-acao', `v-${variante}`, `t-${tamanho}`, larguraTotal && 'largura-total', classe]}
   href={href && !desabilitado ? href : undefined}
   type={href ? undefined : tipo}
   disabled={href ? undefined : desabilitado || undefined}
@@ -86,36 +86,44 @@ const Tag = href ? 'a' : 'button';
    * e criar um degrau para um botao que so existe na faixa de cookies seria
    * inverter a relacao entre sistema e excecao. Delta de 1px, deliberado.
    *
-   * A REVISAO DE DESIGN TROCOU A REGUA (achados A15 e A16). Desde ela o
-   * rotulo e o mesmo nos tres tamanhos -- 13px, 600, 0,08em, a decisao de
-   * marca --, e o tamanho do botao e a ALTURA, na grade de 4px e sem `clamp`:
+   * A REVISAO DE DESIGN TROCOU A REGUA (achados A15 e A16): o tamanho do
+   * botao e a ALTURA, na grade de 4px e sem `clamp`:
    *
    *   tamanho  altura  recuo-x  uso
    *   sm       36px    16px     contexto denso, so desktop
    *   md       44px    24px     o padrao: e a altura minima de toque
    *   lg       52px    32px     o CTA de uma tela inteira (o hero)
    *
-   * O `md` media 32 a 38px, abaixo dos 44 de toque; eram 5 dos 508 controles
-   * pequenos do celular. A conta e a linha do rotulo (20px) mais as duas
-   * bordas (4px) mais o recuo vertical.
+   * A conta e a linha do rotulo (20px) mais as duas bordas (4px) mais o recuo
+   * vertical.
+   *
+   * O SOFT UI TROCOU A VOZ E A FORMA, e nao a altura (docs/decisoes.md, "Soft
+   * UI"). A voz era o `.rotulo` -- 13px em caixa alta, a mesma do selo e do
+   * sobretitulo -- e passou a ser a `.voz-acao`: 16px, 600, caixa normal, com
+   * a mesma linha de 20px, entao as tres alturas ficam onde estavam. A forma
+   * ganhou corpo: sombra de repouso nas variantes cheias, elevacao no hover e
+   * um encolhimento curto ao pressionar, que e o retorno que a skill pede em
+   * 80-150ms ("scale-feedback": 0,95 a 1,05).
    */
   .botao {
     display: inline-block;
     border: 2px solid transparent;
     border-radius: var(--radius-sm);
-    /* Tamanho, peso, espacamento e caixa vem do `.rotulo` do base.css: um
-       rotulo so para os tres tamanhos de botao, que se distinguem pelo recuo. */
     text-align: center;
     text-decoration: none;
     cursor: pointer;
     /*
-     * `all` era o que o tema animava. Aqui a lista e explicita: animar tudo
-     * inclui `outline-color`, e o contorno de foco tem de aparecer na hora.
+     * A lista e explicita, como era: animar `all` inclui `outline-color`, e o
+     * contorno de foco tem de aparecer na hora. O `transform` e a sombra entram
+     * com o Soft UI; o `transform` com a duracao curta, porque e ele que
+     * responde ao clique.
      */
     transition:
-      background-color 0.3s,
-      border-color 0.3s,
-      color 0.3s;
+      background-color var(--duracao) var(--ease-chegada),
+      border-color var(--duracao) var(--ease-chegada),
+      color var(--duracao) var(--ease-chegada),
+      box-shadow var(--duracao) var(--ease-chegada),
+      transform var(--duracao-curta) var(--ease-chegada);
   }
 
   .largura-total {
@@ -143,6 +151,7 @@ const Tag = href ? 'a' : 'button';
     background-color: var(--color-acao-primaria);
     border-color: var(--color-acao-primaria);
     color: var(--color-acao-primaria-texto);
+    box-shadow: var(--shadow-1);
   }
 
   .v-primaria:hover,
@@ -197,6 +206,7 @@ const Tag = href ? 'a' : 'button';
     background-color: var(--color-texto-inverso);
     border-color: var(--color-texto-inverso);
     color: var(--color-texto);
+    box-shadow: var(--shadow-1);
   }
 
   .v-clara-solida:hover,
@@ -224,6 +234,7 @@ const Tag = href ? 'a' : 'button';
     background-color: var(--color-acao-destaque);
     border-color: var(--color-acao-destaque);
     color: var(--color-acao-destaque-texto);
+    box-shadow: var(--shadow-1);
   }
 
   .v-destaque:hover,
@@ -261,7 +272,9 @@ const Tag = href ? 'a' : 'button';
       var(--color-ebook-acao-fim) 100%
     );
     color: var(--color-ebook-acao-texto);
-    transition: filter 0.3s;
+    transition:
+      filter var(--duracao) var(--ease-chegada),
+      transform var(--duracao-curta) var(--ease-chegada);
   }
 
   .v-ebook:hover,
@@ -287,10 +300,43 @@ const Tag = href ? 'a' : 'button';
     outline-color: var(--color-texto-inverso);
   }
 
+  /*
+   * ELEVACAO NO HOVER, em todas as variantes. A sombra sobe de degrau (a
+   * `--shadow-2` tambem nas vazadas, que em repouso nao tem nenhuma: ao
+   * preencher, elas viram superficie) e o botao sobe 1px. Sobre foto e sobre o
+   * carvao a sombra quase nao aparece, e esta certo: la quem responde e a
+   * troca de cor, que cada variante ja tem.
+   */
+  .botao:hover,
+  .botao[data-estado='hover'] {
+    box-shadow: var(--shadow-2);
+  }
+
+  /*
+   * O movimento so existe para quem nao pediu menos dele. O base.css ja zera a
+   * DURACAO das transicoes sob `reduce`, mas zerar a duracao de um
+   * deslocamento transforma o deslize num salto de 1px -- que continua sendo
+   * movimento. Aqui o deslocamento nem e declarado.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .botao:hover,
+    .botao[data-estado='hover'] {
+      transform: translateY(-1px);
+    }
+
+    /* O tema nao tinha estado pressionado: o clique nao devolvia nada. A
+       revisao deu 1px para baixo; o Soft UI encolhe, e encolhe rapido. */
+    .botao:active,
+    .botao[data-estado='ativo'] {
+      transform: scale(0.98);
+      transition-duration: var(--duracao-curta);
+    }
+  }
+
+  /* Pressionado, a sombra volta ao repouso: o botao "afunda" de volta. */
   .botao:active,
   .botao[data-estado='ativo'] {
-    /* O tema nao tinha estado pressionado: o clique nao devolvia nada. */
-    transform: translateY(1px);
+    box-shadow: var(--shadow-1);
   }
 
   .botao:disabled,

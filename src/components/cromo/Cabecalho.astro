@@ -179,7 +179,7 @@ const atual = route ? url(route, lang) : undefined;
                       nao navega. O `href="#"` do tema sujava o historico e
                       punha um destino falso na barra de status.
                     */}
-                    <button type="button" class="rotulo" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="voz-acao" aria-haspopup="true" aria-expanded="false">
                       {item.rotulo}
                       <Icone nome="chevron-right" tamanho="xs" class="seta" />
                     </button>
@@ -197,7 +197,7 @@ const atual = route ? url(route, lang) : undefined;
                   <li>
                     <a
                       href={item.href}
-                      class:list={['rotulo', item.destaque && 'destaque']}
+                      class:list={['voz-acao', item.destaque && 'destaque']}
                       aria-current={item.href === atual ? 'page' : undefined}
                     >
                       {item.rotulo}
@@ -504,8 +504,11 @@ const atual = route ? url(route, lang) : undefined;
     /* MEDIDO no mobile: 12px em cima e embaixo, 45px de altura de linha. */
     padding: 0.75rem 0;
     color: var(--color-texto);
-    /* A voz e a do `.rotulo`, a mesma nas duas faixas: o tema usava 14px no
-       celular e 13px no desktop, com 0,6px de espacamento. */
+    /* A voz e a `.voz-acao`, a mesma nas duas faixas e a mesma do botao. O
+       tema usava 14px no celular e 13px no desktop, com 0,6px de espacamento;
+       a revisao de design unificou no `.rotulo`, e o Soft UI tirou a caixa
+       alta. A largura que isso muda e vigiada pelo verify-behaviors, em 1200px
+       e nos tres idiomas. */
     text-align: left;
     text-decoration: none;
     cursor: pointer;

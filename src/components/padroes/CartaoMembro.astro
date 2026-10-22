@@ -1,4 +1,5 @@
 ---
+import Cartao from '../primitivos/Cartao.astro';
 import Imagem from '../primitivos/Imagem.astro';
 import Titulo from '../primitivos/Titulo.astro';
 import Texto from '../primitivos/Texto.astro';
@@ -31,6 +32,13 @@ import Icone from '../primitivos/Icone.astro';
  *      rotulo secundario e estava desenhado com mais peso visual que o nome.
  *   3. O cartao usa o raio do sistema no lugar dos 4px do tema, que nao batiam
  *      nem com os 5,88px da propria foto logo abaixo.
+ *
+ * NO SOFT UI A CAIXA E O <Cartao>: branco com fio e sombra de repouso sobre o
+ * `clara` da diretoria, carvao com fio claro no e-book. Ele nao e interativo
+ * -- o unico destino e o LinkedIn, e o cartao inteiro levando ao perfil seria
+ * prometer mais do que o cartao e. A marca `inversa` mora na `.descricao`, e
+ * nao na raiz: a raiz agora e do <Cartao>, e os seletores escopados daqui so
+ * alcancam elemento deste template (armadilha 1 do CLAUDE.md).
  */
 interface Props {
   nome: string;
@@ -97,18 +105,22 @@ const inversa = superficie === 'inversa';
 const Marca = linkedin ? 'a' : 'span';
 ---
 
-<div class:list={['cartao', inversa && 'inversa superficie-inversa', classe]}>
-  <Imagem
-    src={foto}
-    alt={nome}
-    largura={340}
-    altura={340}
-    proporcao="quadrada"
-    ajuste="cobrir"
-    tamanhos={tamanhos}
-    class="foto"
-  />
-  <div class="descricao">
+<Cartao superficie={inversa ? 'inversa' : 'base'} recuo="nenhum" class={classe}>
+  {/* A caixa em volta da foto existe so para o seletor alcancar o `<img>` do
+      <Imagem> a partir de um elemento deste template. */}
+  <div class="midia">
+    <Imagem
+      src={foto}
+      alt={nome}
+      largura={340}
+      altura={340}
+      proporcao="quadrada"
+      ajuste="cobrir"
+      tamanhos={tamanhos}
+      class="foto"
+    />
+  </div>
+  <div class:list={['descricao', inversa && 'inversa']}>
     <Titulo
       nivel={nivel}
       papel="cartao"
@@ -127,22 +139,14 @@ const Marca = linkedin ? 'a' : 'span';
       <Icone nome="linkedin" tamanho="sm" />
     </Marca>
   </div>
-</div>
+</Cartao>
 
 <style>
-  .cartao {
-    background-color: var(--color-superficie);
-    /* Cartao e superficie: `md`, como os outros. Era `sm`, o raio de botao. */
-    border-radius: var(--radius-md);
-    /* Medido no tema. E o que corta a foto nos cantos de cima sem que ela
-       precise repetir o raio do cartao. */
-    overflow: hidden;
-    text-align: center;
-  }
+  /* Fundo, raio, fio, sombra e o corte da foto nos cantos sao do <Cartao>. */
 
   /* A foto e quadrada nos tres viewports — medido, nao arbitrado. O
      <Imagem proporcao="quadrada"> ja da a caixa; aqui so a largura. */
-  .cartao :global(.foto) {
+  .midia :global(.foto) {
     width: 100%;
     display: block;
   }
@@ -150,14 +154,22 @@ const Marca = linkedin ? 'a' : 'span';
   .descricao {
     /* 20px medidos entre a foto e o nome. */
     padding: 1.25rem 0.5rem 1.5rem;
+    text-align: center;
   }
 
-  .cartao :global(.nome) {
+  .descricao :global(.nome) {
     margin-block: 0 0.25rem;
   }
 
-  /* Circulo de 32px com borda de 1px, medido. O glifo de 16px vem do
-     <Icone tamanho="sm">, que e o mesmo tamanho medido no rodape. */
+  /*
+   * Circulo de 32px, medido. O glifo de 16px vem do <Icone tamanho="sm">, que
+   * e o mesmo tamanho medido no rodape.
+   *
+   * O SOFT UI TROCOU A BORDA PELO FUNDO. O fio de 1px em volta de um glifo de
+   * 16px lia como campo de formulario vazio; o fundo tingido le como um
+   * controle com corpo, que e a linguagem do resto do cartao. O hover preenche
+   * com a cor de acao.
+   */
   .social {
     position: relative;
     display: inline-flex;
@@ -166,12 +178,12 @@ const Marca = linkedin ? 'a' : 'span';
     width: 2rem;
     height: 2rem;
     margin-top: 0.75rem;
-    border: 1px solid var(--color-borda);
+    background-color: var(--color-estado-hover);
     border-radius: var(--radius-full);
     color: var(--color-texto);
     transition:
-      background-color 0.3s,
-      color 0.3s;
+      background-color var(--duracao) var(--ease-chegada),
+      color var(--duracao) var(--ease-chegada);
   }
 
   /*
@@ -186,44 +198,43 @@ const Marca = linkedin ? 'a' : 'span';
     inset: -0.375rem;
   }
 
-  /* Medido com o mouse em cima: fundo cinza claro e a cor de acao no glifo. */
+  /* O tema clareava o fundo e azulava o glifo; o Soft UI preenche: a acao
+     primaria com o glifo no par dela (5,80:1). */
   a.social:hover {
-    background-color: var(--color-superficie-clara);
-    color: var(--color-acao-primaria);
+    background-color: var(--color-acao-primaria);
+    color: var(--color-acao-primaria-texto);
   }
 
-  /* Sem perfil o simbolo fica, mas apagado — assim a ausencia se le, em vez de
-     parecer um botao que nao responde. */
+  /* Sem perfil o simbolo fica, mas apagado e sem fundo — assim a ausencia se
+     le, em vez de parecer um botao que nao responde. */
   span.social {
+    background-color: transparent;
     color: var(--color-texto-sutil);
-    border-color: var(--color-borda);
   }
 
   /* ---------------- superficie inversa ---------------- */
 
   /*
    * O cartao dos 41 autores do e-book. MEDIDO (scripts/medir-ebook.mjs): fundo
-   * no carvao do proprio ebook, nome branco, cargo no cinza sutil (7,19:1 ali,
-   * medido) e o simbolo do LinkedIn em branco.
+   * no carvao do proprio ebook (o `inversa` do <Cartao>, mesmo valor), nome
+   * branco, cargo no cinza sutil (7,19:1 ali, medido) e o simbolo do LinkedIn
+   * em branco.
    *
-   * A borda do circulo troca de origem: sobre fundo escuro o `--color-borda`
-   * (nevoa) sumiria, e quem serve e a `--color-borda-inversa`, que ja nasceu
-   * medida na topbar. Mesmo raciocinio do contorno de foco no base.css, e o
-   * `superficie-inversa` no elemento e o que aciona aquela regra aqui dentro.
+   * O fundo do circulo troca de origem: o navy translucido sumiria no carvao,
+   * e quem serve e o branco translucido do par inverso. O contorno de foco
+   * troca pelo mesmo motivo, e quem aciona aquela regra do base.css e a
+   * `superficie-inversa` que o <Cartao> poe na raiz.
    */
-  .inversa {
-    background-color: var(--color-ebook-superficie);
-  }
-
   .inversa .social {
-    border-color: var(--color-borda-inversa);
+    background-color: var(--color-estado-hover-inverso);
     color: var(--color-texto-inverso);
   }
 
   .inversa a.social:hover {
-    /* O cinza claro do sistema sobre carvao apagaria o glifo; aqui quem preenche
-       e a propria borda translucida, e o glifo mantem o branco. */
-    background-color: var(--color-borda-inversa);
+    /* O azul de acao sobre o carvao da 3,0:1 -- ver a nota do cabecalho
+       escuro. Aqui quem responde e o branco translucido mais denso, e o glifo
+       mantem o branco. */
+    background-color: var(--color-estado-atual-inverso);
     color: var(--color-texto-inverso);
   }
 

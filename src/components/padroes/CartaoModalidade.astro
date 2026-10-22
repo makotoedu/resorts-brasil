@@ -1,4 +1,5 @@
 ---
+import Cartao from '../primitivos/Cartao.astro';
 import Titulo from '../primitivos/Titulo.astro';
 import LinkAcao from './LinkAcao.astro';
 import type { Tom } from './FaixaDestaque.astro';
@@ -29,6 +30,11 @@ import type { Tom } from './FaixaDestaque.astro';
  * no tokens.css. Ver a nota da <FaixaDestaque> sobre o branco que o tema
  * escrevia sobre os cinco fundos.
  *
+ * O SOFT UI FEZ DELE UM CARTAO INTEIRO CLICAVEL. A caixa e o <Cartao tom>, e
+ * o link e esticado sobre ela: o alvo deixou de ser a palavra "Fale conosco" e
+ * passou a ser a caixa colorida inteira, que e o que o olho ja lia como botao.
+ * O recuo, o raio e o vao entre titulo e link sao os do <Cartao>.
+ *
  * UM DESVIO DELIBERADO: O CHEVRON. Medido no tema com o mouse em cima, este link
  * NAO responde ao hover — branco sobre o roxo em repouso, branco sobre o roxo em
  * hover, sem sublinhado. O `.item-link:hover` existe e troca a cor para azul,
@@ -37,15 +43,6 @@ import type { Tom } from './FaixaDestaque.astro';
  * depender de cor — que e o unico eixo que uma superficie de cor cheia nao tem
  * sobrando.
  */
-const TONS = {
-  ambar: 't-ambar',
-  verde: 't-verde',
-  indigo: 't-indigo',
-  'indigo-escuro': 't-indigo-escuro',
-  roxo: 't-roxo',
-  magenta: 't-magenta',
-} as const;
-
 interface Props {
   tom: Tom;
   titulo: string;
@@ -57,64 +54,18 @@ interface Props {
 }
 
 const { tom, titulo, nivel = 3, href, class: classe } = Astro.props;
+
+/* Ambar e verde levam o navy como par de texto; os outros quatro, o branco.
+   E o mesmo par que o <Cartao> pinta no fundo -- aqui so se escolhe o lado. */
+const cor = tom === 'ambar' || tom === 'verde' ? 'padrao' : 'inverso';
 ---
 
-<div class:list={['cartao', TONS[tom], 'superficie-inversa', classe]}>
-  <Titulo nivel={nivel} papel="cartao" class="titulo">{titulo}</Titulo>
-  {/*
-    `cor="inverso"`: os seis tons sao superficies de cor cheia, e o navy do
-    <LinkAcao> em repouso sumiria em tres deles. A marca `superficie-inversa`
-    acima faz o base.css trocar tambem a cor do contorno de foco.
-  */}
-  <LinkAcao href={href} cor="inverso"><slot /></LinkAcao>
-</div>
-
-<style>
-  /* MEDIDO: 21px de recuo, raio 11,48px. A borda do tema era `none` num `.card`
-     que o Bootstrap desenha com 1px — por isso ela e declarada aqui. */
-  .cartao {
-    padding: 1.5rem; /* era 21px; o recuo de cartao do sistema */
-    border: 0;
-    border-radius: var(--radius-md);
-  }
-
-  /* MEDIDO: 19px, peso 600, sem margem embaixo — o `m-b-0` do markup. O 19px
-     nao esta na escala (o `--text-md` e 18px), e a diferenca de 1px nao paga um
-     degrau novo. Mesmo criterio do botao `sm`, que subiu de 11 para 12px. */
-  .cartao :global(.titulo) {
-    margin-block: 0;
-    color: inherit;
-  }
-
-  /* ---------------- tons ---------------- */
-
-  .t-ambar {
-    background-color: var(--color-acento-ambar);
-    color: var(--color-acento-ambar-texto);
-  }
-
-  .t-verde {
-    background-color: var(--color-acento-verde);
-    color: var(--color-acento-verde-texto);
-  }
-
-  .t-indigo {
-    background-color: var(--color-acento-indigo);
-    color: var(--color-acento-indigo-texto);
-  }
-
-  .t-indigo-escuro {
-    background-color: var(--color-acento-indigo-escuro);
-    color: var(--color-acento-indigo-escuro-texto);
-  }
-
-  .t-roxo {
-    background-color: var(--color-acento-roxo);
-    color: var(--color-acento-roxo-texto);
-  }
-
-  .t-magenta {
-    background-color: var(--color-acento-magenta);
-    color: var(--color-acento-magenta-texto);
-  }
-</style>
+{/*
+  O tom, o par de texto e a marca `superficie-inversa` (que troca o contorno
+  de foco) sao do <Cartao>. O titulo e o link tomam o lado do par que o tom
+  pede: o navy do <LinkAcao> em repouso sumiria no roxo e no magenta.
+*/}
+<Cartao tom={tom} interativo class={classe}>
+  <Titulo nivel={nivel} papel="cartao" cor={cor}>{titulo}</Titulo>
+  <LinkAcao href={href} cor={cor} esticado><slot /></LinkAcao>
+</Cartao>

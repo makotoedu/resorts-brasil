@@ -49,6 +49,13 @@ interface Props {
   /** O `sizes` da foto. Diga-o sempre que o bloco nao ocupar a janela inteira. */
   tamanhos?: string;
   como?: 'div' | 'section' | 'article' | 'aside';
+  /**
+   * A chamada inteira responde ao hover, como um <Cartao interativo>: sobe 2px,
+   * ganha a `--shadow-2` e a foto aproxima. O link que a cobre e o
+   * <LinkAcao esticado> do slot -- o `position: relative` que o `::after` dele
+   * procura ja e desta caixa. Os seis destaques da home.
+   */
+  interativo?: boolean;
   class?: string;
 }
 
@@ -62,6 +69,7 @@ const {
   prioridade = false,
   tamanhos = '(min-width: 64rem) 33vw, 100vw',
   como = 'div',
+  interativo = false,
   class: classe,
 } = Astro.props;
 
@@ -85,6 +93,7 @@ const PROPORCOES = {
     `f-${fundo}`,
     alinhamento === 'centro' && 'centro',
     conteudo === 'fim' && 'conteudo-fim',
+    interativo && 'interativo',
     proporcao && PROPORCOES[proporcao],
     /* A mesma marca que o base.css procura para trocar a cor do contorno de
        foco: sobre fundo escuro o azul do foco desaparece. */
@@ -250,5 +259,57 @@ const PROPORCOES = {
 
   .conteudo-fim {
     justify-content: flex-end;
+  }
+
+  /* ---------------- interativo ---------------- */
+
+  /*
+   * A mesma resposta do <Cartao interativo>, escrita de novo aqui e nao
+   * importada: a regra precisa alcancar a `.foto` deste template, e um
+   * componente nao estiliza o markup de outro. Sao seis declaracoes; se um dia
+   * forem mais, o caminho e a chamada compor o <Cartao>.
+   */
+  .interativo {
+    transition:
+      box-shadow var(--duracao) var(--ease-chegada),
+      transform var(--duracao) var(--ease-chegada);
+    /* Um contexto de empilhamento proprio, para o `z-index: -1` abaixo ficar
+       DENTRO da chamada, por cima do fundo dela, e nao atras da pagina. */
+    isolation: isolate;
+  }
+
+  /*
+   * O LINK ESTICADO PROCURA O ANCESTRAL POSICIONADO MAIS PROXIMO, e ate aqui
+   * era a `.interior`: o `::after` cobriria so o texto. Na chamada interativa a
+   * interior deixa de ser posicionada, e quem a mantinha por cima da foto e do
+   * veu passa a ser a ordem de pintura -- os dois descem para `z-index: -1`, e
+   * conteudo em fluxo pinta sobre camada negativa.
+   */
+  .interativo .interior {
+    position: static;
+  }
+
+  .interativo :global(.foto),
+  .interativo .veu {
+    z-index: -1;
+  }
+
+  .interativo:hover,
+  .interativo:focus-within {
+    box-shadow: var(--shadow-2);
+  }
+
+  .interativo :global(.foto) {
+    transition: transform var(--duracao) var(--ease-chegada);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .interativo:hover {
+      transform: translateY(-2px);
+    }
+
+    .interativo:hover :global(.foto) {
+      transform: scale(1.03);
+    }
   }
 </style>

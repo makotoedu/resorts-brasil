@@ -23,6 +23,7 @@ import Texto from '../components/primitivos/Texto.astro';
 import Botao from '../components/primitivos/Botao.astro';
 import Icone from '../components/primitivos/Icone.astro';
 import Imagem from '../components/primitivos/Imagem.astro';
+import Cartao from '../components/primitivos/Cartao.astro';
 import Secao from '../components/layout/Secao.astro';
 import Container from '../components/layout/Container.astro';
 import Grade from '../components/layout/Grade.astro';
@@ -343,13 +344,25 @@ const faixas = [
         <h3>Rótulo</h3>
         <p class="legenda">
           A classe global <code>.rotulo</code>: DM Sans de 13px, peso 600, caixa alta e{' '}
-          <code>0,08em</code> de espaçamento. É a única caixa alta do site — botão, item do menu,
-          link de ação, título de coluna do rodapé, sobretítulo do hero, selo e etiqueta — e o texto
-          continua em caixa normal no <code>ui.ts</code>: quem sobe a caixa é a classe. O{' '}
-          <code>verify-tipografia.mjs</code> reprova caixa alta com qualquer outra voz.
+          <code>0,08em</code> de espaçamento. É a única caixa alta do site, e desde o Soft UI só a
+          dos rótulos pequenos — título de coluna do rodapé, sobretítulo do hero, selo, etiqueta e
+          distintivo. O texto continua em caixa normal no <code>ui.ts</code>: quem sobe a caixa é a
+          classe. O <code>verify-tipografia.mjs</code> reprova caixa alta com qualquer outra voz.
         </p>
         <div class="demo">
           <p class="rotulo">Em todo o Brasil</p>
+        </div>
+
+        <h3>Voz de ação</h3>
+        <p class="legenda">
+          A classe global <code>.voz-acao</code>: DM Sans de 16px, peso 600, caixa normal, linha de
+          20px. É a voz de tudo que se aperta — botão, link de ação e item do menu principal —, e saiu
+          do <code>.rotulo</code> no Soft UI, quando a caixa alta desses três foi revista. O{' '}
+          <code>verify-tipografia.mjs</code> reprova botão, link de ação ou item de menu em qualquer
+          outra voz.
+        </p>
+        <div class="demo">
+          <p class="voz-acao">Conheça os resorts</p>
         </div>
       </section>
 
@@ -372,7 +385,7 @@ const faixas = [
       <section>
         <h2>Primitivos</h2>
         <p class="legenda">
-          Oito componentes: cinco de conteúdo e três de layout. Todos entram aqui com as
+          Nove componentes: seis de conteúdo e três de layout. Todos entram aqui com as
           variantes e os estados no mesmo commit em que nascem —{' '}
           <code>scripts/verifica-sistema.mjs</code> falha o build se um deles ficar de fora desta
           página, porque catálogo escrito depois nunca é escrito.
@@ -446,8 +459,8 @@ const faixas = [
         <p class="legenda">
           Seis variantes × três tamanhos × cinco estados. As cores e os hovers foram medidos com{' '}
           <code>scripts/medir-primitivos.mjs</code>, <strong>hover incluído</strong> — ele não
-          aparece no HTML nem no diff visual, então seria a parte mais fácil de inventar. O rótulo e
-          as alturas foram decididos na revisão de design.{' '}
+          aparece no HTML nem no diff visual, então seria a parte mais fácil de inventar. As alturas
+          foram decididas na revisão de design; a voz, o raio, a sombra e o movimento, no Soft UI.{' '}
           <code>href</code> decide a tag: com ele sai <code>&lt;a&gt;</code>, sem ele{' '}
           <code>&lt;button&gt;</code>.
         </p>
@@ -496,9 +509,11 @@ const faixas = [
             <span class="estado"><Botao tamanho="lg">Conheça os resorts</Botao><small>lg</small></span>
           </div>
           <p class="legenda">
-            O rótulo é o mesmo nos três: 13px, peso 600, <code>0,08em</code>. O tamanho do botão é
-            a altura, na grade de 4px — <code>sm</code> 36px, <code>md</code> 44px (a altura mínima
-            de toque, e o padrão) e <code>lg</code> 52px, só para o CTA de uma tela inteira.
+            A voz é a mesma nos três: a <code>.voz-acao</code>, 16px, peso 600, caixa normal. O
+            tamanho do botão é a altura, na grade de 4px — <code>sm</code> 36px, <code>md</code> 44px
+            (a altura mínima de toque, e o padrão) e <code>lg</code> 52px, só para o CTA de uma tela
+            inteira. As variantes cheias têm a sombra de repouso (<code>--shadow-1</code>); no hover
+            todas sobem 1px para a <code>--shadow-2</code>, e ao pressionar encolhem a 98%.
           </p>
         </div>
       </section>
@@ -597,6 +612,54 @@ const faixas = [
             Os quatro caminhos vêm de <code>src/data/associados.ts</code>, sem alteração nenhuma —
             é a prova de que o pipeline não invade o dado.
           </p>
+        </div>
+      </section>
+
+      <section>
+        <h3>Cartão</h3>
+        <p class="legenda">
+          A superfície que os três cartões do site compõem — <code>CartaoPublicacao</code>,{' '}
+          <code>CartaoMembro</code> e <code>CartaoModalidade</code> —, nascida no Soft UI. A{' '}
+          <strong>superfície decide a elevação</strong>: <code>base</code> é branco com fio de 1px e
+          a <code>--shadow-1</code>; <code>inversa</code> é carvão com fio claro e nenhuma sombra,
+          porque sombra não aparece em fundo escuro; <code>tom</code> é um dos seis acentos, com o
+          próprio par de texto.
+        </p>
+        <p class="legenda">
+          <code>interativo</code> é só a resposta da caixa: sobe 2px, ganha a{' '}
+          <code>--shadow-2</code> e aproxima a mídia marcada com <code>.cartao-midia</code>. O cartão
+          inteiro clicável é o <strong>link esticado</strong>, e o <code>::after</code> dele mora com
+          quem é dono do link — aqui, o <code>&lt;LinkAcao esticado&gt;</code>. Passe o mouse em
+          qualquer ponto dos cartões abaixo.
+        </p>
+        <div class="demo">
+          <Grade colunas={3} espaco="md">
+            <Cartao>
+              <Titulo nivel={4} papel="cartao">base</Titulo>
+              <Texto papel="apoio">Repouso: fio e sombra 1. Sem link, não responde.</Texto>
+            </Cartao>
+            <Cartao interativo>
+              <Titulo nivel={4} papel="cartao">base, interativo</Titulo>
+              <Texto papel="apoio">O link cobre a caixa inteira.</Texto>
+              <LinkAcao href="#cartao" esticado>Saiba mais</LinkAcao>
+            </Cartao>
+            <Cartao tom="indigo" interativo>
+              <Titulo nivel={4} papel="cartao" cor="inverso">tom="indigo"</Titulo>
+              <LinkAcao href="#cartao" cor="inverso" esticado>Saiba mais</LinkAcao>
+            </Cartao>
+          </Grade>
+        </div>
+        <div class="demo demo-escura superficie-inversa">
+          <Grade colunas={2} espaco="md">
+            <Cartao superficie="inversa">
+              <Titulo nivel={4} papel="cartao" cor="inverso">inversa</Titulo>
+              <Texto papel="apoio" cor="sutil-inverso">Fio claro no lugar da sombra.</Texto>
+            </Cartao>
+            <Cartao superficie="inversa" interativo>
+              <Titulo nivel={4} papel="cartao" cor="inverso">inversa, interativo</Titulo>
+              <LinkAcao href="#cartao" cor="inverso" esticado>Saiba mais</LinkAcao>
+            </Cartao>
+          </Grade>
         </div>
       </section>
 
@@ -1720,10 +1783,13 @@ const faixas = [
     align-items: flex-start;
   }
 
+  /* 1,5rem entre o botao e a legenda, e nao 0,5: a `--shadow-2` do botao
+     forcado em hover desce ~40px, e a 8px dela a legenda de 14px media 4,14:1
+     sobre o navy translucido -- o portao de contraste acusou. */
   .estado {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1.5rem;
     align-items: flex-start;
   }
 

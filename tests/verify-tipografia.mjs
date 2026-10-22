@@ -69,6 +69,16 @@
  *      e nenhum portao lia `text-transform`. A referencia e uma sonda com a
  *      propria classe, entao mudar o rotulo no CSS nao desatualiza o teste.
  *
+ * E A REGRA DA VOZ DE ACAO, que entrou com o Soft UI e reverteu metade da 5:
+ *
+ *   6. BOTAO, LINK DE ACAO E ITEM DO MENU PRINCIPAL TEM A VOZ DE ACAO. A
+ *      caixa alta saiu desses tres e ficou nos rotulos pequenos; sem esta
+ *      regra, o proximo botao escrito com `.rotulo` (o habito de onze etapas)
+ *      voltaria a caixa alta e a regra 5 o aprovaria, porque ele estaria na
+ *      voz certa do rotulo. A referencia e uma sonda `.voz-acao`. Os seletores
+ *      sao contados: se um dia nenhum casar, o portao reprova em vez de passar
+ *      -- um seletor que nao casa nada nao falha, ele passa.
+ *
  * NAO MEDE cor nem espacamento entre blocos.
  *
  * ELE NASCEU CONTADOR E VIROU BLOQUEIO NA MESMA SESSAO. Na primeira execucao
@@ -208,11 +218,47 @@ const COLETAR = () => {
     }
   }
 
-  return { escala, voz, titulos, vozesFora: [...vozesFora.entries()], rotulo, caixaAltaFora: [...caixaAltaFora.entries()] };
+  /*
+   * Regra 6, coletada aqui: botao, link de acao e item do menu principal na
+   * voz de acao. A caixa entra na comparacao, porque a voz de acao e definida
+   * tambem pelo que ela NAO e: caixa alta. A visibilidade nao filtra -- a voz e
+   * do elemento, e o item do menu mobile recolhido continua sendo um item.
+   */
+  const ACOES = '.botao, .link-acao, .menu-nivel1 > li > a, .menu-nivel1 > li > button';
+  const vozAcaoDe = (cs) => `${vozDe(cs)} ${cs.textTransform}`;
+  const sondaAcao = document.createElement('span');
+  sondaAcao.className = 'voz-acao';
+  sondaAcao.style.position = 'absolute';
+  sondaAcao.style.visibility = 'hidden';
+  sondaAcao.textContent = 'M';
+  document.body.appendChild(sondaAcao);
+  const vozAcao = vozAcaoDe(getComputedStyle(sondaAcao));
+  sondaAcao.remove();
+  const acoes = [...document.querySelectorAll(ACOES)];
+  const acoesFora = new Map();
+  for (const el of acoes) {
+    const v = vozAcaoDe(getComputedStyle(el));
+    if (v !== vozAcao && !acoesFora.has(v)) {
+      acoesFora.set(v, `${el.tagName.toLowerCase()}.${[...el.classList].join('.')} "${el.textContent.trim().replace(/\s+/g, ' ').slice(0, 30)}"`);
+    }
+  }
+
+  return {
+    escala,
+    voz,
+    titulos,
+    vozesFora: [...vozesFora.entries()],
+    rotulo,
+    caixaAltaFora: [...caixaAltaFora.entries()],
+    vozAcao,
+    acoesVistas: acoes.length,
+    acoesFora: [...acoesFora.entries()],
+  };
 };
 
 const falhas = [];
 let paginasVistas = 0;
+let acoesVistas = 0;
 
 const navegador = await chromium.launch();
 
@@ -231,9 +277,21 @@ for (const vp of VIEWPORTS) {
       await page.close();
       continue;
     }
-    const { escala, voz, titulos, vozesFora, rotulo, caixaAltaFora } = await page.evaluate(COLETAR);
+    const { escala, voz, titulos, vozesFora, rotulo, caixaAltaFora, vozAcao, acoesVistas: n, acoesFora } =
+      await page.evaluate(COLETAR);
     await page.close();
     paginasVistas += 1;
+    acoesVistas += n;
+
+    /* Regra 6 -------------------------------------------------------- */
+    for (const [v, exemplo] of acoesFora) {
+      falhas.push({
+        regra: 'acao fora da voz de acao',
+        pagina: caminho,
+        vp: vp.nome,
+        detalhe: `${v} -- ${exemplo}; a voz de acao e ${vozAcao}. Use a classe \`.voz-acao\`.`,
+      });
+    }
 
     /* Regra 5 -------------------------------------------------------- */
     for (const [v, exemplo] of caixaAltaFora) {
@@ -331,7 +389,16 @@ await navegador.close();
 
 /* ------------------------------------------------------------------ */
 
-console.log(`\n${paginasVistas} paginas x viewport verificadas\n`);
+console.log(`\n${paginasVistas} paginas x viewport verificadas, ${acoesVistas} acoes na regra 6\n`);
+
+if (paginasVistas && !acoesVistas) {
+  falhas.push({
+    regra: 'regra 6 sem nada para medir',
+    pagina: '-',
+    vp: '-',
+    detalhe: 'nenhum botao, link de acao ou item de menu casou o seletor -- a regra nao estaria cobrindo nada',
+  });
+}
 
 if (!falhas.length) {
   console.log('  ok -- nenhum titulo alcanca o que o contem, e todos estao na escala');

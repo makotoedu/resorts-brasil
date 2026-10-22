@@ -316,6 +316,32 @@
   }
 
   /*
+   * A VOZ DE ACAO -- botao, link de acao e item do menu principal.
+   *
+   * Saiu do `.rotulo` no Soft UI (docs/decisoes.md, "Soft UI"): a decisao de
+   * marca de 20/10 que mantinha a caixa alta nesses tres foi revista, e eles
+   * passam a falar em caixa normal, DM Sans 16px, 600. O `.rotulo` continua
+   * sendo a voz dos rotulos PEQUENOS -- sobretitulo, distintivo, titulo de
+   * coluna do rodape --, que e onde a caixa alta nunca atrapalhou a leitura.
+   *
+   * A entrelinha e 1,25 (20px) e nao a do degrau base (1,6): botao e item de
+   * menu tem altura decidida pela caixa, e a conta do <Botao> (20 de linha +
+   * 4 de borda + recuo) ja era feita sobre uma linha de 20px.
+   *
+   * Global pelo mesmo motivo do `.rotulo`: vale passada como `class` a um
+   * componente. O `verify-tipografia.mjs` afirma que botao, link de acao e item
+   * do menu tem exatamente esta voz, pela sonda desta classe.
+   */
+  .voz-acao {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.25;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  /*
    * O tema respeitava prefers-reduced-motion so no scroll-behavior. Aqui vale
    * para tudo: quem pediu menos movimento nao deveria depender de cada
    * componente lembrar.

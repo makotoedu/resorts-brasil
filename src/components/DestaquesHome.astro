@@ -81,11 +81,12 @@ const cartoes = destaquesHome.map((destaque) => {
             alinhamento="centro"
             conteudo="fim"
             tamanhos={TAMANHOS}
+            interativo
           >
             <Titulo nivel={2} papel="bloco" cor="inverso">
               {cartao.titulo}
             </Titulo>
-            <LinkAcao href={cartao.href} externo={cartao.novaAba} cor="inverso">
+            <LinkAcao href={cartao.href} externo={cartao.novaAba} cor="inverso" esticado>
               {cartao.rotulo}
             </LinkAcao>
           </ChamadaAcao>

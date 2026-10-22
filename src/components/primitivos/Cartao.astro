@@ -1,0 +1,205 @@
+---
+import type { Tom } from '../padroes/FaixaDestaque.astro';
+
+/**
+ * Cartao — a superficie que os tres cartoes do site tinham cada um a sua.
+ *
+ * NASCEU NO SOFT UI, e o motivo e o achado A12 da revisao de design visto de
+ * novo: eram oito anatomias de cartao, a revisao igualou peso, raio e recuo, e
+ * sobraram tres componentes desenhando a MESMA caixa cada um do seu jeito --
+ * borda de 1px num, nenhuma nos outros dois, e nenhum com sombra ou com hover
+ * de cartao. A <CartaoPublicacao>, a <CartaoMembro> e a <CartaoModalidade>
+ * passam a compor este, e o que cada uma desenha por dentro continua sendo
+ * dela.
+ *
+ *   <Cartao recuo="nenhum" interativo>...</Cartao>
+ *   <Cartao superficie="inversa">...</Cartao>
+ *   <Cartao tom="roxo" interativo>...</Cartao>
+ *
+ * A SUPERFICIE DECIDE A ELEVACAO, e nao uma prop:
+ *
+ *   base     branco, fio de 1px no navy a 8% e a `--shadow-1`
+ *   inversa  carvao, fio claro e nenhuma sombra -- sombra nao aparece em
+ *            fundo escuro, e quem eleva ali e a borda
+ *   tom      a cor cheia de um dos seis acentos, com o proprio par de texto,
+ *            e a `--shadow-1`; a cor ja separa o cartao do fundo, o fio nao
+ *
+ * `interativo` E SO A RESPOSTA, NAO O LINK. O cartao inteiro ser clicavel e o
+ * padrao do link esticado -- o `::after` do link principal cobrindo a caixa --,
+ * e esse `::after` mora com QUEM E DONO DO LINK: o <LinkAcao esticado> ou o
+ * titulo da <CartaoPublicacao>. Aqui dentro uma regra para o link de fora nao
+ * valeria (armadilha 1 do CLAUDE.md), e no base.css ela perderia, porque o
+ * base.css esta numa camada e o CSS de componente nao. Este componente da o
+ * `position: relative` que o `::after` procura e a resposta da caixa: sobe
+ * 2px e ganha a `--shadow-2`, e a midia marcada com `.cartao-midia` aproxima.
+ */
+interface Props {
+  superficie?: 'base' | 'inversa';
+  /** Cor cheia de acento. Vence `superficie`. */
+  tom?: Tom;
+  /** A caixa responde ao hover. O link esticado e de quem o tem. */
+  interativo?: boolean;
+  /** `nenhum` quando a midia sangra ate a borda e o corpo traz o proprio recuo. */
+  recuo?: 'nenhum' | 'md';
+  como?: 'div' | 'article' | 'li';
+  class?: string;
+}
+
+const {
+  superficie = 'base',
+  tom,
+  interativo = false,
+  recuo = 'md',
+  como = 'div',
+  class: classe,
+} = Astro.props;
+
+const Tag = como;
+
+/*
+ * Os quatro tons cujo par de texto e o branco. Ambar e verde levam o navy
+ * (ver a nota da <FaixaDestaque>), e sobre eles a marca `superficie-inversa`
+ * trocaria o contorno de foco para branco -- 1,6:1 sobre o ambar.
+ */
+const TONS_ESCUROS: Tom[] = ['indigo', 'indigo-escuro', 'roxo', 'magenta'];
+const inversa = tom ? TONS_ESCUROS.includes(tom) : superficie === 'inversa';
+---
+
+<Tag
+  class:list={[
+    'cartao',
+    tom ? `t-${tom}` : `s-${superficie}`,
+    recuo === 'md' && 'recuo-md',
+    interativo && 'interativo',
+    inversa && 'superficie-inversa',
+    classe,
+  ]}
+>
+  <slot />
+</Tag>
+
+<style>
+  .cartao {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    /* Numa grade de alturas desiguais, o cartao ocupa a celula inteira: a
+       fileira fica alinhada pela base, e o link de cada um cai no mesmo lugar. */
+    height: 100%;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    /* Corta a midia nos cantos sem que ela repita o raio. */
+    overflow: hidden;
+    transition:
+      box-shadow var(--duracao) var(--ease-chegada),
+      border-color var(--duracao) var(--ease-chegada),
+      transform var(--duracao) var(--ease-chegada);
+  }
+
+  /*
+   * O recuo de cartao do sistema, os 24px que a revisao de design igualou. Os
+   * filhos perdem a margem propria e o espaco entre eles e o `gap`: um titulo
+   * seguido de link nao depende de quem lembrou de zerar o `margin-bottom`.
+   */
+  .recuo-md {
+    gap: 0.75rem;
+    padding: 1.5rem;
+  }
+
+  .recuo-md > :global(*) {
+    margin-block: 0;
+  }
+
+  /* ---------------- superficies ---------------- */
+
+  .s-base {
+    background-color: var(--color-superficie);
+    border-color: var(--color-borda-suave);
+    box-shadow: var(--shadow-1);
+  }
+
+  .s-inversa {
+    background-color: var(--color-superficie-inversa);
+    border-color: var(--color-borda-inversa);
+    color: var(--color-texto-inverso);
+  }
+
+  .t-ambar {
+    background-color: var(--color-acento-ambar);
+    color: var(--color-acento-ambar-texto);
+  }
+
+  .t-verde {
+    background-color: var(--color-acento-verde);
+    color: var(--color-acento-verde-texto);
+  }
+
+  .t-indigo {
+    background-color: var(--color-acento-indigo);
+    color: var(--color-acento-indigo-texto);
+  }
+
+  .t-indigo-escuro {
+    background-color: var(--color-acento-indigo-escuro);
+    color: var(--color-acento-indigo-escuro-texto);
+  }
+
+  .t-roxo {
+    background-color: var(--color-acento-roxo);
+    color: var(--color-acento-roxo-texto);
+  }
+
+  .t-magenta {
+    background-color: var(--color-acento-magenta);
+    color: var(--color-acento-magenta-texto);
+  }
+
+  .t-ambar,
+  .t-verde,
+  .t-indigo,
+  .t-indigo-escuro,
+  .t-roxo,
+  .t-magenta {
+    box-shadow: var(--shadow-1);
+  }
+
+  /* ---------------- interativo ---------------- */
+
+  /*
+   * `:focus-within` junto do `:hover`: quem chega pelo teclado ao link do
+   * cartao ve a caixa responder como quem chega pelo mouse. O contorno de foco
+   * continua sendo o do link, desenhado pelo base.css.
+   */
+  .interativo:hover,
+  .interativo:focus-within {
+    box-shadow: var(--shadow-2);
+  }
+
+  .s-inversa.interativo:hover,
+  .s-inversa.interativo:focus-within {
+    border-color: var(--color-texto-sutil-inverso);
+  }
+
+  .interativo :global(.cartao-midia) {
+    overflow: hidden;
+  }
+
+  .interativo :global(.cartao-midia img) {
+    transition: transform var(--duracao) var(--ease-chegada);
+  }
+
+  /*
+   * O movimento so para quem nao pediu menos dele -- o mesmo raciocinio do
+   * <Botao>: o base.css zera a duracao, e duracao zero num deslocamento e um
+   * salto, que continua sendo movimento.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .interativo:hover {
+      transform: translateY(-2px);
+    }
+
+    .interativo:hover :global(.cartao-midia img) {
+      transform: scale(1.03);
+    }
+  }
+</style>

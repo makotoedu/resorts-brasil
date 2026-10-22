@@ -151,6 +151,49 @@ for (const camada of CAMADAS) {
   await page.close();
 }
 
+/* 2c. A barra do menu cabe numa linha a partir de 1200px ----------------- */
+/*
+ * O ACHADO A17 DA REVISAO DE DESIGN FOI VISTO OLHANDO, e este bloco existe para
+ * a proxima vez nao depender disso. Entre 992 e 1199px o cabecalho quebrava em
+ * duas linhas -- o seletor de idioma sob o logotipo em pt e en, o menu inteiro
+ * numa segunda linha em espanhol --, e nenhum portao via: nao ha sobreposicao
+ * nem transbordo, so quebra de linha. A correcao foi mover a faixa para 1200px,
+ * medida com 48px de folga no pior idioma.
+ *
+ * O SOFT UI GASTOU PARTE DESSA FOLGA. A voz do item passou de 13px em caixa
+ * alta para 16px em caixa normal, e o "Fale conosco" virou botao. A largura
+ * mudou nos tres idiomas ao mesmo tempo, e quem confere agora e esta regra: em
+ * 1200px, o centro vertical do logotipo, de cada item e do seletor de idioma
+ * cai na mesma faixa. A variacao escura entra porque o cabecalho dela flutua e
+ * nao tem topbar -- caixa diferente, mesma regra.
+ */
+for (const [nome, caminho] of [
+  ['pt', '/historia.html'],
+  ['en', '/en-us/history.html'],
+  ['es', '/es-es/historia.html'],
+  ['escuro', PAGINA_EBOOK],
+]) {
+  const page = await browser.newPage({ viewport: { width: 1200, height: 900 } });
+  await page.goto(BASE + caminho);
+  const linha = await page.evaluate(() => {
+    const centro = (el) => {
+      const r = el.getBoundingClientRect();
+      return Math.round(r.top + r.height / 2);
+    };
+    const itens = [...document.querySelectorAll('#header .menu-nivel1 > li')];
+    const centros = [
+      centro(document.querySelector('#header .logo')),
+      ...itens.map(centro),
+      centro(document.querySelector('#header .p-dropdown')),
+    ];
+    return { itens: itens.length, faixa: Math.max(...centros) - Math.min(...centros), centros };
+  });
+  check(`[${nome}] o cabecalho cabe numa linha em 1200px`,
+    linha.itens >= 6 && linha.faixa <= 8,
+    `${linha.itens} itens, centros variam ${linha.faixa}px`);
+  await page.close();
+}
+
 /* 3. Hero: o zoom e as legendas ------------------------------------------ */
 /*
  * A HOME MIGROU NA ETAPA 9, e com ela o hero inteiro. O que este bloco testava
