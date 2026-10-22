@@ -88,13 +88,14 @@
   --cor-coral-500: #fc575e; /* destaque/alerta (18) */
   --cor-ambar-500: #fac213; /* faixa de destaque; absorve o #efb72c da mesma faixa em outra pagina */
   --cor-ambar-400: #ffc107; /* medido: fundo do .btn-warning (o CTA da home) */
-  --cor-ambar-600: #d39e00; /* medido: hover do mesmo botao; e a cor do "Fale conosco" no menu */
+  --cor-ambar-600: #d39e00; /* medido: hover do mesmo botao; era a cor do "Fale conosco" no menu do tema */
   /*
-   * O ouro escuro que o menu passou a usar. Nao e medido no tema — e o menor
-   * escurecimento do ambar-600 que alcanca 4,5:1 sobre branco (medido 4,96:1
-   * contra os 2,42:1 do original). Ver a nota de --color-navegacao-destaque.
+   * Aqui morava o `--cor-ambar-800` (#8f6a00), o ouro escuro que o "Fale
+   * conosco" do menu usava desde a Etapa 5: o menor escurecimento do ambar-600
+   * que alcancava 4,5:1 sobre branco. Saiu no Soft UI, quando o item virou
+   * <Botao> -- com ele, os dois `--color-navegacao-destaque`. A historia esta
+   * no docs/decisoes.md, secao "Soft UI".
    */
-  --cor-ambar-800: #8f6a00;
   --cor-indigo-700: #242f9b;
 
   /*
@@ -339,11 +340,11 @@
   /*
    * OS FUNDOS DE ESTADO, em par claro/inverso como os acentos.
    *
-   * Item de menu, item de submenu, aba e hamburguer respondem ao hover com uma
-   * PILULA DE FUNDO, nao so com troca de cor: no Soft UI o controle e uma
-   * superficie, e superficie responde ganhando corpo. O item da pagina atual e
-   * a mesma pilula no azul da acao (`nav-state-active` da skill: "realce a
-   * posicao atual com cor, peso ou indicador").
+   * Item de menu, item de submenu, aba e hamburguer respondem ao hover com um
+   * FUNDO, no raio `sm` dos controles, e nao so com troca de cor: no Soft UI o
+   * controle e uma superficie, e superficie responde ganhando corpo. O item da
+   * pagina atual e o mesmo fundo no azul da acao (`nav-state-active` da
+   * skill: "realce a posicao atual com cor, peso ou indicador").
    *
    * Sao translucidos de proposito: o mesmo token serve sobre o branco do body,
    * sobre o `clara` do painel mobile e sobre o branco do submenu. A cor do TEXTO
@@ -365,34 +366,6 @@
    * os dois nao e perceptivel e uma primitiva a menos e uma decisao a menos.
    */
   --color-texto-decorativo: var(--cor-nevoa-100);
-
-  /*
-   * O item destacado da navegacao — "Fale conosco" no menu, "Seja um associado"
-   * na topbar. No tema eram duas cores literais em `style=` inline
-   * (`#d39e00` e `rgb(211,180,4)`), a 11 pontos uma da outra: ruido, nao
-   * decisao. Consolidadas.
-   *
-   * E ESCURECIDAS. O #d39e00 sobre branco da 2,42:1 e o #d3b404 sobre o azul da
-   * topbar da 2,84:1 — os dois reprovam o criterio 1.4.3 da WCAG, que pede 4,5:1
-   * para texto. Nenhum ouro que ainda pareca ouro passa sobre branco, entao a
-   * decisao foi por faixa:
-   *
-   *   menu (sobre branco)   ambar-800, 4,96:1 medido
-   *   topbar (sobre azul)   o item deixa de ser dourado e fica BRANCO, como o
-   *                         irmao ao lado, distinguido por peso — branco sobre
-   *                         o azul-500 da 5,80:1.
-   *
-   * Mesma classe de correcao que a FaixaDestaque fez na Etapa 3, e pelo mesmo
-   * motivo. Registrada em docs/deltas-visuais.md.
-   */
-  --color-navegacao-destaque: var(--cor-ambar-800);
-  /*
-   * O MESMO DESTAQUE SOBRE O CARVAO do cabecalho escuro do e-book. Ate a
-   * revisao de design ele era branco distinguido por peso 700, e o 700 deixou
-   * de ser baixado. O ambar-400 e o ambar da acao de destaque, e sobre o
-   * carvao-900 da 11,6:1 -- o ouro escuro de cima daria 2,6:1 ali.
-   */
-  --color-navegacao-destaque-inverso: var(--cor-ambar-400);
 
   /* Cor de marca de cada rede. Ver a nota das primitivas. */
   --color-rede-facebook: var(--cor-rede-facebook);

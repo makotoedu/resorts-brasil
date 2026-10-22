@@ -1,5 +1,6 @@
 ---
 import Container from '../layout/Container.astro';
+import Botao from '../primitivos/Botao.astro';
 import Imagem from '../primitivos/Imagem.astro';
 import Icone from '../primitivos/Icone.astro';
 import IconesSociais from './IconesSociais.astro';
@@ -38,8 +39,8 @@ import { ui, url, localeBadge, locales, htmlLang, type Locale, type RouteKey } f
  *      contrario — nada disso sobrevive a uma leitura.
  *   2. O item destacado deixa de ser dourado sobre azul. `rgb(211,180,4)` sobre
  *      o azul-500 da 2,84:1; branco da 5,80:1. No menu, sobre branco, o ouro
- *      escurece de #d39e00 (2,42:1) para o ambar-800 (4,96:1). Ver a nota de
- *      `--color-navegacao-destaque` no tokens.css.
+ *      escureceu de #d39e00 (2,42:1) para o ambar-800 (4,96:1) -- e no Soft UI
+ *      o "Fale conosco" do menu deixou de ser texto dourado e virou <Botao>.
  *   3. O distintivo de idioma (BR/EN/ES) era um `<span>` de 9px posicionado a
  *      `top: -10px` — um expoente. Aqui ele fica na linha do simbolo.
  */
@@ -58,8 +59,9 @@ interface Props {
    * MEDIDO na Etapa 10 (scripts/medir-ebook.mjs), e ate ali nunca tinha sido: o
    * medir-cromo.mjs da Etapa 5 mede em /historia.html, que e clara. O que muda e
    * so a cor — link de menu e gatilho passam a branco, e o hover deixa de ser o
-   * azul de acao (que sumiria sobre o fundo) e vira um cinza claro, medido em
-   * rgb(193,195,206).
+   * azul de acao (que sumiria sobre o fundo). O tema o fazia virar um cinza
+   * claro, medido em rgb(193,195,206); desde o Soft UI o texto fica branco e
+   * quem responde e o fundo de estado inverso.
    *
    * O SUBMENU CONTINUA BRANCO. No tema a classe vinha sempre com `submenu-light`
    * ao lado, e medido ele e o mesmo painel claro das outras paginas — o escuro
@@ -194,14 +196,25 @@ const atual = route ? url(route, lang) : undefined;
                     </ul>
                   </li>
                 ) : (
-                  <li>
-                    <a
-                      href={item.href}
-                      class:list={['voz-acao', item.destaque && 'destaque']}
-                      aria-current={item.href === atual ? 'page' : undefined}
-                    >
-                      {item.rotulo}
-                    </a>
+                  <li class:list={[item.destaque && 'cta']}>
+                    {/*
+                      O "Fale conosco" e o CTA do menu, e desde o Soft UI ele e
+                      um <Botao>: era um link dourado, distinguido so pela cor,
+                      e a cor dele tinha de ser escolhida de novo em cada fundo.
+                    */}
+                    {item.destaque ? (
+                      <Botao href={item.href!} aria-current={item.href === atual ? 'page' : undefined}>
+                        {item.rotulo}
+                      </Botao>
+                    ) : (
+                      <a
+                        href={item.href}
+                        class="voz-acao"
+                        aria-current={item.href === atual ? 'page' : undefined}
+                      >
+                        {item.rotulo}
+                      </a>
+                    )}
                   </li>
                 )
               )
@@ -379,7 +392,7 @@ const atual = route ? url(route, lang) : undefined;
     font-weight: var(--font-weight-medium);
     line-height: 2.5rem;
     text-decoration: none;
-    transition: opacity 0.3s;
+    transition: opacity var(--duracao) var(--ease-chegada);
   }
 
   /* O destaque que era dourado. Ver o desvio 2 no comentario do topo. */
@@ -402,6 +415,20 @@ const atual = route ? url(route, lang) : undefined;
     position: relative;
     background-color: transparent;
     z-index: 199;
+    /*
+     * OS PARES DE ESTADO DO MENU, num lugar so. A variacao escura troca os
+     * VALORES, e nao as regras: na primeira versao do Soft UI cada regra de
+     * estado tinha uma copia `.escuro ...`, e como o Astro carimba o atributo
+     * de escopo em cada parte de cada seletor, o CSS do cabecalho cresceu 4 KB
+     * e reprovou o orcamento nas paginas leves. O painel branco do submenu
+     * devolve os valores claros, nas duas variacoes.
+     */
+    --menu-texto: var(--color-texto);
+    --menu-hover: var(--color-estado-hover);
+    --menu-atual: var(--color-estado-atual);
+    --menu-atual-texto: var(--color-link);
+    --menu-subitem: var(--color-texto);
+    --menu-fio: var(--color-borda-suave);
   }
 
   .barra {
@@ -446,6 +473,20 @@ const atual = route ? url(route, lang) : undefined;
 
   /* ---------------- navegacao ---------------- */
 
+  /*
+   * O SOFT UI DEU CORPO AO MENU (docs/decisoes.md, "Soft UI"). Ate ali o item
+   * era texto azul no hover e sublinhado na pagina atual: nenhuma superficie.
+   * Agora todo controle do cabecalho -- item, item de submenu, seletor de
+   * idioma, hamburguer -- responde com um FUNDO no raio `sm`, e a pagina atual
+   * e esse fundo no azul da acao. Os paineis que abrem (submenu, idioma) sao
+   * superficies `md` com a `--shadow-3`.
+   *
+   * O MOVIMENTO SEGUE A SKILL: entrada em `--duracao` desacelerando, saida em
+   * `--duracao-curta` acelerando ("exit-faster-than-enter"). A transicao vale
+   * para o estado de DESTINO, entao a regra de repouso guarda a saida e a de
+   * aberto guarda a entrada.
+   */
+
   .menu {
     /*
      * Abaixo de 1200px o menu e um painel que ocupa a segunda linha da barra, e
@@ -475,16 +516,23 @@ const atual = route ? url(route, lang) : undefined;
   }
 
   .menu-nivel1 {
+    display: flex;
+    flex-direction: column;
+    /* 2px entre as linhas do painel: o fundo de hover de uma nao encosta no
+       da vizinha. */
+    gap: 0.125rem;
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0.5rem 0 1.5rem;
   }
 
   @media (min-width: 75rem) {
     .menu-nivel1 {
-      display: flex;
+      flex-direction: row;
       align-items: center;
       justify-content: flex-end;
+      gap: 0.25rem;
+      padding: 0;
     }
   }
 
@@ -492,18 +540,29 @@ const atual = route ? url(route, lang) : undefined;
    * O item de primeiro nivel. `<a>` e `<button>` compartilham tudo: o botao so
    * existe onde o item abre submenu em vez de navegar, e visualmente eles tem de
    * ser indistinguiveis.
+   *
+   * O CTA E EXCLUIDO A MAO, com `:not(.botao)`, e a razao contraria a
+   * armadilha 1 do CLAUDE.md. O `<a>` do <Botao> nasce em outro componente,
+   * mas o Astro passa o atributo de escopo DESTE arquivo como prop ao filho, e
+   * o <Botao> espalha `{...resto}` na raiz -- entao o `<a>` dele sai com o
+   * `data-astro-cid` do cabecalho, e estas regras casariam nele. Sem a
+   * exclusao, o "Fale conosco" saia branco com texto navy, o fundo
+   * transparente do item vencendo o azul da variante.
    */
-  .menu-nivel1 > li > a,
+  .menu-nivel1 > li > a:not(.botao),
   .menu-nivel1 > li > button {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: space-between;
+    gap: 0.375rem;
     width: 100%;
-    background: none;
+    /* No painel, linhas de 48px: 20 de linha e 14 de cada lado. Era 45px no
+       tema, e o alvo de toque pede 44. */
+    padding: 0.875rem 0.75rem;
+    background-color: transparent;
     border: 0;
-    /* MEDIDO no mobile: 12px em cima e embaixo, 45px de altura de linha. */
-    padding: 0.75rem 0;
-    color: var(--color-texto);
+    border-radius: var(--radius-sm);
+    color: var(--menu-texto);
     /* A voz e a `.voz-acao`, a mesma nas duas faixas e a mesma do botao. O
        tema usava 14px no celular e 13px no desktop, com 0,6px de espacamento;
        a revisao de design unificou no `.rotulo`, e o Soft UI tirou a caixa
@@ -512,46 +571,55 @@ const atual = route ? url(route, lang) : undefined;
     text-align: left;
     text-decoration: none;
     cursor: pointer;
-    transition: color 0.3s;
+    transition:
+      background-color var(--duracao) var(--ease-chegada),
+      color var(--duracao) var(--ease-chegada);
   }
 
   @media (min-width: 75rem) {
-    .menu-nivel1 > li > a,
+    .menu-nivel1 > li > a:not(.botao),
     .menu-nivel1 > li > button {
-      /* MEDIDO no desktop: recuo 10px/12px. */
+      justify-content: flex-start;
       width: auto;
+      /* Na barra, 44px: 20 de linha e 12 de cada lado -- a altura do <Botao>
+         `md` do CTA ao lado, entao a fileira inteira tem uma altura so. */
       padding: 0.75rem;
     }
   }
 
-  .menu-nivel1 > li > a:hover,
-  .menu-nivel1 > li > button:hover {
-    color: var(--color-acao-primaria);
+  .menu-nivel1 > li > a:not(.botao):hover,
+  .menu-nivel1 > li > button:hover,
+  .dropdown.submenu-aberto > button {
+    background-color: var(--menu-hover);
+  }
+
+  @media (min-width: 75rem) {
+    /* O item continua aceso enquanto o painel dele esta aberto: o mouse saiu
+       do botao para o submenu, mas a origem do painel tem de seguir legivel. */
+    .dropdown:hover > button,
+    .dropdown:focus-within > button {
+      background-color: var(--menu-hover);
+    }
   }
 
   /*
-   * A PAGINA ATUAL E SUBLINHADA, e nao colorida, de proposito. O menu aparece
-   * sobre branco, sobre o carvao do ebook e, no painel, sobre o fundo que o
-   * cabecalho tiver -- a sexta armadilha do CLAUDE.md: uma cor nova seria um
-   * par novo a medir em cada um desses fundos. O sublinhado herda a cor do
-   * proprio texto, e passa onde o texto passa.
+   * A PAGINA ATUAL E UM FUNDO NO AZUL DA ACAO, e deixou de ser o sublinhado de
+   * 2px. O sublinhado foi escolhido na revisao de design justamente para nao
+   * criar um par de cor novo em cada fundo onde o menu aparece (a sexta
+   * armadilha do CLAUDE.md). O Soft UI cria o par, e por isso ele foi medido em
+   * cada fundo -- ver o decisoes.md, secao "Soft UI": o azul-500 sobre o fundo
+   * de estado, por cima do branco do body e do painel, da 4,99:1.
    */
-  .menu-nivel1 > li > a[aria-current='page'],
-  .menu-nivel1 > li.contem-atual > button,
-  .dropdown-menu a[aria-current='page'] {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.5em;
-  }
-
-  /* O ouro escurecido. Ver a nota de --color-navegacao-destaque no tokens.css. */
-  .menu-nivel1 > li > a.destaque {
-    color: var(--color-navegacao-destaque);
+  .menu-nivel1 > li > a:not(.botao)[aria-current='page'],
+  .menu-nivel1 > li.contem-atual > button {
+    background-color: var(--menu-atual);
+    color: var(--menu-atual-texto);
   }
 
   /*
    * A seta do submenu aponta para baixo — o glifo do sistema e o chevron para a
-   * direita, girado, que e como o proprio tema desenhava o dele.
+   * direita, girado, que e como o proprio tema desenhava o dele. Aberto, ela
+   * aponta para cima.
    *
    * `:global` porque o `<svg>` nasce dentro do <Icone>, e estilo com escopo so
    * alcanca elemento do proprio template. Mesmo motivo do `.foto` no
@@ -561,26 +629,61 @@ const atual = route ? url(route, lang) : undefined;
     /* O tamanho e o `xs` do <Icone>, 12px; ate a revisao de design esta regra
        forcava 10px por cima do primitivo. */
     transform: rotate(90deg);
-    transition: transform 0.3s;
-  }
-
-  /* ---------------- submenu ---------------- */
-
-  /* Abaixo de 1200px o submenu abre no toque, e fechado ele nao existe: o tema
-     deixava os 11 itens visiveis de uma vez. */
-  .dropdown-menu {
-    display: none;
-    list-style: none;
-    margin: 0;
-    padding: 0 0 0 0.75rem;
-  }
-
-  .dropdown.submenu-aberto > .dropdown-menu {
-    display: block;
+    transition: transform var(--duracao) var(--ease-chegada);
   }
 
   .dropdown.submenu-aberto > button :global(.seta) {
     transform: rotate(-90deg);
+  }
+
+  @media (min-width: 75rem) {
+    .dropdown:hover > button :global(.seta),
+    .dropdown:focus-within > button :global(.seta) {
+      transform: rotate(-90deg);
+    }
+  }
+
+  /*
+   * O CTA. No painel ele fecha a lista separado dos itens, em largura total so
+   * no celular; na barra ele fica na fileira, com um respiro a mais que o vao
+   * entre itens. `:global` no `.botao` porque o `<a>` e do <Botao>.
+   */
+  .cta {
+    margin-top: 0.75rem;
+  }
+
+  /* Largura total so no celular: no painel do tablet, um botao de 960px pesava
+     mais que a lista inteira acima dele. */
+  @media (max-width: 47.9375rem) {
+    .cta > :global(.botao) {
+      display: block;
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .cta {
+      margin: 0 0 0 0.5rem;
+    }
+  }
+
+  /* ---------------- submenu ---------------- */
+
+  /*
+   * Abaixo de 1200px o submenu abre no toque, como uma sanfona: recuado, com um
+   * fio a esquerda que o amarra ao item de onde saiu. Fechado ele nao existe --
+   * o tema deixava os 11 itens visiveis de uma vez.
+   */
+  .dropdown-menu {
+    display: none;
+    list-style: none;
+    margin: 0.125rem 0 0.375rem 1.25rem;
+    padding: 0 0 0 0.5rem;
+    border-left: 2px solid var(--menu-fio);
+  }
+
+  .dropdown.submenu-aberto > .dropdown-menu {
+    display: block;
   }
 
   @media (min-width: 75rem) {
@@ -590,14 +693,25 @@ const atual = route ? url(route, lang) : undefined;
 
     .dropdown-menu {
       position: absolute;
-      top: 100%;
+      /* 8px abaixo do item: o painel flutua, nao encosta. A ponte do `::before`
+         cobre o vao, senao o mouse que desce do item para o painel atravessaria
+         8px de nada e o `:hover` cairia no caminho. */
+      top: calc(100% + 0.5rem);
       left: 0;
-      /* MEDIDO: 230px de largura, recuo de 10px, raio e sombra do tema. */
+      /* MEDIDO: 230px de largura, a do tema. */
       min-width: 14.375rem;
-      padding: 0.75rem;
+      margin: 0;
+      padding: 0.5rem;
       background-color: var(--color-superficie);
-      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-borda-suave);
+      border-radius: var(--radius-md);
       box-shadow: var(--shadow-3);
+      /* O painel e branco nas duas variacoes: os pares claros de volta. */
+      --menu-texto: var(--color-texto);
+      --menu-hover: var(--color-estado-hover);
+      --menu-atual: var(--color-estado-atual);
+      --menu-atual-texto: var(--color-link);
+      --menu-subitem: var(--color-texto);
       /*
        * `visibility` junto de `opacity`, e nao `display`: so assim a abertura
        * pode ser animada, e so assim o submenu fechado sai da ordem de
@@ -607,11 +721,19 @@ const atual = route ? url(route, lang) : undefined;
       display: block;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(-0.375rem);
+      transform: translateY(-0.25rem);
       transition:
-        opacity 0.25s,
-        transform 0.25s,
-        visibility 0.25s;
+        opacity var(--duracao-curta) var(--ease-partida),
+        transform var(--duracao-curta) var(--ease-partida),
+        visibility var(--duracao-curta);
+    }
+
+    .dropdown-menu::before {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      bottom: 100%;
+      height: 0.5rem;
     }
 
     /*
@@ -625,25 +747,40 @@ const atual = route ? url(route, lang) : undefined;
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
+      transition-duration: var(--duracao);
+      transition-timing-function: var(--ease-chegada);
     }
   }
 
+  /*
+   * O link do submenu, nas duas faixas: 44px de alvo (20 de linha e 12 de cada
+   * lado), 14px em 500. MEDIDO no tema em 12px/500 e #444, consolidado no cinza
+   * de paragrafo na Etapa 5; o Soft UI o leva ao navy do texto, porque agora ha
+   * um fundo de hover para distinguir o item, e o cinza so apagava o painel.
+   */
   .dropdown-menu a {
     display: block;
-    /* MEDIDO: 12px / 500, recuo 12px/18px, cor #444 — consolidada no cinza de
-       paragrafo do sistema, a mesma consolidacao que o <Botao> fez com o
-       #4c5667 na Etapa 1. */
-    padding: 0.75rem 1rem;
-    color: var(--color-texto-paragrafo);
-    font-size: var(--text-xs);
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    color: var(--menu-subitem);
+    font-size: var(--text-sm);
+    line-height: 1.25rem;
     font-weight: var(--font-weight-medium);
     text-decoration: none;
     text-transform: none;
-    transition: color 0.3s;
+    transition:
+      background-color var(--duracao) var(--ease-chegada),
+      color var(--duracao) var(--ease-chegada);
   }
 
   .dropdown-menu a:hover {
-    color: var(--color-acao-primaria);
+    background-color: var(--menu-hover);
+    color: var(--menu-texto);
+  }
+
+  .dropdown-menu a[aria-current='page'] {
+    background-color: var(--menu-atual);
+    color: var(--menu-atual-texto);
   }
 
   /* ---------------- seletor de idioma ---------------- */
@@ -658,43 +795,48 @@ const atual = route ? url(route, lang) : undefined;
     gap: 0.25rem;
     /* 44px de altura, o alvo de toque; media 36. */
     min-height: 2.75rem;
-    padding: 0.5rem;
-    background: none;
+    padding: 0.5rem 0.625rem;
+    background-color: transparent;
     border: 0;
-    color: var(--color-texto);
+    border-radius: var(--radius-sm);
+    color: var(--menu-texto);
     font-family: inherit;
     font-size: var(--text-xs);
     font-weight: var(--font-weight-medium);
     cursor: pointer;
-    transition: color 0.3s;
+    transition: background-color var(--duracao) var(--ease-chegada);
   }
 
-  .p-dropdown > button:hover {
-    color: var(--color-acao-primaria);
+  .p-dropdown > button:hover,
+  .p-dropdown.dropdown-active > button {
+    background-color: var(--menu-hover);
   }
 
+  /* O painel do idioma e o mesmo do submenu: superficie `md`, fio, sombra 3,
+     a mesma entrada e a mesma saida. */
   .p-dropdown-content {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 0.5rem);
     /* Ancorado a direita: no tema ele era centralizado por um `left` negativo
        calculado, e transbordava a janela no mobile. */
     right: 0;
     z-index: 5;
-    /* MEDIDO: 147px, recuo 14px/20px, sombra 0 14px 20px rgba(0,0,0,.1). */
+    /* MEDIDO: 147px, a largura do tema. */
     min-width: 9.1875rem;
-    padding: 1rem 1.25rem;
+    padding: 0.5rem;
     background-color: var(--color-superficie);
-    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-borda-suave);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-3);
     list-style: none;
     margin: 0;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-0.5rem);
+    transform: translateY(-0.25rem);
     transition:
-      opacity 0.25s,
-      transform 0.25s,
-      visibility 0.25s;
+      opacity var(--duracao-curta) var(--ease-partida),
+      transform var(--duracao-curta) var(--ease-partida),
+      visibility var(--duracao-curta);
   }
 
   .p-dropdown.dropdown-active > .p-dropdown-content,
@@ -702,21 +844,24 @@ const atual = route ? url(route, lang) : undefined;
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    transition-duration: var(--duracao);
+    transition-timing-function: var(--ease-chegada);
   }
 
   .p-dropdown-content a {
     display: block;
-    /* MEDIDO: 13px, recuo 2px/8px, entrelinha 26px. */
-    padding: 0.125rem 0.5rem;
+    /* 44px, como o item do submenu. Era 26px de entrelinha no tema. */
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
     color: var(--color-texto);
     font-size: var(--text-sm);
-    line-height: 2;
+    line-height: 1.25rem;
     text-decoration: none;
-    transition: color 0.3s;
+    transition: background-color var(--duracao) var(--ease-chegada);
   }
 
   .p-dropdown-content a:hover {
-    color: var(--color-acao-primaria);
+    background-color: var(--color-estado-hover);
   }
 
   /* ---------------- gatilho do menu mobile ---------------- */
@@ -733,16 +878,23 @@ const atual = route ? url(route, lang) : undefined;
     }
   }
 
-  /* MEDIDO: area de 20x80 com tres barras de 20x2. A area de toque util fica
+  /* MEDIDO: area de 20x80 com tres barras de 20x2. A area de toque util ficava
      abaixo dos 44px recomendados no tema; o recuo lateral daqui a completa sem
-     mover a barra. */
+     mover a barra. O fundo de estado e o mesmo dos itens. */
   .lines-button {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 2.75rem;
     height: 2.75rem;
+    border-radius: var(--radius-sm);
     cursor: pointer;
+    transition: background-color var(--duracao) var(--ease-chegada);
+  }
+
+  .lines-button:hover,
+  .lines-button.toggle-active {
+    background-color: var(--menu-hover);
   }
 
   .lines,
@@ -751,11 +903,11 @@ const atual = route ? url(route, lang) : undefined;
     display: block;
     width: 1.25rem;
     height: 2px;
-    background-color: var(--color-texto);
-    border-radius: var(--radius-sm);
+    background-color: var(--menu-texto);
+    border-radius: var(--radius-full);
     transition:
-      transform 0.3s,
-      opacity 0.3s;
+      transform var(--duracao) var(--ease-chegada),
+      opacity var(--duracao) var(--ease-chegada);
   }
 
   .lines {
@@ -843,76 +995,30 @@ const atual = route ? url(route, lang) : undefined;
 
   /*
    * A variacao de COR das tres paginas do e-book, MEDIDA na Etapa 10. Caixa,
-   * recuo e faixa continuam sendo os mesmos de cima, e por isso ela e um punhado
-   * de regras no fim do arquivo em vez de um segundo componente.
+   * recuo e faixa continuam sendo os mesmos de cima; o que muda sao os pares
+   * de estado declarados no `.cabecalho`, e por isso ela e um bloco de valores
+   * em vez de um segundo jogo de regras.
    *
-   * O hover NAO e o azul de acao. Medido, o tema usa rgb(193,195,206) — e faz
-   * sentido: sobre o carvao do e-book, o azul-500 daria 3,0:1 e o item ficaria
-   * menos legivel ao ser apontado. O cinza claro do sistema da 12,4:1 ali.
+   * O HOVER NUNCA FOI O AZUL DE ACAO aqui: sobre o carvao o azul-500 da 3,0:1.
+   * O tema clareava o texto para um cinza (rgb(193,195,206)); o Soft UI mantem
+   * o texto branco e acende o FUNDO, com os pares inversos dos tokens de
+   * estado -- branco translucido, que sobre o carvao e sobre a foto com veu so
+   * clareia o que ja estava atras do texto branco. Medido sobre a foto, o pior
+   * item da 13,5:1 (docs/decisoes.md, "Soft UI").
+   *
+   * O SUBITEM DO PAINEL MOBILE e o cinza sutil, e nao o navy: abaixo de 1200px
+   * o submenu nao tem fundo proprio e herda o carvao, e ali o navy sumiria. O
+   * cinza de paragrafo que ele usava ate o Soft UI dava 2,86:1; o sutil, 7,19.
+   * Acima de 1200px o painel e branco e devolve os pares claros (ver a regra
+   * do submenu), entao a troca so vale onde o fundo e o carvao.
    */
-  .escuro .menu-nivel1 > li > a,
-  .escuro .menu-nivel1 > li > button,
-  .escuro .p-dropdown > button {
-    color: var(--color-texto-inverso);
-  }
-
-  .escuro .menu-nivel1 > li > a:hover,
-  .escuro .menu-nivel1 > li > button:hover,
-  .escuro .p-dropdown > button:hover {
-    color: var(--color-texto-sutil-inverso);
-  }
-
-  /*
-   * O item destacado do menu sobre fundo escuro.
-   *
-   * O ambar-800 existe para passar sobre BRANCO (4,96:1, ver o tokens.css) e
-   * sobre o carvao do e-book ele da 2,6:1 — o mesmo tipo de par invertido que a
-   * topbar ja tinha. A primeira saida foi a da topbar: branco, distinguido por
-   * peso (700 contra os 600 do menu).
-   *
-   * O 700 DEIXOU DE SER BAIXADO na revisao de design, e o item ficaria igual
-   * aos irmaos sem erro nenhum. A distincao passa para a COR, que e o canal que
-   * o menu claro ja usa: dourado nas duas variacoes, cada um no tom que passa
-   * no proprio fundo. Ver --color-navegacao-destaque-inverso.
-   */
-  .escuro .menu-nivel1 > li > a.destaque {
-    color: var(--color-navegacao-destaque-inverso);
-  }
-
-  /*
-   * O SUBMENU MUDA DE FUNDO CONFORME A FAIXA, e por isso a cor do link dele
-   * tambem tem de mudar.
-   *
-   * Acima de 1200px o submenu e um painel BRANCO (ver a regra na media query
-   * acima), e ali o cinza de paragrafo esta certo nas duas variacoes. Abaixo de
-   * 1200px o painel nao tem fundo proprio: ele herda o do cabecalho. No claro
-   * isso da cinza sobre branco; no escuro, cinza sobre carvao — 2,86:1, o mesmo
-   * numero que o rodape invertido do tema entregava nos 12 links dele.
-   *
-   * Por isso a regra vive numa consulta de largura MAXIMA, e nao junto das
-   * outras: `.escuro .dropdown-menu a` pesa 0-2-1 e venceria o painel branco do
-   * desktop tambem. O 74.9375rem e o complemento exato dos 75rem usados no resto
-   * do arquivo — os 1200px que o site.js tambem compara.
-   */
-  @media (max-width: 74.9375rem) {
-    .escuro .dropdown-menu a {
-      color: var(--color-texto-sutil-inverso);
-    }
-
-    .escuro .dropdown-menu a:hover {
-      color: var(--color-texto-inverso);
-    }
-  }
-
-  /* As tres barras do gatilho, e a borda do X quando ele abre. */
-  .escuro .lines,
-  .escuro .lines::before,
-  .escuro .lines::after {
-    background-color: var(--color-texto-inverso);
-  }
-
-  .escuro .lines-button.toggle-active .lines {
-    background-color: transparent;
+  .escuro {
+    --menu-texto: var(--color-texto-inverso);
+    --menu-hover: var(--color-estado-hover-inverso);
+    --menu-atual: var(--color-estado-atual-inverso);
+    --menu-atual-texto: var(--color-texto-inverso);
+    --menu-subitem: var(--color-texto-sutil-inverso);
+    --menu-fio: var(--color-borda-inversa);
   }
 
   /*
