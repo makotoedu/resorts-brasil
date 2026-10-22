@@ -669,7 +669,10 @@ com o navegador limpo:
 1. As cinco camadas acima, limpas — ou com cada divergência explicada por
    escrito.
 2. Conferência manual do que os números não mostram: abrir `/associados` a
-   768 px e confirmar a grade em 3 colunas com os logos a ~124 px.
+   768 px e confirmar o nome do estado em cima e a grade em 3 colunas, com os
+   logos a ~157 px — nenhum acima de 160, que é o teto da `<FaixaLogos>` no
+   container estreito. E a parede de parceiros a 768 px: rótulo em cima, sete
+   mantenedores em 4 + 3, sete parceiros em 5 + 2.
 3. A conferência de rede da camada 4.
 4. Deploy de preview na Vercel antes de promover.
 
