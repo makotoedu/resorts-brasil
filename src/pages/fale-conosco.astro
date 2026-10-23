@@ -1,97 +1,15 @@
 ---
-import CabecalhoPagina from '../components/padroes/CabecalhoPagina.astro';
 import LayoutSistema from '../layouts/LayoutSistema.astro';
-import Secao from '../components/layout/Secao.astro';
-import Container from '../components/layout/Container.astro';
-import Grade from '../components/layout/Grade.astro';
-import Texto from '../components/primitivos/Texto.astro';
-import CaixaIcone from '../components/padroes/CaixaIcone.astro';
-import ChamadaAcao from '../components/padroes/ChamadaAcao.astro';
-import { contato } from '../data/contato';
-import { ui, type Locale } from '../i18n/ui';
+import PaginaContato from '../components/PaginaContato.astro';
 
 /*
- * QUATRO CORRECOES DELIBERADAS:
- *
- *   1. O telefone do WhatsApp estava escrito no markup dos tres idiomas, e ja
- *      tinha divergido: "+55 11 95058-0313" em PT e ES, "+55 (11) 95058-0313"
- *      em EN. Agora vem de src/data/contato.ts, onde ele ja existia — e onde o
- *      JSON-LD do <head> tambem o le, entao o dado estruturado e o visivel nao
- *      podem mais se contradizer.
- *   2. O telefone da imprensa estava so no markup; passa a vir do mesmo lugar.
- *   3. O simbolo deixa de ser o link. No tema, quem clicava no envelope abria o
- *      e-mail, mas o proprio endereco logo abaixo era um `<b>` sem link — o alvo
- *      util nao era clicavel e o alvo clicavel nao dizia para onde ia. Aqui o
- *      link e o valor: o e-mail, o endereco, o telefone.
- *   4. Hierarquia. Os quatro canais eram `<h3>` logo depois do `<h1>`; viram
- *      `<h2>`, que e o nivel que eles ocupam.
- *
- * O `<br>` do titulo tambem sai: a quebra de linha era manual e so acertava numa
- * largura. O `text-wrap: balance` do base.css faz isso sozinho, em todas.
+ * O corpo vive uma vez so no <PaginaContato>: as tres versoes de idioma eram
+ * identicas fora o `lang`, e uma delas ja tinha divergido (o telefone do
+ * WhatsApp, so em ingles). Ver a nota daquele arquivo, e docs/decisoes.md,
+ * "Fale conosco por assunto".
  */
-const lang: Locale = 'pt-br';
-const t = ui[lang];
 ---
 
-<LayoutSistema lang={lang} route="contact">
-  <CabecalhoPagina id="fale-conosco" titulo={t.contactTitle} />
-
-  <Secao id="contato">
-    <Container>
-      {/*
-        Sem o `p-t-100` do tema.
-
-        Aqueles 100px de recuo superior existiam para equilibrar os 50px de
-        margem que cada <CaixaIcone> carregava embaixo — dois valores medidos que
-        so faziam sentido um por causa do outro. Com a margem no lugar certo (o
-        `gap` da <Grade>), o recuo proprio da <ChamadaAcao> ja fecha a caixa
-        simetrica, 46px em cima e 34 embaixo, os dois medidos.
-
-        Tentar manter os 100px com `class="pt-secao-lg"` tambem NAO funcionaria, e
-        vale registrar: o `<style>` de um componente Astro nao esta em `@layer`, e
-        utilitaria em `@layer utilities` perde para regra sem camada. A prop
-        `class` serve para acrescentar, nao para sobrepor o desenho do padrao.
-      */}
-      <ChamadaAcao fundo="clara">
-        {/* `piso={1}` porque estas quatro celulas sao TEXTO. O piso padrao de
-            duas colunas serve a cartao e a logo; num celular de 390px ele daria
-            150px de largura a um e-mail de 28 caracteres. */}
-        <Grade colunas={4} piso={1} espaco="md" alinhamento="inicio">
-          <CaixaIcone icone="mail" titulo={t.contactEmailTitle} nivel={2}>
-            <Texto>{t.contactEmailText}</Texto>
-            <Texto semMargem>
-              <a href={`mailto:${contato.email}`}>{contato.email}</a>
-            </Texto>
-          </CaixaIcone>
-
-          <CaixaIcone icone="map-pin" titulo={t.contactAddressTitle} nivel={2}>
-            <Texto>{t.contactAddressText}</Texto>
-            <Texto semMargem>
-              <a href={contato.endereco.mapa} target="_blank" rel="noopener noreferrer">
-                {contato.endereco.linha}
-              </a>
-            </Texto>
-          </CaixaIcone>
-
-          <CaixaIcone icone="message-square" titulo={t.contactPressTitle} nivel={2}>
-            <Texto>{contato.imprensa.agencia}</Texto>
-            <Texto semMargem>
-              <a href={`mailto:${contato.imprensa.email}`}>{contato.imprensa.email}</a>
-              <br />
-              <a href={`tel:${contato.imprensa.telefoneE164}`}>{contato.imprensa.telefone}</a>
-            </Texto>
-          </CaixaIcone>
-
-          <CaixaIcone icone="whatsapp" titulo={t.contactWhatsappTitle} nivel={2}>
-            <Texto>{t.contactWhatsappText}</Texto>
-            <Texto semMargem>
-              <a href={contato.whatsapp.link} target="_blank" rel="noopener noreferrer">
-                {contato.whatsapp.telefone}
-              </a>
-            </Texto>
-          </CaixaIcone>
-        </Grade>
-      </ChamadaAcao>
-    </Container>
-  </Secao>
+<LayoutSistema lang="pt-br" route="contact">
+  <PaginaContato lang="pt-br" />
 </LayoutSistema>

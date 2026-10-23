@@ -1,84 +1,15 @@
 ---
-import CabecalhoPagina from '../../components/padroes/CabecalhoPagina.astro';
 import LayoutSistema from '../../layouts/LayoutSistema.astro';
-import Secao from '../../components/layout/Secao.astro';
-import Container from '../../components/layout/Container.astro';
-import Grade from '../../components/layout/Grade.astro';
-import Texto from '../../components/primitivos/Texto.astro';
-import CaixaIcone from '../../components/padroes/CaixaIcone.astro';
-import ChamadaAcao from '../../components/padroes/ChamadaAcao.astro';
-import { contato } from '../../data/contato';
-import { ui, type Locale } from '../../i18n/ui';
+import PaginaContato from '../../components/PaginaContato.astro';
 
 /*
- * Estrutura identica a de src/pages/fale-conosco.astro — este arquivo so troca
- * o `lang`. As quatro correcoes estao documentadas la; uma delas nasceu
- * justamente da divergencia entre estes arquivos: o telefone do WhatsApp era
- * "+55 (11) 95058-0313" so em ingles.
+ * O corpo vive uma vez so no <PaginaContato>: as tres versoes de idioma eram
+ * identicas fora o `lang`, e uma delas ja tinha divergido (o telefone do
+ * WhatsApp, so em ingles). Ver a nota daquele arquivo, e docs/decisoes.md,
+ * "Fale conosco por assunto".
  */
-const lang: Locale = 'es-es';
-const t = ui[lang];
 ---
 
-<LayoutSistema lang={lang} route="contact">
-  <CabecalhoPagina id="fale-conosco" titulo={t.contactTitle} />
-
-  <Secao id="contato">
-    <Container>
-      {/*
-        Sem o `p-t-100` do tema.
-
-        Aqueles 100px de recuo superior existiam para equilibrar os 50px de
-        margem que cada <CaixaIcone> carregava embaixo — dois valores medidos que
-        so faziam sentido um por causa do outro. Com a margem no lugar certo (o
-        `gap` da <Grade>), o recuo proprio da <ChamadaAcao> ja fecha a caixa
-        simetrica, 46px em cima e 34 embaixo, os dois medidos.
-
-        Tentar manter os 100px com `class="pt-secao-lg"` tambem NAO funcionaria, e
-        vale registrar: o `<style>` de um componente Astro nao esta em `@layer`, e
-        utilitaria em `@layer utilities` perde para regra sem camada. A prop
-        `class` serve para acrescentar, nao para sobrepor o desenho do padrao.
-      */}
-      <ChamadaAcao fundo="clara">
-        {/* `piso={1}` porque estas quatro celulas sao TEXTO. O piso padrao de
-            duas colunas serve a cartao e a logo; num celular de 390px ele daria
-            150px de largura a um e-mail de 28 caracteres. */}
-        <Grade colunas={4} piso={1} espaco="md" alinhamento="inicio">
-          <CaixaIcone icone="mail" titulo={t.contactEmailTitle} nivel={2}>
-            <Texto>{t.contactEmailText}</Texto>
-            <Texto semMargem>
-              <a href={`mailto:${contato.email}`}>{contato.email}</a>
-            </Texto>
-          </CaixaIcone>
-
-          <CaixaIcone icone="map-pin" titulo={t.contactAddressTitle} nivel={2}>
-            <Texto>{t.contactAddressText}</Texto>
-            <Texto semMargem>
-              <a href={contato.endereco.mapa} target="_blank" rel="noopener noreferrer">
-                {contato.endereco.linha}
-              </a>
-            </Texto>
-          </CaixaIcone>
-
-          <CaixaIcone icone="message-square" titulo={t.contactPressTitle} nivel={2}>
-            <Texto>{contato.imprensa.agencia}</Texto>
-            <Texto semMargem>
-              <a href={`mailto:${contato.imprensa.email}`}>{contato.imprensa.email}</a>
-              <br />
-              <a href={`tel:${contato.imprensa.telefoneE164}`}>{contato.imprensa.telefone}</a>
-            </Texto>
-          </CaixaIcone>
-
-          <CaixaIcone icone="whatsapp" titulo={t.contactWhatsappTitle} nivel={2}>
-            <Texto>{t.contactWhatsappText}</Texto>
-            <Texto semMargem>
-              <a href={contato.whatsapp.link} target="_blank" rel="noopener noreferrer">
-                {contato.whatsapp.telefone}
-              </a>
-            </Texto>
-          </CaixaIcone>
-        </Grade>
-      </ChamadaAcao>
-    </Container>
-  </Secao>
+<LayoutSistema lang="es-es" route="contact">
+  <PaginaContato lang="es-es" />
 </LayoutSistema>

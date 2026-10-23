@@ -427,13 +427,35 @@ export const ui = {
     historyBookTitle: 'Memórias, sustentabilidade e um olhar para o futuro',
 
     contactTitle: 'Como você prefere falar com a gente?',
+    contactLead:
+      'Dúvidas, convites, associação de resorts, parcerias ou imprensa: escolha o canal e fale com a equipe da Resorts Brasil.',
     contactEmailTitle: 'E-mail',
     contactEmailText: 'Tem alguma dúvida? Podemos te ajudar pelo nosso canal de e-mail.',
     contactAddressTitle: 'Endereço',
     contactAddressText: 'Nosso endereço para correspondências é:',
+    contactMapAction: 'Ver no mapa',
     contactPressTitle: 'Imprensa',
     contactWhatsappTitle: 'WhatsApp',
     contactWhatsappText: 'Converse com nossa equipe via WhatsApp.',
+    /*
+     * Os assuntos da pagina de contato. Ela e o destino do "Associe-se" e dos
+     * botoes de Parceiro e Mantenedor de /apoie, e ate aqui nao mencionava
+     * nenhum dos dois. `Subject` e `Message` sao o assunto do e-mail e a
+     * mensagem do WhatsApp que ja chegam preenchidos.
+     */
+    contactTopicsTitle: 'Qual é o assunto?',
+    contactTopicJoinTitle: 'Associar meu resort',
+    contactTopicJoinText:
+      'Conte qual é o seu resort e onde ele fica. A equipe explica os critérios e o processo de afiliação.',
+    contactTopicJoinSubject: 'Quero associar meu resort',
+    contactTopicJoinMessage: 'Olá! Quero associar meu resort à Resorts Brasil.',
+    contactTopicPartnerTitle: 'Ser parceiro ou mantenedor',
+    contactTopicPartnerText: 'Para empresas que querem apoiar o turismo ao lado da associação.',
+    contactTopicPartnerSubject: 'Parceria com a Resorts Brasil',
+    contactTopicPartnerMessage: 'Olá! Quero saber como ser parceiro ou mantenedor da Resorts Brasil.',
+    contactTopicPressText: 'Jornalistas e veículos falam com a nossa assessoria de imprensa.',
+    contactSendEmail: 'Enviar e-mail',
+    contactSendWhatsapp: 'Chamar no WhatsApp',
 
     boardTitle: 'Diretoria da Resorts Brasil',
     boardCouncilTitle: 'Conselho Consultivo',
@@ -776,13 +798,32 @@ export const ui = {
     historyBookTitle: 'Memories, sustainability and a look to the future',
 
     contactTitle: 'How would you like to contact us?',
+    contactLead:
+      'Questions, invitations, resort membership, partnerships or press: choose a channel and talk to the Resorts Brasil team.',
     contactEmailTitle: 'Email',
     contactEmailText: 'Questions? We can help you via email.',
     contactAddressTitle: 'Address',
     contactAddressText: 'Our mailing address:',
+    contactMapAction: 'View on map',
     contactPressTitle: 'Press',
     contactWhatsappTitle: 'WhatsApp',
-    contactWhatsappText: 'Needing help? Contact our virtual assistant.',
+    /* Era "Needing help? Contact our virtual assistant." -- outro canal, e so
+       em ingles. Quem responde no numero e a equipe, como dizem PT e ES. */
+    contactWhatsappText: 'Chat with our team on WhatsApp.',
+    contactTopicsTitle: 'What is it about?',
+    contactTopicJoinTitle: 'Becoming a member resort',
+    contactTopicJoinText:
+      'Tell us which resort it is and where it is located. Our team will explain the criteria and the membership process.',
+    contactTopicJoinSubject: 'Membership for my resort',
+    contactTopicJoinMessage: 'Hello! I would like my resort to join Resorts Brasil.',
+    contactTopicPartnerTitle: 'Becoming a partner or maintainer',
+    contactTopicPartnerText: 'For companies that want to support tourism alongside the association.',
+    contactTopicPartnerSubject: 'Partnership with Resorts Brasil',
+    contactTopicPartnerMessage:
+      'Hello! I would like to know how to become a partner or maintainer of Resorts Brasil.',
+    contactTopicPressText: 'Journalists and media outlets can reach our press office.',
+    contactSendEmail: 'Send an email',
+    contactSendWhatsapp: 'Message us on WhatsApp',
 
     boardTitle: 'Management of Resorts Brasil',
     boardCouncilTitle: 'Consulting Board',
@@ -1054,15 +1095,33 @@ export const ui = {
      */
     historyBookTitle: 'Memorias, sustentabilidad y una mirada hacia el futuro',
 
-    contactTitle: '¿Cómo prefieres hablar con nosotros?',
+    /* Em *usted*, como o resto do site espanhol (Conozca, Asóciese, a propria
+       rota `contactenos`). So esta pagina tratava o leitor por *tu*. */
+    contactTitle: '¿Cómo prefiere hablar con nosotros?',
+    contactLead:
+      'Dudas, invitaciones, afiliación de resorts, colaboraciones o prensa: elija el canal y hable con el equipo de Resorts Brasil.',
     contactEmailTitle: 'E-mail',
     contactEmailText:
-      '¿Tienes alguna duda? Podemos ayudarte a través de nuestro canal de correo electrónico.',
+      '¿Tiene alguna duda? Podemos ayudarle a través de nuestro canal de correo electrónico.',
     contactAddressTitle: 'Dirección',
     contactAddressText: 'Nuestra dirección de correo es:',
+    contactMapAction: 'Ver en el mapa',
     contactPressTitle: 'Prensa',
     contactWhatsappTitle: 'WhatsApp',
-    contactWhatsappText: 'Contacta con nuestro equipo por WhatsApp.',
+    contactWhatsappText: 'Hable con nuestro equipo por WhatsApp.',
+    contactTopicsTitle: '¿Cuál es el asunto?',
+    contactTopicJoinTitle: 'Asociar mi resort',
+    contactTopicJoinText:
+      'Cuéntenos cuál es su resort y dónde está. El equipo le explica los criterios y el proceso de afiliación.',
+    contactTopicJoinSubject: 'Quiero asociar mi resort',
+    contactTopicJoinMessage: '¡Hola! Quiero asociar mi resort a Resorts Brasil.',
+    contactTopicPartnerTitle: 'Ser colaborador o mantenedor',
+    contactTopicPartnerText: 'Para empresas que quieren apoyar el turismo junto a la asociación.',
+    contactTopicPartnerSubject: 'Colaboración con Resorts Brasil',
+    contactTopicPartnerMessage: '¡Hola! Quiero saber cómo ser colaborador o mantenedor de Resorts Brasil.',
+    contactTopicPressText: 'Periodistas y medios hablan con nuestra asesoría de prensa.',
+    contactSendEmail: 'Enviar un e-mail',
+    contactSendWhatsapp: 'Escribir por WhatsApp',
 
     boardTitle: 'Directorio de Resorts Brasil',
     boardCouncilTitle: 'Consejo Consultivo',

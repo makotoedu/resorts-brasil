@@ -34,10 +34,10 @@ const tamanhosFoto = '(min-width: 48rem) 46vw, 92vw';
           <Texto papel="abertura">{t.supportIntro}</Texto>
           <div class="modalidades">
             <Grade colunas={2} piso={1} espaco="md">
-              <CartaoModalidade tom="roxo" titulo={t.modalityPartner} nivel={3} href={routes.contact[lang]}>
+              <CartaoModalidade tom="roxo" titulo={t.modalityPartner} nivel={3} href={`${routes.contact[lang]}#parceria`}>
               {t.navContact}
               </CartaoModalidade>
-              <CartaoModalidade tom="magenta" titulo={t.modalityMaintainer} nivel={3} href={routes.contact[lang]}>
+              <CartaoModalidade tom="magenta" titulo={t.modalityMaintainer} nivel={3} href={`${routes.contact[lang]}#parceria`}>
               {t.navContact}
               </CartaoModalidade>
             </Grade>
@@ -89,14 +89,14 @@ const tamanhosFoto = '(min-width: 48rem) 46vw, 92vw';
         <Titulo nivel={2} papel="secao">{t.modalityPartner}</Titulo>
         <Texto papel="abertura">{t.modalityPartnerText}</Texto>
         <div class="acao">
-          <Botao href={routes.contact[lang]} variante="clara">{t.navContact}</Botao>
+          <Botao href={`${routes.contact[lang]}#parceria`} variante="clara">{t.navContact}</Botao>
         </div>
       </div>
       <div slot="2">
         <Titulo nivel={2} papel="secao">{t.modalityMaintainer}</Titulo>
         <Texto papel="abertura">{t.modalityMaintainerText}</Texto>
         <div class="acao">
-          <Botao href={routes.contact[lang]} variante="clara">{t.navContact}</Botao>
+          <Botao href={`${routes.contact[lang]}#parceria`} variante="clara">{t.navContact}</Botao>
         </div>
       </div>
     </FaixaDestaque>

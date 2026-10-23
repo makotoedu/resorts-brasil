@@ -1,0 +1,302 @@
+---
+import CabecalhoPagina from './padroes/CabecalhoPagina.astro';
+import Secao from './layout/Secao.astro';
+import Container from './layout/Container.astro';
+import Grade from './layout/Grade.astro';
+import Cartao from './primitivos/Cartao.astro';
+import Titulo from './primitivos/Titulo.astro';
+import Texto from './primitivos/Texto.astro';
+import CaixaIcone from './padroes/CaixaIcone.astro';
+import ChamadaAcao from './padroes/ChamadaAcao.astro';
+import TituloSecao from './padroes/TituloSecao.astro';
+import LinkAcao from './padroes/LinkAcao.astro';
+import { contato } from '../data/contato';
+import { ui, type Locale } from '../i18n/ui';
+
+/**
+ * A pagina de contato, nos tres idiomas. As tres versoes eram identicas fora o
+ * `lang`, e e o mesmo arranjo do <PaginaEbook>: o corpo vive aqui uma vez.
+ *
+ * Fica em `src/components/` e nao em `padroes/` pelo criterio do
+ * <ConviteAssociese>: e montagem de CONTEUDO a partir do `ui.ts` e de
+ * `src/data/contato.ts`, nao uma decisao de desenho.
+ *
+ * POR ASSUNTO, E NAO SO POR CANAL. Esta pagina e o destino do "Associe-se" de
+ * /associe-se e dos quatro botoes de Parceiro e Mantenedor de /apoie, e ate
+ * aqui nao mencionava nenhum dos dois: quem chegava querendo associar o resort
+ * encontrava quatro canais iguais e nenhum sinal de que tinha vindo ao lugar
+ * certo. Os assuntos tem ancora (`#associar`, `#parceria`, `#imprensa`), os
+ * botoes daquelas paginas caem nela, e o e-mail e o WhatsApp de cada assunto
+ * ja chegam com assunto e mensagem preenchidos. A verificacao comportamental
+ * afirma que cada ancora encontra o seu `id` -- uma ancora que nao casa nada
+ * nao falha, ela passa.
+ *
+ * AS QUATRO CORRECOES DA ETAPA 5 CONTINUAM VALENDO:
+ *
+ *   1. Os telefones vem de src/data/contato.ts, que o JSON-LD do <head> tambem
+ *      le. O do WhatsApp ja tinha divergido no markup ("+55 (11)" so em EN).
+ *   2. O telefone da imprensa idem.
+ *   3. O link e o VALOR. No tema, quem clicava no envelope abria o e-mail, e o
+ *      endereco logo abaixo era um `<b>` sem link.
+ *   4. Os canais sao `<h2>`, o nivel que ocupam logo depois do `<h1>`.
+ *
+ * UM LINK POR CARTAO. O e-mail e o telefone sao o proprio <LinkAcao>; no
+ * endereco, o texto fica num `<address>` e o link e "Ver no mapa". Um segundo
+ * link para o mesmo destino ("Enviar e-mail" ao lado do endereco de e-mail)
+ * faria o teclado passar duas vezes pelo mesmo lugar, que foi o defeito da
+ * capa da <CartaoPublicacao>.
+ */
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
+const mailto = (email: string, assunto?: string) =>
+  `mailto:${email}` + (assunto ? `?subject=${encodeURIComponent(assunto)}` : '');
+const whatsapp = (mensagem?: string) =>
+  contato.whatsapp.link + (mensagem ? `?text=${encodeURIComponent(mensagem)}` : '');
+
+/*
+ * O e-mail quebra DEPOIS DA ARROBA, e so se precisar. Na faixa em que a grade ja
+ * tem tres colunas mas a janela ainda e estreita (de 826 a uns 970px), o cartao
+ * fica mais estreito que o endereco inteiro. O `overflow-wrap` do base.css o
+ * cortaria onde calhasse; o `<wbr>` oferece o ponto que um revisor escolheria.
+ */
+const [usuario, dominio] = contato.email.split('@');
+---
+
+<CabecalhoPagina id="fale-conosco" titulo={t.contactTitle} abertura={t.contactLead} />
+
+{/* `espacoBase="nenhum"`: a secao seguinte traz os 80px de cima dela, e os
+    dois recuos somariam 160 -- a mesma junta contada duas vezes que o
+    <ConviteAssociese> registra. */}
+<Secao id="contato" espacoBase="nenhum">
+  <Container>
+    {/* `piso={1}` porque as celulas sao TEXTO: o piso padrao de duas colunas
+        daria 150px a um e-mail num celular de 390px. A classe global e a da
+        regra do terceiro cartao, no <style> abaixo. */}
+    <Grade colunas={3} piso={1} espaco="md" como="ul" class="canais-contato">
+      <Cartao como="li">
+        <div class="canal">
+          <CaixaIcone icone="mail" titulo={t.contactEmailTitle} nivel={2} tom="acao">
+            <Texto>{t.contactEmailText}</Texto>
+          </CaixaIcone>
+          <div class="acao">
+            <LinkAcao href={mailto(contato.email)}>{usuario}@<wbr />{dominio}</LinkAcao>
+          </div>
+        </div>
+      </Cartao>
+
+      <Cartao como="li">
+        <div class="canal">
+          <CaixaIcone icone="whatsapp" titulo={t.contactWhatsappTitle} nivel={2} tom="acao">
+            <Texto>{t.contactWhatsappText}</Texto>
+          </CaixaIcone>
+          <div class="acao">
+            <LinkAcao href={whatsapp()} externo>{contato.whatsapp.telefone}</LinkAcao>
+          </div>
+        </div>
+      </Cartao>
+
+      <Cartao como="li">
+        <div class="canal">
+          <CaixaIcone icone="map-pin" titulo={t.contactAddressTitle} nivel={2} tom="acao">
+            <Texto>{t.contactAddressText}</Texto>
+            <address>
+              {contato.endereco.linhas.map((linha) => <span>{linha}</span>)}
+            </address>
+          </CaixaIcone>
+          <div class="acao">
+            <LinkAcao href={contato.endereco.mapa} externo>{t.contactMapAction}</LinkAcao>
+          </div>
+        </div>
+      </Cartao>
+    </Grade>
+  </Container>
+</Secao>
+
+<Secao id="assuntos">
+  <Container>
+    <ChamadaAcao fundo="clara">
+      <TituloSecao nivel={2} alinhamento="inicio">{t.contactTopicsTitle}</TituloSecao>
+
+      {/* Linhas com fio, e nao uma segunda grade de cartoes: tres cartoes de
+          canal logo acima ja dizem "escolha um", e repetir icone, titulo e
+          frase seria o padrao que a revisao de design corrigiu em /associe-se
+          (achado A21). Sem icone tambem porque nenhum dos 16 glifos diz
+          "associacao", e glifo novo exige regenerar a partir da fonte. */}
+      <div class="caixa-assuntos">
+        <ul class="assuntos">
+          <li id="associar" class="assunto">
+            <div class="texto">
+              <Titulo nivel={3} papel="bloco">{t.contactTopicJoinTitle}</Titulo>
+              <Texto>{t.contactTopicJoinText}</Texto>
+            </div>
+            <div class="acoes">
+              <LinkAcao href={mailto(contato.email, t.contactTopicJoinSubject)}>{t.contactSendEmail}</LinkAcao>
+              <LinkAcao href={whatsapp(t.contactTopicJoinMessage)} externo>{t.contactSendWhatsapp}</LinkAcao>
+            </div>
+          </li>
+
+          <li id="parceria" class="assunto">
+            <div class="texto">
+              <Titulo nivel={3} papel="bloco">{t.contactTopicPartnerTitle}</Titulo>
+              <Texto>{t.contactTopicPartnerText}</Texto>
+            </div>
+            <div class="acoes">
+              <LinkAcao href={mailto(contato.email, t.contactTopicPartnerSubject)}>{t.contactSendEmail}</LinkAcao>
+              <LinkAcao href={whatsapp(t.contactTopicPartnerMessage)} externo>{t.contactSendWhatsapp}</LinkAcao>
+            </div>
+          </li>
+
+          <li id="imprensa" class="assunto">
+            <div class="texto">
+              <Titulo nivel={3} papel="bloco">{t.contactPressTitle}</Titulo>
+              <Texto>{t.contactTopicPressText}</Texto>
+              <Texto peso="semibold">{contato.imprensa.agencia}</Texto>
+            </div>
+            <div class="acoes">
+              <LinkAcao href={mailto(contato.imprensa.email)}>{contato.imprensa.email}</LinkAcao>
+              <LinkAcao href={`tel:${contato.imprensa.telefoneE164}`}>{contato.imprensa.telefone}</LinkAcao>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </ChamadaAcao>
+  </Container>
+</Secao>
+
+<style>
+  /*
+   * O CARTAO DE CANAL: a <CaixaIcone> em cima e a acao na base. O <Cartao> ja
+   * ocupa a celula inteira da grade; a `.canal` ocupa o cartao inteiro, e a
+   * margem automatica empurra o link para o rodape dele. Os tres links caem na
+   * mesma linha mesmo quando o endereco tem tres linhas e o e-mail uma.
+   *
+   * A margem mora num elemento DESTE arquivo, e nao numa utilitaria `mt-auto`
+   * no <LinkAcao>: a regra `.recuo-md > *` do <Cartao> zera a margem dos filhos
+   * diretos e esta fora de camada, e utilitaria em `@layer` perde para ela.
+   */
+  .canal {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .acao {
+    margin-top: auto;
+  }
+
+  /* Sem isto, um e-mail longo num cartao estreito empurraria a largura do
+     link; com o `<wbr>` acima, o ponto de quebra e o de depois da arroba. */
+  .acao :global(.link-acao) {
+    max-width: 100%;
+  }
+
+  /*
+   * O `<address>` vem em italico do navegador, e o italico nao e uma face
+   * baixada: o navegador a sintetiza, inclinando a regular. O portao de
+   * tipografia le familia e peso, nao `font-style`, entao so este arquivo
+   * impede o desvio. Sem `:global`: o elemento vai para o slot da
+   * <CaixaIcone>, mas o markup e deste template, e o escopo daqui o alcanca.
+   */
+  address {
+    font-style: normal;
+    color: var(--color-texto);
+  }
+
+  address span {
+    display: block;
+  }
+
+  /*
+   * O TERCEIRO CARTAO NA FAIXA DE DUAS COLUNAS. Entre 30 e 48rem de largura a
+   * <Grade colunas={3}> tem duas colunas, e o endereco ficava sozinho na metade
+   * esquerda da segunda linha, com um buraco do lado. Ocupando a linha
+   * inteira, a sobra vira desenho. A regra e global porque o `<li>` nasce no
+   * <Cartao>, e estilo com escopo nao alcanca markup de componente filho
+   * (armadilha 1); a consulta e a do container que a propria <Grade> declara.
+   */
+  @container (min-width: 30rem) and (max-width: 47.9375rem) {
+    :global(.canais-contato > li:last-child) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ---------------- assuntos ---------------- */
+
+  /* O container da consulta abaixo. A propria lista nao pode se-lo: uma
+     consulta de container estiliza os descendentes, e a grade e da lista. */
+  .caixa-assuntos {
+    container-type: inline-size;
+  }
+
+  .assuntos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /*
+   * Uma linha por assunto: o argumento a esquerda, os dois caminhos a direita.
+   * Em largura estreita os dois empilham. O fio separa as linhas sem virar
+   * cartao, e o primeiro tambem o tem, para separar a lista do titulo.
+   */
+  .assunto {
+    display: grid;
+    row-gap: 1rem;
+    padding-block: 1.5rem;
+    border-top: 1px solid var(--color-borda);
+  }
+
+  .assunto:last-child {
+    padding-bottom: 0;
+  }
+
+  /*
+   * AS COLUNAS SAO DA LISTA, E NAO DE CADA LINHA. Com `auto` em cada `<li>`,
+   * cada linha media a propria coluna de acoes, e os links da imprensa (o
+   * e-mail e mais largo que "Enviar e-mail") comecavam 15px a esquerda dos de
+   * cima. Com `subgrid`, a coluna mede a acao mais larga das tres, e o
+   * `column-gap` vem da lista.
+   */
+  @container (min-width: 40rem) {
+    .assuntos {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 3rem;
+    }
+
+    .assunto {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      align-items: center;
+    }
+  }
+
+  .texto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* `:global` porque o `<h3>` e o `<p>` nascem no <Titulo> e no <Texto>. */
+  .texto > :global(*) {
+    margin-block: 0;
+  }
+
+  /*
+   * Um caminho por linha, com 24px entre eles: e o vao que deixa os alvos de
+   * toque de 44px do <LinkAcao> (o link de 20px mais 12 para cada lado) sem
+   * se sobreporem.
+   */
+  .acoes {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+</style>
