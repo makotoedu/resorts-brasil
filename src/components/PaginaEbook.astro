@@ -216,7 +216,10 @@ const cartao = t.homeHighlights.ebook;
           <Titulo nivel={3} tamanho="lg" class="indice-titulo">
             Seção {secao.numero}: {textoEm(secao.nome, lang)}
           </Titulo>
-          <Grade colunas={4} espaco="md" alinhamento="inicio">
+          {/* `piso={1}`: o titulo do capitulo e TEXTO, e em duas colunas a 320 ele
+              tinha 124px — "Compartilhamento" e "Sustentabilidade" partiam no
+              meio. Os autores, logo abaixo, ficam em duas: sao foto. */}
+          <Grade colunas={4} espaco="md" alinhamento="inicio" piso={1}>
             {secao.capitulos.map((capitulo) => (
               <div>
                 <Texto cor="inverso" class="capitulo-titulo">

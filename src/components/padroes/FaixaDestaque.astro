@@ -114,6 +114,15 @@ const blocos = tons.map((tom, i) => ({ tom, slot: String(i + 1) }));
     }
   }
 
+  /* Tres blocos em duas colunas: o terceiro ocupa a linha, como na <Grade>. A
+     faixa dos eixos do /resorts-brasil deixava o verde sozinho na metade
+     esquerda, de 480 a 767px. */
+  @container (min-width: 30rem) and (max-width: 47.9375rem) {
+    .colunas-3 > .bloco:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+
   @container (min-width: 48rem) {
     .colunas-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));

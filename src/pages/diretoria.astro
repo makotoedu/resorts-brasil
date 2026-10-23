@@ -46,7 +46,7 @@ const tamanhosFoto = '(min-width: 64rem) 15rem, (min-width: 30rem) 33vw, 50vw';
 
   <Secao id="diretoria" espacoBase="nenhum">
     <Container>
-      <Grade colunas={6} espaco="md">
+      <Grade colunas={6} cheiaEm={64} espaco="md">
         {
           diretoria.map((membro) => (
             <CartaoMembro
@@ -69,7 +69,7 @@ const tamanhosFoto = '(min-width: 64rem) 15rem, (min-width: 30rem) 33vw, 50vw';
         <Titulo nivel={2} papel="secao" alinhamento="centro">{t.boardCouncilTitle}</Titulo>
         <Texto papel="apoio" alinhamento="centro" semMargem>{mandato}</Texto>
       </div>
-      <Grade colunas={6} espaco="md">
+      <Grade colunas={6} cheiaEm={64} espaco="md">
         {
           conselhoConsultivo.map((membro) => (
             <CartaoMembro

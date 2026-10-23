@@ -155,6 +155,12 @@ const Marca = linkedin ? 'a' : 'span';
     /* 20px medidos entre a foto e o nome. */
     padding: 1.25rem 0.5rem 1.5rem;
     text-align: center;
+    /* Dois cartoes por linha a 320 deixam 106px de texto, e "Casagrande",
+       "Superintendente" e "Compartilhamento" nao cabem: sem hifenizacao o
+       `overflow-wrap` do body partia a palavra no meio, sem hifen. Vale para a
+       diretoria e para os autores do e-book, que sao este cartao. */
+    hyphens: auto;
+    hyphenate-limit-chars: 10 4 4; /* o limite do <CartaoPublicacao> */
   }
 
   .descricao :global(.nome) {

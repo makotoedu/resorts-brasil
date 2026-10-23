@@ -48,6 +48,27 @@ interface Props {
    */
   piso?: 1 | 2;
   /**
+   * Onde a contagem CHEIA comeca, em rem de container. O padrao e o da tabela
+   * do <style>: 30rem para duas colunas, 48rem para as demais. `40` atrasa as
+   * duas colunas de `colunas={2}`; `64` atrasa as de 5 e 6, que ficam em tres
+   * entre 48 e 64rem. Combinacao que nao faria nada aborta o build, como
+   * caminho de imagem inexistente.
+   *
+   * E o par do `piso`, na outra ponta da escada, e pelo mesmo motivo: depende do
+   * que ha dentro da celula. Logotipo e numero cabem em seis colunas de 120px;
+   * cartao com nome, cargo ou titulo nao. A 834px a diretoria tinha 85px de
+   * texto por cartao e as publicacoes 75, e "Morrissey" e "sustentabilidade"
+   * partiam no meio. A primeira versao da revisao mobile mudou o degrau para
+   * todos, e os logotipos de /associados, que a <FaixaLogos> desenha numa grade
+   * de seis dentro de 62rem, cairam para tres colunas no desktop.
+   *
+   * O `40` e o texto ao lado de foto: a 30rem de container, uns 525px de
+   * janela, a coluna de texto tinha 200px. Ele tambem foi global na primeira
+   * versao, e o par Parceiro/Mantenedor do /apoie, que mora numa coluna de
+   * 37rem no desktop, empilhou a 1440px.
+   */
+  cheiaEm?: 40 | 64;
+  /**
    * 16px, 32px ou 48px.
    *
    * O `md` era 28px, o vao medido no `.row` do tema, e o `lg` 40px. O Soft UI
@@ -74,6 +95,7 @@ interface Props {
 const {
   colunas = 3,
   piso,
+  cheiaEm,
   espaco = 'md',
   como = 'div',
   alinhamento = 'esticar',
@@ -97,6 +119,11 @@ const ALINHAMENTOS = {
 } as const;
 
 const PISOS = { 1: 'piso-1', 2: 'piso-2' } as const;
+const CHEIAS = { 40: 'cheia-40', 64: 'cheia-64' } as const;
+
+if ((cheiaEm === 40 && colunas !== 2) || (cheiaEm === 64 && colunas < 5)) {
+  throw new Error(`<Grade colunas={${colunas}} cheiaEm={${cheiaEm}}>: combinacao sem efeito`);
+}
 ---
 
 <!--
@@ -109,6 +136,7 @@ const PISOS = { 1: 'piso-1', 2: 'piso-2' } as const;
       'grade',
       `colunas-${colunas}`,
       piso && PISOS[piso],
+      cheiaEm && CHEIAS[cheiaEm],
       ESPACOS[espaco],
       ALINHAMENTOS[alinhamento],
       classe,
@@ -154,6 +182,10 @@ const PISOS = { 1: 'piso-1', 2: 'piso-2' } as const;
    * ficam pequenos demais empilhados um por linha. Cartao de publicacao e o
    * contrario — a capa e o titulo pedem largura —, e por isso as duas paginas da
    * Etapa 7 passam `piso={1}`, que e o que o tema tambem fazia.
+   *
+   * O `cheiaEm` atrasa a ultima coluna da tabela: as duas de `colunas={2}` para
+   * 40rem, as cheias de 5 e 6 para 64rem. Ver a nota da prop e
+   * docs/decisoes.md, "Revisao mobile".
    */
   .colunas-4,
   .colunas-5,
@@ -206,6 +238,39 @@ const PISOS = { 1: 'piso-1', 2: 'piso-2' } as const;
 
     .colunas-6 {
       grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  /*
+   * O `cheiaEm`, pelo mesmo raciocinio do piso: consultas FECHADAS nas duas
+   * pontas, entao os 0-2-0 daqui so pesam dentro da faixa atrasada e nao
+   * prendem a grade no degrau de baixo em nenhuma outra largura.
+   */
+  @container (min-width: 30rem) and (max-width: 39.9375rem) {
+    .cheia-40.colunas-2 {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+  }
+
+  @container (min-width: 48rem) and (max-width: 63.9375rem) {
+    .cheia-64.colunas-5,
+    .cheia-64.colunas-6 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /*
+   * O TERCEIRO ITEM NA FAIXA DE DUAS COLUNAS. Entre 30 e 48rem a grade de tres
+   * tem duas colunas, e o terceiro ficava sozinho na metade esquerda da segunda
+   * linha, com um buraco do lado — nos destaques do /apoie, na estrutura do
+   * e-book e nos canais do fale-conosco, que resolvia isso numa regra propria e
+   * foi de onde esta saiu. O ultimo item impar ocupa a linha inteira, e a sobra
+   * vira desenho. `:global` porque os filhos vem do template de quem usa a
+   * grade, e estilo com escopo nao alcanca markup alheio (armadilha 1).
+   */
+  @container (min-width: 30rem) and (max-width: 47.9375rem) {
+    .colunas-3 > :global(:last-child:nth-child(odd)) {
+      grid-column: 1 / -1;
     }
   }
 </style>

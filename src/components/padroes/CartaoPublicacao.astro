@@ -144,6 +144,15 @@ const {
     display: flex;
     flex-direction: column;
     flex: 1;
+    /* A celula e estreita por estrutura — tres ou cinco por linha, e 24px de
+       recuo de cada lado —, e "sustentabilidade" em Poppins 19px passa de
+       180px. Sem hifenizacao o `overflow-wrap` do body partia a palavra no
+       meio, sem hifen, a 768px. Herda para o titulo e para o resumo, e usa o
+       `lang` da pagina. */
+    hyphens: auto;
+    /* So palavra de dez letras ou mais, e com quatro de cada lado: sem o limite
+       o Chromium partia tambem "de-pende" e "negó-cios" nos resumos. */
+    hyphenate-limit-chars: 10 4 4;
   }
 
   .corpo :global(.titulo) {

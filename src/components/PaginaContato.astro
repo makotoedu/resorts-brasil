@@ -75,9 +75,10 @@ const [usuario, dominio] = contato.email.split('@');
 <Secao id="contato" espacoBase="nenhum">
   <Container>
     {/* `piso={1}` porque as celulas sao TEXTO: o piso padrao de duas colunas
-        daria 150px a um e-mail num celular de 390px. A classe global e a da
-        regra do terceiro cartao, no <style> abaixo. */}
-    <Grade colunas={3} piso={1} espaco="md" como="ul" class="canais-contato">
+        daria 150px a um e-mail num celular de 390px. O terceiro cartao ocupa a
+        linha inteira entre 30 e 48rem pela regra da propria <Grade>, que nasceu
+        aqui e foi generalizada na revisao mobile. */}
+    <Grade colunas={3} piso={1} espaco="md" como="ul">
       <Cartao como="li">
         <div class="canal">
           <CaixaIcone icone="mail" titulo={t.contactEmailTitle} nivel={2} tom="acao">
@@ -210,20 +211,6 @@ const [usuario, dominio] = contato.email.split('@');
 
   address span {
     display: block;
-  }
-
-  /*
-   * O TERCEIRO CARTAO NA FAIXA DE DUAS COLUNAS. Entre 30 e 48rem de largura a
-   * <Grade colunas={3}> tem duas colunas, e o endereco ficava sozinho na metade
-   * esquerda da segunda linha, com um buraco do lado. Ocupando a linha
-   * inteira, a sobra vira desenho. A regra e global porque o `<li>` nasce no
-   * <Cartao>, e estilo com escopo nao alcanca markup de componente filho
-   * (armadilha 1); a consulta e a do container que a propria <Grade> declara.
-   */
-  @container (min-width: 30rem) and (max-width: 47.9375rem) {
-    :global(.canais-contato > li:last-child) {
-      grid-column: 1 / -1;
-    }
   }
 
   /* ---------------- assuntos ---------------- */

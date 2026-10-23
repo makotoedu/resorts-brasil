@@ -783,6 +783,34 @@ const faixas = [
             saiu de contar as posições horizontais que os itens ocupam de fato, porque numa grade{' '}
             <em>masonry</em> posicionada em absoluto o número não está em lugar nenhum do CSS.
           </p>
+
+          <p class="rotulo-demo">
+            <code>&lt;Grade colunas={6} cheiaEm={64}&gt;</code>{' '}
+            <small>2 → 3 → 6, mas as seis só a partir de 64rem</small>
+          </p>
+          <Grade colunas={6} cheiaEm={64} espaco="sm">
+            {[1, 2, 3, 4, 5, 6].map((n) => <div class="celula">{n}</div>)}
+          </Grade>
+          <p class="legenda">
+            <strong>O par do piso, na outra ponta da escada.</strong> Logotipo e número cabem em
+            seis colunas de 120px; cartão com nome, cargo ou título, não. A 834px a diretoria tinha
+            85px de texto por cartão, e "Morrissey" partia no meio. A diretoria e as publicações
+            ficam no degrau do meio entre 48 e 64rem; a faixa de logotipos de{' '}
+            <code>/associados</code>, que usa a mesma grade, não.
+          </p>
+
+          <p class="rotulo-demo">
+            <code>&lt;Grade colunas={2} cheiaEm={40}&gt;</code>{' '}
+            <small>1 → 2, mas as duas só a partir de 40rem</small>
+          </p>
+          <Grade colunas={2} cheiaEm={40} espaco="sm">
+            {[1, 2].map((n) => <div class="celula">{n}</div>)}
+          </Grade>
+          <p class="legenda">
+            O texto ao lado de foto. A 30rem de container a coluna de texto tinha 200px, e o título
+            de seção descia em treze linhas. O par de cartões Parceiro/Mantenedor, que mora numa
+            coluna de 37rem no desktop, continua no padrão.
+          </p>
         </div>
       </section>
 
