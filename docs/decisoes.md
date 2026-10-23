@@ -4190,3 +4190,193 @@ nas duas rodadas. As outras 66 ficaram como estavam: a catraca não alarga o que
 cresceu dentro da folga. A home no celular continua acusando "emagreceu" (461 →
 237 KB) e ficou de fora pelo motivo registrado na parede de parceiros: ela
 oscila conforme os logotipos do carrossel chegam antes do `networkidle`.
+
+# Revisão mobile (outubro de 2026)
+
+Uma revisão da responsividade, feita onde os portões não olham. Os pixels que
+mudaram estão em [deltas-visuais.md](deltas-visuais.md), "Revisão mobile".
+
+## Por que ela existe
+
+Os seis portões medem o celular numa largura só, **390×844**, e sem `isMobile`
+nem `hasTouch`: para eles, o celular é um desktop estreito com mouse. Nada abaixo
+de 390, nada deitado, nada entre ~825 e 1199px (onde a grade já tem as colunas
+cheias e o menu ainda é painel). O menu aberto nunca é medido por dentro, e
+nenhuma captura rola até o fim com o voltar-ao-topo visível.
+
+A revisão rodou sondas só-leitura contra o preview, com toque, nas 40 páginas e
+em dez viewports: 320×568, 360×740, 375×667, 414×896, 600×960, 740×360,
+820×1180, 1024×768, 1180×820 e 1366×1024. O que elas procuravam:
+
+- transbordo horizontal e texto vazando da caixa, em toda a página e não só no
+  `main`;
+- o menu aberto com todos os submenus, o seletor de idioma e a faixa de cookies
+  com "Personalizar", medidos contra a dobra;
+- o cromo depois de navegar pelo router;
+- o fim da página, com o voltar-ao-topo;
+- **palavra partida no meio**: os retângulos de uma mesma palavra
+  (`Range.getClientRects()`) caindo em linhas diferentes. O
+  `overflow-wrap: break-word` do body impede o transbordo partindo a palavra, sem
+  hífen, e por isso nenhum portão a vê.
+
+**Limpo nas dez larguras:** nenhum transbordo horizontal, nenhum texto abaixo de
+13px, nenhuma imagem distorcida, nenhum 404 de `srcset`.
+
+## O que estava quebrado
+
+| defeito | onde | por que nenhum portão viu |
+|---|---|---|
+| a partir da segunda página visitada, os três submenus do menu mobile não abriam | `<script>` do `<Cabecalho>` | script de componente roda uma vez só sob o `<ClientRouter />` (CLAUDE.md, armadilha 6); o `[spa]` testa o hambúrguer, que é do `site.js` |
+| as abas de região não trocavam numa segunda visita a `/associados`, e os contadores apareciam sem contar | `<Abas>`, `<Contador>` | o mesmo |
+| o menu aberto não rolava: o painel media a janela a partir de 64–116px do topo, com o `body` travado. Em 740×360 o "Fale conosco" nascia cortado; em 320×568 bastava abrir um submenu | `site.js`, `<Cabecalho>` | o teste do menu abre e fecha a 390×844, onde tudo cabe |
+| com "Personalizar" aberto, a faixa de cookies media 803px numa tela de 568 e 461 numa de 360; os botões de cima ficavam acima da borda | `<FaixaCookies>` | os testes de cookies rodam a 1440 |
+| abaixo de 329px o hambúrguer descia para uma segunda linha (289px de barra em 280); no e-book, onde o cabeçalho flutua, ficava em cima do h1 | `<Cabecalho>` | nada mede abaixo de 390 |
+| rolando até o fim, o voltar-ao-topo cobria "Cloudbe" ou "Preferências de cookies" de 340 a 760px, nos três idiomas | `<Rodape>` | a reserva de 48px só existia a partir de 86rem, e a nota dizia que abaixo disso "a ponta nunca chegava ali" — no celular a faixa quebra em três ou quatro linhas, e a última chega |
+| o seletor de idioma não fechava no segundo toque: a classe saía e o `:focus-within` segurava o painel, com `aria-expanded="false"` | `<Cabecalho>` | o teste abre com mouse, a 1440, e não fecha |
+| acima de 1200px, no toque, o `aria-expanded` do submenu ficava `true` depois de fechar | `site.js` | o `navDropdowns()` procurava `:scope > a`, e o gatilho virou `<button>`: ele não casava nada |
+
+**O último é o padrão de defeito deste projeto na forma mais pura.** O `site.js`
+tinha o `languageDropdown()` e o `navDropdowns()` com o ciclo de vida certo, e os
+dois procuravam um `<a>` que deixou de existir. Um seletor que não casa nada não
+falha: ele passa. O `<script>` do `<Cabecalho>` nasceu para cobrir o buraco, e o
+cobriu só até a primeira navegação.
+
+## O que foi corrigido
+
+- **O cromo voltou para o `site.js`.** Submenu e idioma procuram o `<button>`, o
+  submenu ganhou o toggle da sanfona abaixo de 1200px, e o `<script>` do
+  `<Cabecalho>` saiu inteiro: com os dois ligados, o primeiro toque abriria e
+  fecharia. O painel do idioma abre só pela classe; quem o fecha é o toque fora,
+  o `Esc` e o foco saindo dele.
+- **`<Abas>` e `<Contador>` rodam no corpo do script e no `astro:page-load`**, com
+  uma marca no elemento para não ligar duas vezes. O corpo cobre a primeira vez
+  que o script chega, inclusive no meio de uma navegação: medido entrando em
+  `/associados` pelo router, a partir da home.
+- **O painel do menu termina na dobra e rola** (`overflow-y: auto` na
+  `.menu-animate`, que já existia e não tinha regra). O topo é medido com o
+  painel já aberto, sem transição: fechado, a barra de 80px reparte a sobra entre
+  as duas linhas, e medido ali o painel terminava 12 a 18px antes da dobra. No
+  e-book a página aparecia numa tira embaixo dele.
+- **A faixa de cookies nunca passa da tela** e rola por dentro.
+
+Medido depois, com as mesmas sondas, na build final:
+
+- submenu, idioma e abas respondem depois de três navegações pelo router, e as
+  abas também na primeira entrada em `/associados` pelo router;
+- o idioma fecha no segundo toque;
+- com os três submenus abertos, o painel termina na dobra e o último item é
+  alcançável em 320×568, 360×640, 390×844, 740×360, 1024×768 e 1180×820, nos três
+  idiomas e no e-book (24 de 24);
+- a faixa de cookies com "Personalizar" aberto mede no máximo a altura da tela;
+- o voltar-ao-topo não cobre link nenhum do rodapé de 320 a 1400px, de 20 em 20;
+- palavras partidas sem hífen: de 214 ocorrências para 3, as três em título de
+  seção (ver abaixo);
+- nenhum transbordo horizontal nas dez larguras, como antes.
+
+## Os valores decididos
+
+Os quatro refinos de layout são decisão do responsável (22/10/2026); os valores
+abaixo foram medidos depois, no navegador.
+
+| | antes | depois | motivo |
+|---|---|---|---|
+| logotipo do cabeçalho, abaixo de 22rem | 56px de altura | 48px | a barra soma 289px e a 320 o conteúdo tem 280. Com 144px de logotipo sobram 17. 320 CSS px é a largura do reflow do WCAG (1.4.10) |
+| recuo de baixo da faixa jurídica, abaixo de 86rem | 32px | 80px | 26 do pé até o voltar-ao-topo, 44 do botão e 10 de folga, que cobrem os 6px que o `::after` do botão de cookies estende o alvo |
+| texto ao lado de foto, `<Grade colunas={2} cheiaEm={40}>` | duas colunas a partir de 30rem | a partir de 40rem, nas 12 grades da home, `/apoie`, `/associe-se` e `/resorts-brasil` | a 600px a coluna de texto tinha 200px, o título treze linhas, e "Conheça os associados" quebrava. 40rem de container dá uns 690px de janela, e em 768 nada muda |
+| cartões com texto, `<Grade colunas={5 ou 6} cheiaEm={64}>` | contagem cheia a partir de 48rem | a partir de 64rem, na diretoria e nas publicações | a 834px a diretoria tinha 85px de texto por cartão e as publicações 75. Entre ~825 e ~1090px elas ficam em três por linha, e a 1024px a diretoria dobra de altura: é o custo, e foi aceito junto com a decisão |
+| terceiro item de `<Grade colunas={3}>` e da `<FaixaDestaque>` | sozinho na metade esquerda, entre 30 e 48rem | ocupa a linha inteira | a regra que o fale-conosco tinha só para ele, generalizada; a dele saiu |
+| hifenização | nenhuma | `hyphens: auto` com `hyphenate-limit-chars: 10 4 4` no corpo do cartão de publicação, no cartão de membro e no título da `<CaixaIcone>` | a palavra longa quebra com hífen, e não mais no meio sem hífen. Sem o limite, o Chromium hifeniza por oportunidade qualquer palavra no fim da linha ("Car-los", "de-pende"), e a primeira versão, que valia também para o texto corrido dos benefícios, hifenizava parágrafos de 250px que nunca tinham partido |
+| índice do e-book | duas colunas abaixo de 30rem | `piso={1}` | o título do capítulo tinha 124px a 320. Os autores continuam em duas: são foto |
+| sufixo do contador, abaixo de 30rem de grade | `--text-md` | `--text-base` | em inglês, a 320, "20 thousand" media 133px numa célula de 124. O `nowrap` fica, porque segura o alinhamento dos rótulos e o CLS da contagem |
+| links do rodapé e da topbar | inline, 18 e 17px de caixa | `inline-block`, 32 e 40px | a caixa passa a ser a linha que já existia, sem mover nada. O medidor isentava os do rodapé como "link inline em `li`", que é regra para link no meio de frase. **Por isso o `sistema-medido.json` vai de 0 para 30 formas abaixo de 44px no celular**, todas links do rodapé com 32px: é o mesmo alvo ficando maior e deixando de ser escondido. Chegar a 44 pediria mudar o passo de 32px da lista, e o alvo esticado por `::after` se sobreporia ao do vizinho |
+| caixas das preferências de cookies | 13px, rótulo de 26 | 20px, rótulo de 44 | eram o único controle da faixa abaixo da altura de toque dos botões ao lado |
+| e-mail do rodapé | quebra depois da arroba | e também antes de ".com.br" | a 320 a coluna mede 115px, menos que o domínio, e o `wrap-anywhere` partia o ".com" no meio |
+| endereço | "São Paulo - SP" com espaços comuns | espaços inseparáveis em volta do hífen | na coluna de 165px o "SP" descia sozinho. Vale para o rodapé e para a página de contato, que leem a mesma linha |
+
+## Os dois degraus que viraram prop, e por quê
+
+**A primeira versão mudou a escada da `<Grade>` para todo mundo, e as duas
+mudanças derrubaram alguém que ninguém tinha contado.** A contagem tinha sido
+feita pelas páginas, procurando `colunas={2}`, `{5}` e `{6}` no markup, e não
+pelos componentes:
+
+- a `<FaixaLogos>` desenha os 78 resorts de `/associados` numa `<Grade colunas={6}>`
+  própria, que no painel de região ocupa três quartos da linha, 62rem. Com seis
+  colunas só a partir de 64rem, os logotipos caíram para três no desktop, e a
+  seção foi de 1.672 para 4.505px de altura;
+- o par Parceiro/Mantenedor do `/apoie` é uma `<Grade colunas={2}>` dentro da
+  coluna de texto, que mede 37rem a 1440px. Com duas colunas só a partir de
+  40rem, ele empilhou no desktop.
+
+Nenhum portão reprovou nenhum dos dois: a geometria mede caixas, e as caixas
+estavam certas. **Quem viu foi o orçamento**, e de viés: os logotipos que
+desceram ficaram fora do alcance do `loading="lazy"`, e `/associados` acusou
+"emagreceu" 34 KB. A confirmação veio de comparar a altura de cada seção das 40
+páginas, em cinco larguras, contra a build do HEAD servida ao lado. É o mesmo
+erro de método das "7 publicações" e das cores contadas por ocorrência: **contar
+o uso no markup da página não é contar o uso**. E é o mesmo aviso que o CLAUDE.md
+já dava sobre a `<FaixaLogos>`: antes de reescrever um componente, procure todos
+os que o usam, inclusive os que o usam por dentro de outro.
+
+Os dois degraus viraram o `cheiaEm` da `<Grade>`, o par do `piso` na outra ponta
+da escada: `40` atrasa as duas colunas de `colunas={2}` e `64` atrasa a contagem
+cheia de 5 e 6, as duas que alguém usa. Combinação sem efeito (`cheiaEm={40}` em
+quatro colunas) aborta o build. Com isso a escada padrão voltou a ser a de antes, e os indicadores de
+`/associados`, que a primeira versão punha em 3+2 entre 825 e 1090px, também.
+
+## O orçamento: seis medidas regravadas
+
+A folha comum cresceu 1.171 bytes (de 46.299 para 47.470; 210 com gzip), e o JS
+545, com o comportamento do cabeçalho no `site.js`. O HTML encolheu uns 650
+bytes, sem o `<script>` do componente. Sozinha, a revisão leva `/historia` a
++0,6%.
+
+**As que estouraram são as três `/historia`, e o motivo é anterior a esta
+revisão.** A base delas ainda é a de antes do Soft UI, com 41.624 bytes de CSS,
+e no HEAD elas já mediam 104,4% dela — o mesmo caso que a etapa anterior
+registrou para a 404 e os termos de uso. Entraram na base as seis medidas
+(celular e desktop), com o mesmo número em duas rodadas; as outras 76 ficaram
+como estavam.
+
+**A primeira rodada não conta.** Com `PAGES` limitado, a primeira página medida
+chegou 17 KB mais leve nas duas tentativas, e a seguinte não: o ouvinte do
+`verify-orcamento` descarta em silêncio o corpo que não chega antes de o
+contexto fechar. Por isso o regravamento rodou três vezes e comparou as duas
+últimas. Na rodada completa a primeira página é a home, que já é a que oscila.
+
+Duas medidas mudaram de lado no caminho. A política de privacidade em inglês
+estourou na primeira versão, por 276 bytes de regras de `cheiaEm` para três e
+quatro colunas que página nenhuma usava; sem elas, voltou à folga e manteve a
+base. E `/associados` acusou "emagreceu" 34 KB no desktop: era a colateral da
+`<FaixaLogos>`, com os logotipos empurrados para fora do alcance do
+`loading="lazy"`. Com o `cheiaEm`, voltou ao peso de antes.
+
+## O que ficou de fora, e por quê
+
+**Nenhuma checagem nova entrou na suíte, por decisão do responsável.** As sondas
+desta revisão ficaram fora do repositório, e o buraco que elas cobriram continua
+aberto para a próxima mudança: o `[spa]` segue testando só o hambúrguer, o menu
+aberto só a 390×844, os cookies só a 1440, e nada procura palavra partida. Se um
+dia esses portões entrarem, o desenho é o das sondas: contexto com toque,
+320×568 e 740×360, o último item do menu e da faixa contra a dobra, o primeiro
+submenu depois de três navegações, e os retângulos de cada palavra.
+
+**Só registrado, sem código:**
+
+- a faixa de cookies cobre 48–59% da tela no primeiro acesso, em retrato; a pilha
+  de botões é a D07;
+- o e-book não está no menu abaixo de 992px, só na topbar, o que é decisão de
+  arquitetura da informação;
+- os logotipos de parceiro e de associado ficam pequenos a 320 (38 a 60px);
+- as abas de região ficam em linhas desiguais a 320, três em inglês;
+- a tabela de cookies da política rola na horizontal sem nada que diga que rola;
+- três palavras ainda partem sem hífen, todas em título de seção, porque
+  hifenizar título não é desejável: "desenvolvimento" num `h2` de 28px a 320 em
+  `/resorts-brasil`, e "sustentabilidade"/"sustentabilidad" no `h2` da
+  `<FaixaDestaque>` de dois tons de `/historia`, a 600px (210px de caixa). Eram
+  214 ocorrências antes desta revisão;
+- o `Hero .cheia` declara `100vh` depois do `100svh` e anula o segundo (latente:
+  nenhuma página usa `altura="cheia"`);
+- o `sizes` dos autores do e-book diz 90vw para cartões que são dois por linha;
+- ao abrir o menu, o logotipo sobe 12 a 16px, porque a barra deixa de repartir a
+  sobra entre as linhas. É anterior a esta revisão.

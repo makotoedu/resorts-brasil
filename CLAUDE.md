@@ -146,7 +146,7 @@ defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
 > por diretório e a lista de 60 linhas morreu. **O CSS gerado ficou byte a byte
 > idêntico**, medido.
 
-### Cinco armadilhas do Astro, e todas custam a mesma coisa
+### Seis armadilhas do Astro, e todas custam a mesma coisa
 
 **Nenhum erro.** O build passa, o tipo passa, e o defeito só aparece olhando.
 
@@ -249,7 +249,28 @@ defeito que cada uma evitou; todas nasceram de algo que passou pelos portões.
    O procedimento que funciona: **restaure o arquivo do HEAD, confirme que passa,
    e reaplique em três ou quatro pedaços.** Ler o erro não leva à causa.
 
-### E uma sexta: cor que depende do que está embaixo
+6. **`<script>` de componente roda uma vez só.** Sob o `<ClientRouter />`, o
+   Astro não reexecuta um script que já executou, mesmo que a página nova o
+   traga de novo. Um `querySelectorAll(…).forEach(addEventListener)` no corpo do
+   script liga os elementos da primeira página e de mais nenhuma. Foi assim que,
+   a partir da segunda página visitada, os três submenus do menu mobile pararam
+   de abrir: o cabeçalho novo nascia sem listener. As abas de `/associados`
+   paravam numa segunda visita, e os contadores apareciam prontos, sem contar.
+
+   **Ninguém viu porque o teste olhava o vizinho.** O `[spa]` clica no
+   hambúrguer, que é do `site.js` e se remonta a cada troca de corpo; o defeito
+   estava no botão ao lado, que tinha script próprio.
+
+   Duas saídas, conforme o dono:
+
+   - **cromo vai para o `site.js`**, dentro do `montar()` e com `signal`, como o
+     submenu e o seletor de idioma desde a revisão mobile;
+   - **componente roda no corpo do script E no `astro:page-load`**, com uma marca
+     no elemento para não ligar duas vezes (ver `<Abas>` e `<Contador>`). O corpo
+     cobre a primeira vez que o script chega, inclusive no meio de uma
+     navegação; o evento cobre as seguintes.
+
+### E mais uma, que não é do Astro: cor que depende do que está embaixo
 
 **Componente transparente herda o fundo de quem o contém — e o contraste também.**
 

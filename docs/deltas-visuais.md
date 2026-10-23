@@ -960,6 +960,41 @@ deram o mesmo número em duas rodadas. As outras 66 continuam com a base de ante
 e a home no celular, que acusa "emagreceu", ficou de fora pela oscilação já
 registrada acima.
 
+## Revisão mobile — o que só aparecia fora dos três viewports
+
+Outubro de 2026. O porquê de cada valor está em [decisoes.md](decisoes.md),
+"Revisão mobile". Os quatro refinos de layout (texto e foto, palavra partida,
+terceiro item, alvos e contador) são decisão do responsável, em 22/10/2026; o
+resto é correção de defeito medido.
+
+| o quê | páginas | tipo | motivo |
+|---|---|---|---|
+| submenus e seletor de idioma | cromo × 41 | **correção** | a partir da segunda página visitada pelo router, os três submenus do menu mobile não abriam, e o idioma não fechava no segundo toque. Nenhum pixel muda na carga direta |
+| abas e contadores | `/associados` × 3 | **correção** | numa segunda visita pelo router as abas de região não trocavam, e os números apareciam sem a contagem |
+| menu aberto | cromo × 41, abaixo de 1200px | **correção** | o painel termina na dobra e rola. Em 740×360 o "Fale conosco" nascia cortado; em 320×568 bastava abrir um submenu |
+| faixa de cookies | cromo × 41 | **correção** | nunca mais alta que a tela, e rola por dentro. Com "Personalizar" aberto ela media 803px numa tela de 568 |
+| preferências de cookies | cromo × 41 | **refino** | caixa de 20px no lugar dos 13 nativos, e 44px de alvo por categoria; o painel cresce uns 54px |
+| logotipo do cabeçalho | cromo × 41, abaixo de 352px | **correção** | 48px de altura em vez de 56: a 320 o hambúrguer descia para uma segunda linha e, no e-book, ficava em cima do h1 |
+| fim da faixa de baixo | rodapé × 41, abaixo de 1376px | **correção** | 80px de recuo embaixo em vez de 32: rolando até o fim, o voltar-ao-topo cobria "Cloudbe" ou "Preferências de cookies" de 340 a 760px |
+| links do rodapé e da topbar | cromo × 41 | **refino** | a caixa do link passa a ser a linha (32 e 40px). Nenhum pixel desenhado muda; muda o alvo de toque |
+| e-mail e endereço do rodapé | rodapé × 41 | **refino** | o e-mail quebra antes de ".com.br", e não no meio do domínio, a 320; "São Paulo - SP" não deixa mais o "SP" sozinho. O endereço da página de contato ganha a mesma junta |
+| texto ao lado de foto | home, `/apoie`, `/associe-se`, `/resorts-brasil` × 3 | **redesenho** | empilha até 40rem de container (uns 690px de janela), e não até 30rem (`cheiaEm={40}`). A 600px a coluna de texto tinha 200px. Em 768px e no desktop nada muda |
+| cartões da diretoria e das publicações | `/diretoria`, `/publicacoes` × 3 | **redesenho** | a contagem cheia só a partir de 64rem de container, uns 1090px (`cheiaEm={64}`). Entre 825 e 1090 ficam três por linha, e a 1024px a diretoria passa de 2.551 para 4.294px de página |
+| hifenização | publicações, diretoria, autores do e-book, benefícios de `/associe-se` | **refino** | `hyphens: auto` com limite de 10 letras: a palavra longa quebra com hífen, e não mais no meio, sem hífen |
+| índice do e-book | e-book × 3 | **refino** | uma coluna abaixo de 30rem: o título do capítulo tinha 124px a 320 |
+| terceiro item | `/apoie`, e-book, `/resorts-brasil` × 3 | **redesenho** | numa grade de três com duas colunas, o terceiro ocupa a linha inteira, como o fale-conosco já fazia |
+| contador | `/associados` × 3, abaixo de 30rem de grade | **refino** | o sufixo ("mil", "thousand") desce para 16px: em inglês, a 320, "20 thousand" vazava da célula |
+
+**Conferido contra a build do HEAD, e não contra o site original:** a altura de
+cada seção das 40 páginas, em 390, 600, 768, 1024 e 1440px, com as duas builds
+servidas pelo `astro preview`. Toda diferença acima de 2px está na tabela. A
+1440px nada muda, nem o rodapé, e `/associados` é idêntica ao HEAD em todas as
+larguras, fora o rodapé.
+
+**O orçamento regravou 6 medidas**, as três `/historia` em celular e desktop,
+cuja base ainda era a de antes do Soft UI. O resto do porquê está no
+`decisoes.md`.
+
 ## Como classificar um delta novo
 
 Ao rodar o diff numa etapa, cada página acima do limiar entra aqui com captura,

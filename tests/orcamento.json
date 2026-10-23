@@ -27,13 +27,13 @@
     "total": 293200
   },
   "/historia.html|mobile": {
-    "html": 48243,
-    "css": 41624,
-    "js": 21361,
+    "html": 48809,
+    "css": 47470,
+    "js": 21906,
     "imagem": 23292,
     "fonte": 0,
     "outro": 0,
-    "total": 134520
+    "total": 141477
   },
   "/associados.html|mobile": {
     "html": 106938,
@@ -153,13 +153,13 @@
     "total": 293196
   },
   "/en-us/history.html|mobile": {
-    "html": 48205,
-    "css": 41624,
-    "js": 21361,
+    "html": 48764,
+    "css": 47470,
+    "js": 21906,
     "imagem": 23292,
     "fonte": 0,
     "outro": 0,
-    "total": 134482
+    "total": 141432
   },
   "/en-us/associates.html|mobile": {
     "html": 106915,
@@ -270,13 +270,13 @@
     "total": 293412
   },
   "/es-es/historia.html|mobile": {
-    "html": 48448,
-    "css": 41624,
-    "js": 21361,
+    "html": 49010,
+    "css": 47470,
+    "js": 21906,
     "imagem": 23292,
     "fonte": 0,
     "outro": 0,
-    "total": 134725
+    "total": 141678
   },
   "/es-es/asociados.html|mobile": {
     "html": 107112,
@@ -396,13 +396,13 @@
     "total": 293200
   },
   "/historia.html|desktop": {
-    "html": 48243,
-    "css": 41624,
-    "js": 21361,
+    "html": 48809,
+    "css": 47470,
+    "js": 21906,
     "imagem": 23292,
     "fonte": 0,
     "outro": 0,
-    "total": 134520
+    "total": 141477
   },
   "/associados.html|desktop": {
     "html": 106938,
@@ -522,13 +522,13 @@
     "total": 293196
   },
   "/en-us/history.html|desktop": {
-    "html": 48205,
-    "css": 41624,
-    "js": 21361,
+    "html": 48764,
+    "css": 47470,
+    "js": 21906,
     "imagem": 23292,
     "fonte": 0,
     "outro": 0,
-    "total": 134482
+    "total": 141432
   },
   "/en-us/associates.html|desktop": {
     "html": 106915,
@@ -639,13 +639,13 @@
     "total": 293412
   },
   "/es-es/historia.html|desktop": {
-    "html": 48448,
-    "css": 41624,
-    "js": 21361,
+    "html": 49010,
+    "css": 47470,
+    "js": 21906,
     "imagem": 23292,
     "fonte": 0,
     "outro": 0,
-    "total": 134725
+    "total": 141678
   },
   "/es-es/asociados.html|desktop": {
     "html": 107112,

@@ -1,37 +1,12 @@
 {
-  "medidoEm": "2026-10-22",
+  "medidoEm": "2026-10-23",
   "base": "http://localhost:4330",
   "resumo": {
     "mobile": {
       "combinacoes": [
         {
-          "chave": "DM Sans 14px 400 lh2.29 ls0em normal",
-          "n": 628,
-          "paginas": 40,
-          "exemplos": [
-            {
-              "seletor": "a",
-              "texto": "Início",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "span.cookie-manage",
-              "texto": "·",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            }
-          ]
-        },
-        {
           "chave": "DM Sans 16px 400 lh1.6 ls0em normal",
-          "n": 556,
+          "n": 553,
           "paginas": 31,
           "exemplos": [
             {
@@ -55,38 +30,63 @@
           ]
         },
         {
-          "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
-          "n": 297,
-          "paginas": 6,
+          "chave": "DM Sans 14px 400 lh2.29 ls0em normal",
+          "n": 551,
+          "paginas": 40,
           "exemplos": [
+            {
+              "seletor": "a",
+              "texto": "Resorts Brasil",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "button.cookie-manage-btn",
+              "texto": "Preferências de cookies",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "li.credito",
+              "texto": "Desenvolvido por",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
+          "n": 379,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "p.copyright-texto",
+              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
             {
               "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
               "texto": "Presidente do Conselho",
               "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.text-sm.text-texto-sutil.text-center",
-              "texto": "Biênio 2026-2027",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.destaque",
-              "texto": "Prefácio",
-              "pagina": "/ebook.html",
               "regiao": "conteudo"
             }
           ]
         },
         {
           "chave": "Poppins 19px 600 lh1.4 ls0em normal",
-          "n": 288,
+          "n": 285,
           "paginas": 33,
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -123,7 +123,32 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 14px 400 lh1.43 ls0em normal",
+          "n": 195,
+          "paginas": 39,
+          "exemplos": [
+            {
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "span.whitespace-nowrap",
+              "texto": "95058-0313",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "address",
+              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -131,8 +156,8 @@
         },
         {
           "chave": "DM Sans 16px 600 lh1.6 ls0em normal",
-          "n": 138,
-          "paginas": 12,
+          "n": 141,
+          "paginas": 15,
           "exemplos": [
             {
               "seletor": "p.font-semibold.mb-0",
@@ -141,39 +166,14 @@
               "regiao": "conteudo"
             },
             {
+              "seletor": "p.font-semibold",
+              "texto": "Anagrama Comunicação e Eventos",
+              "pagina": "/fale-conosco.html",
+              "regiao": "conteudo"
+            },
+            {
               "seletor": "p.text-texto-inverso.font-semibold.mb-0",
               "texto": "Roland de Bonadona",
-              "pagina": "/ebook.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "strong",
-              "texto": "Anonimização:",
-              "pagina": "/politica-de-privacidade.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
-          "chave": "Poppins 23px 600 lh1.25 ls0em normal",
-          "n": 126,
-          "paginas": 18,
-          "exemplos": [
-            {
-              "seletor": "h2.text-lg.text-texto-inverso",
-              "texto": "Apoie o Turismo",
-              "pagina": "/index.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "h2.text-lg",
-              "texto": "Representar e engajar",
-              "pagina": "/resorts-brasil.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "h2.text-lg.text-texto-inverso.text-center",
-              "texto": "O e-book é uma iniciativa:",
               "pagina": "/ebook.html",
               "regiao": "conteudo"
             }
@@ -181,8 +181,8 @@
         },
         {
           "chave": "DM Sans 16px 600 lh1.25 ls0em normal",
-          "n": 109,
-          "paginas": 29,
+          "n": 136,
+          "paginas": 32,
           "exemplos": [
             {
               "seletor": "a.botao.voz-acao.v-destaque",
@@ -205,9 +205,34 @@
           ]
         },
         {
+          "chave": "Poppins 23px 600 lh1.25 ls0em normal",
+          "n": 135,
+          "paginas": 21,
+          "exemplos": [
+            {
+              "seletor": "h2.text-lg.text-texto-inverso",
+              "texto": "Apoie o Turismo",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "h2.text-lg",
+              "texto": "Representar e engajar",
+              "pagina": "/resorts-brasil.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "h3.text-lg",
+              "texto": "Associar meu resort",
+              "pagina": "/fale-conosco.html",
+              "regiao": "conteudo"
+            }
+          ]
+        },
+        {
           "chave": "Poppins 28px 500 lh1.2 ls-0.01em normal",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -231,8 +256,8 @@
         },
         {
           "chave": "DM Sans 19px 400 lh1.4 ls0em normal",
-          "n": 49,
-          "paginas": 28,
+          "n": 52,
+          "paginas": 31,
           "exemplos": [
             {
               "seletor": "span.text-md.text-texto-sutil.max-w-abertura",
@@ -350,7 +375,7 @@
           ]
         },
         {
-          "chave": "Poppins 19px 500 lh1.15 ls-0.027em normal",
+          "chave": "Poppins 16px 500 lh1.15 ls-0.032em normal",
           "n": 6,
           "paginas": 3,
           "exemplos": [
@@ -384,7 +409,7 @@
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -429,8 +454,8 @@
         },
         {
           "chave": "h2 Poppins 28px 500",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -479,7 +504,7 @@
         },
         {
           "chave": "h2 Poppins 19px 600",
-          "n": 30,
+          "n": 27,
           "paginas": 6,
           "exemplos": [
             {
@@ -498,9 +523,15 @@
         },
         {
           "chave": "h3 Poppins 23px 600",
-          "n": 18,
-          "paginas": 3,
+          "n": 27,
+          "paginas": 6,
           "exemplos": [
+            {
+              "seletor": "h3.text-lg",
+              "texto": "Associar meu resort",
+              "pagina": "/fale-conosco.html",
+              "regiao": "conteudo"
+            },
             {
               "seletor": "h3.text-lg.text-texto-inverso.text-center",
               "texto": "Contexto",
@@ -532,7 +563,7 @@
       "familias": [
         {
           "chave": "DM Sans",
-          "n": 2047,
+          "n": 2277,
           "paginas": 41,
           "exemplos": [
             {
@@ -557,7 +588,7 @@
         },
         {
           "chave": "Poppins",
-          "n": 563,
+          "n": 572,
           "paginas": 40,
           "exemplos": [
             {
@@ -584,7 +615,7 @@
       "pesos": [
         {
           "chave": "400",
-          "n": 1539,
+          "n": 1739,
           "paginas": 41,
           "exemplos": [
             {
@@ -594,14 +625,14 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a",
-              "texto": "Início",
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
+              "seletor": "a",
+              "texto": "Resorts Brasil",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -609,7 +640,7 @@
         },
         {
           "chave": "600",
-          "n": 878,
+          "n": 914,
           "paginas": 41,
           "exemplos": [
             {
@@ -634,7 +665,7 @@
         },
         {
           "chave": "500",
-          "n": 193,
+          "n": 196,
           "paginas": 40,
           "exemplos": [
             {
@@ -661,24 +692,24 @@
       "tamanhos": [
         {
           "chave": "14",
-          "n": 940,
+          "n": 1140,
           "paginas": 40,
           "exemplos": [
             {
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
               "seletor": "a",
-              "texto": "Início",
+              "texto": "Resorts Brasil",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "span.cookie-manage",
-              "texto": "·",
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -686,7 +717,7 @@
         },
         {
           "chave": "16",
-          "n": 832,
+          "n": 865,
           "paginas": 38,
           "exemplos": [
             {
@@ -711,12 +742,12 @@
         },
         {
           "chave": "19",
-          "n": 343,
+          "n": 337,
           "paginas": 37,
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -753,7 +784,7 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -761,8 +792,8 @@
         },
         {
           "chave": "23",
-          "n": 126,
-          "paginas": 18,
+          "n": 135,
+          "paginas": 21,
           "exemplos": [
             {
               "seletor": "h2.text-lg.text-texto-inverso",
@@ -777,17 +808,17 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "h2.text-lg.text-texto-inverso.text-center",
-              "texto": "O e-book é uma iniciativa:",
-              "pagina": "/ebook.html",
+              "seletor": "h3.text-lg",
+              "texto": "Associar meu resort",
+              "pagina": "/fale-conosco.html",
               "regiao": "conteudo"
             }
           ]
         },
         {
           "chave": "28",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -901,26 +932,51 @@
         },
         {
           "chave": "2.29",
-          "n": 628,
+          "n": 551,
           "paginas": 40,
           "exemplos": [
             {
               "seletor": "a",
-              "texto": "Início",
+              "texto": "Resorts Brasil",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "button.cookie-manage-btn",
+              "texto": "Preferências de cookies",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "li.credito",
+              "texto": "Desenvolvido por",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "1.5",
+          "n": 379,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
               "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
+              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "span.cookie-manage",
-              "texto": "·",
-              "pagina": "/index.html",
-              "regiao": "rodape"
+              "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
+              "texto": "Presidente do Conselho",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
             }
           ]
         },
@@ -931,7 +987,7 @@
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -950,34 +1006,9 @@
           ]
         },
         {
-          "chave": "1.5",
-          "n": 297,
-          "paginas": 6,
-          "exemplos": [
-            {
-              "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
-              "texto": "Presidente do Conselho",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.text-sm.text-texto-sutil.text-center",
-              "texto": "Biênio 2026-2027",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.destaque",
-              "texto": "Prefácio",
-              "pagina": "/ebook.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
           "chave": "1.25",
-          "n": 235,
-          "paginas": 35,
+          "n": 271,
+          "paginas": 38,
           "exemplos": [
             {
               "seletor": "a.botao.voz-acao.v-destaque",
@@ -1018,7 +1049,32 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "1.43",
+          "n": 195,
+          "paginas": 39,
+          "exemplos": [
+            {
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "span.whitespace-nowrap",
+              "texto": "95058-0313",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "address",
+              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -1026,8 +1082,8 @@
         },
         {
           "chave": "1.2",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -1133,7 +1189,7 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -1141,8 +1197,8 @@
         },
         {
           "chave": "-0.01em @28px",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -1215,7 +1271,7 @@
           ]
         },
         {
-          "chave": "-0.027em @19px",
+          "chave": "-0.032em @16px",
           "n": 6,
           "paginas": 3,
           "exemplos": [
@@ -1248,7 +1304,7 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -1258,7 +1314,7 @@
       "raios": [
         {
           "chave": "9999px",
-          "n": 358,
+          "n": 341,
           "paginas": 39,
           "exemplos": [
             {
@@ -1267,20 +1323,20 @@
               "regiao": "rodape"
             },
             {
-              "seletor": "a.topo",
-              "pagina": "/index.html",
-              "regiao": "outro"
-            },
-            {
               "seletor": "a.social",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
+            },
+            {
+              "seletor": "a.topo",
+              "pagina": "/diretoria.html",
+              "regiao": "outro"
             }
           ]
         },
         {
           "chave": "12px",
-          "n": 252,
+          "n": 261,
           "paginas": 33,
           "exemplos": [
             {
@@ -1324,44 +1380,320 @@
         }
       ],
       "linha": {
-        "paragrafos": 332,
+        "paragrafos": 338,
         "min": 20,
         "mediana": 46,
         "max": 50,
         "acimaDe75": 0
       },
-      "toqueAbaixoDe44": []
+      "toqueAbaixoDe44": [
+        {
+          "seletor": "a",
+          "texto": "Resorts Brasil",
+          "w": 87,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 39
+        },
+        {
+          "seletor": "a",
+          "texto": "Diretoria",
+          "w": 55,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 53
+        },
+        {
+          "seletor": "a",
+          "texto": "História",
+          "w": 49,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 26
+        },
+        {
+          "seletor": "a",
+          "texto": "Resorts Associados",
+          "w": 127,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Associe-se",
+          "w": 74,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Apoie o turismo",
+          "w": 103,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Publicações",
+          "w": 78,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Estatísticas e Estudos",
+          "w": 142,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "E-book",
+          "w": 48,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 39
+        },
+        {
+          "seletor": "a",
+          "texto": "Fale conosco",
+          "w": 85,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Política de privacidade",
+          "w": 147,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 14
+        },
+        {
+          "seletor": "a",
+          "texto": "Termos de uso",
+          "w": 95,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 14
+        },
+        {
+          "seletor": "a",
+          "texto": "Board",
+          "w": 38,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/en-us/home.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "History",
+          "w": 46,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/en-us/home.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Associated Resorts",
+          "w": 125,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/en-us/home.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Join Us",
+          "w": 47,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/en-us/home.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Support Tourism",
+          "w": 107,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/en-us/home.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Publications",
+          "w": 79,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/en-us/home.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Statistics and Studies",
+          "w": 141,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/en-us/home.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Contact us",
+          "w": 72,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/en-us/home.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Privacy policy",
+          "w": 90,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/en-us/home.html",
+          "ocorrencias": 26
+        },
+        {
+          "seletor": "a",
+          "texto": "Terms of use",
+          "w": 83,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/en-us/home.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Directorio",
+          "w": 64,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/es-es/inicio.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Resorts Asociados",
+          "w": 120,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/es-es/inicio.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Asóciese",
+          "w": 59,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/es-es/inicio.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Apoye al turismo",
+          "w": 109,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/es-es/inicio.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Estadísticas y estudios",
+          "w": 149,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/es-es/inicio.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Contáctenos",
+          "w": 84,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/es-es/inicio.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Política de privacidad",
+          "w": 139,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/es-es/inicio.html",
+          "ocorrencias": 13
+        },
+        {
+          "seletor": "a",
+          "texto": "Términos de uso",
+          "w": 106,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/es-es/inicio.html",
+          "ocorrencias": 13
+        }
+      ]
     },
     "tablet": {
       "combinacoes": [
         {
-          "chave": "DM Sans 14px 400 lh2.29 ls0em normal",
-          "n": 628,
-          "paginas": 40,
-          "exemplos": [
-            {
-              "seletor": "a",
-              "texto": "Início",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "span.cookie-manage",
-              "texto": "·",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            }
-          ]
-        },
-        {
           "chave": "DM Sans 16px 400 lh1.6 ls0em normal",
-          "n": 563,
+          "n": 560,
           "paginas": 31,
           "exemplos": [
             {
@@ -1385,38 +1717,63 @@
           ]
         },
         {
-          "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
-          "n": 297,
-          "paginas": 6,
+          "chave": "DM Sans 14px 400 lh2.29 ls0em normal",
+          "n": 551,
+          "paginas": 40,
           "exemplos": [
+            {
+              "seletor": "a",
+              "texto": "Resorts Brasil",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "button.cookie-manage-btn",
+              "texto": "Preferências de cookies",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "li.credito",
+              "texto": "Desenvolvido por",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
+          "n": 379,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "p.copyright-texto",
+              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
             {
               "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
               "texto": "Presidente do Conselho",
               "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.text-sm.text-texto-sutil.text-center",
-              "texto": "Biênio 2026-2027",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.destaque",
-              "texto": "Prefácio",
-              "pagina": "/ebook.html",
               "regiao": "conteudo"
             }
           ]
         },
         {
           "chave": "Poppins 19.36px 600 lh1.4 ls0em normal",
-          "n": 288,
+          "n": 285,
           "paginas": 33,
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -1453,7 +1810,32 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 14px 400 lh1.43 ls0em normal",
+          "n": 195,
+          "paginas": 39,
+          "exemplos": [
+            {
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "span.whitespace-nowrap",
+              "texto": "95058-0313",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "address",
+              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -1461,8 +1843,8 @@
         },
         {
           "chave": "DM Sans 16px 600 lh1.6 ls0em normal",
-          "n": 138,
-          "paginas": 12,
+          "n": 141,
+          "paginas": 15,
           "exemplos": [
             {
               "seletor": "p.font-semibold.mb-0",
@@ -1471,39 +1853,14 @@
               "regiao": "conteudo"
             },
             {
+              "seletor": "p.font-semibold",
+              "texto": "Anagrama Comunicação e Eventos",
+              "pagina": "/fale-conosco.html",
+              "regiao": "conteudo"
+            },
+            {
               "seletor": "p.text-texto-inverso.font-semibold.mb-0",
               "texto": "Roland de Bonadona",
-              "pagina": "/ebook.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "strong",
-              "texto": "Anonimização:",
-              "pagina": "/politica-de-privacidade.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
-          "chave": "Poppins 23.72px 600 lh1.25 ls0em normal",
-          "n": 126,
-          "paginas": 18,
-          "exemplos": [
-            {
-              "seletor": "h2.text-lg.text-texto-inverso",
-              "texto": "Apoie o Turismo",
-              "pagina": "/index.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "h2.text-lg",
-              "texto": "Representar e engajar",
-              "pagina": "/resorts-brasil.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "h2.text-lg.text-texto-inverso.text-center",
-              "texto": "O e-book é uma iniciativa:",
               "pagina": "/ebook.html",
               "regiao": "conteudo"
             }
@@ -1511,8 +1868,8 @@
         },
         {
           "chave": "DM Sans 16px 600 lh1.25 ls0em normal",
-          "n": 109,
-          "paginas": 29,
+          "n": 136,
+          "paginas": 32,
           "exemplos": [
             {
               "seletor": "a.botao.voz-acao.v-destaque",
@@ -1535,9 +1892,34 @@
           ]
         },
         {
+          "chave": "Poppins 23.72px 600 lh1.25 ls0em normal",
+          "n": 135,
+          "paginas": 21,
+          "exemplos": [
+            {
+              "seletor": "h2.text-lg.text-texto-inverso",
+              "texto": "Apoie o Turismo",
+              "pagina": "/index.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "h2.text-lg",
+              "texto": "Representar e engajar",
+              "pagina": "/resorts-brasil.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "h3.text-lg",
+              "texto": "Associar meu resort",
+              "pagina": "/fale-conosco.html",
+              "regiao": "conteudo"
+            }
+          ]
+        },
+        {
           "chave": "Poppins 30.16px 500 lh1.2 ls-0.01em normal",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -1561,8 +1943,8 @@
         },
         {
           "chave": "DM Sans 19.36px 400 lh1.4 ls0em normal",
-          "n": 49,
-          "paginas": 28,
+          "n": 52,
+          "paginas": 31,
           "exemplos": [
             {
               "seletor": "span.text-md.text-texto-sutil.max-w-abertura",
@@ -1714,7 +2096,7 @@
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -1759,8 +2141,8 @@
         },
         {
           "chave": "h2 Poppins 30.16px 500",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -1809,7 +2191,7 @@
         },
         {
           "chave": "h2 Poppins 19.36px 600",
-          "n": 30,
+          "n": 27,
           "paginas": 6,
           "exemplos": [
             {
@@ -1828,9 +2210,15 @@
         },
         {
           "chave": "h3 Poppins 23.72px 600",
-          "n": 18,
-          "paginas": 3,
+          "n": 27,
+          "paginas": 6,
           "exemplos": [
+            {
+              "seletor": "h3.text-lg",
+              "texto": "Associar meu resort",
+              "pagina": "/fale-conosco.html",
+              "regiao": "conteudo"
+            },
             {
               "seletor": "h3.text-lg.text-texto-inverso.text-center",
               "texto": "Contexto",
@@ -1862,7 +2250,7 @@
       "familias": [
         {
           "chave": "DM Sans",
-          "n": 2058,
+          "n": 2288,
           "paginas": 41,
           "exemplos": [
             {
@@ -1887,7 +2275,7 @@
         },
         {
           "chave": "Poppins",
-          "n": 563,
+          "n": 572,
           "paginas": 40,
           "exemplos": [
             {
@@ -1914,7 +2302,7 @@
       "pesos": [
         {
           "chave": "400",
-          "n": 1546,
+          "n": 1746,
           "paginas": 41,
           "exemplos": [
             {
@@ -1924,14 +2312,14 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a",
-              "texto": "Início",
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
+              "seletor": "a",
+              "texto": "Resorts Brasil",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -1939,7 +2327,7 @@
         },
         {
           "chave": "600",
-          "n": 878,
+          "n": 914,
           "paginas": 41,
           "exemplos": [
             {
@@ -1964,7 +2352,7 @@
         },
         {
           "chave": "500",
-          "n": 197,
+          "n": 200,
           "paginas": 40,
           "exemplos": [
             {
@@ -1991,24 +2379,24 @@
       "tamanhos": [
         {
           "chave": "14",
-          "n": 940,
+          "n": 1140,
           "paginas": 40,
           "exemplos": [
             {
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
               "seletor": "a",
-              "texto": "Início",
+              "texto": "Resorts Brasil",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "span.cookie-manage",
-              "texto": "·",
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -2016,7 +2404,7 @@
         },
         {
           "chave": "16",
-          "n": 843,
+          "n": 870,
           "paginas": 38,
           "exemplos": [
             {
@@ -2046,7 +2434,7 @@
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -2083,7 +2471,7 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -2091,8 +2479,8 @@
         },
         {
           "chave": "23.72",
-          "n": 126,
-          "paginas": 18,
+          "n": 135,
+          "paginas": 21,
           "exemplos": [
             {
               "seletor": "h2.text-lg.text-texto-inverso",
@@ -2107,17 +2495,17 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "h2.text-lg.text-texto-inverso.text-center",
-              "texto": "O e-book é uma iniciativa:",
-              "pagina": "/ebook.html",
+              "seletor": "h3.text-lg",
+              "texto": "Associar meu resort",
+              "pagina": "/fale-conosco.html",
               "regiao": "conteudo"
             }
           ]
         },
         {
           "chave": "30.16",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -2231,26 +2619,51 @@
         },
         {
           "chave": "2.29",
-          "n": 628,
+          "n": 551,
           "paginas": 40,
           "exemplos": [
             {
               "seletor": "a",
-              "texto": "Início",
+              "texto": "Resorts Brasil",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "button.cookie-manage-btn",
+              "texto": "Preferências de cookies",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "li.credito",
+              "texto": "Desenvolvido por",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "1.5",
+          "n": 379,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
               "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
+              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "span.cookie-manage",
-              "texto": "·",
-              "pagina": "/index.html",
-              "regiao": "rodape"
+              "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
+              "texto": "Presidente do Conselho",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
             }
           ]
         },
@@ -2261,7 +2674,7 @@
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -2280,34 +2693,9 @@
           ]
         },
         {
-          "chave": "1.5",
-          "n": 297,
-          "paginas": 6,
-          "exemplos": [
-            {
-              "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
-              "texto": "Presidente do Conselho",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.text-sm.text-texto-sutil.text-center",
-              "texto": "Biênio 2026-2027",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.destaque",
-              "texto": "Prefácio",
-              "pagina": "/ebook.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
           "chave": "1.25",
-          "n": 235,
-          "paginas": 35,
+          "n": 271,
+          "paginas": 38,
           "exemplos": [
             {
               "seletor": "a.botao.voz-acao.v-destaque",
@@ -2348,7 +2736,32 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "1.43",
+          "n": 195,
+          "paginas": 39,
+          "exemplos": [
+            {
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "span.whitespace-nowrap",
+              "texto": "95058-0313",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "address",
+              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -2356,8 +2769,8 @@
         },
         {
           "chave": "1.2",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -2463,7 +2876,7 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -2471,8 +2884,8 @@
         },
         {
           "chave": "-0.01em @30.16px",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -2578,7 +2991,7 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -2588,7 +3001,7 @@
       "raios": [
         {
           "chave": "9999px",
-          "n": 359,
+          "n": 343,
           "paginas": 39,
           "exemplos": [
             {
@@ -2597,20 +3010,20 @@
               "regiao": "rodape"
             },
             {
-              "seletor": "a.topo",
-              "pagina": "/index.html",
-              "regiao": "outro"
-            },
-            {
               "seletor": "a.social",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
+            },
+            {
+              "seletor": "a.topo",
+              "pagina": "/diretoria.html",
+              "regiao": "outro"
             }
           ]
         },
         {
           "chave": "12px",
-          "n": 252,
+          "n": 261,
           "paginas": 33,
           "exemplos": [
             {
@@ -2654,43 +3067,18 @@
         }
       ],
       "linha": {
-        "paragrafos": 332,
+        "paragrafos": 338,
         "min": 23,
         "mediana": 68,
-        "max": 74,
+        "max": 75,
         "acimaDe75": 0
       }
     },
     "desktop": {
       "combinacoes": [
         {
-          "chave": "DM Sans 14px 400 lh2.29 ls0em normal",
-          "n": 628,
-          "paginas": 40,
-          "exemplos": [
-            {
-              "seletor": "a",
-              "texto": "Início",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "span.cookie-manage",
-              "texto": "·",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            }
-          ]
-        },
-        {
           "chave": "DM Sans 16px 400 lh1.6 ls0em normal",
-          "n": 563,
+          "n": 560,
           "paginas": 31,
           "exemplos": [
             {
@@ -2714,8 +3102,58 @@
           ]
         },
         {
+          "chave": "DM Sans 14px 400 lh2.29 ls0em normal",
+          "n": 551,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "a",
+              "texto": "Resorts Brasil",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "button.cookie-manage-btn",
+              "texto": "Preferências de cookies",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "li.credito",
+              "texto": "Desenvolvido por",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
+          "n": 379,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "p.copyright-texto",
+              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
+              "texto": "Presidente do Conselho",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
+            }
+          ]
+        },
+        {
           "chave": "DM Sans 16px 600 lh1.25 ls0em normal",
-          "n": 349,
+          "n": 376,
           "paginas": 41,
           "exemplos": [
             {
@@ -2739,38 +3177,13 @@
           ]
         },
         {
-          "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
-          "n": 297,
-          "paginas": 6,
-          "exemplos": [
-            {
-              "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
-              "texto": "Presidente do Conselho",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.text-sm.text-texto-sutil.text-center",
-              "texto": "Biênio 2026-2027",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.destaque",
-              "texto": "Prefácio",
-              "pagina": "/ebook.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
           "chave": "Poppins 20px 600 lh1.4 ls0em normal",
-          "n": 288,
+          "n": 285,
           "paginas": 33,
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -2807,7 +3220,32 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 14px 400 lh1.43 ls0em normal",
+          "n": 195,
+          "paginas": 39,
+          "exemplos": [
+            {
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "span.whitespace-nowrap",
+              "texto": "95058-0313",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "address",
+              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -2815,8 +3253,8 @@
         },
         {
           "chave": "DM Sans 16px 600 lh1.6 ls0em normal",
-          "n": 138,
-          "paginas": 12,
+          "n": 141,
+          "paginas": 15,
           "exemplos": [
             {
               "seletor": "p.font-semibold.mb-0",
@@ -2825,23 +3263,23 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "p.text-texto-inverso.font-semibold.mb-0",
-              "texto": "Roland de Bonadona",
-              "pagina": "/ebook.html",
+              "seletor": "p.font-semibold",
+              "texto": "Anagrama Comunicação e Eventos",
+              "pagina": "/fale-conosco.html",
               "regiao": "conteudo"
             },
             {
-              "seletor": "strong",
-              "texto": "Anonimização:",
-              "pagina": "/politica-de-privacidade.html",
+              "seletor": "p.text-texto-inverso.font-semibold.mb-0",
+              "texto": "Roland de Bonadona",
+              "pagina": "/ebook.html",
               "regiao": "conteudo"
             }
           ]
         },
         {
           "chave": "Poppins 25px 600 lh1.25 ls0em normal",
-          "n": 126,
-          "paginas": 18,
+          "n": 135,
+          "paginas": 21,
           "exemplos": [
             {
               "seletor": "h2.text-lg.text-texto-inverso",
@@ -2856,17 +3294,17 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "h2.text-lg.text-texto-inverso.text-center",
-              "texto": "O e-book é uma iniciativa:",
-              "pagina": "/ebook.html",
+              "seletor": "h3.text-lg",
+              "texto": "Associar meu resort",
+              "pagina": "/fale-conosco.html",
               "regiao": "conteudo"
             }
           ]
         },
         {
           "chave": "Poppins 34px 500 lh1.2 ls-0.01em normal",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -2890,8 +3328,8 @@
         },
         {
           "chave": "DM Sans 20px 400 lh1.4 ls0em normal",
-          "n": 49,
-          "paginas": 28,
+          "n": 52,
+          "paginas": 31,
           "exemplos": [
             {
               "seletor": "span.text-md.text-texto-sutil.max-w-abertura",
@@ -3069,7 +3507,7 @@
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -3114,8 +3552,8 @@
         },
         {
           "chave": "h2 Poppins 34px 500",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -3164,7 +3602,7 @@
         },
         {
           "chave": "h2 Poppins 20px 600",
-          "n": 30,
+          "n": 27,
           "paginas": 6,
           "exemplos": [
             {
@@ -3183,9 +3621,15 @@
         },
         {
           "chave": "h3 Poppins 25px 600",
-          "n": 18,
-          "paginas": 3,
+          "n": 27,
+          "paginas": 6,
           "exemplos": [
+            {
+              "seletor": "h3.text-lg",
+              "texto": "Associar meu resort",
+              "pagina": "/fale-conosco.html",
+              "regiao": "conteudo"
+            },
             {
               "seletor": "h3.text-lg.text-texto-inverso.text-center",
               "texto": "Contexto",
@@ -3217,7 +3661,7 @@
       "familias": [
         {
           "chave": "DM Sans",
-          "n": 2372,
+          "n": 2602,
           "paginas": 41,
           "exemplos": [
             {
@@ -3242,7 +3686,7 @@
         },
         {
           "chave": "Poppins",
-          "n": 563,
+          "n": 572,
           "paginas": 40,
           "exemplos": [
             {
@@ -3269,7 +3713,7 @@
       "pesos": [
         {
           "chave": "400",
-          "n": 1546,
+          "n": 1746,
           "paginas": 41,
           "exemplos": [
             {
@@ -3279,14 +3723,14 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "a",
-              "texto": "Início",
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
+              "seletor": "a",
+              "texto": "Resorts Brasil",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -3294,7 +3738,7 @@
         },
         {
           "chave": "600",
-          "n": 1155,
+          "n": 1191,
           "paginas": 41,
           "exemplos": [
             {
@@ -3319,7 +3763,7 @@
         },
         {
           "chave": "500",
-          "n": 234,
+          "n": 237,
           "paginas": 40,
           "exemplos": [
             {
@@ -3345,8 +3789,33 @@
       ],
       "tamanhos": [
         {
+          "chave": "14",
+          "n": 1140,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "a",
+              "texto": "Resorts Brasil",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
           "chave": "16",
-          "n": 1083,
+          "n": 1110,
           "paginas": 41,
           "exemplos": [
             {
@@ -3370,38 +3839,13 @@
           ]
         },
         {
-          "chave": "14",
-          "n": 940,
-          "paginas": 40,
-          "exemplos": [
-            {
-              "seletor": "a",
-              "texto": "Início",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "span.cookie-manage",
-              "texto": "·",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            }
-          ]
-        },
-        {
           "chave": "20",
           "n": 343,
           "paginas": 37,
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -3446,8 +3890,8 @@
         },
         {
           "chave": "25",
-          "n": 126,
-          "paginas": 18,
+          "n": 135,
+          "paginas": 21,
           "exemplos": [
             {
               "seletor": "h2.text-lg.text-texto-inverso",
@@ -3462,17 +3906,17 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "h2.text-lg.text-texto-inverso.text-center",
-              "texto": "O e-book é uma iniciativa:",
-              "pagina": "/ebook.html",
+              "seletor": "h3.text-lg",
+              "texto": "Associar meu resort",
+              "pagina": "/fale-conosco.html",
               "regiao": "conteudo"
             }
           ]
         },
         {
           "chave": "34",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -3586,24 +4030,24 @@
         },
         {
           "chave": "2.29",
-          "n": 628,
+          "n": 551,
           "paginas": 40,
           "exemplos": [
             {
               "seletor": "a",
-              "texto": "Início",
+              "texto": "Resorts Brasil",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil - Todos os direitos reserv",
+              "seletor": "button.cookie-manage-btn",
+              "texto": "Preferências de cookies",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "span.cookie-manage",
-              "texto": "·",
+              "seletor": "li.credito",
+              "texto": "Desenvolvido por",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -3611,7 +4055,7 @@
         },
         {
           "chave": "1.25",
-          "n": 475,
+          "n": 511,
           "paginas": 41,
           "exemplos": [
             {
@@ -3635,13 +4079,38 @@
           ]
         },
         {
+          "chave": "1.5",
+          "n": 379,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "p.text-sm.text-texto-paragrafo",
+              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "p.copyright-texto",
+              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
+              "texto": "Presidente do Conselho",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
+            }
+          ]
+        },
+        {
           "chave": "1.4",
           "n": 337,
           "paginas": 37,
           "exemplos": [
             {
               "seletor": "h3.text-md.text-center",
-              "texto": "Mantenedores:",
+              "texto": "Mantenedores",
               "pagina": "/index.html",
               "regiao": "conteudo"
             },
@@ -3655,31 +4124,6 @@
               "seletor": "p.text-md.text-center.max-w-abertura",
               "texto": "Trabalhamos em conjunto com os associados em pro",
               "pagina": "/resorts-brasil.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
-          "chave": "1.5",
-          "n": 297,
-          "paginas": 6,
-          "exemplos": [
-            {
-              "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
-              "texto": "Presidente do Conselho",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.text-sm.text-texto-sutil.text-center",
-              "texto": "Biênio 2026-2027",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            },
-            {
-              "seletor": "p.destaque",
-              "texto": "Prefácio",
-              "pagina": "/ebook.html",
               "regiao": "conteudo"
             }
           ]
@@ -3703,7 +4147,32 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
+          "chave": "1.43",
+          "n": 195,
+          "paginas": 39,
+          "exemplos": [
+            {
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "span.whitespace-nowrap",
+              "texto": "95058-0313",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "address",
+              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -3730,8 +4199,8 @@
         },
         {
           "chave": "1.2",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -3837,7 +4306,7 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -3845,8 +4314,8 @@
         },
         {
           "chave": "-0.01em @34px",
-          "n": 63,
-          "paginas": 30,
+          "n": 66,
+          "paginas": 33,
           "exemplos": [
             {
               "seletor": "h2.text-xl",
@@ -3952,7 +4421,7 @@
             },
             {
               "seletor": "h2.titulo-lista.rotulo",
-              "texto": "Navegação",
+              "texto": "Sobre nós",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -3962,7 +4431,7 @@
       "raios": [
         {
           "chave": "9999px",
-          "n": 364,
+          "n": 348,
           "paginas": 39,
           "exemplos": [
             {
@@ -3971,20 +4440,20 @@
               "regiao": "rodape"
             },
             {
-              "seletor": "a.topo",
-              "pagina": "/index.html",
-              "regiao": "outro"
-            },
-            {
               "seletor": "a.social",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
+            },
+            {
+              "seletor": "a.topo",
+              "pagina": "/diretoria.html",
+              "regiao": "outro"
             }
           ]
         },
         {
           "chave": "12px",
-          "n": 252,
+          "n": 261,
           "paginas": 33,
           "exemplos": [
             {
@@ -4028,7 +4497,7 @@
         }
       ],
       "linha": {
-        "paragrafos": 332,
+        "paragrafos": 338,
         "min": 35,
         "mediana": 68,
         "max": 74,
