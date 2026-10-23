@@ -81,13 +81,13 @@
     "total": 191213
   },
   "/fale-conosco.html|mobile": {
-    "html": 44592,
-    "css": 41624,
+    "html": 57223,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 113436
+    "total": 130742
   },
   "/ebook.html|mobile": {
     "html": 133680,
@@ -108,22 +108,22 @@
     "total": 142666
   },
   "/termos-de-uso.html|mobile": {
-    "html": 44123,
-    "css": 41624,
+    "html": 45345,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 112967
+    "total": 118864
   },
   "/404.html|mobile": {
-    "html": 29686,
-    "css": 41624,
+    "html": 30174,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 98530
+    "total": 103693
   },
   "/en-us/home.html|mobile": {
     "html": 141624,
@@ -207,13 +207,13 @@
     "total": 191165
   },
   "/en-us/contact-us.html|mobile": {
-    "html": 44516,
-    "css": 41624,
+    "html": 57168,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 113360
+    "total": 130687
   },
   "/en-us/ebook.html|mobile": {
     "html": 133680,
@@ -234,13 +234,13 @@
     "total": 140095
   },
   "/en-us/terms-of-use.html|mobile": {
-    "html": 43569,
-    "css": 41624,
+    "html": 44784,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 112413
+    "total": 118303
   },
   "/es-es/inicio.html|mobile": {
     "html": 141837,
@@ -324,13 +324,13 @@
     "total": 191488
   },
   "/es-es/contactenos.html|mobile": {
-    "html": 44846,
-    "css": 41624,
+    "html": 57501,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 113690
+    "total": 131020
   },
   "/es-es/ebook.html|mobile": {
     "html": 133878,
@@ -351,22 +351,22 @@
     "total": 143163
   },
   "/es-es/terminos-de-uso.html|mobile": {
-    "html": 44418,
-    "css": 41624,
+    "html": 45636,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 113262
+    "total": 119155
   },
   "/design.html|mobile": {
-    "html": 236291,
-    "css": 50735,
+    "html": 251724,
+    "css": 51291,
     "js": 0,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 292885
+    "total": 308874
   },
   "/index.html|desktop": {
     "html": 145499,
@@ -450,13 +450,13 @@
     "total": 197091
   },
   "/fale-conosco.html|desktop": {
-    "html": 44592,
-    "css": 41624,
+    "html": 57223,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 113436
+    "total": 130742
   },
   "/ebook.html|desktop": {
     "html": 133680,
@@ -477,22 +477,22 @@
     "total": 142666
   },
   "/termos-de-uso.html|desktop": {
-    "html": 44123,
-    "css": 41624,
+    "html": 45345,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 112967
+    "total": 118864
   },
   "/404.html|desktop": {
-    "html": 29686,
-    "css": 41624,
+    "html": 30174,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 98530
+    "total": 103693
   },
   "/en-us/home.html|desktop": {
     "html": 145532,
@@ -576,13 +576,13 @@
     "total": 197043
   },
   "/en-us/contact-us.html|desktop": {
-    "html": 44516,
-    "css": 41624,
+    "html": 57168,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 113360
+    "total": 130687
   },
   "/en-us/ebook.html|desktop": {
     "html": 133680,
@@ -603,13 +603,13 @@
     "total": 140095
   },
   "/en-us/terms-of-use.html|desktop": {
-    "html": 43569,
-    "css": 41624,
+    "html": 44784,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 112413
+    "total": 118303
   },
   "/es-es/inicio.html|desktop": {
     "html": 145745,
@@ -693,13 +693,13 @@
     "total": 197366
   },
   "/es-es/contactenos.html|desktop": {
-    "html": 44846,
-    "css": 41624,
+    "html": 57501,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 113690
+    "total": 131020
   },
   "/es-es/ebook.html|desktop": {
     "html": 133878,
@@ -720,21 +720,21 @@
     "total": 143163
   },
   "/es-es/terminos-de-uso.html|desktop": {
-    "html": 44418,
-    "css": 41624,
+    "html": 45636,
+    "css": 46299,
     "js": 21361,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 113262
+    "total": 119155
   },
   "/design.html|desktop": {
-    "html": 236291,
-    "css": 50735,
+    "html": 251724,
+    "css": 51291,
     "js": 0,
     "imagem": 5859,
     "fonte": 0,
     "outro": 0,
-    "total": 292885
+    "total": 308874
   }
 }

@@ -4030,3 +4030,163 @@ quando o container é estreito, os 156px que o tema media no tablet:
 Os 89, 122 e 173px do desktop continuam desiguais pelo mesmo motivo — a
 contagem de colunas por estado —, e não foram mexidos: é a página de outra
 decisão, e não a desta.
+
+# Fale conosco por assunto, e o rodapé reorganizado (outubro de 2026)
+
+A página de contato nos três idiomas e o rodapé das 41 páginas. Os pixels que
+mudaram estão em [deltas-visuais.md](deltas-visuais.md), "Fale conosco e
+rodapé".
+
+## O que estava errado
+
+**A página de contato era o destino de todos os funis e não reconhecia nenhum.**
+O "Associe-se" de `/associe-se` caía nela, e também os quatro botões de Parceiro
+e Mantenedor de `/apoie`. Quem chegava querendo associar o resort encontrava
+"Como você prefere falar com a gente?" e quatro canais iguais numa caixa cinza:
+nenhuma menção ao assunto que o trouxe. Ali também o valor útil (o e-mail, o
+telefone) vinha pequeno depois de uma frase, a imprensa estava misturada com o
+público geral e o endereço era uma linha corrida sem CEP. O `decisoes.md` já a
+chamava de página oca, com 1.184px de altura.
+
+**Três defeitos de texto**, achados lendo os três idiomas lado a lado:
+
+| defeito | onde |
+|---|---|
+| o WhatsApp era "nossa equipe" em PT e ES e "our virtual assistant" em EN | `contactWhatsappText` |
+| só esta página tratava o leitor por *tú* em espanhol ("prefieres", "Tienes", "Contacta"); o resto do site espanhol usa *usted* (Conozca, Asóciese, a própria rota `contactenos`) | três chaves do `ui.ts` |
+| o nome da agência de imprensa estava gravado com o ponto final dentro do dado | `src/data/contato.ts` |
+
+**O rodapé repetia link e esquecia página.** "Sobre nós" e "Resorts Brasil"
+levavam à mesma URL, lado a lado. Associe-se e o e-book, que o cabeçalho oferece
+em toda página, não estavam lá. Não havia um único dado de contato, embora
+`src/data/contato.ts` exista para isso. E a faixa dizia "…Todos os direitos
+reservados. by Cloudbe", com o crédito da agência em inglês nos três idiomas,
+depois de um ponto final.
+
+## As decisões do responsável (22/10/2026)
+
+- **A página se organiza por assunto**, e não só por canal: associar um resort,
+  ser parceiro ou mantenedor, imprensa. Recusado: só o polimento visual dos
+  quatro canais.
+- **Quem responde no WhatsApp é a equipe.** O inglês se corrigiu para bater com
+  PT e ES.
+- **O crédito da agência fica, traduzido**: "Desenvolvido por", "Developed by",
+  "Desarrollado por".
+- **O rodapé se reorganiza**: as colunas espelham o menu, entra a coluna de
+  contato, e privacidade e termos descem para a faixa de baixo.
+
+**O que não entrou, e por quê:** horário de atendimento e prazo de resposta,
+porque são promessas que ninguém confirmou. Também não entrou um mapa embutido:
+seria um `<iframe>` de terceiro, que este site só aceita com fachada de
+clique-para-carregar, e o link "Ver no mapa" já leva ao mesmo lugar.
+
+## A página
+
+O corpo vive uma vez no
+[`<PaginaContato>`](../src/components/PaginaContato.astro), no arranjo do
+`<PaginaEbook>`. Ele fica em `src/components/` e não em `padroes/`, pelo
+critério do `<ConviteAssociese>`: é montagem de conteúdo. As três páginas
+passaram a ter quatro linhas cada.
+
+- **Três cartões de canal** (e-mail, WhatsApp, endereço), cada um um `<Cartao>`
+  com a `<CaixaIcone>` dentro. A imprensa saiu dos canais e virou assunto: é
+  outro público.
+- **Um link por cartão, e o link é o valor.** O e-mail e o telefone são o
+  próprio `<LinkAcao>`. No endereço, o texto fica num `<address>` com CEP, e o
+  link é "Ver no mapa". Um "Enviar e-mail" ao lado do endereço de e-mail faria o
+  teclado passar duas vezes pelo mesmo destino, que foi o defeito da capa da
+  `<CartaoPublicacao>`.
+- **"Qual é o assunto?"**, numa `<ChamadaAcao>` clara, em linhas com fio, e não
+  numa segunda grade de cartões. Três cartões de canal logo acima já dizem
+  "escolha um", e repetir ícone, título e frase seria o A21 de novo. Cada
+  assunto tem âncora (`#associar`, `#parceria`, `#imprensa`), e os botões de
+  `/associe-se` e `/apoie` caem nela.
+- **O e-mail e o WhatsApp de cada assunto chegam preenchidos**:
+  `mailto:…?subject=` e `wa.me/…?text=`, com o assunto e a mensagem no `ui.ts`.
+  O assunto de parceria usa os termos de `/apoie` (Parceiro/Mantenedor,
+  Partner/Maintainer, Colaborador/Mantenedor).
+- **O CEP veio do próprio link de mapa do site**, que resolve para "R. Prof.
+  Carlos de Carvalho, 28 … 04531-080". O mesmo destino confirma o "28" contra o
+  "nº 280" dos termos de uso, que continua registrado para quem responde pelo
+  documento. As linhas do `<address>` são montadas a partir dos campos, e o
+  JSON-LD ganhou `postalCode`.
+- **Não há convite de associação no fim**, embora o `<ConviteAssociese>` feche
+  outras quatro páginas: ele leva a `/associe-se`, cujo botão traz de volta
+  para cá.
+
+## O rodapé
+
+- As três listas usam **os grupos e os rótulos do menu** (`navAbout`,
+  `navAssociates`, `navInformation`). Um nome próprio para o mesmo grupo foi o
+  que deixou "Sobre nós" e "Resorts Brasil" lado a lado. Saem `footerNavigation`,
+  `footerAbout`, `footerInstitutional`, `footerInformation` e `footerSocial`, e
+  o "Início" sai também: o logotipo já leva à home.
+- **A coluna de contato lê `src/data/contato.ts`**, a mesma fonte da página e do
+  JSON-LD.
+- **A marca ganha a frase da associação**, e as redes saem da coluna própria
+  para debaixo dela.
+- **Privacidade e termos descem para a faixa de baixo**, onde se procura
+  documento jurídico, e por isso chegam também à 404, que só tem a faixa.
+
+## Os valores decididos
+
+| | antes | depois | motivo |
+|---|---|---|---|
+| canais, entre 30 e 48rem | — | o terceiro cartão ocupa a linha inteira | a `<Grade colunas={3}>` tem duas colunas nessa faixa, e o endereço ficava sozinho na metade esquerda, com um buraco ao lado |
+| e-mail no cartão | — | `<wbr>` depois da arroba | entre 840 e 1040px de janela o cartão fica mais estreito que o endereço inteiro. Medido de 780 a 1120px, de 20 em 20: nenhum transbordo, e a quebra cai onde um revisor a poria |
+| ação do cartão | — | na base, por `margin-top: auto` num elemento da página | os três links caem na mesma linha. A utilitária `mt-auto` não serve: perde para o `.recuo-md > *` do `<Cartao>`, que está fora de camada |
+| colunas dos assuntos | `auto` em cada linha | `subgrid` da lista, a partir de 40rem | com uma coluna por linha, os links da imprensa começavam 15px à esquerda dos de cima, porque o e-mail é mais largo que "Enviar e-mail" |
+| rodapé | seis colunas, a marca em duas | a marca e, ao lado a partir de 75rem, as listas numa `<Grade colunas={4}>` | com a coluna de contato, a grade de seis valia a partir de 826px, com colunas de uns 100px: o e-mail quebrava em três pedaços e o telefone em dois. 75rem é a faixa em que o menu vira barra; a proporção larga continua um terço para a marca |
+| coluna de contato | 32px por linha | 20px de entrelinha e 6 de recuo | o item de uma linha mede os mesmos 32px das outras colunas, e o que quebra continua sendo um item só: com 32px, "contato@" e "resortsbrasil.com.br" pareciam dois itens |
+| telefone | — | quebra entre "+55 11" e o resto, nunca no hífen | a 900px ele saía "95058-" numa linha e "0313" na outra. A primeira versão protegia o número inteiro, e a geometria reprovou: no rodapé de demonstração do catálogo, 123px num item de 110 |
+| faixa de baixo | uma linha centrada | duas pontas a partir de 86rem | **medido**: 1.239px de conteúdo em espanhol com o botão de cookies visível (1.230 em PT, 1.031 em EN), mais 48px e os 40 de recuo de cada lado. A primeira versão usava 62rem, e a 1200px as duas pontas quebravam |
+| fim da faixa | — | 48px reservados | o voltar-ao-topo flutua a 24px da borda e 26 do pé, com 44px de lado, e rolando até o fim cobria o "Cloudbe". Com o texto centrado, a ponta nunca chegava ali |
+| linha de autoria | 32px de entrelinha | 1,5 | os 32px medidos eram a altura de uma linha; no celular ela quebra em duas |
+| "Desenvolvido por" | navy | cinza de parágrafo, com "Cloudbe" sublinhado | no navy ele pesava mais que os links ao lado. Sublinhado porque é o único link da faixa que divide a linha com texto |
+| frase da marca | — | `cor="paragrafo"`, 26rem | o cinza sutil que o `papel="apoio"` traz dá 4,44:1 sobre a névoa do rodapé; o de parágrafo, 6,19:1 |
+
+Medido depois, no computado (`scripts/medir-sistema.mjs` nas três páginas de
+contato, `/historia`, `/ebook` e a 404): zero controles abaixo de 44px no
+celular, no máximo 75 caracteres por linha, só os três raios do sistema, DM Sans
+e Poppins em 400, 500 e 600.
+
+## O que só a medição e o olho pegaram
+
+**Seis problemas apareceram na primeira versão, e só um reprovou portão:**
+
+- a grade de seis colunas a 900px, o telefone partido no hífen e a faixa
+  quebrada a 1200px: tudo isso dentro das caixas, então a geometria não viu;
+- o voltar-ao-topo sobre o "Cloudbe": só aparece rolando até o fim, que é onde
+  nenhuma captura de carregamento olha;
+- os links da imprensa desalinhados dos de cima, por 15px;
+- e o único que um portão pegou: o número protegido inteiro, a 123px num item de
+  110 no catálogo. Ali a geometria acertou onde o olho teria errado, porque nas
+  páginas a coluna tem 165px.
+
+**E a variação invertida custou bytes que o orçamento viu**, pela segunda vez
+neste projeto. A primeira versão escrevia cada cor do rodapé duas vezes, a
+segunda com `.invertido` na frente, e o Astro carimba o atributo de escopo em
+cada parte de cada seletor: o CSS do rodapé foi de 2.881 para 4.506 bytes, numa
+folha que as 41 páginas baixam. Com as cores em propriedades personalizadas, que
+o `.invertido` troca de valor, ele caiu para 3.274, e a folha comum cresce 494
+bytes sobre a build anterior em vez de 1.652. É a lição do menu escuro do Soft
+UI, que o CLAUDE.md já registrava como convenção, e que mesmo assim se repetiu.
+
+## O orçamento: 16 medidas regravadas, e não as 82
+
+As três páginas de contato cresceram 15%, de propósito: a página dobrou de
+conteúdo, e o CSS dela vai embutido no HTML. As demais crescem pelo rodapé, uns
+1,1 KB de HTML e 0,5 KB de CSS em cada página.
+
+**A 404 e os três termos de uso passaram de 5% por pouco (5,2%), e o motivo é
+anterior a esta etapa.** A linha de base delas ainda é a de antes do Soft UI,
+que deixou o crescimento da folha comum fora da base de propósito. Antes desta
+mudança, as quatro já estavam a 3,8–4,3%. O catálogo foi a 5,5% com o rodapé
+novo nas duas demos.
+
+Entraram na base as 16 medidas que estouraram (contato ×3, 404, termos ×3 e o
+catálogo, cada uma em celular e desktop), medidas duas vezes com o mesmo número
+nas duas rodadas. As outras 66 ficaram como estavam: a catraca não alarga o que
+cresceu dentro da folga. A home no celular continua acusando "emagreceu" (461 →
+237 KB) e ficou de fora pelo motivo registrado na parede de parceiros: ela
+oscila conforme os logotipos do carrossel chegam antes do `networkidle`.

@@ -69,6 +69,17 @@ Quem estava em `/historia` e trocava para inglês caía em `/en-us/home` e perdi
 a página. Hoje há duas verificações do **destino**: uma numa página com
 tradução, outra na 404, que não tem e precisa cair na home.
 
+**Uma âncora que não casa nada não falha.** Desde outubro de 2026 o "Associe-se"
+de `/associe-se` e os botões de Parceiro e Mantenedor de `/apoie` levam a
+`#associar` e `#parceria` na página de contato. Se o `id` sumir, o navegador abre
+a página no topo, sem erro nenhum. A suíte exige que cada página de origem
+**tenha** ao menos um link com âncora, senão a checagem passaria sem olhar nada,
+e que cada âncora encontre o seu `id`, nos três idiomas. Uma segunda checagem
+clica no botão pela navegação sem recarga e exige o assunto **na tela**. No mesmo
+grupo: o rodapé não repete `href` entre as colunas e contém Associe-se, e-book e
+contato, e a faixa de baixo da 404 leva os documentos jurídicos. As quatro foram
+rodadas contra a build anterior e reprovaram, cada uma apontando o defeito.
+
 **Um teste que passava sem testar nada.** A verificação do carrossel comparava o
 `innerHTML` do primeiro filho logo depois do `goto` e de novo 2s depois. Só que o
 `site.js` embrulha cada item num `.polo-carousel-item` ao inicializar, então a

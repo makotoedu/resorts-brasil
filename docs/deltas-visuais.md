@@ -927,6 +927,39 @@ o embute nas páginas que a usam. O catálogo subiu de 286 para 299 KB com as du
 demos da `<ParedeLogos>`, 4,5% da folga de 5%, e também não foi regravado: a
 catraca aperta o que emagrece, e não alarga o que cresceu.
 
+## Fale conosco e rodapé — por assunto, e as colunas do menu
+
+Outubro de 2026. O porquê de cada valor está em [decisoes.md](decisoes.md), "Fale
+conosco por assunto, e o rodapé reorganizado". As quatro decisões (por assunto, a
+equipe no WhatsApp, o crédito traduzido, o rodapé reorganizado) são do
+responsável, em 22/10/2026.
+
+| o quê | páginas | tipo | motivo |
+|---|---|---|---|
+| assuntos | contato × 3 | **redesenho** | "Qual é o assunto?": associar um resort, ser parceiro ou mantenedor, imprensa, cada um com âncora e com e-mail e WhatsApp preenchidos. A página é o destino do "Associe-se" e dos botões de `/apoie`, e não mencionava nenhum dos dois |
+| canais | contato × 3 | **redesenho** | três cartões (e-mail, WhatsApp, endereço) no lugar de quatro caixas numa caixa cinza; a imprensa vira assunto. O valor é o link, na voz de ação, e fica na base do cartão |
+| abertura | contato × 3 | **refino** | uma frase sob o título, que diz para que serve a página |
+| endereço | contato × 3 e rodapé × 41 | **correção** | em três linhas e com o CEP, que não aparecia em lugar nenhum do site; o JSON-LD ganha `postalCode` |
+| WhatsApp em inglês | `/en-us/contact-us` | **correção** | "Needing help? Contact our virtual assistant." vira "Chat with our team on WhatsApp.", como em PT e ES |
+| tratamento em espanhol | `/es-es/contactenos` | **correção** | *tú* vira *usted*, como no resto do site espanhol |
+| agência de imprensa | contato × 3 | **correção** | sem o ponto final que estava gravado dentro do dado |
+| âncoras | `/associe-se` × 3, `/apoie` × 3 | **correção** | os botões levam a `#associar` e `#parceria`, e não ao topo da página de contato. Nenhum pixel muda nessas páginas |
+| colunas | rodapé × 41 | **correção** | "Sobre nós" e "Resorts Brasil" levavam à mesma página; Associe-se e o e-book faltavam. As listas passam a espelhar os grupos do menu |
+| coluna de contato | rodapé × 41 | **redesenho** | e-mail, WhatsApp, endereço e "Fale conosco", lidos de `src/data/contato.ts` |
+| marca | rodapé × 41 | **redesenho** | a frase da associação sob o logotipo, e as redes debaixo dela, sem coluna própria |
+| disposição | rodapé × 41 | **redesenho** | abaixo de 1200px a marca vai para cima das listas, e as quatro listas descem de quatro para duas colunas sozinhas. Eram seis colunas a partir de 826px |
+| faixa de baixo | rodapé × 41 | **redesenho** | privacidade e termos descem das listas para a faixa; a partir de 1376px, autoria à esquerda e documentos à direita, e abaixo disso empilhada e centrada como sempre foi |
+| crédito | rodapé × 41 | **correção** | "…reservados. by Cloudbe", com o "by" em inglês nos três idiomas, vira "Desenvolvido por Cloudbe", no cinza dos links e com o nome sublinhado |
+| 404 | `/404` | **refino** | a faixa de baixo passa a levar privacidade e termos |
+
+**O orçamento regravou 16 medidas, e não as 82.** As páginas de contato foram de
+111 para 128 KB, de propósito. A 404 e os três termos de uso passaram de 5% por
+pouco (5,2%), porque a base delas ainda era a de antes do Soft UI e já estavam a
+3,8–4,3%. O catálogo foi a 5,5% com o rodapé novo nas duas demos. As 16 medidas
+deram o mesmo número em duas rodadas. As outras 66 continuam com a base de antes,
+e a home no celular, que acusa "emagreceu", ficou de fora pela oscilação já
+registrada acima.
+
 ## Como classificar um delta novo
 
 Ao rodar o diff numa etapa, cada página acima do limiar entra aqui com captura,

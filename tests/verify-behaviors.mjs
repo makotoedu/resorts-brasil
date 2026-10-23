@@ -1083,6 +1083,128 @@ for (const { nome, pagina } of [
   await page.close();
 }
 
+/* 12. Contato por assunto, e o rodape --------------------------------- */
+/*
+ * A pagina de contato tem ancoras por assunto, e os botoes de /associe-se e de
+ * /apoie caem nelas. UMA ANCORA QUE NAO CASA NADA NAO FALHA: o navegador abre a
+ * pagina no topo, sem erro nenhum, e quem clicou em "Associe-se" chega a quatro
+ * canais genericos -- que e exatamente o defeito que as ancoras corrigiram.
+ * Por isso a checagem exige que cada pagina de origem TENHA ao menos um link
+ * com ancora (senao ela passaria sem olhar nada) e que cada ancora encontre o
+ * seu `id` no destino.
+ */
+const CONTATO = {
+  'pt-br': { contato: '/fale-conosco', associe: '/associe-se', apoie: '/apoie', ebook: '/ebook', historia: '/historia' },
+  'en-us': { contato: '/en-us/contact-us', associe: '/en-us/join-us', apoie: '/en-us/support-tourism', ebook: '/en-us/ebook', historia: '/en-us/history' },
+  'es-es': { contato: '/es-es/contactenos', associe: '/es-es/asociese', apoie: '/es-es/apoye', ebook: '/es-es/ebook', historia: '/es-es/historia' },
+};
+
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const problemas = [];
+  let conferidas = 0;
+  for (const [lang, r] of Object.entries(CONTATO)) {
+    for (const origem of [r.associe, r.apoie]) {
+      await page.goto(BASE + origem);
+      const hrefs = await page.evaluate((contato) =>
+        [...new Set([...document.querySelectorAll('main a[href]')]
+          .map((a) => new URL(a.href))
+          .filter((u) => u.pathname === contato && u.hash)
+          .map((u) => u.pathname + u.hash))], r.contato);
+      if (!hrefs.length) problemas.push(`${origem}: nenhum link com ancora para ${r.contato}`);
+      for (const href of hrefs) {
+        await page.goto(BASE + href);
+        const existe = await page.evaluate((id) => !!document.getElementById(id), href.split('#')[1]);
+        conferidas += 1;
+        if (!existe) problemas.push(`${origem} -> ${href}: o id nao existe [${lang}]`);
+      }
+    }
+  }
+  check('[contato] toda ancora de /associe-se e /apoie encontra o seu id',
+    problemas.length === 0, problemas.join('; ') || `${conferidas} ancora(s) conferida(s) nos tres idiomas`);
+
+  /* E pela navegacao sem recarga, que e como o visitante chega: o assunto tem
+     de estar na tela, e nao so no documento. */
+  await page.goto(BASE + '/associe-se');
+  await page.waitForTimeout(600);
+  /* Sem o link, a checagem reprova; um `page.click` cego estouraria o tempo e
+     derrubaria a suite inteira, que foi o que a build anterior fez com ele. */
+  const botao = await page.$('main a[href$="#associar"]');
+  if (botao) {
+    await botao.click();
+    await page.waitForTimeout(900);
+  }
+  const chegada = await page.evaluate(() => {
+    const alvo = document.getElementById('associar');
+    const r = alvo?.getBoundingClientRect();
+    return { url: location.pathname + location.hash, naTela: !!r && r.top >= -1 && r.top < innerHeight };
+  });
+  check('[contato] "Associe-se" leva ao assunto, com ele na tela',
+    chegada.url === '/fale-conosco#associar' && chegada.naTela,
+    `url=${chegada.url}, na tela=${chegada.naTela}`);
+
+  /* Assunto do e-mail e mensagem do WhatsApp preenchidos, nos dois assuntos
+     que os tem e nos tres idiomas. */
+  const vazios = [];
+  for (const [lang, r] of Object.entries(CONTATO)) {
+    await page.goto(BASE + r.contato);
+    const links = await page.evaluate(() =>
+      ['associar', 'parceria'].map((id) => ({
+        id,
+        mail: document.querySelector(`#${id} a[href^="mailto:"]`)?.href ?? '',
+        wa: document.querySelector(`#${id} a[href*="wa.me"]`)?.href ?? '',
+      })));
+    for (const l of links) {
+      const assunto = new URLSearchParams(l.mail.split('?')[1] ?? '').get('subject');
+      const texto = l.wa ? new URL(l.wa).searchParams.get('text') : null;
+      if (!assunto) vazios.push(`${lang} #${l.id}: e-mail sem assunto`);
+      if (!texto) vazios.push(`${lang} #${l.id}: WhatsApp sem mensagem`);
+    }
+  }
+  check('[contato] e-mail e WhatsApp de cada assunto chegam preenchidos',
+    vazios.length === 0, vazios.join('; ') || '2 assuntos x 2 canais x 3 idiomas');
+
+  await page.close();
+}
+
+{
+  /*
+   * O RODAPE ESPELHA O MENU, e as duas falhas que a reorganizacao corrigiu nao
+   * quebram nada: "Sobre nos" e "Resorts Brasil" apontavam para a mesma pagina
+   * lado a lado, e Associe-se e o e-book simplesmente nao estavam la. Nos tres
+   * idiomas e nas duas variacoes de cromo; a 404 (`minimo`) conferida a parte,
+   * porque so a faixa de baixo dela leva os documentos juridicos.
+   */
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const problemas = [];
+  const paginas = Object.entries(CONTATO).flatMap(([lang, r]) => [[lang, r.historia], [lang, r.ebook]]);
+  for (const [lang, caminho] of paginas) {
+    await page.goto(BASE + caminho);
+    const r = await page.evaluate(() => ({
+      listas: [...document.querySelectorAll('#footer .lista a[href]')].map((a) => new URL(a.href).pathname),
+      faixa: document.querySelectorAll('#footer .legal a[href]').length,
+    }));
+    const repetidos = r.listas.filter((h, i) => r.listas.indexOf(h) !== i);
+    if (repetidos.length) problemas.push(`${caminho}: repete ${[...new Set(repetidos)].join(', ')}`);
+    for (const chave of ['associe', 'ebook', 'contato']) {
+      if (!r.listas.includes(CONTATO[lang][chave])) problemas.push(`${caminho}: falta ${CONTATO[lang][chave]}`);
+    }
+    if (r.faixa < 3) problemas.push(`${caminho}: faixa com ${r.faixa} link(s), esperados 3`);
+  }
+  await page.goto(BASE + '/404.html');
+  const faixa404 = await page.evaluate(() => ({
+    listas: document.querySelectorAll('#footer .lista').length,
+    faixa: document.querySelectorAll('#footer .legal a[href]').length,
+  }));
+  if (faixa404.listas !== 0 || faixa404.faixa < 3) {
+    problemas.push(`/404: ${faixa404.listas} lista(s) e ${faixa404.faixa} link(s) na faixa`);
+  }
+  check('[rodape] sem link repetido, com Associe-se, e-book e contato, e a faixa juridica na 404',
+    problemas.length === 0, problemas.join('; ') || `${paginas.length} paginas e a 404`);
+
+  await page.close();
+}
+
 await browser.close();
 
 const failed = results.filter((r) => !r.pass);
