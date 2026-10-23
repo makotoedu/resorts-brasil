@@ -368,15 +368,23 @@ export const ui = {
     navSupport: 'Apoie o turismo',
     navContact: 'Fale conosco',
     langOther: { 'en-us': 'Inglês (EN)', 'es-es': 'Espanhol (ES)' },
-    footerNavigation: 'Navegação',
-    footerAbout: 'Sobre nós',
+    /*
+     * As colunas do rodape usam os rotulos do menu (`navAbout`,
+     * `navAssociates`, `navInformation`): o rodape espelha o cabecalho, e um
+     * nome proprio para o mesmo grupo foi o que deixou "Sobre nos" e "Resorts
+     * Brasil" lado a lado apontando para a mesma pagina.
+     */
+    footerTagline:
+      'Desde 2001, a Associação Brasileira de Resorts representa os principais resorts do país e trabalha para transformar o segmento e o turismo nacional.',
+    footerContact: 'Contato',
+    footerEbook: 'E-book',
     footerPrivacy: 'Política de privacidade',
     footerTerms: 'Termos de uso',
-    footerInstitutional: 'Institucional',
-    footerInformation: 'Informação',
     footerStatistics: 'Estatísticas e Estudos',
-    footerSocial: 'Redes Sociais',
-    copyright: 'Resorts Brasil - Todos os direitos reservados. by',
+    /* Era "Resorts Brasil - Todos os direitos reservados. by", com o credito
+       da agencia em ingles nos tres idiomas. O credito agora e `footerCredit`. */
+    copyright: 'Resorts Brasil · Associação Brasileira de Resorts. Todos os direitos reservados.',
+    footerCredit: 'Desenvolvido por',
     regioesAssociados: { sudeste: 'Sudeste', sul: 'Sul', norte: 'Norte', nordeste: 'Nordeste', 'centro-oeste': 'Centro-Oeste' },
     cookieRegion: 'Aviso de cookies',
     cookieText:
@@ -756,15 +764,15 @@ export const ui = {
     navSupport: 'Support Tourism',
     navContact: 'Contact us',
     langOther: { 'pt-br': 'Portuguese (BR)', 'es-es': 'Spanish (ES)' },
-    footerNavigation: 'Navigation',
-    footerAbout: 'About us',
+    footerTagline:
+      "Since 2001, the Brazilian Association of Resorts has represented the country's leading resorts, working to transform the segment and Brazilian tourism.",
+    footerContact: 'Contact',
+    footerEbook: 'E-book',
     footerPrivacy: 'Privacy policy',
     footerTerms: 'Terms of use',
-    footerInstitutional: 'Institutional',
-    footerInformation: 'Information',
     footerStatistics: 'Statistics and Studies',
-    footerSocial: 'Social Media',
-    copyright: 'Resorts Brasil - All rights reserved. by',
+    copyright: 'Resorts Brasil · Brazilian Association of Resorts. All rights reserved.',
+    footerCredit: 'Developed by',
     regioesAssociados: { sudeste: 'Southeast', sul: 'South', norte: 'North', nordeste: 'Northeast', 'centro-oeste': 'Midwest' },
     cookieRegion: 'Cookie notice',
     cookieText:
@@ -1044,15 +1052,15 @@ export const ui = {
     navSupport: 'Apoye al turismo',
     navContact: 'Contáctenos',
     langOther: { 'pt-br': 'Portugués (BR)', 'en-us': 'Inglés (EN)' },
-    footerNavigation: 'Navegación',
-    footerAbout: 'Sobre nosotros',
+    footerTagline:
+      'Desde 2001, la Asociación Brasileña de Resorts representa a los principales resorts del país y trabaja para transformar el segmento y el turismo nacional.',
+    footerContact: 'Contacto',
+    footerEbook: 'E-book',
     footerPrivacy: 'Política de privacidad',
     footerTerms: 'Términos de uso',
-    footerInstitutional: 'Institucional',
-    footerInformation: 'Información',
     footerStatistics: 'Estadísticas y estudios',
-    footerSocial: 'Redes sociales',
-    copyright: 'Resorts Brasil - Todos los derechos reservados. by',
+    copyright: 'Resorts Brasil · Asociación Brasileña de Resorts. Todos los derechos reservados.',
+    footerCredit: 'Desarrollado por',
     regioesAssociados: { sudeste: 'Sureste', sul: 'Sur', norte: 'Norte', nordeste: 'Noreste', 'centro-oeste': 'Centro-Oeste' },
     cookieRegion: 'Aviso de cookies',
     cookieText:

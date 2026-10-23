@@ -1619,9 +1619,16 @@ const faixas = [
       <section>
         <h3>Rodapé</h3>
         <p class="legenda">
-          Logotipo, três listas de navegação, redes sociais e a faixa de copyright. As listas saem do
-          mesmo mapa de rotas que o cabeçalho usa, então um slug traduzido não pode divergir entre os
-          dois.
+          A marca com a frase da associação e as redes, três listas nos grupos do menu, a coluna de
+          contato e a faixa de baixo. As listas saem do mesmo mapa de rotas que o cabeçalho usa, então
+          um slug traduzido não pode divergir entre os dois; o contato sai de{' '}
+          <code>src/data/contato.ts</code>, a mesma fonte da página de contato e do JSON-LD.
+        </p>
+        <p class="legenda">
+          <strong>Reorganizado em 22/10/2026.</strong> As listas vinham do tema e tinham divergido do
+          menu: «Sobre nós» e «Resorts Brasil» levavam à mesma página, lado a lado, e Associe-se e o
+          e-book não apareciam. Privacidade e termos desceram para a faixa de baixo, e o crédito da
+          agência deixou de ser um «by» em inglês nos três idiomas.
         </p>
         <div class="demo demo-sangrada">
           <Rodape lang="pt-br" />
@@ -1637,7 +1644,8 @@ const faixas = [
           aparece aqui.
         </p>
         <p class="legenda">
-          <code>minimo</code> deixa só a faixa de copyright — é o rodapé que a 404 sempre teve:
+          <code>minimo</code> deixa só a faixa de baixo — é o rodapé que a 404 sempre teve, e desde a
+          reorganização ele leva também privacidade e termos:
         </p>
         <div class="demo demo-sangrada">
           <Rodape lang="pt-br" minimo />

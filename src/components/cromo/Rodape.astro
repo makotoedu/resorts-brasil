@@ -3,11 +3,13 @@ import Container from '../layout/Container.astro';
 import Grade from '../layout/Grade.astro';
 import Imagem from '../primitivos/Imagem.astro';
 import Titulo from '../primitivos/Titulo.astro';
+import Texto from '../primitivos/Texto.astro';
 import IconesSociais from './IconesSociais.astro';
+import { contato } from '../../data/contato';
 import { ui, url, type Locale } from '../../i18n/ui';
 
 /**
- * Rodape — logotipo, tres listas de navegacao, redes e a faixa de copyright.
+ * Rodape — a marca, tres listas de navegacao, o contato e a faixa de baixo.
  *
  * MEDIDO (scripts/medir-cromo.mjs):
  *
@@ -27,10 +29,28 @@ import { ui, url, type Locale } from '../../i18n/ui';
  *   2. Os titulos das listas viram `<h2>`. Eram `<h4>` sem nenhum `<h3>` acima,
  *      em todas as paginas — parte dos 39 sumarios quebrados que a migracao
  *      existe para consertar.
+ *
+ * REORGANIZADO EM 22/10/2026, e o que mudou e o CONTEUDO, nao a voz. As listas
+ * vinham do tema e tinham divergido do menu: "Sobre nos" e "Resorts Brasil"
+ * apontavam para a mesma pagina, uma ao lado da outra; Associe-se e o e-book,
+ * que o cabecalho oferece em toda pagina, nao estavam aqui; e o rodape nao
+ * tinha um unico dado de contato, embora src/data/contato.ts exista para isso.
+ *
+ *   - as tres listas espelham os grupos do menu e usam os rotulos dele;
+ *   - a coluna de contato le src/data/contato.ts, a mesma fonte da pagina de
+ *     contato e do JSON-LD;
+ *   - a marca ganha a frase da associacao, e as redes saem da coluna propria
+ *     para debaixo dela;
+ *   - privacidade e termos descem para a faixa de baixo, que e onde se procura
+ *     documento juridico, e por isso chegam tambem a 404 (`minimo`);
+ *   - a faixa deixa de dizer "...reservados. by Cloudbe": o credito da agencia
+ *     estava em ingles nos tres idiomas, depois de um ponto final.
+ *
+ * Ver docs/decisoes.md, "Fale conosco por assunto, e o rodape reorganizado".
  */
 interface Props {
   lang: Locale;
-  /** Só a faixa de copyright, sem as listas. É o rodapé que a 404 sempre teve. */
+  /** Só a faixa de baixo, sem as listas. É o rodapé que a 404 sempre teve. */
   minimo?: boolean;
   /**
    * O rodape escuro das tres paginas do e-book — o `.inverted` do tema.
@@ -50,22 +70,10 @@ const t = ui[lang];
 // fixo em "2022" nas 12 paginas internas em PT.
 const ano = new Date().getFullYear();
 
-/** As tres listas, como dado — no tema eram tres blocos de markup iguais. */
+/** As tres listas, como dado, nos grupos e com os rotulos do menu. */
 const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] = [
   {
-    titulo: t.footerNavigation,
-    itens: [
-      { rotulo: t.navHome, href: url('home', lang) },
-      { rotulo: t.footerAbout, href: url('resortsBrasil', lang) },
-      { rotulo: t.navAssociates, href: url('associates', lang) },
-      { rotulo: t.navSupport, href: url('support', lang) },
-      { rotulo: t.navContact, href: url('contact', lang) },
-      { rotulo: t.footerPrivacy, href: url('privacy', lang) },
-      { rotulo: t.footerTerms, href: url('terms', lang) },
-    ],
-  },
-  {
-    titulo: t.footerInstitutional,
+    titulo: t.navAbout,
     itens: [
       { rotulo: t.navResortsBrasil, href: url('resortsBrasil', lang) },
       { rotulo: t.navBoard, href: url('board', lang) },
@@ -73,13 +81,41 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
     ],
   },
   {
-    titulo: t.footerInformation,
+    titulo: t.navAssociates,
+    itens: [
+      { rotulo: t.navAssociatesList, href: url('associates', lang) },
+      { rotulo: t.navJoinUs, href: url('joinUs', lang) },
+      { rotulo: t.navSupport, href: url('support', lang) },
+    ],
+  },
+  {
+    titulo: t.navInformation,
     itens: [
       { rotulo: t.navPublications, href: url('publications', lang) },
       { rotulo: t.footerStatistics, href: url('statistics', lang) },
+      { rotulo: t.footerEbook, href: url('ebook', lang) },
     ],
   },
 ];
+
+/* O e-mail quebra depois da arroba, e so se precisar: a coluna mede 165px no
+   celular. Ver a nota do <PaginaContato>. */
+const [usuario, dominio] = contato.email.split('@');
+
+/*
+ * O telefone pode quebrar entre "+55 11" e o resto, que e onde se agrupa um
+ * numero falado, e nunca no hifen: a 900px ele saia "95058-" numa linha e
+ * "0313" na outra. A primeira versao protegia o numero inteiro, e a geometria
+ * reprovou -- no rodape de demonstracao do catalogo, no celular, "+55 11
+ * 95058-0313" mede 123px num item de 110, o mesmo que uma tela de 320px faria.
+ *
+ * O e-mail e o telefone levam tambem o `wrap-anywhere`, a rede de baixo para
+ * quando nem o dominio cabe. Foi um e-mail vazando da coluna que fez a
+ * varredura de geometria aprender a ver texto.
+ */
+const partesWhatsapp = contato.whatsapp.telefone.split(' ');
+const fimWhatsapp = partesWhatsapp.pop();
+const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
 ---
 
 <footer id="footer" class:list={['rodape', invertido && 'invertido superficie-inversa']}>
@@ -88,39 +124,79 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
       <div class="conteudo">
         <Container>
           <!--
-            Seis colunas, e a do logotipo ocupa duas. E a proporcao do tema
-            (4+2+2+2+2 de doze) escrita em sextos, e a <Grade> ja desce sozinha
-            para tres e para duas conforme a largura do pai.
+            Dois niveis: a marca e, ao lado dela a partir de 1200px, as quatro
+            listas numa <Grade> propria, que desce para duas colunas sozinha.
+
+            Eram seis colunas numa grade so, com a marca em duas (os 4+2+2+2+2 de
+            doze do tema). Com tres listas aquilo bastava; com a coluna de
+            contato, a grade de seis valia a partir de 826px de janela, e ali cada
+            coluna media uns 100px -- o e-mail quebrava em tres pedacos e o
+            telefone em dois. A proporcao larga continua a mesma, um terco para a
+            marca.
           -->
-          <Grade colunas={6} espaco="md" alinhamento="inicio">
+          <div class="colunas-rodape">
             <div class="celula-marca">
               <a href={url('home', lang)} class="marca">
                 <Imagem src="/images/logo-25anos.png" alt="Resorts Brasil" largura={240} altura={80} ajuste="conter" />
               </a>
-            </div>
-
-            {colunas.map((coluna) => (
-              <div>
-                <Titulo nivel={2} class="titulo-lista rotulo">
-                  {coluna.titulo}
-                </Titulo>
-                <ul class="lista">
-                  {coluna.itens.map((item) => (
-                    <li>
-                      <a href={item.href}>{item.rotulo}</a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-
-            <div>
-              <Titulo nivel={2} class="titulo-lista rotulo">
-                {t.footerSocial}
-              </Titulo>
+              {/* `paragrafo` e nao o `sutil` que o papel traz: sobre a nevoa do
+                  rodape o cinza sutil da 4,44:1, abaixo dos 4,5, e o de
+                  paragrafo 6,19:1 -- o mesmo dos links ao lado. */}
+              <Texto papel="apoio" cor={invertido ? 'sutil-inverso' : 'paragrafo'}>
+                {t.footerTagline}
+              </Texto>
               <IconesSociais lang={lang} superficie="rodape" />
             </div>
-          </Grade>
+
+            <Grade colunas={4} espaco="md" alinhamento="inicio">
+              {colunas.map((coluna) => (
+                <div>
+                  <Titulo nivel={2} class="titulo-lista rotulo">
+                    {coluna.titulo}
+                  </Titulo>
+                  <ul class="lista">
+                    {coluna.itens.map((item) => (
+                      <li>
+                        <a href={item.href}>{item.rotulo}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+
+              <div>
+                <Titulo nivel={2} class="titulo-lista rotulo">
+                  {t.footerContact}
+                </Titulo>
+                <ul class="lista contato">
+                  <li>
+                    <a href={`mailto:${contato.email}`} class="wrap-anywhere">
+                      {usuario}@<wbr />{dominio}
+                    </a>
+                  </li>
+                  <li>
+                    <a href={contato.whatsapp.link} target="_blank" rel="noopener noreferrer" class="wrap-anywhere">
+                      {inicioWhatsapp}{' '}
+                      <span class="whitespace-nowrap">{fimWhatsapp}</span>
+                    </a>
+                  </li>
+                  <li>
+                    <address>
+                      {contato.endereco.linhas.map((linha, i) => (
+                        <>
+                          {i > 0 && <br />}
+                          {linha}
+                        </>
+                      ))}
+                    </address>
+                  </li>
+                  <li>
+                    <a href={url('contact', lang)}>{t.navContact}</a>
+                  </li>
+                </ul>
+              </div>
+            </Grade>
+          </div>
         </Container>
       </div>
     )
@@ -128,136 +204,53 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
 
   <div class="copyright">
     <Container>
-      <p class="copyright-texto">
-        &copy; {ano} {t.copyright}{' '}
-        <a href="https://www.cloudbe.com.br" target="_blank" rel="noopener">Cloudbe</a>{' '}
-        <!--
-          Revogar tem de ser tao facil quanto consentir, e estar em toda pagina
-          — inclusive na 404, que usa `minimo`. Fica na faixa de copyright, e
-          nao na lista "Navegacao", onde um <li> a mais mudaria a altura do
-          rodape. Nasce `hidden`: sem JavaScript o botao nao faria nada, e quem
-          o revela e o site.js.
-        -->
-        <span class="cookie-manage" hidden>
-          &middot; <button type="button" class="cookie-manage-btn">{t.cookieManage}</button>
-        </span>
-      </p>
+      <div class="faixa">
+        <p class="copyright-texto">&copy; {ano} {t.copyright}</p>
+        <ul class="legal">
+          <li>
+            <a href={url('privacy', lang)}>{t.footerPrivacy}</a>
+          </li>
+          <li>
+            <a href={url('terms', lang)}>{t.footerTerms}</a>
+          </li>
+          <!--
+            Revogar tem de ser tao facil quanto consentir, e estar em toda pagina
+            — inclusive na 404, que usa `minimo`. Por isso mora nesta faixa, e
+            nao nas listas. Nasce `hidden`: sem JavaScript o botao nao faria
+            nada, e quem o revela e o site.js, pela classe `.cookie-manage`.
+          -->
+          <li class="cookie-manage" hidden>
+            <button type="button" class="cookie-manage-btn">{t.cookieManage}</button>
+          </li>
+          <li class="credito">
+            {t.footerCredit}{' '}
+            <a href="https://www.cloudbe.com.br" target="_blank" rel="noopener">Cloudbe</a>
+          </li>
+        </ul>
+      </div>
     </Container>
   </div>
 </footer>
 
 <style>
-  .rodape {
-    background-color: var(--color-superficie-clara);
-  }
-
-  /* MEDIDO: 60px em cima, 40px embaixo; o 60 foi a 64, na grade. */
-  .conteudo {
-    padding-block: 4rem 2.5rem;
-  }
-
-  .celula-marca {
-    grid-column: span 2;
-  }
-
-  .marca {
-    display: inline-block;
-    line-height: 0;
-  }
-
   /*
-   * O logotipo no seu tamanho, sem ampliar. Ver o desvio 1 no comentario do
-   * topo: o tema pedia 130px de altura a um arquivo de 100px.
+   * AS CORES DO RODAPE SAO PROPRIEDADES, e a variacao invertida troca os
+   * valores, nao as regras. A primeira versao da reorganizacao escrevia cada
+   * cor duas vezes, a segunda com `.invertido` na frente -- e o Astro carimba o
+   * atributo de escopo em cada parte de cada seletor. O CSS do rodape foi de
+   * 2.881 para 4.506 bytes, numa folha que as 41 paginas baixam, e as tres
+   * mais leves passaram dos 5% do orcamento. E a mesma licao que o menu
+   * escuro do Soft UI ja tinha deixado no decisoes.md.
    */
-  .marca :global(img) {
-    width: auto;
-    height: 5rem;
+  .rodape {
+    --rodape-fundo: var(--color-superficie-clara);
+    --rodape-faixa: var(--color-superficie-clara-alt);
+    --rodape-titulo: var(--color-texto);
+    --rodape-texto: var(--color-texto);
+    --rodape-link: var(--color-texto-paragrafo);
+    --rodape-hover: var(--color-acao-primaria);
+    background-color: var(--rodape-fundo);
   }
-
-  /* O <Titulo> traz a tag e a cor, o `.rotulo` traz a voz (era 14px com 1px
-     de espacamento, medido); daqui so os 20px medidos ate a lista. */
-  .rodape :global(.titulo-lista) {
-    margin-block: 0 1.25rem;
-  }
-
-  .lista {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  /* MEDIDO: 32px por item. E altura de linha da lista, nao entrelinha de
-     texto, e por isso vai em rem: em fracao ela crescia com o corpo de 16px. */
-  .lista li {
-    line-height: 2rem;
-  }
-
-  .lista a {
-    color: var(--color-texto-paragrafo);
-    font-size: var(--text-sm);
-    text-decoration: none;
-    text-underline-offset: 0.25em;
-    text-decoration-thickness: 1px;
-    transition: color var(--duracao) var(--ease-chegada);
-  }
-
-  /* O Soft UI acrescentou o sublinhado ao hover: a troca de cinza para azul,
-     sozinha, e o tipo de sinal que depende so de cor. */
-  .lista a:hover {
-    color: var(--color-acao-primaria);
-    text-decoration-line: underline;
-  }
-
-  /* ---------------- faixa de copyright ---------------- */
-
-  .copyright {
-    /* MEDIDO: fundo proprio, um degrau adiante do rodape, e 30px de recuo. */
-    background-color: var(--color-superficie-clara-alt);
-    padding-block: 2rem;
-  }
-
-  .copyright-texto {
-    color: var(--color-texto);
-    font-size: var(--text-sm);
-    line-height: 2rem; /* os 32px medidos, em rem pelo mesmo motivo da lista */
-    margin: 0;
-    text-align: center;
-  }
-
-  .copyright-texto a,
-  .cookie-manage-btn {
-    color: var(--color-texto-paragrafo);
-    text-decoration: none;
-    transition: color var(--duracao) var(--ease-chegada);
-  }
-
-  .copyright-texto a:hover,
-  .cookie-manage-btn:hover {
-    color: var(--color-acao-primaria);
-  }
-
-  /* O alvo de toque do botao de preferencias: ele mede a linha do copyright,
-     32px, e o pseudo-elemento leva o alvo a 44 so na vertical -- largura ele
-     ja tem. Mesma tecnica do <LinkAcao>. */
-  .cookie-manage-btn::after {
-    content: '';
-    position: absolute;
-    inset: -0.375rem 0;
-  }
-
-  /* O botao tem de parecer o link ao lado dele: e a mesma acao para quem le. */
-  .cookie-manage-btn {
-    position: relative;
-    background: none;
-    border: 0;
-    padding: 0;
-    font: inherit;
-    cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-
-  /* ---------------- rodape invertido ---------------- */
 
   /*
    * O rodape das tres paginas do e-book. MEDIDO na Etapa 10, e o que a medicao
@@ -282,36 +275,239 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
    * O hover dos links tambem invertia de sentido: o azul de acao da 3,22:1 sobre
    * este fundo, ou seja, apontar o link o deixava MENOS legivel. Aqui ele vai
    * para o branco, que e o que "mais destacado" significa sobre fundo escuro.
+   *
+   * O que a reorganizacao acrescentou -- o endereco, os documentos e o credito
+   * na faixa -- le as mesmas propriedades, e por isso entra no mesmo par sem
+   * regra nenhuma aqui. A frase da marca e um <Texto>, e recebe a cor pela prop.
    */
   .invertido {
-    background-color: var(--color-superficie-inversa-alt);
+    --rodape-fundo: var(--color-superficie-inversa-alt);
+    --rodape-faixa: var(--color-superficie-inversa-faixa);
+    --rodape-titulo: var(--color-texto-inverso);
+    --rodape-texto: var(--color-texto-sutil-inverso);
+    --rodape-link: var(--color-texto-sutil-inverso);
+    --rodape-hover: var(--color-texto-inverso);
   }
 
-  .invertido :global(.titulo-lista) {
-    color: var(--color-texto-inverso);
+  /* MEDIDO: 60px em cima, 40px embaixo; o 60 foi a 64, na grade. */
+  .conteudo {
+    padding-block: 4rem 2.5rem;
   }
 
-  .invertido .lista a {
-    color: var(--color-texto-sutil-inverso);
+  /*
+   * A marca em cima das listas, e ao lado delas a partir de 1200px -- a mesma
+   * faixa em que o menu vira barra. Ao lado, um terco para a marca e dois para
+   * as listas, que e a proporcao do tema; e a <Grade> das listas so chega a
+   * quatro colunas com 48rem, entao entre 1200 e uns 1280px elas ficam em
+   * duas, ao lado da marca.
+   */
+  .colunas-rodape {
+    display: grid;
+    gap: 3rem;
   }
 
-  .invertido .lista a:hover {
-    color: var(--color-texto-inverso);
+  @media (min-width: 75rem) {
+    .colunas-rodape {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      gap: 2rem;
+    }
   }
 
-  /* O par escuro da `--color-superficie-clara-alt`. Ver a nota do token. */
-  .invertido .copyright {
-    background-color: var(--color-superficie-inversa-faixa);
+  /*
+   * A marca, a frase e as redes, empilhadas com 20px entre elas -- o mesmo vao
+   * medido do titulo de coluna ate a lista. So o `<p>` traz margem; as redes
+   * tem margem lateral negativa, que devolve o primeiro circulo ao alinhamento
+   * (ver o <IconesSociais>), e por isso nao se zera tudo.
+   */
+  .celula-marca {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
   }
 
-  .invertido .copyright-texto,
-  .invertido .copyright-texto a,
-  .invertido .cookie-manage-btn {
-    color: var(--color-texto-sutil-inverso);
+  /* A frase da associacao nao corre a celula inteira: 26rem sao uns 60
+     caracteres no corpo de 14px. */
+  .celula-marca > :global(p) {
+    margin: 0;
+    max-width: 26rem;
   }
 
-  .invertido .copyright-texto a:hover,
-  .invertido .cookie-manage-btn:hover {
-    color: var(--color-texto-inverso);
+  .marca {
+    display: inline-block;
+    line-height: 0;
+  }
+
+  /*
+   * O logotipo no seu tamanho, sem ampliar. Ver o desvio 1 no comentario do
+   * topo: o tema pedia 130px de altura a um arquivo de 100px.
+   */
+  .marca :global(img) {
+    width: auto;
+    height: 5rem;
+  }
+
+  /* O <Titulo> traz a tag, o `.rotulo` traz a voz (era 14px com 1px de
+     espacamento, medido); daqui a cor e os 20px medidos ate a lista. */
+  .rodape :global(.titulo-lista) {
+    margin-block: 0 1.25rem;
+    color: var(--rodape-titulo);
+  }
+
+  .lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* MEDIDO: 32px por item. E altura de linha da lista, nao entrelinha de
+     texto, e por isso vai em rem: em fracao ela crescia com o corpo de 16px. */
+  .lista li {
+    line-height: 2rem;
+  }
+
+  /*
+   * A COLUNA DE CONTATO E A UNICA CUJOS ITENS QUEBRAM DE LINHA: e-mail,
+   * telefone e endereco, numa coluna de 165px no celular e uns 180 no tablet.
+   * Com os 32px de entrelinha das outras listas, "contato@" e
+   * "resortsbrasil.com.br" pareciam dois itens. Aqui os 32px viram 20 de
+   * entrelinha mais 6 de recuo em cima e embaixo: o item de uma linha mede o
+   * mesmo das colunas ao lado, e o que quebra continua sendo um item so.
+   */
+  .contato li {
+    padding-block: 0.375rem;
+    line-height: 1.25rem;
+  }
+
+  /* As tres linhas de um mesmo dado, na voz do link ao lado, e sem o italico
+     que o navegador da ao `<address>` e que nenhuma face baixada desenha. */
+  .contato address {
+    color: var(--rodape-link);
+    font-size: var(--text-sm);
+    font-style: normal;
+  }
+
+  /*
+   * TODO LINK DO RODAPE E A MESMA VOZ: o cinza de paragrafo em repouso e a cor
+   * de acao com sublinhado no hover. O Soft UI acrescentou o sublinhado: a
+   * troca de cinza para azul, sozinha, e o tipo de sinal que depende so de cor.
+   * O botao de preferencias entra junto porque tem de parecer o link ao lado
+   * dele -- e a mesma acao para quem le.
+   */
+  .lista a,
+  .legal a,
+  .cookie-manage-btn {
+    color: var(--rodape-link);
+    text-decoration: none;
+    text-underline-offset: 0.25em;
+    text-decoration-thickness: 1px;
+    transition: color var(--duracao) var(--ease-chegada);
+  }
+
+  .lista a {
+    font-size: var(--text-sm);
+  }
+
+  .lista a:hover,
+  .legal a:hover,
+  .cookie-manage-btn:hover {
+    color: var(--rodape-hover);
+    text-decoration-line: underline;
+  }
+
+  /* ---------------- faixa de baixo ---------------- */
+
+  .copyright {
+    /* MEDIDO: fundo proprio, um degrau adiante do rodape, e 30px de recuo. */
+    background-color: var(--rodape-faixa);
+    padding-block: 2rem;
+  }
+
+  /*
+   * Duas pontas: a autoria a esquerda, os documentos e o credito a direita.
+   * Abaixo disso, empilhadas e centradas, que e como a faixa sempre foi.
+   *
+   * 86rem e MEDIDO, nao escolhido: as duas pontas somam 1239px de conteudo em
+   * espanhol, o idioma mais longo, com o botao de cookies visivel (1230 em
+   * portugues, 1031 em ingles); mais os 48px reservados abaixo e os 40px de
+   * recuo de cada lado, cabem a partir de 1367px de janela. A primeira versao
+   * usava 62rem, e a 1200px as duas pontas quebravam, cada uma em duas linhas.
+   *
+   * OS 48px SAO DO VOLTAR-AO-TOPO. Ele flutua a 24px da borda e 26px do pe,
+   * com 44px de lado, e rolando ate o fim cobria os ultimos 28px da faixa --
+   * o "Cloudbe". Com o texto centrado, como a faixa sempre foi, a ponta
+   * direita nunca chegava ali; em duas pontas, chega.
+   */
+  .faixa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+
+  @media (min-width: 86rem) {
+    .faixa {
+      flex-direction: row;
+      justify-content: space-between;
+      gap: 2rem;
+      padding-inline-end: 3rem;
+      text-align: start;
+    }
+  }
+
+  /* A autoria no navy, como sempre foi. Os 32px medidos eram a altura de UMA
+     linha; no celular ela quebra em duas, e ali 32px de entrelinha separam a
+     frase dela mesma. Quem segura a altura da faixa e a lista ao lado. */
+  .copyright-texto {
+    margin: 0;
+    color: var(--rodape-texto);
+    line-height: 1.5;
+  }
+
+  /*
+   * Os documentos e o credito no cinza de paragrafo, inclusive o "Desenvolvido
+   * por": no navy ele pesava mais que os links ao lado. Sem separador
+   * desenhado: com o `compressHTML: 'jsx'` nao ha espaco entre as tags, e um
+   * ponto no inicio de cada linha quebrada seria pior que o vao.
+   */
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    color: var(--rodape-link);
+    line-height: 2rem; /* os 32px medidos, em rem pelo mesmo motivo da lista */
+    list-style: none;
+  }
+
+  /* O nome da agencia e o unico link da faixa que divide a linha com texto, e
+     no mesmo cinza dele so a cor o distinguiria. O sublinhado e o do botao de
+     cookies ao lado. */
+  .credito a {
+    text-decoration-line: underline;
+  }
+
+  /* O alvo de toque do botao de preferencias: ele mede a linha do copyright,
+     32px, e o pseudo-elemento leva o alvo a 44 so na vertical -- largura ele
+     ja tem. Mesma tecnica do <LinkAcao>. Os links ao lado sao inline dentro
+     de `<li>`, que a WCAG 2.5.8 isenta. */
+  .cookie-manage-btn::after {
+    content: '';
+    position: absolute;
+    inset: -0.375rem 0;
+  }
+
+  .cookie-manage-btn {
+    position: relative;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    text-decoration-line: underline;
   }
 </style>
