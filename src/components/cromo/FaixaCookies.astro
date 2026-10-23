@@ -134,6 +134,17 @@ const t = ui[lang];
     color: var(--color-texto-inverso);
     padding-block: 1.25rem;
     /*
+     * NUNCA MAIS ALTA QUE A TELA. Presa ao pe e sem limite, com "Personalizar"
+     * aberto ela media 803px numa tela de 568 e 461 numa de 360 (celular
+     * deitado): o texto e os botoes de cima saiam pela borda de cima, onde
+     * nenhuma rolagem os alcanca. `vh` primeiro como reserva, `dvh` para a
+     * barra do navegador que aparece e some.
+     */
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /*
      * A faixa desce em vez de aparecer. Quem troca a classe e o site.js, um
      * quadro depois de tirar o `hidden` — sem esse intervalo o navegador calcula
      * o estado inicial ja com a classe aplicada e nao ha transicao.
@@ -231,11 +242,22 @@ const t = ui[lang];
     opacity: 0.85;
   }
 
+  /* 44px de alvo na linha inteira, e uma caixa de 20px no lugar dos 13 nativos.
+     O rotulo ja ligava a caixa, mas media 26px de altura — o unico controle da
+     faixa abaixo da altura de toque dos botoes ao lado. */
   .categorias label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    min-height: 2.75rem;
     cursor: pointer;
+  }
+
+  .categorias input {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
   }
 
   .categorias input:disabled + strong {

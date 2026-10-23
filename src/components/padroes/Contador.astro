@@ -65,41 +65,52 @@ const { ate, de = 0, sufixo = '', rotulo, duracao = 500, class: classe } = Astro
    *
    * O observador se desliga item a item (`unobserve`), entao a contagem
    * acontece uma vez por numero e nao volta a cada rolagem.
+   *
+   * No corpo do script E no `astro:page-load`, pelo mesmo motivo das <Abas>:
+   * sob o <ClientRouter /> este script roda uma vez so, e numa segunda visita
+   * pelo router os numeros apareciam prontos, sem a contagem. A marca no
+   * elemento impede observar duas vezes o mesmo numero.
    */
-  const numeros = document.querySelectorAll<HTMLElement>('[data-contador]');
+  const iniciar = () => {
+    const numeros = [...document.querySelectorAll<HTMLElement>('[data-contador]')].filter(
+      (el) => el.dataset.contadorPronto === undefined
+    );
+    if (!numeros.length) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  if (numeros.length) {
-    const semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const contar = (el: HTMLElement) => {
+      const de = Number(el.dataset.de) || 0;
+      const ate = Number(el.dataset.ate) || 0;
+      const duracao = Number(el.dataset.duracao) || 500;
+      const inicio = performance.now();
 
-    if (!semMovimento) {
-      const contar = (el: HTMLElement) => {
-        const de = Number(el.dataset.de) || 0;
-        const ate = Number(el.dataset.ate) || 0;
-        const duracao = Number(el.dataset.duracao) || 500;
-        const inicio = performance.now();
-
-        const passo = (agora: number) => {
-          const avanco = Math.min((agora - inicio) / duracao, 1);
-          el.textContent = String(Math.round(de + (ate - de) * avanco));
-          if (avanco < 1) requestAnimationFrame(passo);
-        };
-        requestAnimationFrame(passo);
+      const passo = (agora: number) => {
+        const avanco = Math.min((agora - inicio) / duracao, 1);
+        el.textContent = String(Math.round(de + (ate - de) * avanco));
+        if (avanco < 1) requestAnimationFrame(passo);
       };
+      requestAnimationFrame(passo);
+    };
 
-      const observador = new IntersectionObserver(
-        (entradas) => {
-          for (const entrada of entradas) {
-            if (!entrada.isIntersecting) continue;
-            contar(entrada.target as HTMLElement);
-            observador.unobserve(entrada.target);
-          }
-        },
-        { threshold: 0.5 }
-      );
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        for (const entrada of entradas) {
+          if (!entrada.isIntersecting) continue;
+          contar(entrada.target as HTMLElement);
+          observador.unobserve(entrada.target);
+        }
+      },
+      { threshold: 0.5 }
+    );
 
-      numeros.forEach((el) => observador.observe(el));
+    for (const el of numeros) {
+      el.dataset.contadorPronto = '';
+      observador.observe(el);
     }
-  }
+  };
+
+  iniciar();
+  document.addEventListener('astro:page-load', iniciar);
 </script>
 
 <style>
@@ -138,5 +149,18 @@ const { ate, de = 0, sufixo = '', rotulo, duracao = 500, class: classe } = Astro
   .sufixo {
     font-size: var(--text-md);
     font-weight: var(--font-weight-medium);
+  }
+
+  /*
+   * NUMA GRADE ESTREITA O SUFIXO DESCE UM DEGRAU. A 320, em ingles, "20
+   * thousand" media 133px numa celula de 124: o `nowrap` acima segura o
+   * alinhamento e por isso o numero vazava da celula. Com o sufixo no corpo de
+   * 16px, cabe. O container e o `.caixa` da <Grade> em volta, entao a regra
+   * vale para a fileira inteira e os rotulos continuam alinhados.
+   */
+  @container (max-width: 29.9375rem) {
+    .sufixo {
+      font-size: var(--text-base);
+    }
   }
 </style>

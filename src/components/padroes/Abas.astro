@@ -119,49 +119,65 @@ const paineis = await Promise.all(
    * tabulacao, e as outras se alcancam pelas setas. E o que o padrao ARIA de
    * abas pede, e o que o `tabs()` do site.js ja fazia — este script substitui
    * aquele bloco.
+   *
+   * NO CORPO DO SCRIPT E NO `astro:page-load`. Sob o <ClientRouter />, um
+   * script de componente roda uma vez so: numa segunda visita a /associados
+   * pelo router as abas nasciam sem listener e nao trocavam. O evento dispara
+   * depois de cada navegacao; a chamada direta cobre a primeira vez em que o
+   * script chega, inclusive quando ele chega no meio de uma navegacao. A marca
+   * no grupo impede ligar duas vezes o mesmo elemento, e os listeners sao de
+   * elemento: morrem junto com o corpo trocado, entao nada acumula.
    */
-  for (const grupo of document.querySelectorAll<HTMLElement>('[role="tablist"]')) {
-    const abas = [...grupo.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
-    if (!abas.length) continue;
+  const iniciar = () => {
+    for (const grupo of document.querySelectorAll<HTMLElement>('[role="tablist"]')) {
+      if (grupo.dataset.abasProntas !== undefined) continue;
+      grupo.dataset.abasProntas = '';
 
-    const raiz = grupo.parentElement;
-    if (!raiz) continue;
+      const abas = [...grupo.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+      if (!abas.length) continue;
 
-    const ativar = (aba: HTMLButtonElement, focar = false) => {
-      for (const outra of abas) {
-        const alvo = outra.getAttribute('aria-controls');
-        const painel = alvo ? raiz.querySelector<HTMLElement>(`#${CSS.escape(alvo)}`) : null;
-        const ativa = outra === aba;
+      const raiz = grupo.parentElement;
+      if (!raiz) continue;
 
-        outra.classList.toggle('ativa', ativa);
-        outra.setAttribute('aria-selected', String(ativa));
-        if (ativa) outra.removeAttribute('tabindex');
-        else outra.setAttribute('tabindex', '-1');
-        if (painel) painel.hidden = !ativa;
-      }
-      if (focar) aba.focus();
-    };
+      const ativar = (aba: HTMLButtonElement, focar = false) => {
+        for (const outra of abas) {
+          const alvo = outra.getAttribute('aria-controls');
+          const painel = alvo ? raiz.querySelector<HTMLElement>(`#${CSS.escape(alvo)}`) : null;
+          const ativa = outra === aba;
 
-    grupo.addEventListener('click', (e) => {
-      const aba = (e.target as HTMLElement).closest<HTMLButtonElement>('[role="tab"]');
-      if (aba) ativar(aba);
-    });
+          outra.classList.toggle('ativa', ativa);
+          outra.setAttribute('aria-selected', String(ativa));
+          if (ativa) outra.removeAttribute('tabindex');
+          else outra.setAttribute('tabindex', '-1');
+          if (painel) painel.hidden = !ativa;
+        }
+        if (focar) aba.focus();
+      };
 
-    grupo.addEventListener('keydown', (e) => {
-      const atual = abas.indexOf(document.activeElement as HTMLButtonElement);
-      if (atual === -1) return;
+      grupo.addEventListener('click', (e) => {
+        const aba = (e.target as HTMLElement).closest<HTMLButtonElement>('[role="tab"]');
+        if (aba) ativar(aba);
+      });
 
-      const passo = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-      let alvo: HTMLButtonElement | undefined;
-      if (passo) alvo = abas[(atual + passo + abas.length) % abas.length];
-      else if (e.key === 'Home') alvo = abas[0];
-      else if (e.key === 'End') alvo = abas[abas.length - 1];
-      else return;
+      grupo.addEventListener('keydown', (e) => {
+        const atual = abas.indexOf(document.activeElement as HTMLButtonElement);
+        if (atual === -1) return;
 
-      e.preventDefault();
-      if (alvo) ativar(alvo, true);
-    });
-  }
+        const passo = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+        let alvo: HTMLButtonElement | undefined;
+        if (passo) alvo = abas[(atual + passo + abas.length) % abas.length];
+        else if (e.key === 'Home') alvo = abas[0];
+        else if (e.key === 'End') alvo = abas[abas.length - 1];
+        else return;
+
+        e.preventDefault();
+        if (alvo) ativar(alvo, true);
+      });
+    }
+  };
+
+  iniciar();
+  document.addEventListener('astro:page-load', iniciar);
 </script>
 
 <style>

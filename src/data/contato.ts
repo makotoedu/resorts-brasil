@@ -36,7 +36,9 @@ export const contato = {
      * As linhas do `<address>`, na pagina de contato e no rodape. Era uma linha
      * so, corrida, e o CEP nao aparecia em lugar nenhum do site.
      */
-    linhas: [logradouro, `${bairro}, ${cidade} - ${uf}`, `CEP ${cep}`],
+    // Espaco inseparavel em volta do hifen: na coluna de 165px do rodape o "SP"
+    // descia sozinho para a linha seguinte. Agora quem desce e "Sao Paulo - SP".
+    linhas: [logradouro, `${bairro}, ${cidade} - ${uf}`, `CEP ${cep}`],
     mapa: 'https://goo.gl/maps/osRdE2bZhqc1hCk78',
   },
 

@@ -44,8 +44,8 @@ const ready = (fn) =>
 /* Menu mobile ------------------------------------------------------------ */
 // O tema anima min-height de 0 ate a altura da janela em 500ms com
 // easeInOutQuart, marcando .toggle-active no gatilho, .mainMenu-open no body e
-// .menu-animate no menu 300ms depois. Os submenus nao precisam de toggle: abaixo
-// de 1200px o CSS ja os deixa em display:block.
+// .menu-animate no menu 300ms depois. Os submenus abrem como sanfona, no
+// `navDropdowns()` abaixo.
 function mobileMenu(signal) {
   const trigger = document.querySelector('#mainMenu-trigger a, #mainMenu-trigger button');
   const menu = document.querySelector('#mainMenu');
@@ -56,10 +56,32 @@ function mobileMenu(signal) {
   let animateTimer;
   signal.addEventListener('abort', () => clearTimeout(animateTimer), { once: true });
 
+  // O PAINEL TERMINA NA DOBRA, e nao a uma janela inteira do topo dele. Ele
+  // comeca abaixo da barra (64px, 116 quando ela quebrava a 320), com o `body`
+  // travado: com a altura da janela, o fundo do painel ficava sempre fora da
+  // tela e sem rolagem. A 740x360 o "Fale conosco" nascia cortado com tudo
+  // fechado. Quem rola o que nao cabe e o `overflow-y` do `.menu-animate`.
+  //
+  // O topo e medido com o painel JA ABERTO, sem transicao, e devolvido ao ponto
+  // de partida antes de animar. Fechado, a barra de 80px reparte a sobra entre
+  // as duas linhas e o painel fica 8 a 16px abaixo de onde ficara: medido ali,
+  // ele terminava antes da dobra, e no e-book, onde o cabecalho flutua, a
+  // pagina aparecia numa tira embaixo dele.
+  const alturaAteADobra = () => {
+    const { minHeight, transition } = menu.style;
+    menu.style.transition = 'none';
+    menu.style.minHeight = `${window.innerHeight}px`;
+    const topo = menu.getBoundingClientRect().top;
+    menu.style.minHeight = minHeight;
+    menu.getBoundingClientRect(); // fixa o ponto de partida antes da transicao
+    menu.style.transition = transition;
+    return `${Math.max(window.innerHeight - topo, 0)}px`;
+  };
+
   const setOpen = (next) => {
     open = next;
     menu.style.transition = `min-height 500ms ${EASE}`;
-    menu.style.minHeight = next ? `${window.innerHeight}px` : '0px';
+    menu.style.minHeight = next ? alturaAteADobra() : '0px';
     trigger.classList.toggle('toggle-active', next);
     trigger.setAttribute('aria-expanded', String(next));
     document.body.classList.toggle('mainMenu-open', next);
@@ -89,36 +111,49 @@ function mobileMenu(signal) {
   // O tema fecha o menu ao redimensionar para o breakpoint de desktop. Era 992,
   // a faixa do Bootstrap; desde a revisao de design e 1200, a mesma dos 75rem
   // do <Cabecalho> -- ver a nota de faixa no <style> dele.
-  // PRESO A `window`: sem o signal, uma copia por navegacao.
+  // PRESO A `window`: sem o signal, uma copia por navegacao. Abaixo de 1200px
+  // ele tambem refaz a altura do painel aberto: girar o celular troca a dobra.
   window.addEventListener('resize', () => {
-    if (open && window.innerWidth >= 1200) setOpen(false);
+    if (!open) return;
+    if (window.innerWidth >= 1200) setOpen(false);
+    else menu.style.minHeight = alturaAteADobra();
   }, { signal });
 }
 
 /* Seletor de idioma ------------------------------------------------------ */
-// No desktop o CSS abre por :hover; o clique existe para toque.
+// O painel abre so pela classe, nas duas faixas: clique, toque, Enter ou
+// Espaco no `<button>`. Abria tambem por `:focus-within`, e no toque o foco
+// fica no botao -- o segundo toque tirava a classe e o painel continuava
+// aberto, com o `aria-expanded` dizendo "false".
 function languageDropdown(signal) {
   // Mantem aria-expanded junto da classe de estado: sao a mesma informacao,
   // uma para o CSS e outra para o leitor de tela.
   const sync = (drop) => {
-    const link = drop.querySelector(':scope > a');
-    if (link) link.setAttribute('aria-expanded', String(drop.classList.contains('dropdown-active')));
+    const gatilho = drop.querySelector(':scope > button');
+    if (gatilho) gatilho.setAttribute('aria-expanded', String(drop.classList.contains('dropdown-active')));
+  };
+  const fechar = (drop) => {
+    drop.classList.remove('dropdown-active');
+    sync(drop);
   };
 
   document.querySelectorAll('.p-dropdown').forEach((drop) => {
-    const link = drop.querySelector(':scope > a');
-    if (!link) return;
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
+    const gatilho = drop.querySelector(':scope > button');
+    if (!gatilho) return;
+    gatilho.addEventListener('click', () => {
       drop.classList.toggle('dropdown-active');
       sync(drop);
     }, { signal });
     // Esc fecha e devolve o foco ao gatilho, como qualquer menu.
     drop.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape' || !drop.classList.contains('dropdown-active')) return;
-      drop.classList.remove('dropdown-active');
-      sync(drop);
-      link.focus();
+      fechar(drop);
+      gatilho.focus();
+    }, { signal });
+    // O teclado que sai do painel pelo Tab o fecha: sem o `:focus-within`,
+    // ninguem mais o fecharia ate o proximo clique.
+    drop.addEventListener('focusout', (e) => {
+      if (!drop.contains(e.relatedTarget)) fechar(drop);
     }, { signal });
   });
 
@@ -133,20 +168,38 @@ function languageDropdown(signal) {
 }
 
 /* Submenus da navegacao -------------------------------------------------- */
-// O submenu abre por CSS (:hover no desktop, sempre aberto no mobile), e o
-// ajustes.css acrescentou :focus-within para o teclado. Falta so manter o
-// aria-expanded honesto: um atributo fixo em "false" enquanto o menu abre
-// engana mais o leitor de tela do que a ausencia dele.
+// DUAS FAIXAS, DOIS DONOS DO ESTADO.
+//
+// Abaixo de 1200px o submenu e uma sanfona: o toque no `<button>` poe e tira
+// `.submenu-aberto`, e o `aria-expanded` segue a classe. A partir de 1200px
+// quem abre e o CSS, por :hover e :focus-within, e aqui so se mantem o
+// atributo honesto -- um "false" fixo enquanto o painel abre engana mais o
+// leitor de tela do que a ausencia dele.
+//
+// Este bloco morava num <script> do <Cabecalho>, e la ele morria na primeira
+// navegacao: script de componente roda uma vez so sob o <ClientRouter />, e o
+// cabecalho novo nascia sem listener nenhum. Aqui ele e remontado a cada troca
+// de corpo, como o resto do cromo.
 function navDropdowns(signal) {
+  const barra = () => window.innerWidth >= 1200;
   document.querySelectorAll('#mainMenu nav > ul > li.dropdown').forEach((li) => {
-    const link = li.querySelector(':scope > a');
-    if (!link) return;
-    const marcar = (aberto) => link.setAttribute('aria-expanded', String(aberto));
-    li.addEventListener('mouseenter', () => marcar(true), { signal });
-    li.addEventListener('mouseleave', () => marcar(false), { signal });
-    li.addEventListener('focusin', () => marcar(true), { signal });
+    const gatilho = li.querySelector(':scope > button');
+    if (!gatilho) return;
+    const marcar = (aberto) => gatilho.setAttribute('aria-expanded', String(aberto));
+    gatilho.addEventListener('click', () => {
+      if (!barra()) marcar(li.classList.toggle('submenu-aberto'));
+    }, { signal });
+    li.addEventListener('mouseenter', () => {
+      if (barra()) marcar(true);
+    }, { signal });
+    li.addEventListener('mouseleave', () => {
+      if (barra() && !li.contains(document.activeElement)) marcar(false);
+    }, { signal });
+    li.addEventListener('focusin', () => {
+      if (barra()) marcar(true);
+    }, { signal });
     li.addEventListener('focusout', (e) => {
-      if (!li.contains(e.relatedTarget)) marcar(false);
+      if (barra() && !li.contains(e.relatedTarget)) marcar(false);
     }, { signal });
   });
 }

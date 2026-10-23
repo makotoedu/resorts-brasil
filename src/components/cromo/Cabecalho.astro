@@ -226,10 +226,10 @@ const atual = route ? url(route, lang) : undefined;
       <div class="extras">
         <div class="p-dropdown">
           <!--
-            `<button>` pelo mesmo motivo do submenu. O site.js procura
-            `:scope > a`, entao ele nao alcanca este gatilho — o comportamento
-            de clique vem do <script> no fim deste arquivo, que so existe onde
-            este componente existe.
+            `<button>` pelo mesmo motivo do submenu. O clique vem do
+            `languageDropdown()` do site.js, que se remonta a cada troca de
+            corpo; um <script> neste arquivo rodaria uma vez so e morreria na
+            primeira navegacao — foi o que aconteceu ate a revisao mobile.
           -->
           <button type="button" aria-label={t.chooseLanguage} aria-haspopup="true" aria-expanded="false">
             <Icone nome="globe" tamanho="sm" />
@@ -267,66 +267,6 @@ const atual = route ? url(route, lang) : undefined;
     </div>
   </Container>
 </header>
-
-<script>
-  /*
-   * O seletor de idioma, so onde este componente existe.
-   *
-   * O `languageDropdown()` do site.js procura `.p-dropdown > a`, e aqui o
-   * gatilho e um `<button>` — a troca de tag foi deliberada (o item nao navega).
-   * Este bloco cobre o botao sem tocar no script compartilhado, que continua
-   * servindo as paginas do tema exatamente como antes.
-   *
-   * Astro empacota este <script> junto da pagina que usa o componente, entao ele
-   * nao chega nas 40 paginas nao migradas.
-   */
-  const sincronizar = (drop: Element) => {
-    const gatilho = drop.querySelector(':scope > button');
-    gatilho?.setAttribute('aria-expanded', String(drop.classList.contains('dropdown-active')));
-  };
-
-  document.querySelectorAll('.p-dropdown').forEach((drop) => {
-    const gatilho = drop.querySelector(':scope > button');
-    if (!gatilho) return;
-
-    gatilho.addEventListener('click', () => {
-      drop.classList.toggle('dropdown-active');
-      sincronizar(drop);
-    });
-
-    /* Esc fecha e devolve o foco ao gatilho, como qualquer menu. */
-    drop.addEventListener('keydown', (e) => {
-      if ((e as KeyboardEvent).key !== 'Escape' || !drop.classList.contains('dropdown-active')) return;
-      drop.classList.remove('dropdown-active');
-      sincronizar(drop);
-      (gatilho as HTMLElement).focus();
-    });
-  });
-
-  document.addEventListener('click', (e) => {
-    document.querySelectorAll('.p-dropdown.dropdown-active').forEach((drop) => {
-      if (drop.contains(e.target as Node)) return;
-      drop.classList.remove('dropdown-active');
-      sincronizar(drop);
-    });
-  });
-
-  /*
-   * O submenu da navegacao no MOBILE.
-   *
-   * No desktop ele abre por :hover e :focus-within, em CSS. Abaixo de 1200px nao
-   * ha hover, e o tema resolvia isso deixando todos os submenus abertos o tempo
-   * todo — o menu mobile nascia com os 11 itens visiveis de uma vez. Aqui cada
-   * um abre no toque, e o `aria-expanded` diz a verdade nas duas faixas.
-   */
-  document.querySelectorAll('#mainMenu li.dropdown > button').forEach((gatilho) => {
-    gatilho.addEventListener('click', () => {
-      const li = gatilho.parentElement!;
-      const aberto = li.classList.toggle('submenu-aberto');
-      gatilho.setAttribute('aria-expanded', String(aberto));
-    });
-  });
-</script>
 
 <style>
   /*
@@ -393,6 +333,10 @@ const atual = route ? url(route, lang) : undefined;
     line-height: 2.5rem;
     text-decoration: none;
     transition: opacity var(--duracao) var(--ease-chegada);
+    /* O alvo e a faixa: inline, o link media os 17px do texto numa linha de 40,
+       e a topbar so existe a partir de 992px — onde ha iPad deitado, com toque. */
+    display: inline-block;
+    vertical-align: top;
   }
 
   /* O destaque que era dourado. Ver o desvio 2 no comentario do topo. */
@@ -453,6 +397,20 @@ const atual = route ? url(route, lang) : undefined;
     height: 3.5rem;
   }
 
+  /*
+   * ABAIXO DE 22rem, 48px. A barra soma logotipo 168 + vao 8 + idioma 61 +
+   * vao 8 + hamburguer 44 = 289px, e a 320 o conteudo tem 280: o hamburguer
+   * descia para uma segunda linha, a barra ia de 80 para 116px e, no e-book,
+   * onde o cabecalho e `absolute`, ficava em cima do h1. Medido: quebrava a
+   * partir de 329px nos tres idiomas. Com 144px de logotipo sobram 17 a 320.
+   * 320 CSS px e a largura do reflow do WCAG (1.4.10), nao um celular exotico.
+   */
+  @media (max-width: 21.9375rem) {
+    .logo :global(img) {
+      height: 3rem;
+    }
+  }
+
   @media (min-width: 75rem) {
     .logo :global(img) {
       height: 5rem;
@@ -494,8 +452,8 @@ const atual = route ? url(route, lang) : undefined;
      *
      * `height: 0` E `overflow: hidden` juntos, e o par nao e redundante: o
      * script escreve `min-height`, nunca `height`. Com altura zero declarada
-     * aqui, a altura usada e o maior dos dois — 0 fechado, a janela inteira
-     * aberto —, e a transicao de `min-height` que ele configura tem o que
+     * aqui, a altura usada e o maior dos dois — 0 fechado, do topo dele ate a
+     * dobra aberto —, e a transicao de `min-height` que ele configura tem o que
      * animar. So `overflow: hidden` deixaria o menu aberto o tempo todo, porque
      * altura automatica cresce com o conteudo.
      */
@@ -503,6 +461,20 @@ const atual = route ? url(route, lang) : undefined;
     flex-basis: 100%;
     height: 0;
     overflow: hidden;
+  }
+
+  /*
+   * ABERTO, O PAINEL ROLA. O site.js o faz terminar na dobra e trava o `body`,
+   * entao o que nao cabe so se alcanca por aqui: em 740x360 o "Fale conosco"
+   * ja nao cabia com tudo fechado, e a 320x568 bastava abrir um submenu. A
+   * `.menu-animate` entra 300ms depois de abrir, e por isso a barra de rolagem
+   * nao pisca durante a animacao da altura.
+   */
+  @media (max-width: 74.9375rem) {
+    .menu.menu-animate {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
   }
 
   @media (min-width: 75rem) {
@@ -839,8 +811,11 @@ const atual = route ? url(route, lang) : undefined;
       visibility var(--duracao-curta);
   }
 
-  .p-dropdown.dropdown-active > .p-dropdown-content,
-  .p-dropdown:focus-within > .p-dropdown-content {
+  /* So a classe abre, e nao `:focus-within`: no toque o foco fica no botao, e o
+     segundo toque tirava a classe com o painel ainda aberto. O teclado continua
+     servido — Enter e Espaco no `<button>` sao clique, e o site.js fecha quando
+     o foco sai do painel. */
+  .p-dropdown.dropdown-active > .p-dropdown-content {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);

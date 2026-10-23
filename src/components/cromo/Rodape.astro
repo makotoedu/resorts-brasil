@@ -99,8 +99,12 @@ const colunas: { titulo: string; itens: { rotulo: string; href: string }[] }[] =
 ];
 
 /* O e-mail quebra depois da arroba, e so se precisar: a coluna mede 165px no
-   celular. Ver a nota do <PaginaContato>. */
+   celular. Ver a nota do <PaginaContato>. A 320 ela mede 115, menos que o
+   dominio inteiro, e o `wrap-anywhere` partia "resortsbrasil.co|m.br"; o
+   segundo ponto de quebra fica antes do primeiro ponto do dominio. */
 const [usuario, dominio] = contato.email.split('@');
+const [marcaDominio, ...restoDominio] = dominio.split('.');
+const sufixoDominio = restoDominio.length ? `.${restoDominio.join('.')}` : '';
 
 /*
  * O telefone pode quebrar entre "+55 11" e o resto, que e onde se agrupa um
@@ -171,7 +175,7 @@ const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
                 <ul class="lista contato">
                   <li>
                     <a href={`mailto:${contato.email}`} class="wrap-anywhere">
-                      {usuario}@<wbr />{dominio}
+                      {usuario}@<wbr />{marcaDominio}<wbr />{sufixoDominio}
                     </a>
                   </li>
                   <li>
@@ -408,6 +412,27 @@ const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
     font-size: var(--text-sm);
   }
 
+  /*
+   * O ALVO E A LINHA, NAO O TEXTO. Inline, o link media os 18px do proprio
+   * texto dentro de uma linha de 32: passava no 2.5.8 so pelo espacamento, e o
+   * medidor o isentava como "link inline em `li`", que e regra para link no
+   * meio de uma frase. Em `inline-block` ele herda os 32px da linha sem mover
+   * nada; o `vertical-align: top` impede a linha de crescer pelo alinhamento
+   * de base entre o corpo de 16px do `li` e o de 14px do link.
+   */
+  .lista a,
+  .legal a {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  /* No contato a linha e 20px mais 6 de recuo de cada lado: o link estende o
+     alvo pelo recuo e o devolve na margem, e mede os mesmos 32. */
+  .contato a {
+    padding-block: 0.375rem;
+    margin-block: -0.375rem;
+  }
+
   .lista a:hover,
   .legal a:hover,
   .cookie-manage-btn:hover {
@@ -424,6 +449,23 @@ const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
   }
 
   /*
+   * ABAIXO DE 86rem A RESERVA DO VOLTAR-AO-TOPO E EMBAIXO. A nota da `.faixa`
+   * dizia que, centrada, a ponta direita nunca chegava ao botao -- e chegava:
+   * no celular a faixa quebra em tres ou quatro linhas, e a ultima ia ate a
+   * borda. Medido de 320 a 1400px, de 20 em 20: de 340 a 760 o botao cobria o
+   * "Cloudbe" ou o "Preferencias de cookies", nos tres idiomas.
+   *
+   * 80px = 26 do pe ate o botao, 44 do botao e 10 de folga, que cobrem tambem
+   * os 6px que o `::after` do botao de cookies estende o alvo. Rolando ate o
+   * fim, a ultima linha fica inteira acima do botao.
+   */
+  @media (max-width: 85.9375rem) {
+    .copyright {
+      padding-block-end: 5rem;
+    }
+  }
+
+  /*
    * Duas pontas: a autoria a esquerda, os documentos e o credito a direita.
    * Abaixo disso, empilhadas e centradas, que e como a faixa sempre foi.
    *
@@ -435,8 +477,8 @@ const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
    *
    * OS 48px SAO DO VOLTAR-AO-TOPO. Ele flutua a 24px da borda e 26px do pe,
    * com 44px de lado, e rolando ate o fim cobria os ultimos 28px da faixa --
-   * o "Cloudbe". Com o texto centrado, como a faixa sempre foi, a ponta
-   * direita nunca chegava ali; em duas pontas, chega.
+   * o "Cloudbe". Abaixo de 86rem a reserva e outra, embaixo da faixa: ver a
+   * regra da `.copyright`.
    */
   .faixa {
     display: flex;
@@ -493,8 +535,8 @@ const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
 
   /* O alvo de toque do botao de preferencias: ele mede a linha do copyright,
      32px, e o pseudo-elemento leva o alvo a 44 so na vertical -- largura ele
-     ja tem. Mesma tecnica do <LinkAcao>. Os links ao lado sao inline dentro
-     de `<li>`, que a WCAG 2.5.8 isenta. */
+     ja tem. Mesma tecnica do <LinkAcao>. Os links ao lado medem os 32px da
+     linha, pelo `inline-block` da regra das listas. */
   .cookie-manage-btn::after {
     content: '';
     position: absolute;
