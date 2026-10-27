@@ -4380,3 +4380,104 @@ submenu depois de três navegações, e os retângulos de cada palavra.
 - o `sizes` dos autores do e-book diz 90vw para cartões que são dois por linha;
 - ao abrir o menu, o logotipo sobe 12 a 16px, porque a barra deixa de repartir a
   sobra entre as linhas. É anterior a esta revisão.
+
+# Rodapé enxuto, contato revisto e o CTA âmbar (27/10/2026)
+
+Nove pedidos do responsável, numa lista só: quatro no rodapé, quatro na página
+de contato e um no cabeçalho. Os pixels que mudaram estão em
+[deltas-visuais.md](deltas-visuais.md), "Rodapé enxuto, contato revisto e o CTA
+âmbar".
+
+## Os pedidos, e como cada um saiu
+
+- **Rodapé.** A frase da associação saiu de baixo da marca, e o `footerTagline`
+  saiu dos três idiomas. A linha de copyright perdeu o nome por extenso: "©
+  2026 Resorts Brasil · Todos os direitos reservados.", com o mesmo corte em EN e
+  ES. O endereço perdeu a sala e o CEP. O WhatsApp ficou só com o número.
+- **Contato.** A frase de abertura saiu, e o `contactLead` também. A caixa de
+  assuntos virou `<Cartao>`. O espaço no meio do e-mail sumiu. Os cartões de canal
+  foram revistos.
+- **Cabeçalho.** O "Fale conosco" passou à variante `destaque` do `<Botao>`:
+  âmbar com o navy por cima, 9,10:1 em repouso e 6,12:1 no hover. É o par que o
+  `tokens.css` declara junto, e o mesmo botão nas duas variações do cromo: um
+  botão cheio não depende do fundo de quem o contém.
+
+## O que foi interpretado, e não pedido ao pé da letra
+
+- **A sala e o CEP saíram só do rodapé.** O pedido veio na lista do rodapé, e a
+  página de contato apresenta o endereço como "para correspondências", que sem
+  sala e sem CEP não chega. O `contato.ts` separou a `rua` do `complemento` e
+  ganhou `linhasCurtas`. A segunda linha dos dois endereços virou uma constante
+  só, com o espaço inseparável dentro, para os dois não divergirem. O JSON-LD
+  continua com o `streetAddress` completo e o `postalCode`.
+- **"WhatsApp" saiu do texto visível, e não do nome acessível.** Um `.sr-only`
+  depois do número diz " (WhatsApp)" a quem ouve a página: o link abre o
+  WhatsApp, e não uma chamada. Como o nome acessível começa pelo texto visível,
+  quem navega por voz continua chamando o link pelo número (critério 2.5.3).
+- **"Estilo diferente dos demais cards" foi lido como a superfície.** A caixa
+  de assuntos era uma `<ChamadaAcao fundo="clara">`: névoa sem fio nem sombra, e
+  com o recuo de chamada. Era a única superfície da página com outro desenho.
+  Virou um `<Cartao>`: branco, com fio, `--shadow-1` e 24px de recuo, igual aos
+  canais acima. As linhas com fio lá dentro ficaram, porque a razão delas (o A21)
+  continua valendo. O cartão não é interativo, porque quem responde são os links
+  de cada linha.
+
+## Os cartões de canal
+
+| | antes | depois | motivo |
+|---|---|---|---|
+| símbolo | glifo solto de 48px | glifo de 24px numa pastilha de 48px, no raio `sm` | três glifos de traço fino soltos no canto de cartões brancos. Na pastilha eles ganham o peso de um controle, e o cartão inteiro passou a ser um |
+| fundo da pastilha | — | `color-mix(in srgb, currentColor 10%, transparent)` | é a cor do próprio símbolo a 10%, a mesma mistura do `--color-estado-atual`, e por isso não precisa de token nem de variação por tom. Prop nova `pastilha` da `<CaixaIcone>`, no catálogo |
+| alvo | o link: 20px de linha, 44 com o `::after` | o cartão inteiro, com `<LinkAcao esticado>` num `<Cartao interativo>` | no celular o cartão mede uns 350×200px, e só a linha do link respondia ao toque. No hover o cartão sobe e ganha a `--shadow-2`, e a seta desliza |
+| ação | na base, solta | na base, com fio em cima e 20px de recuo | na fileira de três o endereço tem três linhas a mais, e o vão entre a frase e o link dos outros dois parecia conteúdo faltando. Com o fio, o vão vira o rodapé do cartão. É o mesmo fio das linhas de assunto |
+| endereço | — | acima do link esticado (`z-index: 1`) | é o único texto da página que alguém copia. Sem isso, arrastar o mouse sobre ele abria o mapa |
+
+Os textos dos cartões não mudaram. Continua valendo **um link por cartão, e o
+link é o valor**; o link esticado não acrescenta destino, só alarga o alvo.
+
+**Um desalinhamento ficou, e é anterior.** Entre uns 826 e 970px de janela o
+e-mail quebra depois da arroba (ver "Os valores decididos" da seção anterior), e
+o fio daquele cartão sobe 18px em relação aos outros dois. Antes do fio, eram os
+links que ficavam desalinhados nessa mesma faixa.
+
+## O espaço no e-mail, que só o Firefox mostrava
+
+O endereço levava um `<wbr>` depois da arroba, e o `<LinkAcao>` é `inline-flex`
+com 6px de `gap`. **No Firefox o `<wbr>` vira item de flex**: "contato@" e
+"resortsbrasil.com.br" saíam como dois itens, com o `gap` dos dois lados do
+`<wbr>`. Medido nos retângulos do texto, o primeiro trecho terminava em 142,4px e
+o segundo começava em 154,4px. O Chromium funde o `<wbr>` no texto vizinho e
+desenha a palavra inteira, e por isso **nenhum portão viu: todos rodam no
+Chromium**.
+
+A correção é um `<span>` em volta do endereço, que faz dele um item só, e o
+ponto de quebra continua lá dentro. Conferido de novo no Firefox, o link passa a
+ter um `SPAN` e o chevron. O rodapé não tinha o defeito, porque o link de lá é
+`inline-block`.
+
+**A regra geral:** dentro de um container flex, todo elemento filho é um item, e
+o texto dos dois lados dele vira dois itens, com o `gap` no meio. Um `<wbr>` ou
+um `<b>` no meio do rótulo de um `<LinkAcao>` precisa de um elemento em volta do
+rótulo inteiro. E só o Chromium perdoa o `<wbr>`, então conferir no Chromium não
+basta.
+
+## O que só a medição pegou
+
+**Trocar a superfície levou junto uma regra que ninguém via.** A `<ChamadaAcao>`
+limita todo `<p>` de dentro à `--container-linha`; o `<Cartao>` não. Na troca, a
+coluna do argumento de cada assunto ficou com 1.055px no desktop, uns 145
+caracteres por linha, e os seis portões passaram: nenhum reprova linha longa. Foi
+o `scripts/medir-sistema.mjs` que acusou, de zero para três parágrafos acima de
+75 (os três assuntos, nos três idiomas). O limite voltou, escrito na página, e o
+texto mais longo fica em 71 caracteres.
+
+Medido depois, no computado, nas 40 páginas × 3 viewports: nenhum parágrafo
+acima de 75 caracteres (máximo de 74), só os três raios do sistema, e DM Sans e
+Poppins em 400, 500 e 600. **Um alvo novo abaixo de 44px**, e é do mesmo tipo
+dos que já estavam lá: sem o "WhatsApp" na frente, o número do rodapé cabe numa
+linha e passa a medir os 32px da linha da coluna, como os outros links dela.
+Antes ele quebrava em duas linhas e media 52.
+
+**O orçamento não regravou nada.** As 82 medidas ficaram dentro dos 5%, sem
+nenhuma engordar nem emagrecer além da folga: o rodapé perdeu uma frase em cada
+página, e o contato ganhou a pastilha e o fio, que vão embutidos só no HTML dele.

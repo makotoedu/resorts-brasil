@@ -995,6 +995,24 @@ larguras, fora o rodapé.
 cuja base ainda era a de antes do Soft UI. O resto do porquê está no
 `decisoes.md`.
 
+## Rodapé enxuto, contato revisto e o CTA âmbar
+
+27/10/2026. Todos os itens são pedido do responsável, e o porquê de cada valor
+está em [decisoes.md](decisoes.md), na seção de mesmo nome.
+
+| o quê | páginas | tipo | motivo |
+|---|---|---|---|
+| "Fale conosco" | cromo × 41, claro e escuro | **redesenho** | o `<Botao>` do menu passa do azul de ação ao âmbar da variante `destaque`, com o navy por cima (9,10:1) |
+| frase da marca | rodapé × 41 | **redesenho** | sai. Sob o logotipo ficam só as redes, e a célula da marca encurta |
+| linha de copyright | rodapé × 41 | **redesenho** | "Resorts Brasil · Todos os direitos reservados.", sem o nome da associação por extenso, nos três idiomas |
+| endereço | rodapé × 41 | **redesenho** | duas linhas, sem a sala e sem o CEP. A página de contato continua com os dois |
+| WhatsApp | rodapé × 41 | **redesenho** | só o número. O nome do canal continua no nome acessível |
+| abertura | contato × 3 | **redesenho** | a frase sob o título sai, e os cartões sobem 80px no desktop |
+| e-mail | contato × 3 | **correção** | no Firefox, 12px de espaço entre "contato@" e o domínio. O Chromium nunca mostrou |
+| assuntos | contato × 3 | **correção** | a caixa passa ao `<Cartao>`, branco com fio e sombra, igual aos canais, e o recuo cai dos 48px da chamada para 24px no desktop. Era a única superfície da página com outro desenho |
+| cartões de canal | contato × 3 | **redesenho** | símbolo numa pastilha de 48px, fio sobre a ação, cartão inteiro clicável, que sobe no hover |
+| catálogo | `/design` | **refino** | uma demonstração da `pastilha` da `<CaixaIcone>` |
+
 ## Como classificar um delta novo
 
 Ao rodar o diff numa etapa, cada página acima do limiar entra aqui com captura,

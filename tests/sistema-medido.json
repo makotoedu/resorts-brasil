@@ -1,5 +1,5 @@
 {
-  "medidoEm": "2026-10-23",
+  "medidoEm": "2026-10-27",
   "base": "http://localhost:4330",
   "resumo": {
     "mobile": {
@@ -56,24 +56,24 @@
         },
         {
           "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
-          "n": 379,
+          "n": 340,
           "paginas": 40,
           "exemplos": [
             {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
               "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
+              "texto": "© 2026 Resorts Brasil · Todos os direitos reserv",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
               "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
               "texto": "Presidente do Conselho",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "p.text-sm.text-texto-sutil.text-center",
+              "texto": "Biênio 2026-2027",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
             }
@@ -148,7 +148,7 @@
             },
             {
               "seletor": "address",
-              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
+              "texto": "R. Prof. Carlos de Carvalho, 28Itaim Bibi, São P",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -256,8 +256,8 @@
         },
         {
           "chave": "DM Sans 19px 400 lh1.4 ls0em normal",
-          "n": 52,
-          "paginas": 31,
+          "n": 49,
+          "paginas": 28,
           "exemplos": [
             {
               "seletor": "span.text-md.text-texto-sutil.max-w-abertura",
@@ -563,7 +563,7 @@
       "familias": [
         {
           "chave": "DM Sans",
-          "n": 2277,
+          "n": 2235,
           "paginas": 41,
           "exemplos": [
             {
@@ -615,7 +615,7 @@
       "pesos": [
         {
           "chave": "400",
-          "n": 1739,
+          "n": 1697,
           "paginas": 41,
           "exemplos": [
             {
@@ -625,14 +625,14 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
+              "seletor": "a",
+              "texto": "Resorts Brasil",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "a",
-              "texto": "Resorts Brasil",
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -692,15 +692,9 @@
       "tamanhos": [
         {
           "chave": "14",
-          "n": 1140,
+          "n": 1101,
           "paginas": 40,
           "exemplos": [
-            {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
             {
               "seletor": "a",
               "texto": "Resorts Brasil",
@@ -710,6 +704,12 @@
             {
               "seletor": "a.wrap-anywhere",
               "texto": "contato@resortsbrasil.com.br",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "span.whitespace-nowrap",
+              "texto": "95058-0313",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -742,7 +742,7 @@
         },
         {
           "chave": "19",
-          "n": 337,
+          "n": 334,
           "paginas": 37,
           "exemplos": [
             {
@@ -957,18 +957,12 @@
         },
         {
           "chave": "1.5",
-          "n": 379,
+          "n": 340,
           "paginas": 40,
           "exemplos": [
             {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
               "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
+              "texto": "© 2026 Resorts Brasil · Todos os direitos reserv",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
@@ -977,12 +971,18 @@
               "texto": "Presidente do Conselho",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
+            },
+            {
+              "seletor": "p.text-sm.text-texto-sutil.text-center",
+              "texto": "Biênio 2026-2027",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
             }
           ]
         },
         {
           "chave": "1.4",
-          "n": 337,
+          "n": 334,
           "paginas": 37,
           "exemplos": [
             {
@@ -1074,7 +1074,7 @@
             },
             {
               "seletor": "address",
-              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
+              "texto": "R. Prof. Carlos de Carvalho, 28Itaim Bibi, São P",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -1314,7 +1314,7 @@
       "raios": [
         {
           "chave": "9999px",
-          "n": 341,
+          "n": 358,
           "paginas": 39,
           "exemplos": [
             {
@@ -1323,14 +1323,14 @@
               "regiao": "rodape"
             },
             {
+              "seletor": "a.topo",
+              "pagina": "/index.html",
+              "regiao": "outro"
+            },
+            {
               "seletor": "a.social",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
-            },
-            {
-              "seletor": "a.topo",
-              "pagina": "/diretoria.html",
-              "regiao": "outro"
             }
           ]
         },
@@ -1358,7 +1358,7 @@
         },
         {
           "chave": "8px",
-          "n": 128,
+          "n": 137,
           "paginas": 41,
           "exemplos": [
             {
@@ -1367,12 +1367,12 @@
               "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.voz-acao.v-primaria",
+              "seletor": "a.botao.voz-acao.v-destaque",
               "pagina": "/index.html",
               "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.voz-acao.v-destaque",
+              "seletor": "img.rounded-md",
               "pagina": "/index.html",
               "regiao": "conteudo"
             }
@@ -1380,7 +1380,7 @@
         }
       ],
       "linha": {
-        "paragrafos": 338,
+        "paragrafos": 335,
         "min": 20,
         "mediana": 46,
         "max": 50,
@@ -1471,6 +1471,16 @@
           "seletor": "a",
           "texto": "E-book",
           "w": 48,
+          "h": 32,
+          "inline": false,
+          "regiao": "rodape",
+          "pagina": "/index.html",
+          "ocorrencias": 39
+        },
+        {
+          "seletor": "a.wrap-anywhere",
+          "texto": "+55 11 95058-0313 (WhatsApp)",
+          "w": 123,
           "h": 32,
           "inline": false,
           "regiao": "rodape",
@@ -1743,24 +1753,24 @@
         },
         {
           "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
-          "n": 379,
+          "n": 340,
           "paginas": 40,
           "exemplos": [
             {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
               "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
+              "texto": "© 2026 Resorts Brasil · Todos os direitos reserv",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
               "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
               "texto": "Presidente do Conselho",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "p.text-sm.text-texto-sutil.text-center",
+              "texto": "Biênio 2026-2027",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
             }
@@ -1835,7 +1845,7 @@
             },
             {
               "seletor": "address",
-              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
+              "texto": "R. Prof. Carlos de Carvalho, 28Itaim Bibi, São P",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -1943,8 +1953,8 @@
         },
         {
           "chave": "DM Sans 19.36px 400 lh1.4 ls0em normal",
-          "n": 52,
-          "paginas": 31,
+          "n": 49,
+          "paginas": 28,
           "exemplos": [
             {
               "seletor": "span.text-md.text-texto-sutil.max-w-abertura",
@@ -2250,7 +2260,7 @@
       "familias": [
         {
           "chave": "DM Sans",
-          "n": 2288,
+          "n": 2246,
           "paginas": 41,
           "exemplos": [
             {
@@ -2302,7 +2312,7 @@
       "pesos": [
         {
           "chave": "400",
-          "n": 1746,
+          "n": 1704,
           "paginas": 41,
           "exemplos": [
             {
@@ -2312,14 +2322,14 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
+              "seletor": "a",
+              "texto": "Resorts Brasil",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "a",
-              "texto": "Resorts Brasil",
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -2379,15 +2389,9 @@
       "tamanhos": [
         {
           "chave": "14",
-          "n": 1140,
+          "n": 1101,
           "paginas": 40,
           "exemplos": [
-            {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
             {
               "seletor": "a",
               "texto": "Resorts Brasil",
@@ -2397,6 +2401,12 @@
             {
               "seletor": "a.wrap-anywhere",
               "texto": "contato@resortsbrasil.com.br",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "span.whitespace-nowrap",
+              "texto": "95058-0313",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -2429,7 +2439,7 @@
         },
         {
           "chave": "19.36",
-          "n": 343,
+          "n": 340,
           "paginas": 37,
           "exemplos": [
             {
@@ -2644,18 +2654,12 @@
         },
         {
           "chave": "1.5",
-          "n": 379,
+          "n": 340,
           "paginas": 40,
           "exemplos": [
             {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
               "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
+              "texto": "© 2026 Resorts Brasil · Todos os direitos reserv",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
@@ -2664,12 +2668,18 @@
               "texto": "Presidente do Conselho",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
+            },
+            {
+              "seletor": "p.text-sm.text-texto-sutil.text-center",
+              "texto": "Biênio 2026-2027",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
             }
           ]
         },
         {
           "chave": "1.4",
-          "n": 337,
+          "n": 334,
           "paginas": 37,
           "exemplos": [
             {
@@ -2761,7 +2771,7 @@
             },
             {
               "seletor": "address",
-              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
+              "texto": "R. Prof. Carlos de Carvalho, 28Itaim Bibi, São P",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -3001,7 +3011,7 @@
       "raios": [
         {
           "chave": "9999px",
-          "n": 343,
+          "n": 362,
           "paginas": 39,
           "exemplos": [
             {
@@ -3010,14 +3020,14 @@
               "regiao": "rodape"
             },
             {
+              "seletor": "a.topo",
+              "pagina": "/index.html",
+              "regiao": "outro"
+            },
+            {
               "seletor": "a.social",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
-            },
-            {
-              "seletor": "a.topo",
-              "pagina": "/diretoria.html",
-              "regiao": "outro"
             }
           ]
         },
@@ -3045,7 +3055,7 @@
         },
         {
           "chave": "8px",
-          "n": 128,
+          "n": 137,
           "paginas": 41,
           "exemplos": [
             {
@@ -3054,12 +3064,12 @@
               "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.voz-acao.v-primaria",
+              "seletor": "a.botao.voz-acao.v-destaque",
               "pagina": "/index.html",
               "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.voz-acao.v-destaque",
+              "seletor": "img.rounded-md",
               "pagina": "/index.html",
               "regiao": "conteudo"
             }
@@ -3067,10 +3077,10 @@
         }
       ],
       "linha": {
-        "paragrafos": 338,
+        "paragrafos": 335,
         "min": 23,
         "mediana": 68,
-        "max": 75,
+        "max": 74,
         "acimaDe75": 0
       }
     },
@@ -3127,31 +3137,6 @@
           ]
         },
         {
-          "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
-          "n": 379,
-          "paginas": 40,
-          "exemplos": [
-            {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
-              "texto": "Presidente do Conselho",
-              "pagina": "/diretoria.html",
-              "regiao": "conteudo"
-            }
-          ]
-        },
-        {
           "chave": "DM Sans 16px 600 lh1.25 ls0em normal",
           "n": 376,
           "paginas": 41,
@@ -3169,10 +3154,35 @@
               "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.voz-acao.v-primaria",
+              "seletor": "a.botao.voz-acao.v-destaque",
               "texto": "Fale conosco",
               "pagina": "/index.html",
               "regiao": "cabecalho"
+            }
+          ]
+        },
+        {
+          "chave": "DM Sans 14px 400 lh1.5 ls0em normal",
+          "n": 340,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "p.copyright-texto",
+              "texto": "© 2026 Resorts Brasil · Todos os direitos reserv",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "p.text-sm.text-texto-paragrafo.mb-0",
+              "texto": "Presidente do Conselho",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
+            },
+            {
+              "seletor": "p.text-sm.text-texto-sutil.text-center",
+              "texto": "Biênio 2026-2027",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
             }
           ]
         },
@@ -3245,7 +3255,7 @@
             },
             {
               "seletor": "address",
-              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
+              "texto": "R. Prof. Carlos de Carvalho, 28Itaim Bibi, São P",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -3328,8 +3338,8 @@
         },
         {
           "chave": "DM Sans 20px 400 lh1.4 ls0em normal",
-          "n": 52,
-          "paginas": 31,
+          "n": 49,
+          "paginas": 28,
           "exemplos": [
             {
               "seletor": "span.text-md.text-texto-sutil.max-w-abertura",
@@ -3661,7 +3671,7 @@
       "familias": [
         {
           "chave": "DM Sans",
-          "n": 2602,
+          "n": 2560,
           "paginas": 41,
           "exemplos": [
             {
@@ -3713,7 +3723,7 @@
       "pesos": [
         {
           "chave": "400",
-          "n": 1746,
+          "n": 1704,
           "paginas": 41,
           "exemplos": [
             {
@@ -3723,14 +3733,14 @@
               "regiao": "conteudo"
             },
             {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
+              "seletor": "a",
+              "texto": "Resorts Brasil",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
             {
-              "seletor": "a",
-              "texto": "Resorts Brasil",
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -3789,31 +3799,6 @@
       ],
       "tamanhos": [
         {
-          "chave": "14",
-          "n": 1140,
-          "paginas": 40,
-          "exemplos": [
-            {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "a",
-              "texto": "Resorts Brasil",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
-              "seletor": "a.wrap-anywhere",
-              "texto": "contato@resortsbrasil.com.br",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            }
-          ]
-        },
-        {
           "chave": "16",
           "n": 1110,
           "paginas": 41,
@@ -3831,7 +3816,7 @@
               "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.voz-acao.v-primaria",
+              "seletor": "a.botao.voz-acao.v-destaque",
               "texto": "Fale conosco",
               "pagina": "/index.html",
               "regiao": "cabecalho"
@@ -3839,8 +3824,33 @@
           ]
         },
         {
+          "chave": "14",
+          "n": 1101,
+          "paginas": 40,
+          "exemplos": [
+            {
+              "seletor": "a",
+              "texto": "Resorts Brasil",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "a.wrap-anywhere",
+              "texto": "contato@resortsbrasil.com.br",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            },
+            {
+              "seletor": "span.whitespace-nowrap",
+              "texto": "95058-0313",
+              "pagina": "/index.html",
+              "regiao": "rodape"
+            }
+          ]
+        },
+        {
           "chave": "20",
-          "n": 343,
+          "n": 340,
           "paginas": 37,
           "exemplos": [
             {
@@ -4071,7 +4081,7 @@
               "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.voz-acao.v-primaria",
+              "seletor": "a.botao.voz-acao.v-destaque",
               "texto": "Fale conosco",
               "pagina": "/index.html",
               "regiao": "cabecalho"
@@ -4080,18 +4090,12 @@
         },
         {
           "chave": "1.5",
-          "n": 379,
+          "n": 340,
           "paginas": 40,
           "exemplos": [
             {
-              "seletor": "p.text-sm.text-texto-paragrafo",
-              "texto": "Desde 2001, a Associação Brasileira de Resorts r",
-              "pagina": "/index.html",
-              "regiao": "rodape"
-            },
-            {
               "seletor": "p.copyright-texto",
-              "texto": "© 2026 Resorts Brasil · Associação Brasileira de",
+              "texto": "© 2026 Resorts Brasil · Todos os direitos reserv",
               "pagina": "/index.html",
               "regiao": "rodape"
             },
@@ -4100,12 +4104,18 @@
               "texto": "Presidente do Conselho",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
+            },
+            {
+              "seletor": "p.text-sm.text-texto-sutil.text-center",
+              "texto": "Biênio 2026-2027",
+              "pagina": "/diretoria.html",
+              "regiao": "conteudo"
             }
           ]
         },
         {
           "chave": "1.4",
-          "n": 337,
+          "n": 334,
           "paginas": 37,
           "exemplos": [
             {
@@ -4172,7 +4182,7 @@
             },
             {
               "seletor": "address",
-              "texto": "R. Prof. Carlos de Carvalho, 28, sl. 82Itaim Bib",
+              "texto": "R. Prof. Carlos de Carvalho, 28Itaim Bibi, São P",
               "pagina": "/index.html",
               "regiao": "rodape"
             }
@@ -4431,7 +4441,7 @@
       "raios": [
         {
           "chave": "9999px",
-          "n": 348,
+          "n": 361,
           "paginas": 39,
           "exemplos": [
             {
@@ -4440,14 +4450,14 @@
               "regiao": "rodape"
             },
             {
+              "seletor": "a.topo",
+              "pagina": "/index.html",
+              "regiao": "outro"
+            },
+            {
               "seletor": "a.social",
               "pagina": "/diretoria.html",
               "regiao": "conteudo"
-            },
-            {
-              "seletor": "a.topo",
-              "pagina": "/diretoria.html",
-              "regiao": "outro"
             }
           ]
         },
@@ -4475,7 +4485,7 @@
         },
         {
           "chave": "8px",
-          "n": 128,
+          "n": 137,
           "paginas": 41,
           "exemplos": [
             {
@@ -4484,12 +4494,12 @@
               "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.voz-acao.v-primaria",
+              "seletor": "a.botao.voz-acao.v-destaque",
               "pagina": "/index.html",
               "regiao": "cabecalho"
             },
             {
-              "seletor": "a.botao.voz-acao.v-destaque",
+              "seletor": "img.rounded-md",
               "pagina": "/index.html",
               "regiao": "conteudo"
             }
@@ -4497,7 +4507,7 @@
         }
       ],
       "linha": {
-        "paragrafos": 338,
+        "paragrafos": 335,
         "min": 35,
         "mediana": 68,
         "max": 74,
