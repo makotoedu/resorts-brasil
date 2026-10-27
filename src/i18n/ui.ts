@@ -374,16 +374,15 @@ export const ui = {
      * nome proprio para o mesmo grupo foi o que deixou "Sobre nos" e "Resorts
      * Brasil" lado a lado apontando para a mesma pagina.
      */
-    footerTagline:
-      'Desde 2001, a Associação Brasileira de Resorts representa os principais resorts do país e trabalha para transformar o segmento e o turismo nacional.',
     footerContact: 'Contato',
     footerEbook: 'E-book',
     footerPrivacy: 'Política de privacidade',
     footerTerms: 'Termos de uso',
     footerStatistics: 'Estatísticas e Estudos',
     /* Era "Resorts Brasil - Todos os direitos reservados. by", com o credito
-       da agencia em ingles nos tres idiomas. O credito agora e `footerCredit`. */
-    copyright: 'Resorts Brasil · Associação Brasileira de Resorts. Todos os direitos reservados.',
+       da agencia em ingles nos tres idiomas. O credito agora e `footerCredit`.
+       O nome por extenso da associacao saiu em 27/10/2026. */
+    copyright: 'Resorts Brasil · Todos os direitos reservados.',
     footerCredit: 'Desenvolvido por',
     regioesAssociados: { sudeste: 'Sudeste', sul: 'Sul', norte: 'Norte', nordeste: 'Nordeste', 'centro-oeste': 'Centro-Oeste' },
     cookieRegion: 'Aviso de cookies',
@@ -435,8 +434,6 @@ export const ui = {
     historyBookTitle: 'Memórias, sustentabilidade e um olhar para o futuro',
 
     contactTitle: 'Como você prefere falar com a gente?',
-    contactLead:
-      'Dúvidas, convites, associação de resorts, parcerias ou imprensa: escolha o canal e fale com a equipe da Resorts Brasil.',
     contactEmailTitle: 'E-mail',
     contactEmailText: 'Tem alguma dúvida? Podemos te ajudar pelo nosso canal de e-mail.',
     contactAddressTitle: 'Endereço',
@@ -764,14 +761,12 @@ export const ui = {
     navSupport: 'Support Tourism',
     navContact: 'Contact us',
     langOther: { 'pt-br': 'Portuguese (BR)', 'es-es': 'Spanish (ES)' },
-    footerTagline:
-      "Since 2001, the Brazilian Association of Resorts has represented the country's leading resorts, working to transform the segment and Brazilian tourism.",
     footerContact: 'Contact',
     footerEbook: 'E-book',
     footerPrivacy: 'Privacy policy',
     footerTerms: 'Terms of use',
     footerStatistics: 'Statistics and Studies',
-    copyright: 'Resorts Brasil · Brazilian Association of Resorts. All rights reserved.',
+    copyright: 'Resorts Brasil · All rights reserved.',
     footerCredit: 'Developed by',
     regioesAssociados: { sudeste: 'Southeast', sul: 'South', norte: 'North', nordeste: 'Northeast', 'centro-oeste': 'Midwest' },
     cookieRegion: 'Cookie notice',
@@ -806,8 +801,6 @@ export const ui = {
     historyBookTitle: 'Memories, sustainability and a look to the future',
 
     contactTitle: 'How would you like to contact us?',
-    contactLead:
-      'Questions, invitations, resort membership, partnerships or press: choose a channel and talk to the Resorts Brasil team.',
     contactEmailTitle: 'Email',
     contactEmailText: 'Questions? We can help you via email.',
     contactAddressTitle: 'Address',
@@ -1052,14 +1045,12 @@ export const ui = {
     navSupport: 'Apoye al turismo',
     navContact: 'Contáctenos',
     langOther: { 'pt-br': 'Portugués (BR)', 'en-us': 'Inglés (EN)' },
-    footerTagline:
-      'Desde 2001, la Asociación Brasileña de Resorts representa a los principales resorts del país y trabaja para transformar el segmento y el turismo nacional.',
     footerContact: 'Contacto',
     footerEbook: 'E-book',
     footerPrivacy: 'Política de privacidad',
     footerTerms: 'Términos de uso',
     footerStatistics: 'Estadísticas y estudios',
-    copyright: 'Resorts Brasil · Asociación Brasileña de Resorts. Todos los derechos reservados.',
+    copyright: 'Resorts Brasil · Todos los derechos reservados.',
     footerCredit: 'Desarrollado por',
     regioesAssociados: { sudeste: 'Sureste', sul: 'Sur', norte: 'Norte', nordeste: 'Noreste', 'centro-oeste': 'Centro-Oeste' },
     cookieRegion: 'Aviso de cookies',
@@ -1106,8 +1097,6 @@ export const ui = {
     /* Em *usted*, como o resto do site espanhol (Conozca, Asóciese, a propria
        rota `contactenos`). So esta pagina tratava o leitor por *tu*. */
     contactTitle: '¿Cómo prefiere hablar con nosotros?',
-    contactLead:
-      'Dudas, invitaciones, afiliación de resorts, colaboraciones o prensa: elija el canal y hable con el equipo de Resorts Brasil.',
     contactEmailTitle: 'E-mail',
     contactEmailText:
       '¿Tiene alguna duda? Podemos ayudarle a través de nuestro canal de correo electrónico.',

@@ -7,7 +7,6 @@ import Cartao from './primitivos/Cartao.astro';
 import Titulo from './primitivos/Titulo.astro';
 import Texto from './primitivos/Texto.astro';
 import CaixaIcone from './padroes/CaixaIcone.astro';
-import ChamadaAcao from './padroes/ChamadaAcao.astro';
 import TituloSecao from './padroes/TituloSecao.astro';
 import LinkAcao from './padroes/LinkAcao.astro';
 import { contato } from '../data/contato';
@@ -45,6 +44,14 @@ import { ui, type Locale } from '../i18n/ui';
  * link para o mesmo destino ("Enviar e-mail" ao lado do endereco de e-mail)
  * faria o teclado passar duas vezes pelo mesmo lugar, que foi o defeito da
  * capa da <CartaoPublicacao>.
+ *
+ * E DESDE 27/10/2026 ESSE LINK E O CARTAO INTEIRO: o <LinkAcao esticado> cobre
+ * o <Cartao interativo>, que sobe e ganha sombra no hover. O simbolo foi para
+ * uma pastilha e a acao ganhou um fio em cima, que faz do vao entre a frase e
+ * o link o rodape do cartao, e nao um buraco. Na mesma revisao saiu a frase de
+ * abertura, e a caixa de assuntos passou a ser um <Cartao> -- era uma
+ * <ChamadaAcao> no cinza claro, sem fio nem sombra, a unica superficie da
+ * pagina com outro desenho.
  */
 interface Props {
   lang: Locale;
@@ -63,11 +70,17 @@ const whatsapp = (mensagem?: string) =>
  * tem tres colunas mas a janela ainda e estreita (de 826 a uns 970px), o cartao
  * fica mais estreito que o endereco inteiro. O `overflow-wrap` do base.css o
  * cortaria onde calhasse; o `<wbr>` oferece o ponto que um revisor escolheria.
+ *
+ * O `<wbr>` VAI DENTRO DE UM `<span>`, e a razao so aparece no Firefox. O
+ * <LinkAcao> e `inline-flex` com 6px de `gap`, e la o `<wbr>` vira item de
+ * flex: "contato@" e "resortsbrasil.com.br" saiam como dois itens com 12px
+ * entre eles, um espaco no meio do endereco. O Chromium funde o `<wbr>` no
+ * texto vizinho, e por isso nenhum portao viu: todos rodam no Chromium.
  */
 const [usuario, dominio] = contato.email.split('@');
 ---
 
-<CabecalhoPagina id="fale-conosco" titulo={t.contactTitle} abertura={t.contactLead} />
+<CabecalhoPagina id="fale-conosco" titulo={t.contactTitle} />
 
 {/* `espacoBase="nenhum"`: a secao seguinte traz os 80px de cima dela, e os
     dois recuos somariam 160 -- a mesma junta contada duas vezes que o
@@ -79,38 +92,40 @@ const [usuario, dominio] = contato.email.split('@');
         linha inteira entre 30 e 48rem pela regra da propria <Grade>, que nasceu
         aqui e foi generalizada na revisao mobile. */}
     <Grade colunas={3} piso={1} espaco="md" como="ul">
-      <Cartao como="li">
+      <Cartao como="li" interativo>
         <div class="canal">
-          <CaixaIcone icone="mail" titulo={t.contactEmailTitle} nivel={2} tom="acao">
+          <CaixaIcone icone="mail" titulo={t.contactEmailTitle} nivel={2} tom="acao" pastilha>
             <Texto>{t.contactEmailText}</Texto>
           </CaixaIcone>
           <div class="acao">
-            <LinkAcao href={mailto(contato.email)}>{usuario}@<wbr />{dominio}</LinkAcao>
+            <LinkAcao href={mailto(contato.email)} esticado>
+              <span>{usuario}@<wbr />{dominio}</span>
+            </LinkAcao>
           </div>
         </div>
       </Cartao>
 
-      <Cartao como="li">
+      <Cartao como="li" interativo>
         <div class="canal">
-          <CaixaIcone icone="whatsapp" titulo={t.contactWhatsappTitle} nivel={2} tom="acao">
+          <CaixaIcone icone="whatsapp" titulo={t.contactWhatsappTitle} nivel={2} tom="acao" pastilha>
             <Texto>{t.contactWhatsappText}</Texto>
           </CaixaIcone>
           <div class="acao">
-            <LinkAcao href={whatsapp()} externo>{contato.whatsapp.telefone}</LinkAcao>
+            <LinkAcao href={whatsapp()} externo esticado>{contato.whatsapp.telefone}</LinkAcao>
           </div>
         </div>
       </Cartao>
 
-      <Cartao como="li">
+      <Cartao como="li" interativo>
         <div class="canal">
-          <CaixaIcone icone="map-pin" titulo={t.contactAddressTitle} nivel={2} tom="acao">
+          <CaixaIcone icone="map-pin" titulo={t.contactAddressTitle} nivel={2} tom="acao" pastilha>
             <Texto>{t.contactAddressText}</Texto>
             <address>
               {contato.endereco.linhas.map((linha) => <span>{linha}</span>)}
             </address>
           </CaixaIcone>
           <div class="acao">
-            <LinkAcao href={contato.endereco.mapa} externo>{t.contactMapAction}</LinkAcao>
+            <LinkAcao href={contato.endereco.mapa} externo esticado>{t.contactMapAction}</LinkAcao>
           </div>
         </div>
       </Cartao>
@@ -120,7 +135,10 @@ const [usuario, dominio] = contato.email.split('@');
 
 <Secao id="assuntos">
   <Container>
-    <ChamadaAcao fundo="clara">
+    {/* Um <Cartao>, a mesma superficie dos canais acima: fundo branco, fio e
+        sombra de repouso. Nao e interativo -- quem responde sao os links de
+        cada linha, e o cartao inteiro nao leva a lugar nenhum. */}
+    <Cartao>
       <TituloSecao nivel={2} alinhamento="inicio">{t.contactTopicsTitle}</TituloSecao>
 
       {/* Linhas com fio, e nao uma segunda grade de cartoes: tres cartoes de
@@ -165,7 +183,7 @@ const [usuario, dominio] = contato.email.split('@');
           </li>
         </ul>
       </div>
-    </ChamadaAcao>
+    </Cartao>
   </Container>
 </Secao>
 
@@ -187,8 +205,16 @@ const [usuario, dominio] = contato.email.split('@');
     gap: 1.5rem;
   }
 
+  /*
+   * O fio faz da acao o rodape do cartao. Na fileira de tres, o endereco tem
+   * tres linhas a mais que o e-mail, e sem o fio o vao entre a frase e o link
+   * dos outros dois parecia conteudo faltando. E o mesmo fio das linhas de
+   * assunto, logo abaixo.
+   */
   .acao {
     margin-top: auto;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-borda);
   }
 
   /* Sem isto, um e-mail longo num cartao estreito empurraria a largura do
@@ -203,8 +229,15 @@ const [usuario, dominio] = contato.email.split('@');
    * tipografia le familia e peso, nao `font-style`, entao so este arquivo
    * impede o desvio. Sem `:global`: o elemento vai para o slot da
    * <CaixaIcone>, mas o markup e deste template, e o escopo daqui o alcanca.
+   *
+   * E ele fica ACIMA DO LINK ESTICADO, e so ele. O `::after` do "Ver no mapa"
+   * cobre o cartao, e o endereco e o unico texto daqui que alguem copia -- para
+   * um formulario de entrega, para um envelope. Sem o `z-index`, arrastar o
+   * mouse sobre ele abria o mapa em vez de selecionar.
    */
   address {
+    position: relative;
+    z-index: 1;
     font-style: normal;
     color: var(--color-texto);
   }
@@ -273,6 +306,16 @@ const [usuario, dominio] = contato.email.split('@');
   /* `:global` porque o `<h3>` e o `<p>` nascem no <Titulo> e no <Texto>. */
   .texto > :global(*) {
     margin-block: 0;
+  }
+
+  /*
+   * A LINHA DE LEITURA, que a <ChamadaAcao> dava e o <Cartao> nao da. Na troca,
+   * a coluna do argumento ficou com 1055px no desktop, uns 145 caracteres por
+   * linha, e o medir-sistema.mjs acusou os tres assuntos nos tres idiomas: de
+   * zero para tres paragrafos acima de 75.
+   */
+  .texto > :global(p) {
+    max-width: var(--container-linha);
   }
 
   /*

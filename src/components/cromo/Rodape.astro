@@ -3,7 +3,6 @@ import Container from '../layout/Container.astro';
 import Grade from '../layout/Grade.astro';
 import Imagem from '../primitivos/Imagem.astro';
 import Titulo from '../primitivos/Titulo.astro';
-import Texto from '../primitivos/Texto.astro';
 import IconesSociais from './IconesSociais.astro';
 import { contato } from '../../data/contato';
 import { ui, url, type Locale } from '../../i18n/ui';
@@ -45,6 +44,10 @@ import { ui, url, type Locale } from '../../i18n/ui';
  *     documento juridico, e por isso chegam tambem a 404 (`minimo`);
  *   - a faixa deixa de dizer "...reservados. by Cloudbe": o credito da agencia
  *     estava em ingles nos tres idiomas, depois de um ponto final.
+ *
+ * ENXUGADO EM 27/10/2026, a pedido: a frase da associacao saiu de baixo da
+ * marca, o nome por extenso saiu da linha de copyright, o endereco ficou sem
+ * sala e sem CEP (`linhasCurtas`) e o WhatsApp ficou so com o numero.
  *
  * Ver docs/decisoes.md, "Fale conosco por assunto, e o rodape reorganizado".
  */
@@ -116,10 +119,15 @@ const sufixoDominio = restoDominio.length ? `.${restoDominio.join('.')}` : '';
  * O e-mail e o telefone levam tambem o `wrap-anywhere`, a rede de baixo para
  * quando nem o dominio cabe. Foi um e-mail vazando da coluna que fez a
  * varredura de geometria aprender a ver texto.
+ *
+ * O numero aparece sozinho, sem "WhatsApp" na frente. O nome do canal fica no
+ * nome acessivel, num `.sr-only` DEPOIS do numero: quem ouve o link precisa
+ * saber que ele abre o WhatsApp e nao uma chamada, e o texto visivel continua
+ * sendo o comeco do nome (o criterio 2.5.3, de quem navega por voz).
  */
 const partesWhatsapp = contato.whatsapp.telefone.split(' ');
 const fimWhatsapp = partesWhatsapp.pop();
-const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
+const inicioWhatsapp = partesWhatsapp.join(' ');
 ---
 
 <footer id="footer" class:list={['rodape', invertido && 'invertido superficie-inversa']}>
@@ -143,12 +151,6 @@ const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
               <a href={url('home', lang)} class="marca">
                 <Imagem src="/images/logo-25anos.png" alt="Resorts Brasil" largura={240} altura={80} ajuste="conter" />
               </a>
-              {/* `paragrafo` e nao o `sutil` que o papel traz: sobre a nevoa do
-                  rodape o cinza sutil da 4,44:1, abaixo dos 4,5, e o de
-                  paragrafo 6,19:1 -- o mesmo dos links ao lado. */}
-              <Texto papel="apoio" cor={invertido ? 'sutil-inverso' : 'paragrafo'}>
-                {t.footerTagline}
-              </Texto>
               <IconesSociais lang={lang} superficie="rodape" />
             </div>
 
@@ -182,11 +184,12 @@ const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
                     <a href={contato.whatsapp.link} target="_blank" rel="noopener noreferrer" class="wrap-anywhere">
                       {inicioWhatsapp}{' '}
                       <span class="whitespace-nowrap">{fimWhatsapp}</span>
+                      <span class="sr-only">{` (${t.contactWhatsappTitle})`}</span>
                     </a>
                   </li>
                   <li>
                     <address>
-                      {contato.endereco.linhas.map((linha, i) => (
+                      {contato.endereco.linhasCurtas.map((linha, i) => (
                         <>
                           {i > 0 && <br />}
                           {linha}
@@ -318,23 +321,16 @@ const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
   }
 
   /*
-   * A marca, a frase e as redes, empilhadas com 20px entre elas -- o mesmo vao
-   * medido do titulo de coluna ate a lista. So o `<p>` traz margem; as redes
-   * tem margem lateral negativa, que devolve o primeiro circulo ao alinhamento
-   * (ver o <IconesSociais>), e por isso nao se zera tudo.
+   * A marca e as redes, empilhadas com 20px entre elas -- o mesmo vao medido do
+   * titulo de coluna ate a lista. As redes tem margem lateral negativa, que
+   * devolve o primeiro circulo ao alinhamento (ver o <IconesSociais>), e por
+   * isso nao se zera a margem delas.
    */
   .celula-marca {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 1.25rem;
-  }
-
-  /* A frase da associacao nao corre a celula inteira: 26rem sao uns 60
-     caracteres no corpo de 14px. */
-  .celula-marca > :global(p) {
-    margin: 0;
-    max-width: 26rem;
   }
 
   .marca {
@@ -383,7 +379,7 @@ const inicioWhatsapp = `${t.contactWhatsappTitle} ${partesWhatsapp.join(' ')}`;
     line-height: 1.25rem;
   }
 
-  /* As tres linhas de um mesmo dado, na voz do link ao lado, e sem o italico
+  /* As duas linhas de um mesmo dado, na voz do link ao lado, e sem o italico
      que o navegador da ao `<address>` e que nenhuma face baixada desenha. */
   .contato address {
     color: var(--rodape-link);

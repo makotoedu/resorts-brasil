@@ -1039,6 +1039,8 @@ const faixas = [
           de 48px em cima, para quando cada caixa tem o seu — os canais da página de contato.{' '}
           <code>lado</code>, com o símbolo de 24px na linha do título, para quando ele se repete —
           os oito benefícios de ser associado, que eram o mesmo visto de 46px empilhado oito vezes.
+          A <code>pastilha</code> põe o símbolo empilhado num quadrado de 48px, e é o que os canais
+          de contato usam dentro do cartão.
         </p>
         <div class="demo">
           <Grade colunas={4} espaco="md">
@@ -1062,6 +1064,15 @@ const faixas = [
             </CaixaIcone>
             <CaixaIcone icone="check-circle" titulo="B2B" nivel={4} tom="acao" disposicao="lado">
               <Texto>Rodadas de negócio em formatos inovadores com clientes.</Texto>
+            </CaixaIcone>
+          </Grade>
+          <p class="rotulo-demo"><code>pastilha</code> <small>o símbolo num quadrado tingido com a cor dele</small></p>
+          <Grade colunas={4} espaco="md">
+            <CaixaIcone icone="mail" titulo="E-mail" nivel={4} tom="acao" pastilha>
+              <Texto>No tom de ação, a pastilha é o azul a 10%.</Texto>
+            </CaixaIcone>
+            <CaixaIcone icone="map-pin" titulo="Endereço" nivel={4} pastilha>
+              <Texto>No tom padrão, é o navy a 10%.</Texto>
             </CaixaIcone>
           </Grade>
           <p class="legenda">

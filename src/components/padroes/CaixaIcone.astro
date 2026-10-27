@@ -26,6 +26,13 @@ import type { NomeIcone } from '../../icones/glifos';
  *
  *   <CaixaIcone icone="check-circle" titulo="Feiras" disposicao="lado">
  *
+ * A PASTILHA, desde 27/10/2026: na empilhada, o simbolo pode vir num quadrado
+ * tingido com a cor dele. Os canais da pagina de contato eram tres glifos
+ * soltos de 48px no canto de cartoes brancos; na pastilha eles tem o peso de
+ * um controle, que e o que o cartao inteiro clicavel passou a ser.
+ *
+ *   <CaixaIcone icone="mail" titulo="E-mail" tom="acao" pastilha>
+ *
  * MEDIDO (scripts/medir-padroes.mjs): glifo de 36px numa caixa de 46px, 16px
  * ate o titulo, titulo de 18px com entrelinha de 25px e 4px ate o texto, texto
  * de 14px com entrelinha de 22,4px.
@@ -48,6 +55,11 @@ interface Props {
   tom?: 'padrao' | 'acao';
   /** Ver a nota do topo: `lado` e para quando o simbolo se repete. */
   disposicao?: 'empilhada' | 'lado';
+  /**
+   * O simbolo de 24px numa pastilha de 48px, com o fundo na cor dele. Para a
+   * disposicao empilhada dentro de um <Cartao>: os canais da pagina de contato.
+   */
+  pastilha?: boolean;
   class?: string;
 }
 
@@ -58,6 +70,7 @@ const {
   alinhamento = 'inicio',
   tom = 'padrao',
   disposicao = 'empilhada',
+  pastilha = false,
   class: classe,
 } = Astro.props;
 ---
@@ -68,12 +81,13 @@ const {
     alinhamento === 'centro' && 'centro',
     tom === 'acao' && 'tom-acao',
     disposicao === 'lado' && 'lado',
+    pastilha && 'pastilha',
     classe,
   ]}
 >
   {/* aria-hidden por omissao do `rotulo`: o titulo logo abaixo diz a mesma
       coisa, e anunciar os dois faria o leitor de tela repetir cada item. */}
-  <Icone nome={icone} tamanho={disposicao === 'lado' ? 'md' : 'lg'} class="simbolo" />
+  <Icone nome={icone} tamanho={disposicao === 'lado' || pastilha ? 'md' : 'lg'} class="simbolo" />
   <div class="conteudo">
     <Titulo nivel={nivel} papel="cartao" class="titulo">{titulo}</Titulo>
     <div class="texto">
@@ -120,6 +134,22 @@ const {
 
   .tom-acao :global(.simbolo) {
     color: var(--color-acao-primaria);
+  }
+
+  /*
+   * A PASTILHA ocupa os mesmos 48px do simbolo empilhado, e o glifo cai para
+   * 24px dentro dela. O fundo e a cor do proprio simbolo a 10% -- o azul de
+   * acao no `tom="acao"`, o navy no padrao --, e por isso nao precisa de token
+   * proprio nem de variacao por tom: e a mesma mistura do `--color-estado-atual`.
+   *
+   * `content-box` porque o recuo e do `<svg>`: com o `border-box` do Preflight,
+   * os 12px de cada lado sairiam de dentro dos 24px e o glifo sumiria.
+   */
+  .pastilha :global(.simbolo) {
+    box-sizing: content-box;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
   }
 
   /*

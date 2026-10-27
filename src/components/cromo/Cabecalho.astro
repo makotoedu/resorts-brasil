@@ -40,7 +40,8 @@ import { ui, url, localeBadge, locales, htmlLang, type Locale, type RouteKey } f
  *   2. O item destacado deixa de ser dourado sobre azul. `rgb(211,180,4)` sobre
  *      o azul-500 da 2,84:1; branco da 5,80:1. No menu, sobre branco, o ouro
  *      escureceu de #d39e00 (2,42:1) para o ambar-800 (4,96:1) -- e no Soft UI
- *      o "Fale conosco" do menu deixou de ser texto dourado e virou <Botao>.
+ *      o "Fale conosco" do menu deixou de ser texto dourado e virou <Botao>,
+ *      que em 27/10/2026 voltou ao ambar como fundo, com o navy por cima.
  *   3. O distintivo de idioma (BR/EN/ES) era um `<span>` de 9px posicionado a
  *      `top: -10px` — um expoente. Aqui ele fica na linha do simbolo.
  */
@@ -201,9 +202,16 @@ const atual = route ? url(route, lang) : undefined;
                       O "Fale conosco" e o CTA do menu, e desde o Soft UI ele e
                       um <Botao>: era um link dourado, distinguido so pela cor,
                       e a cor dele tinha de ser escolhida de novo em cada fundo.
+                      O ambar voltou em 27/10/2026, agora como superficie: a
+                      variante `destaque` traz o fundo e o navy por cima (9,10:1),
+                      e um botao cheio nao depende do fundo de quem o contem.
                     */}
                     {item.destaque ? (
-                      <Botao href={item.href!} aria-current={item.href === atual ? 'page' : undefined}>
+                      <Botao
+                        href={item.href!}
+                        variante="destaque"
+                        aria-current={item.href === atual ? 'page' : undefined}
+                      >
                         {item.rotulo}
                       </Botao>
                     ) : (
