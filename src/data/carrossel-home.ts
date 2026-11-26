@@ -1,12 +1,12 @@
 /**
- * O carrossel de logos da home: 71 logos, contra os 79 de /associados.
+ * O carrossel de logos da home: 71 logos, contra os 78 de /associados.
  *
- * Nem todo associado aparece aqui — seis dos listados em /associados ficam de
+ * Nem todo associado aparece aqui — cinco dos listados em /associados ficam de
  * fora. E uma selecao, nao a lista inteira.
  *
- * OS SEIS SAO A DIFERENCA ENTRE LOGOTIPOS DISTINTOS, e nao entre entradas: o
- * `clubmed.png` aparece tres vezes em associados.ts (SP, RJ e BA), entao as 79
- * entradas de la sao 77 arquivos, e 77 - 71 = 6. Quem quiser conferir a conta
+ * OS CINCO SAO A DIFERENCA ENTRE LOGOTIPOS DISTINTOS, e nao entre entradas: o
+ * `clubmed.png` aparece tres vezes em associados.ts (SP, RJ e BA), entao as 78
+ * entradas de la sao 76 arquivos, e 76 - 71 = 5. Quem quiser conferir a conta
  * depois de acrescentar alguem tem de deduplicar pelo `logo`, nao contar linhas.
  *
  * Antes estava escrita a mao nas tres homes e ja havia divergido: o EN trocava
